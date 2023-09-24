@@ -1,0 +1,16 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenAC.Net.NFSe.Nacional", "OpenAC.Net.NFSe.Nacional\OpenAC.Net.NFSe.Nacional.csproj", "{3F38E32E-7B07-4E31-B0E1-37F36D28EC5B}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{3F38E32E-7B07-4E31-B0E1-37F36D28EC5B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3F38E32E-7B07-4E31-B0E1-37F36D28EC5B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3F38E32E-7B07-4E31-B0E1-37F36D28EC5B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3F38E32E-7B07-4E31-B0E1-37F36D28EC5B}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
