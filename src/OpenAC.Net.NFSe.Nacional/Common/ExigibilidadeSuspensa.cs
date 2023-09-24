@@ -6,7 +6,7 @@
 // Last Modified By : RFTD
 // Last Modified On : 09-09-2023
 // ***********************************************************************
-// <copyright file="TributosNFSe.cs" company="OpenAC .Net">
+// <copyright file="ExigibilidadeSuspensa.cs" company="OpenAC .Net">
 //		        		   The MIT License (MIT)
 //	     		    Copyright (c) 2014-2023 Grupo OpenAC.Net
 //
@@ -30,17 +30,15 @@
 // ***********************************************************************
 
 using OpenAC.Net.DFe.Core.Attributes;
+using OpenAC.Net.DFe.Core.Serializer;
 
 namespace OpenAC.Net.NFSe.Nacional.Common;
 
-public sealed class TributosNFSe
+public sealed class ExigibilidadeSuspensa
 {
-    [DFeElement("tribMun", Ocorrencia = Ocorrencia.Obrigatoria)]
-    public TributoMunicipal Municipal { get; set; } = new();
+    [DFeElement(TipoCampo.Enum, "tpSusp", Ocorrencia = Ocorrencia.Obrigatoria)]
+    public TipoSuspensao TipoSuspensao { get; set; }
     
-    [DFeElement("tribFed", Ocorrencia = Ocorrencia.NaoObrigatoria)]
-    public TributoFederal? Federal { get; set; }
-    
-    [DFeElement("totTrib", Ocorrencia = Ocorrencia.Obrigatoria)]
-    public TotalTributos Total { get; set; } = new();
+    [DFeElement(TipoCampo.StrNumber, "nProcesso", Min = 1, Max = 30, Ocorrencia = Ocorrencia.Obrigatoria)]
+    public string? NumeroProcesso { get; set; }
 }

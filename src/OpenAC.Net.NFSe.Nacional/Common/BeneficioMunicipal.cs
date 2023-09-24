@@ -6,7 +6,7 @@
 // Last Modified By : RFTD
 // Last Modified On : 09-09-2023
 // ***********************************************************************
-// <copyright file="TributosNFSe.cs" company="OpenAC .Net">
+// <copyright file="BeneficioMunicipal.cs" company="OpenAC .Net">
 //		        		   The MIT License (MIT)
 //	     		    Copyright (c) 2014-2023 Grupo OpenAC.Net
 //
@@ -30,17 +30,21 @@
 // ***********************************************************************
 
 using OpenAC.Net.DFe.Core.Attributes;
+using OpenAC.Net.DFe.Core.Serializer;
 
 namespace OpenAC.Net.NFSe.Nacional.Common;
 
-public sealed class TributosNFSe
+public sealed class BeneficioMunicipal
 {
-    [DFeElement("tribMun", Ocorrencia = Ocorrencia.Obrigatoria)]
-    public TributoMunicipal Municipal { get; set; } = new();
+    [DFeElement(TipoCampo.Enum, "tpBM", Ocorrencia = Ocorrencia.Obrigatoria)]
+    public TipoBeneficioMunicipal Tipo { get; set; }
     
-    [DFeElement("tribFed", Ocorrencia = Ocorrencia.NaoObrigatoria)]
-    public TributoFederal? Federal { get; set; }
+    [DFeElement(TipoCampo.StrNumber, "nBM", Min = 1, Max = 14, Ocorrencia = Ocorrencia.Obrigatoria)]
+    public string NumeroBeneficio { get; set; }
     
-    [DFeElement("totTrib", Ocorrencia = Ocorrencia.Obrigatoria)]
-    public TotalTributos Total { get; set; } = new();
+    [DFeElement(TipoCampo.De2, "vRedBCBM", Min = 4, Max = 18, Ocorrencia = Ocorrencia.NaoObrigatoria)]
+    public decimal? ValorReducao { get; set; }
+    
+    [DFeElement(TipoCampo.De2, "pRedBCBM", Min = 4, Max = 7, Ocorrencia = Ocorrencia.NaoObrigatoria)]
+    public decimal? PorcentagemReducao { get; set; }
 }

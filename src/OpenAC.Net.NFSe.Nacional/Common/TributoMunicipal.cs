@@ -30,17 +30,30 @@
 // ***********************************************************************
 
 using OpenAC.Net.DFe.Core.Attributes;
+using OpenAC.Net.DFe.Core.Serializer;
 
 namespace OpenAC.Net.NFSe.Nacional.Common;
 
-public sealed class TributosNFSe
+public sealed class TributoMunicipal
 {
-    [DFeElement("tribMun", Ocorrencia = Ocorrencia.Obrigatoria)]
-    public TributoMunicipal Municipal { get; set; } = new();
+    [DFeElement(TipoCampo.Enum, "tribISSQN", Ocorrencia = Ocorrencia.Obrigatoria)]
+    public TributoISSQN ISSQN { get; set; }
+
+    [DFeElement(TipoCampo.Str, "cPaisResult", Min = 2, Max = 2, Ocorrencia = Ocorrencia.NaoObrigatoria)]
+    public string? CodPais { get; set; }
     
-    [DFeElement("tribFed", Ocorrencia = Ocorrencia.NaoObrigatoria)]
-    public TributoFederal? Federal { get; set; }
+    [DFeElement("tribMun", Ocorrencia = Ocorrencia.NaoObrigatoria)]
+    public BeneficioMunicipal? Beneficio { get; set; }
     
-    [DFeElement("totTrib", Ocorrencia = Ocorrencia.Obrigatoria)]
-    public TotalTributos Total { get; set; } = new();
+    [DFeElement("tribMun", Ocorrencia = Ocorrencia.NaoObrigatoria)]
+    public ExigibilidadeSuspensa? Suspensao { get; set; }
+    
+    [DFeElement(TipoCampo.Enum, "tpImunidade", Ocorrencia = Ocorrencia.NaoObrigatoria)]
+    public TipoImunidade? TipoImunidade { get; set; }
+    
+    [DFeElement(TipoCampo.De2, "pAliq", Min = 4, Max = 7, Ocorrencia = Ocorrencia.NaoObrigatoria)]
+    public decimal? Aliquota{ get; set; }
+    
+    [DFeElement(TipoCampo.Enum, "tpRetISSQN", Ocorrencia = Ocorrencia.NaoObrigatoria)]
+    public TipoRetencaoISSQN? TipoRetencaoISSQN { get; set; }
 }

@@ -6,7 +6,7 @@
 // Last Modified By : RFTD
 // Last Modified On : 09-09-2023
 // ***********************************************************************
-// <copyright file="TributosNFSe.cs" company="OpenAC .Net">
+// <copyright file="TipoCST.cs" company="OpenAC .Net">
 //		        		   The MIT License (MIT)
 //	     		    Copyright (c) 2014-2023 Grupo OpenAC.Net
 //
@@ -33,14 +33,48 @@ using OpenAC.Net.DFe.Core.Attributes;
 
 namespace OpenAC.Net.NFSe.Nacional.Common;
 
-public sealed class TributosNFSe
+/// <summary>
+/// Código de Situação Tributária do PIS/COFINS (CST):
+/// 00 - Nenhum;
+/// 01 - Operação Tributável com Alíquota Básica;
+/// 02 - Operação Tributável com Alíquota Diferenciada;
+/// 03 - Operação Tributável com Alíquota por Unidade de Medida de Produto;
+/// 04 - Operação Tributável monofásica - Revenda a Alíquota Zero;
+/// 05 - Operação Tributável por Substituição Tributária;
+/// 06 - Operação Tributável a Alíquota Zero;
+/// 07 - Operação Tributável da Contribuição;
+/// 08 - Operação sem Incidência da Contribuição;
+/// 09 - Operação com Suspensão da Contribuição;
+/// </summary>
+public enum TipoCST
 {
-    [DFeElement("tribMun", Ocorrencia = Ocorrencia.Obrigatoria)]
-    public TributoMunicipal Municipal { get; set; } = new();
+    [DFeEnum("00")]
+    Nenhum,
     
-    [DFeElement("tribFed", Ocorrencia = Ocorrencia.NaoObrigatoria)]
-    public TributoFederal? Federal { get; set; }
+    [DFeEnum("01")]
+    AliquotaBasica,
     
-    [DFeElement("totTrib", Ocorrencia = Ocorrencia.Obrigatoria)]
-    public TotalTributos Total { get; set; } = new();
+    [DFeEnum("02")]
+    AliquotaDiferenciada,
+    
+    [DFeEnum("03")]
+    AliquotaUnidadeMedidaProduto,
+    
+    [DFeEnum("04")]
+    RevendaAliquotaZero,
+    
+    [DFeEnum("05")]
+    SubstituicaoTributaria,
+    
+    [DFeEnum("06")]
+    AliquotaZero,
+    
+    [DFeEnum("07")]
+    Contribuicao,
+    
+    [DFeEnum("08")]
+    SemIncidenciaContribuicao,
+    
+    [DFeEnum("09")]
+    ComSuspensaoContribuicao
 }

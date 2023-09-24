@@ -6,7 +6,7 @@
 // Last Modified By : RFTD
 // Last Modified On : 09-09-2023
 // ***********************************************************************
-// <copyright file="TributosNFSe.cs" company="OpenAC .Net">
+// <copyright file="PisCofins.cs" company="OpenAC .Net">
 //		        		   The MIT License (MIT)
 //	     		    Copyright (c) 2014-2023 Grupo OpenAC.Net
 //
@@ -30,17 +30,30 @@
 // ***********************************************************************
 
 using OpenAC.Net.DFe.Core.Attributes;
+using OpenAC.Net.DFe.Core.Serializer;
 
 namespace OpenAC.Net.NFSe.Nacional.Common;
 
-public sealed class TributosNFSe
+public sealed class PisCofins
 {
-    [DFeElement("tribMun", Ocorrencia = Ocorrencia.Obrigatoria)]
-    public TributoMunicipal Municipal { get; set; } = new();
+    [DFeElement(TipoCampo.Enum, "CST", Min = 2, Max = 2, Ocorrencia = Ocorrencia.Obrigatoria)]
+    public TipoCST Cst { get; set; } = TipoCST.Nenhum;
     
-    [DFeElement("tribFed", Ocorrencia = Ocorrencia.NaoObrigatoria)]
-    public TributoFederal? Federal { get; set; }
+    [DFeElement(TipoCampo.De2, "vBCPisCofins", Min = 4, Max = 18, Ocorrencia = Ocorrencia.NaoObrigatoria)]
+    public decimal? ValorBcCofins { get; set; }
     
-    [DFeElement("totTrib", Ocorrencia = Ocorrencia.Obrigatoria)]
-    public TotalTributos Total { get; set; } = new();
+    [DFeElement(TipoCampo.De2, "pAliqPis", Min = 4, Max = 7, Ocorrencia = Ocorrencia.NaoObrigatoria)]
+    public decimal? AliquotaPis{ get; set; }
+    
+    [DFeElement(TipoCampo.De2, "pAliqCofins", Min = 4, Max = 7, Ocorrencia = Ocorrencia.NaoObrigatoria)]
+    public decimal? AliquotaCofins{ get; set; }
+    
+    [DFeElement(TipoCampo.De2, "vPis", Min = 4, Max = 18, Ocorrencia = Ocorrencia.NaoObrigatoria)]
+    public decimal? ValorPis { get; set; }
+    
+    [DFeElement(TipoCampo.De2, "vCofins", Min = 4, Max = 18, Ocorrencia = Ocorrencia.NaoObrigatoria)]
+    public decimal? ValorCofins { get; set; }
+    
+    [DFeElement(TipoCampo.Enum, "tpRetPisCofins", Min = 1, Max = 1, Ocorrencia = Ocorrencia.NaoObrigatoria)]
+    public TipoRetencaoPisCofins? TipoRetencao { get; set; }
 }

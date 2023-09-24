@@ -6,7 +6,7 @@
 // Last Modified By : RFTD
 // Last Modified On : 09-09-2023
 // ***********************************************************************
-// <copyright file="TributosNFSe.cs" company="OpenAC .Net">
+// <copyright file="TipoBeneficioMunicipal.cs" company="OpenAC .Net">
 //		        		   The MIT License (MIT)
 //	     		    Copyright (c) 2014-2023 Grupo OpenAC.Net
 //
@@ -33,14 +33,20 @@ using OpenAC.Net.DFe.Core.Attributes;
 
 namespace OpenAC.Net.NFSe.Nacional.Common;
 
-public sealed class TributosNFSe
+/// <summary>
+/// Tipo do Benefício Municipal:
+/// 1 - Alíquota Diferenciada;
+/// 2 - Redução da BC;
+/// 3 - Isenção;
+/// </summary>
+public enum TipoBeneficioMunicipal
 {
-    [DFeElement("tribMun", Ocorrencia = Ocorrencia.Obrigatoria)]
-    public TributoMunicipal Municipal { get; set; } = new();
+    [DFeEnum("1")]
+    AliquotaDiferenciada,
     
-    [DFeElement("tribFed", Ocorrencia = Ocorrencia.NaoObrigatoria)]
-    public TributoFederal? Federal { get; set; }
+    [DFeEnum("2")]
+    ReducaoBC,
     
-    [DFeElement("totTrib", Ocorrencia = Ocorrencia.Obrigatoria)]
-    public TotalTributos Total { get; set; } = new();
+    [DFeEnum("3")]
+    Isencao
 }

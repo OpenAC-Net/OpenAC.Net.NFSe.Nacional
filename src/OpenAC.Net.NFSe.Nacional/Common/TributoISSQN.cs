@@ -33,14 +33,24 @@ using OpenAC.Net.DFe.Core.Attributes;
 
 namespace OpenAC.Net.NFSe.Nacional.Common;
 
-public sealed class TributosNFSe
+/// <summary>
+/// Tributação do ISSQN sobre o serviço prestado:
+/// 1 - Operação tributável;
+/// 2 - Exportação de serviço;
+/// 3 - Não Incidência;
+/// 4 - Imunidade;
+/// </summary>
+public enum TributoISSQN
 {
-    [DFeElement("tribMun", Ocorrencia = Ocorrencia.Obrigatoria)]
-    public TributoMunicipal Municipal { get; set; } = new();
+    [DFeEnum("1")]
+    OperaçãoTributavel,
     
-    [DFeElement("tribFed", Ocorrencia = Ocorrencia.NaoObrigatoria)]
-    public TributoFederal? Federal { get; set; }
+    [DFeEnum("2")]
+    ExportacaoServico,
     
-    [DFeElement("totTrib", Ocorrencia = Ocorrencia.Obrigatoria)]
-    public TotalTributos Total { get; set; } = new();
+    [DFeEnum("3")]
+    NaoIncidencia,
+    
+    [DFeEnum("4")]
+    Imunidade
 }

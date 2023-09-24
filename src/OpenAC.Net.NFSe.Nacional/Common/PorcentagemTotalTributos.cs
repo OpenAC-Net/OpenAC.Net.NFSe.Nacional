@@ -6,7 +6,7 @@
 // Last Modified By : RFTD
 // Last Modified On : 09-09-2023
 // ***********************************************************************
-// <copyright file="TributosNFSe.cs" company="OpenAC .Net">
+// <copyright file="TotalTributos.cs" company="OpenAC .Net">
 //		        		   The MIT License (MIT)
 //	     		    Copyright (c) 2014-2023 Grupo OpenAC.Net
 //
@@ -30,17 +30,18 @@
 // ***********************************************************************
 
 using OpenAC.Net.DFe.Core.Attributes;
+using OpenAC.Net.DFe.Core.Serializer;
 
 namespace OpenAC.Net.NFSe.Nacional.Common;
 
-public sealed class TributosNFSe
+public sealed class PorcentagemTotalTributos
 {
-    [DFeElement("tribMun", Ocorrencia = Ocorrencia.Obrigatoria)]
-    public TributoMunicipal Municipal { get; set; } = new();
+    [DFeElement(TipoCampo.De2, "pTotTribFed", Min = 4, Max = 7, Ocorrencia = Ocorrencia.Obrigatoria)]
+    public decimal TotalFederal { get; set; }
     
-    [DFeElement("tribFed", Ocorrencia = Ocorrencia.NaoObrigatoria)]
-    public TributoFederal? Federal { get; set; }
+    [DFeElement(TipoCampo.De2, "pTotTribEst", Min = 4, Max = 7, Ocorrencia = Ocorrencia.Obrigatoria)]
+    public decimal TotalEstadual{ get; set; }
     
-    [DFeElement("totTrib", Ocorrencia = Ocorrencia.Obrigatoria)]
-    public TotalTributos Total { get; set; } = new();
+    [DFeElement(TipoCampo.De2, "pTotTribMun", Min = 4, Max = 7, Ocorrencia = Ocorrencia.Obrigatoria)]
+    public decimal TotalMunicipal { get; set; }
 }
