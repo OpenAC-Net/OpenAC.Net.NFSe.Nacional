@@ -30,20 +30,36 @@
 // ***********************************************************************
 
 using OpenAC.Net.DFe.Core.Attributes;
+using OpenAC.Net.DFe.Core.Serializer;
 
 namespace OpenAC.Net.NFSe.Nacional.Common;
 
 public sealed class ValoresNFSe
 {
-    [DFeElement("vServPrest", Ocorrencia = Ocorrencia.Obrigatoria)]
-    public ValoresServico ValoresServico { get; set; } = new();
+    [DFeElement(TipoCampo.De2, "vCalcDR", Min = 4, Max = 18, Ocorrencia = Ocorrencia.NaoObrigatoria)]
+    public decimal? ValorBcReducaoDeducao { get; set; }
     
-    [DFeElement("vDescCondIncond", Ocorrencia = Ocorrencia.NaoObrigatoria)]
-    public ValoresDesconto? ValoresDesconto { get; set; }
+    [DFeElement(TipoCampo.Str, "tpBM", Min = 1, Max = 40, Ocorrencia = Ocorrencia.NaoObrigatoria)]
+    public string? TipoBeneficioMunicipal { get; set; }
     
-    [DFeElement("vDedRed", Ocorrencia = Ocorrencia.NaoObrigatoria)]
-    public ValoresDeducaoReducao? ValoresDeducaoReducao { get; set; }
+    [DFeElement(TipoCampo.De2, "vCalcBM", Min = 4, Max = 18, Ocorrencia = Ocorrencia.NaoObrigatoria)]
+    public decimal? ValorBcBeneficioMunicipal { get; set; }
     
-    [DFeElement("trib", Ocorrencia = Ocorrencia.Obrigatoria)]
-    public TributosNFSe Tributos { get; set; } = new();
+    [DFeElement(TipoCampo.De2, "vBC", Min = 4, Max = 18, Ocorrencia = Ocorrencia.NaoObrigatoria)]
+    public decimal? ValorBc { get; set; }
+    
+    [DFeElement(TipoCampo.De2, "pAliqAplic", Min = 4, Max = 4, Ocorrencia = Ocorrencia.NaoObrigatoria)]
+    public decimal? Aliquota { get; set; }
+    
+    [DFeElement(TipoCampo.De2, "vISSQN", Min = 4, Max = 18, Ocorrencia = Ocorrencia.NaoObrigatoria)]
+    public decimal? ValorISSQN { get; set; }
+    
+    [DFeElement(TipoCampo.De2, "vTotalRet", Min = 4, Max = 18, Ocorrencia = Ocorrencia.NaoObrigatoria)]
+    public decimal? TotalRetido { get; set; }
+    
+    [DFeElement(TipoCampo.De2, "vLiq", Min = 4, Max = 18, Ocorrencia = Ocorrencia.NaoObrigatoria)]
+    public decimal? ValorLiquido { get; set; }
+    
+    [DFeElement(TipoCampo.Str, "xOutInf", Min = 1, Max = 2000, Ocorrencia = Ocorrencia.NaoObrigatoria)]
+    public string? OutrasInformacoes { get; set; }
 }

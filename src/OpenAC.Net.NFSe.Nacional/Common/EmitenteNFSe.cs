@@ -6,7 +6,7 @@
 // Last Modified By : RFTD
 // Last Modified On : 09-09-2023
 // ***********************************************************************
-// <copyright file="InfoPessoaNFSe.cs" company="OpenAC .Net">
+// <copyright file="NotaFiscalServico.cs" company="OpenAC .Net">
 //		        		   The MIT License (MIT)
 //	     		    Copyright (c) 2014-2023 Grupo OpenAC.Net
 //
@@ -34,7 +34,7 @@ using OpenAC.Net.DFe.Core.Serializer;
 
 namespace OpenAC.Net.NFSe.Nacional.Common;
 
-public class InfoPessoaNFSe
+public sealed class EmitenteNFSe
 {
     #region Properties
 
@@ -43,24 +43,18 @@ public class InfoPessoaNFSe
     
     [DFeElement(TipoCampo.StrNumber, "CPF", Min = 11, Max = 11, Ocorrencia = Ocorrencia.NaoObrigatoria)]
     public string? CPF { get; set; }
-    
-    [DFeElement(TipoCampo.StrNumber, "NIF", Min = 1, Max = 40, Ocorrencia = Ocorrencia.NaoObrigatoria)]
-    public string? Nif { get; set; }
-
-    [DFeElement(TipoCampo.Enum, "cNaoNIF", Ocorrencia = Ocorrencia.NaoObrigatoria)]
-    public MotivoNaoNIF? CodigoNaoNif { get; set; }
-
-    [DFeElement(TipoCampo.Str, "CAEPF", Min = 14, Max = 14, Ocorrencia = Ocorrencia.NaoObrigatoria)]
-    public string? NumeroCAEPF { get; set; }
 
     [DFeElement(TipoCampo.StrNumber, "IM", Min = 1, Max = 15, Ocorrencia = Ocorrencia.NaoObrigatoria)]
     public string? InscricaoMunicipal { get; set; }
 
-    [DFeElement(TipoCampo.Str, "xNome", Min = 1, Max = 300, Ocorrencia = Ocorrencia.NaoObrigatoria)]
-    public string? Nome { get; set; }
+    [DFeElement(TipoCampo.Str, "xNome", Min = 1, Max = 300, Ocorrencia = Ocorrencia.Obrigatoria)]
+    public string RazaoSocial { get; set; } = string.Empty;
+    
+    [DFeElement(TipoCampo.Str, "xFant", Min = 1, Max = 150, Ocorrencia = Ocorrencia.NaoObrigatoria)]
+    public string? NomeFantasia { get; set; }
 
-    [DFeElement("end", Ocorrencia = Ocorrencia.Obrigatoria)]
-    public EnderecoNFSe Endereco { get; set; } = new();
+    [DFeElement("enderNac", Ocorrencia = Ocorrencia.Obrigatoria)]
+    public EnderecoEmitente Endereco { get; set; } = new();
     
     [DFeElement(TipoCampo.StrNumber, "fone", Min = 6, Max = 20, Ocorrencia = Ocorrencia.NaoObrigatoria)]
     public string? Telefone { get; set; }

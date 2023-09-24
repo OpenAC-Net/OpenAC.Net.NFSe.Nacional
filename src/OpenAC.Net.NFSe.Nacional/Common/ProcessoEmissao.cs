@@ -6,7 +6,7 @@
 // Last Modified By : RFTD
 // Last Modified On : 09-09-2023
 // ***********************************************************************
-// <copyright file="InfoPessoaNFSe.cs" company="OpenAC .Net">
+// <copyright file="ProcessoEmissao.cs" company="OpenAC .Net">
 //		        		   The MIT License (MIT)
 //	     		    Copyright (c) 2014-2023 Grupo OpenAC.Net
 //
@@ -30,43 +30,23 @@
 // ***********************************************************************
 
 using OpenAC.Net.DFe.Core.Attributes;
-using OpenAC.Net.DFe.Core.Serializer;
 
 namespace OpenAC.Net.NFSe.Nacional.Common;
 
-public class InfoPessoaNFSe
+/// <summary>
+/// Processo de Emissão da DPS:
+/// 1 - Emissão com aplicativo do contribuinte (via Web Service);
+/// 2 - Emissão com aplicativo disponibilizado pelo fisco (Web);
+/// 3 - Emissão com aplicativo disponibilizado pelo fisco (App);
+/// </summary>
+public enum ProcessoEmissao
 {
-    #region Properties
-
-    [DFeElement(TipoCampo.StrNumber, "CNPJ", Min = 14, Max = 14, Ocorrencia = Ocorrencia.NaoObrigatoria)]
-    public string? CNPJ { get; set; }
+    [DFeEnum("1")]
+    AplicativoContribuinte,
     
-    [DFeElement(TipoCampo.StrNumber, "CPF", Min = 11, Max = 11, Ocorrencia = Ocorrencia.NaoObrigatoria)]
-    public string? CPF { get; set; }
+    [DFeEnum("2")]
+    AplicativoFiscoWeb,
     
-    [DFeElement(TipoCampo.StrNumber, "NIF", Min = 1, Max = 40, Ocorrencia = Ocorrencia.NaoObrigatoria)]
-    public string? Nif { get; set; }
-
-    [DFeElement(TipoCampo.Enum, "cNaoNIF", Ocorrencia = Ocorrencia.NaoObrigatoria)]
-    public MotivoNaoNIF? CodigoNaoNif { get; set; }
-
-    [DFeElement(TipoCampo.Str, "CAEPF", Min = 14, Max = 14, Ocorrencia = Ocorrencia.NaoObrigatoria)]
-    public string? NumeroCAEPF { get; set; }
-
-    [DFeElement(TipoCampo.StrNumber, "IM", Min = 1, Max = 15, Ocorrencia = Ocorrencia.NaoObrigatoria)]
-    public string? InscricaoMunicipal { get; set; }
-
-    [DFeElement(TipoCampo.Str, "xNome", Min = 1, Max = 300, Ocorrencia = Ocorrencia.NaoObrigatoria)]
-    public string? Nome { get; set; }
-
-    [DFeElement("end", Ocorrencia = Ocorrencia.Obrigatoria)]
-    public EnderecoNFSe Endereco { get; set; } = new();
-    
-    [DFeElement(TipoCampo.StrNumber, "fone", Min = 6, Max = 20, Ocorrencia = Ocorrencia.NaoObrigatoria)]
-    public string? Telefone { get; set; }
-    
-    [DFeElement(TipoCampo.Str, "email", Min = 1, Max = 80, Ocorrencia = Ocorrencia.NaoObrigatoria)]
-    public string? Email { get; set; }
-
-    #endregion Properties
+    [DFeEnum("3")]
+    AplicativoFiscoApp,
 }

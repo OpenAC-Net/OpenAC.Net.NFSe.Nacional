@@ -45,7 +45,7 @@ public sealed class Dps : DFeDocument<Dps>
     public string Versao { get; set; } = string.Empty;
 
     [DFeElement("infDPS", Ocorrencia = Ocorrencia.Obrigatoria)]
-    public InfDps InfDps { get; set; } = new();
+    public InfDps Informacoes { get; set; } = new();
     
     public DFeSignature Signature { get; set; } = new();
 

@@ -38,7 +38,7 @@ public sealed class MunicipioNacional : IMunicipio
 {
     #region Properties
 
-    [DFeElement(TipoCampo.Str, "cMun", Min = 0, Max = 7, Ocorrencia = Ocorrencia.Obrigatoria)]
+    [DFeElement(TipoCampo.StrNumber, "cMun", Min = 0, Max = 7, Ocorrencia = Ocorrencia.Obrigatoria)]
     public string CodMunicipio { get; set; } = string.Empty;
     
     [DFeElement(TipoCampo.Str, "CEP", Min = 8, Max = 8, Ocorrencia = Ocorrencia.Obrigatoria)]
