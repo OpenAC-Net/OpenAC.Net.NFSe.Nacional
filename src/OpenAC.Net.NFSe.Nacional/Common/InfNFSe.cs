@@ -85,7 +85,7 @@ public sealed class InfNFSe
     public DateTimeOffset DhProcessamento { get; set; }
     
     [DFeElement(TipoCampo.Int, "nDFSe", Min = 1, Max = 13, Ocorrencia = Ocorrencia.Obrigatoria)]
-    public int TipoNumeroDFSe { get; set; }
+    public int NumeroDFSe { get; set; }
     
     [DFeElement("emit", Ocorrencia = Ocorrencia.Obrigatoria)]
     public EmitenteNFSe Emitente { get; set; } = new();

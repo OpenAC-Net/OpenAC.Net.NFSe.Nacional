@@ -1,16 +1,56 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFrameworks>net5.0;net6.0;net7.0;net462;net47;net471;net472;net48;net481</TargetFrameworks>
+        <TargetFrameworks>net6.0;net7.0;net462;net47;net48;netstandard2.0</TargetFrameworks>
         <LangVersion>default</LangVersion>
         <Nullable>enable</Nullable>
+        <AssemblyName>OpenAC.Net.NFSe.Nacional</AssemblyName>
+        <RootNamespace>OpenAC.Net.NFSe.Nacional</RootNamespace>
+        <SignAssembly>true</SignAssembly>
+        <AssemblyOriginatorKeyFile>OpenAC.snk</AssemblyOriginatorKeyFile>
+        <Copyright>Copyright © Projeto OpenAC .Net 2014 - 2023</Copyright>
+        <Company>OpenAC .Net - Automação Comercial em .Net</Company>
+        <Authors>Projeto OpenAC .Net</Authors>
+        <PackageProjectUrl>https://openac-net.github.io/</PackageProjectUrl>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <PackageIconUrl>https://avatars.githubusercontent.com/u/90476515?s=200&amp;v=4</PackageIconUrl>
+        <RepositoryUrl>https://github.com/OpenAC-Net/OpenAC.Net.NFSe.Nacional</RepositoryUrl>
+        <RepositoryType>git</RepositoryType>
+        <PackageTags>OpenAC.Net NFSe Nacional OpenNFSe</PackageTags>
+        <PackageLicenseFile>LICENSE</PackageLicenseFile>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
+        <NeutralLanguage>pt-BR</NeutralLanguage>
+        <AssemblyVersion>1.0.0.0</AssemblyVersion>
+        <FileVersion>1.0.0.0</FileVersion>
+        <Version>1.0.0.0</Version>
+        <PublishRepositoryUrl>true</PublishRepositoryUrl>
+        <EmbedUntrackedSources>true</EmbedUntrackedSources>
+        <DebugType>embedded</DebugType>
+        <IncludeSymbols>true</IncludeSymbols>
+        <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
+        <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+        <PackageId>OpenAC.Net.NFSe.Nacional</PackageId>
     </PropertyGroup>
 
-
-
     <ItemGroup>
-      <PackageReference Include="OpenAC.Net.Core" Version="1.5.0.1" />
-      <PackageReference Include="OpenAC.Net.DFe.Core" Version="1.5.0.2" />
+      <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1">
+        <PrivateAssets>all</PrivateAssets>
+        <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      </PackageReference>
+      <PackageReference Include="OpenAC.Net.Core" Version="1.6.0-beta.1" />
+      <PackageReference Include="OpenAC.Net.DFe.Core" Version="1.6.0-beta.1" />
+      <PackageReference Include="System.Net.Http.Json" Version="7.0.1" />
     </ItemGroup>
 
+    <ItemGroup>
+        <None Include="..\..\LICENSE">
+            <Pack>True</Pack>
+            <PackagePath>/</PackagePath>
+        </None>
+        <None Include="..\..\README.md">
+            <Pack>True</Pack>
+            <PackagePath>/</PackagePath>
+        </None>
+    </ItemGroup>
+    
 </Project>

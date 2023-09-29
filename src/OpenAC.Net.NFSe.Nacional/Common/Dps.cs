@@ -36,8 +36,9 @@ using OpenAC.Net.DFe.Core.Serializer;
 
 namespace OpenAC.Net.NFSe.Nacional.Common;
 
+[DFeSignInfoElement("infDPS")]
 [DFeRoot("DPS", Namespace = "http://www.sped.fazenda.gov.br/nfse")]
-public sealed class Dps : DFeDocument<Dps>
+public sealed class Dps : DFeSignDocument<Dps>
 {
     #region Properties
 
@@ -46,17 +47,6 @@ public sealed class Dps : DFeDocument<Dps>
 
     [DFeElement("infDPS", Ocorrencia = Ocorrencia.Obrigatoria)]
     public InfDps Informacoes { get; set; } = new();
-    
-    public DFeSignature Signature { get; set; } = new();
 
     #endregion Properties
-
-    #region Methods
-
-    private bool ShouldSerializeSignature() =>
-        !Signature.SignatureValue.IsEmpty() &&
-        !Signature.SignedInfo.Reference.DigestValue.IsEmpty() &&
-        !Signature.KeyInfo.X509Data.X509Certificate.IsEmpty();
-
-    #endregion Methods
 }

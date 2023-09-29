@@ -29,15 +29,15 @@
 // <summary></summary>
 // ***********************************************************************
 
-using OpenAC.Net.Core.Extensions;
 using OpenAC.Net.DFe.Core.Attributes;
 using OpenAC.Net.DFe.Core.Document;
 using OpenAC.Net.DFe.Core.Serializer;
 
 namespace OpenAC.Net.NFSe.Nacional.Common;
 
+[DFeSignInfoElement("infNFSe")]
 [DFeRoot("NFSe", Namespace = "http://www.sped.fazenda.gov.br/nfse")]
-public class NotaFiscalServico : DFeDocument<NotaFiscalServico>
+public class NotaFiscalServico : DFeSignDocument<NotaFiscalServico>
 {
     #region Properties
 
@@ -46,17 +46,6 @@ public class NotaFiscalServico : DFeDocument<NotaFiscalServico>
     
     [DFeElement("infNFSe", Ocorrencia = Ocorrencia.Obrigatoria)]
     public InfNFSe Informacoes { get; set; } = new();
-    
-    public DFeSignature Signature { get; set; } = new();
 
     #endregion Properties
-
-    #region Methods
-
-    private bool ShouldSerializeSignature() =>
-        !Signature.SignatureValue.IsEmpty() &&
-        !Signature.SignedInfo.Reference.DigestValue.IsEmpty() &&
-        !Signature.KeyInfo.X509Data.X509Certificate.IsEmpty();
-
-    #endregion Methods
 }
