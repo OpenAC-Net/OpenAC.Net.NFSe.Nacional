@@ -1,4 +1,4 @@
-// ***********************************************************************
+﻿// ***********************************************************************
 // Assembly         : OpenAC.Net.NFSe.Nacional
 // Author           : RFTD
 // Created          : 09-09-2023
@@ -6,7 +6,7 @@
 // Last Modified By : RFTD
 // Last Modified On : 09-09-2023
 // ***********************************************************************
-// <copyright file="NFSeWebservice.cs" company="OpenAC .Net">
+// <copyright file="CodRespostaAnaliseIndeferido.cs" company="OpenAC .Net">
 //		        		   The MIT License (MIT)
 //	     		    Copyright (c) 2014-2023 Grupo OpenAC.Net
 //
@@ -29,31 +29,20 @@
 // <summary></summary>
 // ***********************************************************************
 
-using System.Net.Http;
+using OpenAC.Net.DFe.Core.Attributes;
 
-namespace OpenAC.Net.NFSe.Nacional.Webservice;
+namespace OpenAC.Net.NFSe.Nacional.Common;
 
-public sealed class NFSeWebservice
+/// <summary>
+/// Resposta da solicitação de análise fiscal para cancelamento de NFS-e:
+/// 1 - Cancelamento de NFS-e Indeferido;
+/// 2 - Cancelamento de NFS-e Indeferido Sem Análise de Mérito.
+/// </summary>
+public enum CodRespostaAnaliseIndeferido
 {
-    #region Fields
-
-    private ConfiguracaoNFSe configuracaoNFSe;
-    private HttpClient client;
-
-    #endregion Fields
-
-    #region Constructors
-
-    public NFSeWebservice(ConfiguracaoNFSe configuracaoNFSe) : this(configuracaoNFSe, new HttpClient())
-    {
-        
-    }
-
-    public NFSeWebservice(ConfiguracaoNFSe configuracaoNFSe, HttpClient client)
-    {
-        this.configuracaoNFSe = configuracaoNFSe;
-        this.client = client;
-    }
-
-    #endregion Constructors
+    [DFeEnum("1")]
+    Indeferido,
+    
+    [DFeEnum("2")]
+    IndeferidoSemAnaliseMerito
 }

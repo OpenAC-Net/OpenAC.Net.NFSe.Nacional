@@ -1,4 +1,4 @@
-// ***********************************************************************
+﻿// ***********************************************************************
 // Assembly         : OpenAC.Net.NFSe.Nacional
 // Author           : RFTD
 // Created          : 09-09-2023
@@ -6,7 +6,7 @@
 // Last Modified By : RFTD
 // Last Modified On : 09-09-2023
 // ***********************************************************************
-// <copyright file="NFSeWebservice.cs" company="OpenAC .Net">
+// <copyright file="IEventoNFSe.cs" company="OpenAC .Net">
 //		        		   The MIT License (MIT)
 //	     		    Copyright (c) 2014-2023 Grupo OpenAC.Net
 //
@@ -29,31 +29,13 @@
 // <summary></summary>
 // ***********************************************************************
 
-using System.Net.Http;
+namespace OpenAC.Net.NFSe.Nacional.Common;
 
-namespace OpenAC.Net.NFSe.Nacional.Webservice;
-
-public sealed class NFSeWebservice
+/// <summary>
+/// Resposta da análise da solicitação do cancelamento extemporâneo de NFS-e:
+/// 1 - Cancelamento Extemporâneo Deferido.
+/// </summary>
+public enum CodRespostaAnaliseDeferido
 {
-    #region Fields
-
-    private ConfiguracaoNFSe configuracaoNFSe;
-    private HttpClient client;
-
-    #endregion Fields
-
-    #region Constructors
-
-    public NFSeWebservice(ConfiguracaoNFSe configuracaoNFSe) : this(configuracaoNFSe, new HttpClient())
-    {
-        
-    }
-
-    public NFSeWebservice(ConfiguracaoNFSe configuracaoNFSe, HttpClient client)
-    {
-        this.configuracaoNFSe = configuracaoNFSe;
-        this.client = client;
-    }
-
-    #endregion Constructors
+    CancelamentoExtemporaneoDeferido
 }

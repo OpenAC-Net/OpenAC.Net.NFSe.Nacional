@@ -1,4 +1,4 @@
-// ***********************************************************************
+﻿// ***********************************************************************
 // Assembly         : OpenAC.Net.NFSe.Nacional
 // Author           : RFTD
 // Created          : 09-09-2023
@@ -6,7 +6,7 @@
 // Last Modified By : RFTD
 // Last Modified On : 09-09-2023
 // ***********************************************************************
-// <copyright file="NFSeWebservice.cs" company="OpenAC .Net">
+// <copyright file="EventoDesbloqueioOficio.cs" company="OpenAC .Net">
 //		        		   The MIT License (MIT)
 //	     		    Copyright (c) 2014-2023 Grupo OpenAC.Net
 //
@@ -29,31 +29,19 @@
 // <summary></summary>
 // ***********************************************************************
 
-using System.Net.Http;
+using OpenAC.Net.DFe.Core.Attributes;
+using OpenAC.Net.DFe.Core.Serializer;
 
-namespace OpenAC.Net.NFSe.Nacional.Webservice;
+namespace OpenAC.Net.NFSe.Nacional.Common;
 
-public sealed class NFSeWebservice
+public sealed class EventoDesbloqueioOficio : IEventoNFSe
 {
-    #region Fields
+    [DFeElement(TipoCampo.Str, "xDesc", Ocorrencia = Ocorrencia.Obrigatoria)]
+    public string Descricao { get; set; } = "Desbloqueio de NFS-e por Ofício";
 
-    private ConfiguracaoNFSe configuracaoNFSe;
-    private HttpClient client;
+    [DFeElement(TipoCampo.Str, "CPFAgTrib", Min = 11, Max = 11, Ocorrencia = Ocorrencia.Obrigatoria)]
+    public string CPFAgTrib { get; set; } = string.Empty;
 
-    #endregion Fields
-
-    #region Constructors
-
-    public NFSeWebservice(ConfiguracaoNFSe configuracaoNFSe) : this(configuracaoNFSe, new HttpClient())
-    {
-        
-    }
-
-    public NFSeWebservice(ConfiguracaoNFSe configuracaoNFSe, HttpClient client)
-    {
-        this.configuracaoNFSe = configuracaoNFSe;
-        this.client = client;
-    }
-
-    #endregion Constructors
+    [DFeElement(TipoCampo.StrNumber, "idBloqOfic", Min = 59, Max = 59, Ocorrencia = Ocorrencia.Obrigatoria)]
+    public string CodManifestacaoEvento { get; set; } = string.Empty;
 }

@@ -1,4 +1,4 @@
-// ***********************************************************************
+﻿// ***********************************************************************
 // Assembly         : OpenAC.Net.NFSe.Nacional
 // Author           : RFTD
 // Created          : 09-09-2023
@@ -6,7 +6,7 @@
 // Last Modified By : RFTD
 // Last Modified On : 09-09-2023
 // ***********************************************************************
-// <copyright file="NFSeWebservice.cs" company="OpenAC .Net">
+// <copyright file="MotivoRejeicao.cs" company="OpenAC .Net">
 //		        		   The MIT License (MIT)
 //	     		    Copyright (c) 2014-2023 Grupo OpenAC.Net
 //
@@ -29,31 +29,37 @@
 // <summary></summary>
 // ***********************************************************************
 
-using System.Net.Http;
+using OpenAC.Net.DFe.Core.Attributes;
 
-namespace OpenAC.Net.NFSe.Nacional.Webservice;
+namespace OpenAC.Net.NFSe.Nacional.Common;
 
-public sealed class NFSeWebservice
+/// <summary>
+/// Motivo da Rejeição da NFS-e:
+/// 
+/// 1 - NFS-e em duplicidade;
+/// 2 - NFS-e já emitida pelo tomador;
+/// 3 - Não ocorrência do fato gerador;
+/// 4 - Erro quanto a responsabilidade tributária;
+/// 5 - Erro quanto ao valor do serviço, valor das deduções ou serviço prestado ou data do fato gerador;
+/// 9 - Outros;
+/// </summary>
+public enum MotivoRejeicao
 {
-    #region Fields
-
-    private ConfiguracaoNFSe configuracaoNFSe;
-    private HttpClient client;
-
-    #endregion Fields
-
-    #region Constructors
-
-    public NFSeWebservice(ConfiguracaoNFSe configuracaoNFSe) : this(configuracaoNFSe, new HttpClient())
-    {
-        
-    }
-
-    public NFSeWebservice(ConfiguracaoNFSe configuracaoNFSe, HttpClient client)
-    {
-        this.configuracaoNFSe = configuracaoNFSe;
-        this.client = client;
-    }
-
-    #endregion Constructors
+    [DFeEnum("1")]
+    Duplicidade,
+    
+    [DFeEnum("2")]
+    EmitidadaTomador,
+    
+    [DFeEnum("3")]
+    NaoOcorrencia,
+    
+    [DFeEnum("4")]
+    ErroResponsabilidadeTributaria,
+    
+    [DFeEnum("5")]
+    ErroValores,
+    
+    [DFeEnum("9")]
+    Outros
 }

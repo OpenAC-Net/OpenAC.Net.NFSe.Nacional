@@ -65,6 +65,21 @@ public sealed class InfPedReg
     public int NumeroPedido { get; set; }
 
     [DFeItem(typeof(EventoCancelamento), "e101101")]
+    [DFeItem(typeof(EventoCancelamentoPorSubstituicao), "e105102")]
+    [DFeItem(typeof(EventoSolicitacaoCancelamento), "e101103")]
+    [DFeItem(typeof(EventoCancelamentoDeferido), "e105104")]
+    [DFeItem(typeof(EventoCancelamentoIndeferido), "e105105")]
+    [DFeItem(typeof(EventoConfirmacaoPrestador), "e202201")]
+    [DFeItem(typeof(EventoConfirmacaoTomador), "e203202")]
+    [DFeItem(typeof(EventoConfirmacaoIntermediario), "e203203")]
+    [DFeItem(typeof(EventoConfirmacaoTacita), "e203204")]
+    [DFeItem(typeof(EventoRejeicaoPrestador), "e203205")]
+    [DFeItem(typeof(EventoRejeicaoTomador), "e203206")]
+    [DFeItem(typeof(EventoRejeicaoIntermediario), "e203207")]
+    [DFeItem(typeof(EventoAnulacaoRejeicao), "e203208")]
+    [DFeItem(typeof(EventoCancelamentoOficio), "e305101")]
+    [DFeItem(typeof(EventoBloqueioOficio), "e305102")]
+    [DFeItem(typeof(EventoDesbloqueioOficio), "e305103")]
     public IEventoNFSe Evento { get; set; } = null!;
 
     #endregion Properties

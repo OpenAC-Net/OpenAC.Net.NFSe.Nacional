@@ -6,7 +6,7 @@
 // Last Modified By : RFTD
 // Last Modified On : 09-09-2023
 // ***********************************************************************
-// <copyright file="IEventoNFSe.cs" company="OpenAC .Net">
+// <copyright file="EventoCancelamento.cs" company="OpenAC .Net">
 //		        		   The MIT License (MIT)
 //	     		    Copyright (c) 2014-2023 Grupo OpenAC.Net
 //
@@ -34,7 +34,7 @@ using OpenAC.Net.DFe.Core.Serializer;
 
 namespace OpenAC.Net.NFSe.Nacional.Common;
 
-public sealed class EventoCancelamento : IEventoNFSe
+public sealed class EventoCancelamento: IEventoNFSe
 {
     [DFeElement(TipoCampo.Str, "xDesc", Ocorrencia = Ocorrencia.Obrigatoria)]
     public string Descricao { get; set; } = "Cancelamento de NFS-e";

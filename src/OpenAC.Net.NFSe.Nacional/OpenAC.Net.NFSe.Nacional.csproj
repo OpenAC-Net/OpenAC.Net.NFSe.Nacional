@@ -51,6 +51,10 @@
             <Pack>True</Pack>
             <PackagePath>/</PackagePath>
         </None>
+        <None Include="Schemas\1.00\**\*.*">
+            <Pack>True</Pack>
+            <PackagePath>content\Schemas\</PackagePath>
+        </None>
     </ItemGroup>
     
 </Project>

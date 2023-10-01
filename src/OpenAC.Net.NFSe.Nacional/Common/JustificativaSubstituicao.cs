@@ -1,4 +1,4 @@
-// ***********************************************************************
+﻿// ***********************************************************************
 // Assembly         : OpenAC.Net.NFSe.Nacional
 // Author           : RFTD
 // Created          : 09-09-2023
@@ -6,7 +6,7 @@
 // Last Modified By : RFTD
 // Last Modified On : 09-09-2023
 // ***********************************************************************
-// <copyright file="NFSeWebservice.cs" company="OpenAC .Net">
+// <copyright file="IEventoNFSe.cs" company="OpenAC .Net">
 //		        		   The MIT License (MIT)
 //	     		    Copyright (c) 2014-2023 Grupo OpenAC.Net
 //
@@ -29,31 +29,36 @@
 // <summary></summary>
 // ***********************************************************************
 
-using System.Net.Http;
+using OpenAC.Net.DFe.Core.Attributes;
 
-namespace OpenAC.Net.NFSe.Nacional.Webservice;
+namespace OpenAC.Net.NFSe.Nacional.Common;
 
-public sealed class NFSeWebservice
+/// <summary>
+/// Código de justificativa para substituição de NFS-e:
+/// 01 - Desenquadramento de NFS-e do Simples Nacional;
+/// 02 - Enquadramento de NFS-e no Simples Nacional;
+/// 03 - Inclusão Retroativa de Imunidade/Isenção para NFS-e;
+/// 04 - Exclusão Retroativa de Imunidade/Isenção para NFS-e;
+/// 05 - Rejeição de NFS-e pelo tomador ou pelo intermediário se responsável pelo recolhimento do tributo;
+/// 99 - Outros;
+/// </summary>
+public enum JustificativaSubstituicao
 {
-    #region Fields
-
-    private ConfiguracaoNFSe configuracaoNFSe;
-    private HttpClient client;
-
-    #endregion Fields
-
-    #region Constructors
-
-    public NFSeWebservice(ConfiguracaoNFSe configuracaoNFSe) : this(configuracaoNFSe, new HttpClient())
-    {
-        
-    }
-
-    public NFSeWebservice(ConfiguracaoNFSe configuracaoNFSe, HttpClient client)
-    {
-        this.configuracaoNFSe = configuracaoNFSe;
-        this.client = client;
-    }
-
-    #endregion Constructors
+    [DFeEnum("01")]
+    DesenquadramentoSimplesNacional,
+    
+    [DFeEnum("02")]
+    EnquadramentoSimplesNacional,
+    
+    [DFeEnum("03")]
+    InclusaoRetroativaImunidadeIsencao,
+    
+    [DFeEnum("04")]
+    ExclusaoRetroativaImunidadeIsencao,
+    
+    [DFeEnum("05")]
+    RejeicaoNFSeTomadorIntermediário,
+    
+    [DFeEnum("99")]
+    Outros
 }
