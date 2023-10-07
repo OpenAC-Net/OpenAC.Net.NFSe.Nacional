@@ -31,6 +31,9 @@
 
 
 using System;
+using System.IO;
+using System.Reflection;
+using OpenAC.Net.Core.Extensions;
 using OpenAC.Net.DFe.Core.Common;
 using OpenAC.Net.NFSe.Nacional.Common;
 
@@ -38,13 +41,80 @@ namespace OpenAC.Net.NFSe.Nacional;
 
 public sealed class NFSeArquivoConfig : DFeArquivosConfigBase<SchemaNFSe>
 {
+    #region Constructors
+
+    public NFSeArquivoConfig()
+    {
+        var path = Path.GetDirectoryName((Assembly.GetEntryAssembly() ?? Assembly.GetExecutingAssembly()).Location);
+        if (Directory.Exists(path))
+        {
+            PathNFSe = Path.Combine(path, "NFSe");
+            PathEnvio = Path.Combine(path, "Envio");
+            PathDps = Path.Combine(path, "DPS");
+        }
+        else
+        {
+            PathNFSe = string.Empty;
+            PathEnvio = string.Empty;
+            PathDps = string.Empty;
+        }
+    }
+
+    #endregion Constructors
+
+    #region Properties
+
+    /// <summary>
+    /// Gets or sets the path n fe.
+    /// </summary>
+    /// <value>The path n fe.</value>
+    public string PathNFSe { get; set; }
+
+    /// <summary>
+    /// Gets or sets the path lote.
+    /// </summary>
+    /// <value>The path lote.</value>
+    public string PathEnvio { get; set; }
+
+    /// <summary>
+    /// Gets or sets the path lote.
+    /// </summary>
+    /// <value>The path lote.</value>
+    public string PathDps { get; set; }
+
+    #endregion Properties
+
+    #region Methods
+
+    public string GetPathNFSe(DateTime data, string cnpj = "")
+    {
+        return GetPath(PathNFSe, "NFSe", cnpj, data, "NFSe");
+    }
+
+    public string GetPathEnvio(DateTime data, string cnpj = "")
+    {
+        return GetPath(PathEnvio, "Envio", cnpj, data);
+    }
+
+    public string GetPathDps(DateTime data, string cnpj = "")
+    {
+        return GetPath(PathDps, "Dps", cnpj, data, "Rps");
+    }
+    
     public override string GetSchema(SchemaNFSe schema)
     {
-        throw new NotImplementedException();
+        return schema switch
+        {
+            SchemaNFSe.DPS => Path.Combine(PathSchemas, "DPS_v1.00.xsd"),
+            SchemaNFSe.Evento => Path.Combine(PathSchemas, "pedRegEvento_v1.00.xsd"),
+            _ => throw new ArgumentOutOfRangeException(nameof(schema), schema, null)
+        };
     }
 
     protected override void ArquivoServicoChange()
     {
-        throw new NotImplementedException();
+        //
     }
+
+    #endregion Methods
 }

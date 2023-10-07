@@ -6,7 +6,7 @@
 // Last Modified By : RFTD
 // Last Modified On : 09-09-2023
 // ***********************************************************************
-// <copyright file="OpenNFSeNacional.cs" company="OpenAC .Net">
+// <copyright file="NFSeResponse.cs" company="OpenAC .Net">
 //		        		   The MIT License (MIT)
 //	     		    Copyright (c) 2014-2023 Grupo OpenAC.Net
 //
@@ -29,26 +29,36 @@
 // <summary></summary>
 // ***********************************************************************
 
-using System;
-using OpenAC.Net.NFSe.Nacional.Common;
-using OpenAC.Net.NFSe.Nacional.Webservice;
+using System.Text.Json;
 
-namespace OpenAC.Net.NFSe.Nacional;
+namespace OpenAC.Net.NFSe.Nacional.Webservice;
 
-public sealed class OpenNFSeNacional
+public sealed class NFSeResponse<T> where T : class, new()
 {
-    #region Properties
+    #region Constructors
 
-    public ConfiguracaoNFSe Configuracoes { get; set; } = new();
-
-    #endregion Properties
-
-    #region Methods
-
-    public NFSeResponse<DpsEnvioResposta> EnviarDps(Dps dps)
+    internal NFSeResponse(string xmlEnvio, string envio, string resposta, bool sucesso)
     {
-        throw new NotImplementedException();
+        XmlEnvio = xmlEnvio;
+        JsonEnvio = envio;
+        JsonRetorno = resposta;
+        Sucesso = sucesso;
+        Resultado = JsonSerializer.Deserialize<T>(resposta) ?? new T();
     }
 
-    #endregion
+    #endregion Constructors
+    
+    #region Properties
+
+    public string XmlEnvio { get; }
+
+    public string JsonEnvio { get; }
+
+    public string JsonRetorno { get; }
+    
+    public bool Sucesso { get; }
+    
+    public T Resultado { get; }
+
+    #endregion Properties
 }

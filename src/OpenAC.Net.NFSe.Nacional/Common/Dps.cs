@@ -30,7 +30,9 @@
 // ***********************************************************************
 
 using OpenAC.Net.Core.Extensions;
+using OpenAC.Net.DFe.Core;
 using OpenAC.Net.DFe.Core.Attributes;
+using OpenAC.Net.DFe.Core.Common;
 using OpenAC.Net.DFe.Core.Document;
 using OpenAC.Net.DFe.Core.Serializer;
 
@@ -49,4 +51,17 @@ public sealed class Dps : DFeSignDocument<Dps>
     public InfDps Informacoes { get; set; } = new();
 
     #endregion Properties
+
+    #region Methods
+
+    public void Assinar(ConfiguracaoNFSe configuracao)
+    {
+        var options = DFeSaveOptions.DisableFormatting;
+        if (configuracao.Geral.RetirarAcentos)
+            options |= DFeSaveOptions.RemoveAccents;
+        
+        AssinarDocumento(configuracao.Certificados.ObterCertificado(), options, false, SignDigest.SHA1);
+    }
+
+    #endregion Methods
 }

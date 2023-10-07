@@ -32,12 +32,22 @@
 using System;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
+using OpenAC.Net.Core.Extensions;
 using OpenAC.Net.DFe.Core.Common;
+using OpenAC.Net.NFSe.Nacional.Common;
 
 namespace OpenAC.Net.NFSe.Nacional.Webservice;
 
 public sealed class DpsEnvioResposta
 {
+    #region Fields
+
+    private NotaFiscalServico? nota;
+
+    #endregion Fields
+    
+    #region Properties
+
     [JsonPropertyName("tipoAmbiente")]
     [JsonConverter(typeof(TipoAmbienteJsonConverter))]
     public DFeTipoAmbiente Ambiente { get; set; }
@@ -57,10 +67,15 @@ public sealed class DpsEnvioResposta
     [JsonPropertyName("nfseXmlGZipB64")]
     [JsonConverter(typeof(XmlGzipJsonConverter))]
     public string XmlNFSe { get; set; } = string.Empty;
+
+    [JsonIgnore] 
+    public NotaFiscalServico? NFSe => XmlNFSe.IsEmpty() ? null : nota ??= NotaFiscalServico.Load(XmlNFSe);
     
     [JsonPropertyName("alertas")] 
     public List<MensagemProcessamento> Alertas { get; set; } = new();
     
     [JsonPropertyName("erros")] 
     public List<MensagemProcessamento> Erros { get; set; } = new();
+    
+    #endregion Properties
 }
