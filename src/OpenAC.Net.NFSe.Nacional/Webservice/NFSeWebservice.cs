@@ -36,16 +36,16 @@ using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Security.Authentication;
 using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Xml.Schema;
+using OpenAC.Net.Core.Logging;
 using OpenAC.Net.DFe.Core;
 using OpenAC.Net.DFe.Core.Common;
 using OpenAC.Net.NFSe.Nacional.Common;
 
 namespace OpenAC.Net.NFSe.Nacional.Webservice;
 
-public sealed class NFSeWebservice
+public sealed class NFSeWebservice : IOpenLog
 {
     #region Internal Types
 
@@ -93,13 +93,19 @@ public sealed class NFSeWebservice
 
         var content = JsonContent.Create(envio);
         var strEnvio = await content.ReadAsStringAsync();
-        GravarArquivoEmDisco(strEnvio, $"Enviar-{dps.Informacoes.NumeroDps:000000}-env.xml", documento);
+        
+        this.Log().Debug($"Webservice: [Enviar][Envio] - {strEnvio}");
+        
+        GravarArquivoEmDisco(strEnvio, $"Enviar-{dps.Informacoes.NumeroDps:000000}-env.json", documento);
         
         var url = NFSeServiceManager.Instance[DFeTipoEmissao.Normal][configuracao.WebServices.Ambiente, DFeSiglaUF.AN][TipoServico.Sefin];
         var httpResponse = await SendAsync(content, HttpMethod.Post, url + "/nfse");
         
         var strResponse = await httpResponse.Content.ReadAsStringAsync();
-        GravarArquivoEmDisco(strResponse, $"Enviar-{dps.Informacoes.NumeroDps:000000}-resp.xml", documento);
+        
+        this.Log().Debug($"Webservice: [Enviar][Resposta] - {strResponse}");
+        
+        GravarArquivoEmDisco(strResponse, $"Enviar-{dps.Informacoes.NumeroDps:000000}-resp.json", documento);
 
         return new NFSeResponse<DpsEnvioResposta>(dps.Xml, strEnvio, strResponse, httpResponse.IsSuccessStatusCode);
 

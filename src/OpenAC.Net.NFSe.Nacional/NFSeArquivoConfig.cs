@@ -29,11 +29,9 @@
 // <summary></summary>
 // ***********************************************************************
 
-
 using System;
 using System.IO;
 using System.Reflection;
-using OpenAC.Net.Core.Extensions;
 using OpenAC.Net.DFe.Core.Common;
 using OpenAC.Net.NFSe.Nacional.Common;
 

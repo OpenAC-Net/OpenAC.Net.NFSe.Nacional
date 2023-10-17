@@ -29,11 +29,13 @@
 // <summary></summary>
 // ***********************************************************************
 
+using System;
 using System.Text.Json;
+using OpenAC.Net.Core.Logging;
 
 namespace OpenAC.Net.NFSe.Nacional.Webservice;
 
-public sealed class NFSeResponse<T> where T : class, new()
+public sealed class NFSeResponse<T>: IOpenLog where T : class, new()
 {
     #region Constructors
 
@@ -43,7 +45,15 @@ public sealed class NFSeResponse<T> where T : class, new()
         JsonEnvio = envio;
         JsonRetorno = resposta;
         Sucesso = sucesso;
-        Resultado = JsonSerializer.Deserialize<T>(resposta) ?? new T();
+        try
+        {
+            Resultado = JsonSerializer.Deserialize<T>(resposta);
+        }
+        catch (Exception e)
+        {
+            this.Log().Error(e);
+            Resultado = null;
+        }
     }
 
     #endregion Constructors
@@ -58,7 +68,7 @@ public sealed class NFSeResponse<T> where T : class, new()
     
     public bool Sucesso { get; }
     
-    public T Resultado { get; }
+    public T? Resultado { get; }
 
     #endregion Properties
 }

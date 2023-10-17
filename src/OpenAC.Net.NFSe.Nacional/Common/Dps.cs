@@ -29,7 +29,6 @@
 // <summary></summary>
 // ***********************************************************************
 
-using OpenAC.Net.Core.Extensions;
 using OpenAC.Net.DFe.Core;
 using OpenAC.Net.DFe.Core.Attributes;
 using OpenAC.Net.DFe.Core.Common;

@@ -29,7 +29,7 @@
 // <summary></summary>
 // ***********************************************************************
 
-using System;
+using System.Threading.Tasks;
 using OpenAC.Net.NFSe.Nacional.Common;
 using OpenAC.Net.NFSe.Nacional.Webservice;
 
@@ -37,18 +37,30 @@ namespace OpenAC.Net.NFSe.Nacional;
 
 public sealed class OpenNFSeNacional
 {
+    #region Fields
+    
+    private readonly NFSeWebservice webservice;
+    
+    #endregion Fields
+
+    #region Constructors
+
+    public OpenNFSeNacional()
+    {
+        webservice = new NFSeWebservice(Configuracoes);
+    }
+
+    #endregion Constructors
+    
     #region Properties
 
-    public ConfiguracaoNFSe Configuracoes { get; set; } = new();
+    public ConfiguracaoNFSe Configuracoes { get; } = new();
 
     #endregion Properties
 
     #region Methods
 
-    public NFSeResponse<DpsEnvioResposta> EnviarDps(Dps dps)
-    {
-        throw new NotImplementedException();
-    }
+    public Task<NFSeResponse<DpsEnvioResposta>> EnviarAsync(Dps dps) => webservice.EnviarAsync(dps);
 
     #endregion
 }
