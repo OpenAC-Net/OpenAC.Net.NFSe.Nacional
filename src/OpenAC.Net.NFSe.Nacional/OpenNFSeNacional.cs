@@ -61,6 +61,8 @@ public sealed class OpenNFSeNacional
     #region Methods
 
     public Task<NFSeResponse<DpsEnvioResposta>> EnviarAsync(Dps dps) => webservice.EnviarAsync(dps);
+    
+    public Task<NFSeResponse<EventoEnvioResposta>> EnviarAsync(PedidoRegistroEvento evento) => webservice.EnviarAsync(evento);
 
     #endregion
 }

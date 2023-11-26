@@ -75,6 +75,41 @@ public sealed class NFSeWebservice : IOpenLog
 
     #region MyRegion
 
+    public async Task<NFSeResponse<EventoEnvioResposta>> EnviarAsync(PedidoRegistroEvento evento)
+    {
+        evento.Assinar(configuracao);
+        
+        ValidarSchema(SchemaNFSe.Evento, evento.Xml);
+        
+        var documento = evento.Informacoes.CPFAutor ?? evento.Informacoes.CNPJAutor;
+        
+        GravarDpsEmDisco(evento.Xml, $"{evento.Informacoes.NumeroPedido:000000}_evento.xml", 
+            documento, evento.Informacoes.DhEvento.DateTime);
+        
+        var envio = new EventoEnvio()
+        {
+            XmlEvento = evento.Xml
+        };
+        
+        var content = JsonContent.Create(envio);
+        var strEnvio = await content.ReadAsStringAsync();
+        
+        this.Log().Debug($"Webservice: [Evento][Envio] - {strEnvio}");
+        
+        GravarArquivoEmDisco(strEnvio, $"Evento-{evento.Informacoes.NumeroPedido:000000}-env.json", documento);
+        
+        var url = NFSeServiceManager.Instance[DFeTipoEmissao.Normal][configuracao.WebServices.Ambiente, DFeSiglaUF.AN][TipoServico.Sefin];
+        var httpResponse = await SendAsync(content, HttpMethod.Post, url + $"/nfse/{evento.Informacoes.ChNFSe}/eventos");
+        
+        var strResponse = await httpResponse.Content.ReadAsStringAsync();
+        
+        this.Log().Debug($"Webservice: [Evento][Resposta] - {strResponse}");
+        
+        GravarArquivoEmDisco(strResponse, $"Evento-{evento.Informacoes.NumeroPedido:000000}-resp.json", documento);
+
+        return new NFSeResponse<EventoEnvioResposta>(evento.Xml, strEnvio, strResponse, httpResponse.IsSuccessStatusCode);
+    }
+    
     public async Task<NFSeResponse<DpsEnvioResposta>> EnviarAsync(Dps dps)
     {
         dps.Assinar(configuracao);

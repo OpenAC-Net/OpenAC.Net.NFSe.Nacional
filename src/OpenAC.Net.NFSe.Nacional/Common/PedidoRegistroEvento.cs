@@ -29,7 +29,9 @@
 // <summary></summary>
 // ***********************************************************************
 
+using OpenAC.Net.DFe.Core;
 using OpenAC.Net.DFe.Core.Attributes;
+using OpenAC.Net.DFe.Core.Common;
 using OpenAC.Net.DFe.Core.Document;
 using OpenAC.Net.DFe.Core.Serializer;
 
@@ -39,9 +41,26 @@ namespace OpenAC.Net.NFSe.Nacional.Common;
 [DFeRoot("pedRegEvento", Namespace = "http://www.sped.fazenda.gov.br/nfse")]
 public sealed class PedidoRegistroEvento : DFeSignDocument<PedidoRegistroEvento>
 {
+    #region Properties
+
     [DFeAttribute(TipoCampo.Str, "versao", Ocorrencia = Ocorrencia.Obrigatoria)]
     public string Versao { get; set; } = string.Empty;
 
     [DFeElement("infPedReg", Ocorrencia = Ocorrencia.Obrigatoria)]
     public InfPedReg Informacoes { get; set; } = new();
+
+    #endregion Properties
+    
+    #region Methods
+
+    public void Assinar(ConfiguracaoNFSe configuracao)
+    {
+        var options = DFeSaveOptions.DisableFormatting;
+        if (configuracao.Geral.RetirarAcentos)
+            options |= DFeSaveOptions.RemoveAccents;
+        
+        AssinarDocumento(configuracao.Certificados.ObterCertificado(), options, false, SignDigest.SHA1);
+    }
+
+    #endregion Methods
 }

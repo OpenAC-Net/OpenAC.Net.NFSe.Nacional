@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFrameworks>net6.0;net7.0;net462;net471;net48;netstandard2.0</TargetFrameworks>
+        <TargetFrameworks>net6.0;net7.0;netstandard2.0;net462;net471;net48;net8.0</TargetFrameworks>
         <LangVersion>default</LangVersion>
         <Nullable>enable</Nullable>
         <AssemblyName>OpenAC.Net.NFSe.Nacional</AssemblyName>
@@ -33,13 +33,13 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1">
+      <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0">
         <PrivateAssets>all</PrivateAssets>
         <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       </PackageReference>
       <PackageReference Include="OpenAC.Net.Core" Version="1.6.0-beta.1" />
       <PackageReference Include="OpenAC.Net.DFe.Core" Version="1.6.0-beta.1" />
-      <PackageReference Include="System.Net.Http.Json" Version="7.0.1" />
+      <PackageReference Include="System.Net.Http.Json" Version="8.0.0" />
     </ItemGroup>
 
     <ItemGroup Condition=" '$(TargetFramework)' == 'net462' ">
