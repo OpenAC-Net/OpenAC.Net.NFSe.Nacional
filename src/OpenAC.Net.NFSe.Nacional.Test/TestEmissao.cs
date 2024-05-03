@@ -57,6 +57,32 @@ namespace OpenAC.Net.NFSe.Nacional.Test
                 }
             };
 
+            var valores = new ValoresDps() 
+            {
+                ValoresServico = new ValoresServico
+                {
+                    Valor = 100
+                },
+                Tributos = new TributosNFSe
+                {
+                    Municipal = new TributoMunicipal
+                    {
+                        ISSQN = TributoISSQN.OperaçãoTributavel,
+                        TipoRetencaoISSQN = TipoRetencaoISSQN.RetidoTomador,
+                    },
+                    Total = new TotalTributos
+                    {
+                        PorcentagemTotal = new PorcentagemTotalTributos()
+                        {
+                            TotalEstadual = 0,
+                            TotalFederal = 0,
+                            TotalMunicipal = 0,
+                        }
+                    }
+                }
+            };
+
+
             var dps = new Common.Dps();
             dps.Informacoes = new Common.InfDps()
             {
@@ -69,9 +95,10 @@ namespace OpenAC.Net.NFSe.Nacional.Test
                 TipoEmitente = Common.EmitenteDps.Prestador,
                 Prestador = prest,
                 Tomador = toma,
-                Servico = serv
+                Servico = serv,
+                Valores = valores
             };
-            openNFSeNacional.EnviarAsync()
+            openNFSeNacional.EnviarAsync(dps);
         }
     }
 }

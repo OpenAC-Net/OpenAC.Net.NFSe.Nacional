@@ -83,7 +83,7 @@ public sealed class InfDps
     public ServicoNFSe Servico { get; set; } = new();
     
     [DFeElement("valores", Ocorrencia = Ocorrencia.Obrigatoria)]
-    public ValoresNFSe Valores { get; set; } = new();
+    public ValoresDps Valores { get; set; } = new();
 
     #endregion Properties
 }
