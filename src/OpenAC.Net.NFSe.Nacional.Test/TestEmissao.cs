@@ -10,6 +10,7 @@ namespace OpenAC.Net.NFSe.Nacional.Test
         public void TestarEmissaoNFSe()
         {
             var openNFSeNacional = new OpenNFSeNacional();
+            SetupOpenNFSeNacional.SetSetup(openNFSeNacional);
             var numDPS = "1";
             var codMun = "3525300";
             var tipoInscricaoFederal = 1; //1 CNPJ; 2 CPF;
@@ -84,6 +85,7 @@ namespace OpenAC.Net.NFSe.Nacional.Test
 
 
             var dps = new Common.Dps();
+            dps.Versao = "1.00";
             dps.Informacoes = new Common.InfDps()
             {
                 Id = "DPS" + codMun + tipoInscricaoFederal + inscricaoFederal.PadLeft(14, '0') + serieDPS.PadLeft(5, '0') + numDPS.PadLeft(15, '0'),

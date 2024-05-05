@@ -51,6 +51,10 @@ public sealed class Dps : DFeSignDocument<Dps>
 
     #endregion Properties
 
+    public Dps()
+    {
+        Signature = new DFeSignature();
+    }
     #region Methods
 
     public void Assinar(ConfiguracaoNFSe configuracao)
