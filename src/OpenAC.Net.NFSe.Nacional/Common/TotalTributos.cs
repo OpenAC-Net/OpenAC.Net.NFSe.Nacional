@@ -51,7 +51,7 @@ public sealed class TotalTributos
     /// Não informar nenhum valor estimado para os Tributos (Decreto 8.264/2014).
     /// 0 - Não;
     /// </summary>
-    [DFeElement(TipoCampo.Int, "", Ocorrencia = Ocorrencia.NaoObrigatoria)]
+    [DFeElement(TipoCampo.Int, "indTotTrib", Ocorrencia = Ocorrencia.NaoObrigatoria)]
     public int? IndicadorTotal { get; set; }
     
     /// <summary>
