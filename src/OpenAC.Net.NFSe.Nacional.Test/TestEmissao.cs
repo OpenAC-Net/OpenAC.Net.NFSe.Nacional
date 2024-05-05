@@ -91,6 +91,7 @@ namespace OpenAC.Net.NFSe.Nacional.Test
                 Id = "DPS" + codMun + tipoInscricaoFederal + inscricaoFederal.PadLeft(14, '0') + serieDPS.PadLeft(5, '0') + numDPS.PadLeft(15, '0'),
                 TipoAmbiente = DFe.Core.Common.DFeTipoAmbiente.Homologacao,
                 DhEmissao = DateTime.Now,
+                LocalidadeEmitente = codMun,
                 Serie = serieDPS,
                 NumeroDps = numDPS.ToInt32(),
                 Competencia = DateTime.Now,
