@@ -57,6 +57,6 @@ public sealed class TotalTributos
     /// <summary>
     /// Valor percentual aproximado do total dos tributos da alíquota do Simples Nacional (%)
     /// </summary>
-    [DFeElement(TipoCampo.De2, "pTotTribSN", Min = 4, Max = 5, Ocorrencia = Ocorrencia.Obrigatoria)]
+    [DFeElement(TipoCampo.De2, "pTotTribSN", Min = 4, Max = 5, Ocorrencia = Ocorrencia.NaoObrigatoria)]
     public decimal? PercetualSimples { get; set; }
 }
