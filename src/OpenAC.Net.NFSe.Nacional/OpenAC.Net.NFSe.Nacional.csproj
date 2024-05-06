@@ -38,7 +38,7 @@
         <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       </PackageReference>
       <PackageReference Include="OpenAC.Net.Core" Version="1.6.0-beta.1" />
-      <PackageReference Include="OpenAC.Net.DFe.Core" Version="1.6.0-beta.1" />
+      <PackageReference Include="OpenAC.Net.DFe.Core" Version="1.6.0-beta.2" />
       <PackageReference Include="System.Net.Http.Json" Version="8.0.0" />
     </ItemGroup>
 
@@ -59,6 +59,10 @@
             <Pack>True</Pack>
             <PackagePath>content\Schemas\</PackagePath>
         </None>
+    </ItemGroup>          
+
+    <ItemGroup>
+      <Reference Include="System.Security" Condition="'$(TargetFramework)' == 'net471' OR '$(TargetFramework)' == 'net462' OR '$(TargetFramework)' == 'net48'" />
     </ItemGroup>
     
 </Project>

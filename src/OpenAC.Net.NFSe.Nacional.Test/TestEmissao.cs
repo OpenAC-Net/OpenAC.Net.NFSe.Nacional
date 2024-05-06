@@ -95,7 +95,7 @@ namespace OpenAC.Net.NFSe.Nacional.Test
                 Serie = serieDPS,
                 NumeroDps = numDPS.ToInt32(),
                 Competencia = DateTime.Now,
-                TipoEmitente = Common.EmitenteDps.Prestador,
+                TipoEmitente = EmitenteDps.Prestador,
                 Prestador = prest,
                 Tomador = toma,
                 Servico = serv,
