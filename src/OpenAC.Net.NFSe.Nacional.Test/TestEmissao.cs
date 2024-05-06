@@ -7,19 +7,14 @@ namespace OpenAC.Net.NFSe.Nacional.Test
     public class TestEmissao
     {
         [TestMethod]
-        public void TestarEmissaoNFSe()
+        public async Task TestarEmissaoNFSe()
         {
             var openNFSeNacional = new OpenNFSeNacional();
-            SetupOpenNFSeNacional.SetSetup(openNFSeNacional);
-            var numDPS = "1";
-            var codMun = "3525300";
-            var tipoInscricaoFederal = 1; //1 CNPJ; 2 CPF;
-            var inscricaoFederal = "42250933000187";
-            var serieDPS = "1";
+            SetupOpenNFSeNacional.Configuracao(openNFSeNacional);
 
             var prest = new PrestadorDps()
             {
-                CNPJ = inscricaoFederal,
+                CNPJ = SetupOpenNFSeNacional.InscricaoFederal,
                 Email = "teste@teste.com",
                 Regime = new RegimeTributario()
                 {
@@ -69,7 +64,7 @@ namespace OpenAC.Net.NFSe.Nacional.Test
                     Municipal = new TributoMunicipal
                     {
                         ISSQN = TributoISSQN.OperaçãoTributavel,
-                        TipoRetencaoISSQN = TipoRetencaoISSQN.RetidoTomador,
+                        TipoRetencaoISSQN = TipoRetencaoISSQN.NaoRetido,
                     },
                     Total = new TotalTributos
                     {
@@ -88,12 +83,16 @@ namespace OpenAC.Net.NFSe.Nacional.Test
             dps.Versao = "1.00";
             dps.Informacoes = new Common.InfDps()
             {
-                Id = "DPS" + codMun + tipoInscricaoFederal + inscricaoFederal.PadLeft(14, '0') + serieDPS.PadLeft(5, '0') + numDPS.PadLeft(15, '0'),
+                Id = "DPS" + SetupOpenNFSeNacional.CodMun +
+                            SetupOpenNFSeNacional.TipoInscricaoFederal +
+                            SetupOpenNFSeNacional.InscricaoFederal.PadLeft(14, '0') +
+                            SetupOpenNFSeNacional.SerieDPS.PadLeft(5, '0') +
+                            SetupOpenNFSeNacional.NumDPS.PadLeft(15, '0'),
                 TipoAmbiente = DFe.Core.Common.DFeTipoAmbiente.Homologacao,
                 DhEmissao = DateTime.Now,
-                LocalidadeEmitente = codMun,
-                Serie = serieDPS,
-                NumeroDps = numDPS.ToInt32(),
+                LocalidadeEmitente = SetupOpenNFSeNacional.CodMun,
+                Serie = SetupOpenNFSeNacional.SerieDPS,
+                NumeroDps = SetupOpenNFSeNacional.NumDPS.ToInt32(),
                 Competencia = DateTime.Now,
                 TipoEmitente = EmitenteDps.Prestador,
                 Prestador = prest,
@@ -101,7 +100,9 @@ namespace OpenAC.Net.NFSe.Nacional.Test
                 Servico = serv,
                 Valores = valores
             };
-            openNFSeNacional.EnviarAsync(dps);
+            var retorno = await openNFSeNacional.EnviarAsync(dps);
+
+            Assert.IsTrue(retorno.Sucesso);
         }
     }
 }

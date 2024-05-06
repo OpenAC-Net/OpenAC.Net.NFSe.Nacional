@@ -36,18 +36,23 @@ namespace OpenAC.Net.NFSe.Nacional.Webservice;
 
 public sealed class MensagemProcessamento
 {
-    [JsonPropertyName("mensagem")]
+    //Comentado, pois por mais que no swagger está minúsculo, está retornando maiúsculo
+    //[JsonPropertyName("mensagem")]
     public string Mensagem { get; set; } = string.Empty;
-    
-    [JsonPropertyName("codigo")]
+
+    //Comentado, pois por mais que no swagger está minúsculo, está retornando maiúsculo
+    //[JsonPropertyName("codigo")]
     public string Codigo { get; set; } = string.Empty;
-    
-    [JsonPropertyName("descricao")]
+
+    //Comentado, pois por mais que no swagger está minúsculo, está retornando maiúsculo
+    //[JsonPropertyName("descricao")]
     public string Descricao { get; set; } = string.Empty;
-    
-    [JsonPropertyName("complemento")]
+
+    //Comentado, pois por mais que no swagger está minúsculo, está retornando maiúsculo
+    //[JsonPropertyName("complemento")]
     public string Complemento { get; set; } = string.Empty;
-    
-    [JsonPropertyName("parametros")] 
+
+    //Comentado, pois por mais que no swagger está minúsculo, está retornando maiúsculo
+    //[JsonPropertyName("parametros")] 
     public List<string> Parametros { get; set; } = new();
 }
