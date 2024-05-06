@@ -59,6 +59,10 @@
             <Pack>True</Pack>
             <PackagePath>content\Schemas\</PackagePath>
         </None>
+    </ItemGroup>          
+
+    <ItemGroup>
+      <Reference Include="System.Security" Condition="'$(TargetFramework)' == 'net471' OR '$(TargetFramework)' == 'net462' OR '$(TargetFramework)' == 'net48'" />
     </ItemGroup>
     
 </Project>

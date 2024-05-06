@@ -38,34 +38,34 @@ public class InfoPessoaNFSe
 {
     #region Properties
 
-    [DFeElement(TipoCampo.StrNumber, "CNPJ", Min = 14, Max = 14, Ocorrencia = Ocorrencia.NaoObrigatoria)]
+    [DFeElement(TipoCampo.StrNumber, "CNPJ", Min = 14, Max = 14, Ocorrencia = Ocorrencia.NaoObrigatoria, Ordem = 0)]
     public string? CNPJ { get; set; }
     
-    [DFeElement(TipoCampo.StrNumber, "CPF", Min = 11, Max = 11, Ocorrencia = Ocorrencia.NaoObrigatoria)]
+    [DFeElement(TipoCampo.StrNumber, "CPF", Min = 11, Max = 11, Ocorrencia = Ocorrencia.NaoObrigatoria, Ordem = 0)]
     public string? CPF { get; set; }
     
-    [DFeElement(TipoCampo.StrNumber, "NIF", Min = 1, Max = 40, Ocorrencia = Ocorrencia.NaoObrigatoria)]
+    [DFeElement(TipoCampo.StrNumber, "NIF", Min = 1, Max = 40, Ocorrencia = Ocorrencia.NaoObrigatoria, Ordem = 1)]
     public string? Nif { get; set; }
 
-    [DFeElement(TipoCampo.Enum, "cNaoNIF", Ocorrencia = Ocorrencia.NaoObrigatoria)]
+    [DFeElement(TipoCampo.Enum, "cNaoNIF", Ocorrencia = Ocorrencia.NaoObrigatoria, Ordem = 2)]
     public MotivoNaoNIF? CodigoNaoNif { get; set; }
 
-    [DFeElement(TipoCampo.Str, "CAEPF", Min = 14, Max = 14, Ocorrencia = Ocorrencia.NaoObrigatoria)]
+    [DFeElement(TipoCampo.Str, "CAEPF", Min = 14, Max = 14, Ocorrencia = Ocorrencia.NaoObrigatoria, Ordem = 3)]
     public string? NumeroCAEPF { get; set; }
 
-    [DFeElement(TipoCampo.StrNumber, "IM", Min = 1, Max = 15, Ocorrencia = Ocorrencia.NaoObrigatoria)]
+    [DFeElement(TipoCampo.StrNumber, "IM", Min = 1, Max = 15, Ocorrencia = Ocorrencia.NaoObrigatoria, Ordem = 4)]
     public string? InscricaoMunicipal { get; set; }
 
-    [DFeElement(TipoCampo.Str, "xNome", Min = 1, Max = 300, Ocorrencia = Ocorrencia.NaoObrigatoria)]
+    [DFeElement(TipoCampo.Str, "xNome", Min = 1, Max = 300, Ocorrencia = Ocorrencia.NaoObrigatoria, Ordem = 5)]
     public string? Nome { get; set; }
 
-    [DFeElement("end", Ocorrencia = Ocorrencia.Obrigatoria)]
-    public EnderecoNFSe Endereco { get; set; } = new();
+    [DFeElement("end", Ocorrencia = Ocorrencia.NaoObrigatoria, Ordem = 5)]
+    public EnderecoNFSe Endereco { get; set; }
     
-    [DFeElement(TipoCampo.StrNumber, "fone", Min = 6, Max = 20, Ocorrencia = Ocorrencia.NaoObrigatoria)]
+    [DFeElement(TipoCampo.StrNumber, "fone", Min = 6, Max = 20, Ocorrencia = Ocorrencia.NaoObrigatoria, Ordem = 6)]
     public string? Telefone { get; set; }
     
-    [DFeElement(TipoCampo.Str, "email", Min = 1, Max = 80, Ocorrencia = Ocorrencia.NaoObrigatoria)]
+    [DFeElement(TipoCampo.Str, "email", Min = 1, Max = 80, Ocorrencia = Ocorrencia.NaoObrigatoria, Ordem = 7)]
     public string? Email { get; set; }
 
     #endregion Properties

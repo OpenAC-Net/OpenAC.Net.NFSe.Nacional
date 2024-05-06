@@ -50,7 +50,7 @@ public sealed class InfDps
     public DateTimeOffset DhEmissao { get; set; }
 
     [DFeElement(TipoCampo.Str, "verAplic", Min = 1, Max = 20, Ocorrencia = Ocorrencia.Obrigatoria)]
-    public string VersaoAplicacao { get; set; } = "OpenAC .Net NFSe Nacional";
+    public string VersaoAplicacao { get; set; } = "OpenAC.NFSe.Nacional";
 
     [DFeElement(TipoCampo.Str, "serie", Min = 1, Max = 5, Ocorrencia = Ocorrencia.Obrigatoria)]
     public string Serie { get; set; } = string.Empty;
@@ -83,7 +83,7 @@ public sealed class InfDps
     public ServicoNFSe Servico { get; set; } = new();
     
     [DFeElement("valores", Ocorrencia = Ocorrencia.Obrigatoria)]
-    public ValoresNFSe Valores { get; set; } = new();
+    public ValoresDps Valores { get; set; } = new();
 
     #endregion Properties
 }

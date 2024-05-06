@@ -146,7 +146,7 @@ public sealed class NFSeWebservice : IOpenLog
 
     }
 
-    private Task<HttpResponseMessage> SendAsync(HttpContent content, HttpMethod method, string url)
+    private async Task<HttpResponseMessage> SendAsync(HttpContent content, HttpMethod method, string url)
     {
         var handler = new HttpClientHandler();
 
@@ -164,7 +164,7 @@ public sealed class NFSeWebservice : IOpenLog
         request.Headers.UserAgent.Add(commentValue);
         request.Content = content;
         
-        return client.SendAsync(request);
+        return await client.SendAsync(request);
     }
     
     /// <summary>
