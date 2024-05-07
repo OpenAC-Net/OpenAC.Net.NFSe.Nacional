@@ -1,108 +1,121 @@
 using OpenAC.Net.Core.Extensions;
 using OpenAC.Net.NFSe.Nacional.Common;
 
-namespace OpenAC.Net.NFSe.Nacional.Test
+namespace OpenAC.Net.NFSe.Nacional.Test;
+
+public class TestEmissao
 {
-    [TestClass]
-    public class TestEmissao
+    [TestMethod]
+    public async Task EmissaoNFSe()
     {
-        [TestMethod]
-        public async Task TestarEmissaoNFSe()
+        var openNFSeNacional = new OpenNFSeNacional();
+        SetupOpenNFSeNacional.Configuracao(openNFSeNacional);
+
+        var prest = new PrestadorDps()
         {
-            var openNFSeNacional = new OpenNFSeNacional();
-            SetupOpenNFSeNacional.Configuracao(openNFSeNacional);
-
-            var prest = new PrestadorDps()
+            CNPJ = SetupOpenNFSeNacional.InscricaoFederal,
+            Email = "teste@teste.com",
+            Regime = new RegimeTributario()
             {
-                CNPJ = SetupOpenNFSeNacional.InscricaoFederal,
-                Email = "teste@teste.com",
-                Regime = new RegimeTributario()
-                {
-                    OptanteSimplesNacional = OptanteSimplesNacional.OptanteMEI,
-                    RegimeEspecial = RegimeEspecial.Nenhum
-                }
-            };
+                OptanteSimplesNacional = OptanteSimplesNacional.OptanteMEI,
+                RegimeEspecial = RegimeEspecial.Nenhum
+            }
+        };
 
-            var toma = new InfoPessoaNFSe()
+        var toma = new InfoPessoaNFSe()
+        {
+            CNPJ = "52309133000148",
+            Nome = "Lecom Automação de Processos",
+            Endereco = new EnderecoNFSe
             {
-                CNPJ = "52309133000148",
-                Nome = "Lecom Automação de Processos",
-                Endereco = new EnderecoNFSe
+                Bairro = "Centro",
+                Logradouro = "Rua Conde do Pinhal",
+                Municipio = new MunicipioNacional
                 {
-                    Bairro = "Centro",
-                    Logradouro = "Rua Conde do Pinhal",
-                    Municipio = new MunicipioNacional
-                    {
-                        CEP = "17201040",
-                        CodMunicipio = "3525300"
-                    },
-                    Numero = "375"
-                }
-            };
-
-            var serv = new ServicoNFSe() 
-            {
-                Localidade = new LocalidadeNFSe()
-                {
-                    CodMunicipioPrestacao = "3525300"
+                    CEP = "17201040",
+                    CodMunicipio = "3525300"
                 },
-                Informacoes = new InformacoesServico
-                {
-                    CodTributacaoNacional = "080201",
-                    Descricao = "Referente ao serviço prestado"
-                }
-            };
+                Numero = "375"
+            }
+        };
 
-            var valores = new ValoresDps() 
+        var serv = new ServicoNFSe()
+        {
+            Localidade = new LocalidadeNFSe()
             {
-                ValoresServico = new ValoresServico
+                CodMunicipioPrestacao = "3525300"
+            },
+            Informacoes = new InformacoesServico
+            {
+                CodTributacaoNacional = "080201",
+                Descricao = "Referente ao serviço prestado"
+            }
+        };
+
+        var valores = new ValoresDps()
+        {
+            ValoresServico = new ValoresServico
+            {
+                Valor = 100
+            },
+            Tributos = new TributosNFSe
+            {
+                Municipal = new TributoMunicipal
                 {
-                    Valor = 100
+                    ISSQN = TributoISSQN.OperaçãoTributavel,
+                    TipoRetencaoISSQN = TipoRetencaoISSQN.NaoRetido,
                 },
-                Tributos = new TributosNFSe
+                Total = new TotalTributos
                 {
-                    Municipal = new TributoMunicipal
+                    PorcentagemTotal = new PorcentagemTotalTributos()
                     {
-                        ISSQN = TributoISSQN.OperaçãoTributavel,
-                        TipoRetencaoISSQN = TipoRetencaoISSQN.NaoRetido,
-                    },
-                    Total = new TotalTributos
-                    {
-                        PorcentagemTotal = new PorcentagemTotalTributos()
-                        {
-                            TotalEstadual = 0,
-                            TotalFederal = 0,
-                            TotalMunicipal = 0,
-                        }
+                        TotalEstadual = 0,
+                        TotalFederal = 0,
+                        TotalMunicipal = 0,
                     }
                 }
-            };
+            }
+        };
 
 
-            var dps = new Common.Dps();
-            dps.Versao = "1.00";
-            dps.Informacoes = new Common.InfDps()
-            {
-                Id = "DPS" + SetupOpenNFSeNacional.CodMun +
-                            SetupOpenNFSeNacional.TipoInscricaoFederal +
-                            SetupOpenNFSeNacional.InscricaoFederal.PadLeft(14, '0') +
-                            SetupOpenNFSeNacional.SerieDPS.PadLeft(5, '0') +
-                            SetupOpenNFSeNacional.NumDPS.PadLeft(15, '0'),
-                TipoAmbiente = DFe.Core.Common.DFeTipoAmbiente.Homologacao,
-                DhEmissao = DateTime.Now,
-                LocalidadeEmitente = SetupOpenNFSeNacional.CodMun,
-                Serie = SetupOpenNFSeNacional.SerieDPS,
-                NumeroDps = SetupOpenNFSeNacional.NumDPS.ToInt32(),
-                Competencia = DateTime.Now,
-                TipoEmitente = EmitenteDps.Prestador,
-                Prestador = prest,
-                Tomador = toma,
-                Servico = serv,
-                Valores = valores
-            };
-            var retorno = await openNFSeNacional.EnviarAsync(dps);
+        var dps = new Common.Dps();
+        dps.Versao = "1.00";
+        dps.Informacoes = new()
+        {
+            Id = "DPS" + SetupOpenNFSeNacional.CodMun +
+                        SetupOpenNFSeNacional.TipoInscricaoFederal +
+                        SetupOpenNFSeNacional.InscricaoFederal.PadLeft(14, '0') +
+                        SetupOpenNFSeNacional.SerieDPS.PadLeft(5, '0') +
+                        SetupOpenNFSeNacional.NumDPS.PadLeft(15, '0'),
+            TipoAmbiente = DFe.Core.Common.DFeTipoAmbiente.Homologacao,
+            DhEmissao = DateTime.Now,
+            LocalidadeEmitente = SetupOpenNFSeNacional.CodMun,
+            Serie = SetupOpenNFSeNacional.SerieDPS,
+            NumeroDps = SetupOpenNFSeNacional.NumDPS.ToInt32(),
+            Competencia = DateTime.Now,
+            TipoEmitente = EmitenteDps.Prestador,
+            Prestador = prest,
+            Tomador = toma,
+            Servico = serv,
+            Valores = valores
+        };
+        var retorno = await openNFSeNacional.EnviarAsync(dps);
 
-            Assert.IsTrue(retorno.Sucesso);
-        }
+        Assert.IsTrue(retorno.Sucesso);
+    }
+
+    public async Task CancelamentoNFSe()
+    {
+        var openNFSeNacional = new OpenNFSeNacional();
+        SetupOpenNFSeNacional.Configuracao(openNFSeNacional);
+
+        var chaveNFse = "35253002242250933000187000000000000324057909658427";
+
+        var evento = new PedidoRegistroEvento();
+        evento.Versao = "1.00";
+        evento.Informacoes = new()
+        {
+            Id = "PRE" + chaveNFse + SetupOpenNFSeNacional.NumEvento.PadLeft(3, '0')
+        };
     }
 }

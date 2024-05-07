@@ -63,6 +63,33 @@
 
     <ItemGroup>
       <Reference Include="System.Security" Condition="'$(TargetFramework)' == 'net471' OR '$(TargetFramework)' == 'net462' OR '$(TargetFramework)' == 'net48'" />
+    </ItemGroup>          
+
+    <ItemGroup>
+      <None Update="Schemas\1.00\DPS_v1.00.xsd">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+      <None Update="Schemas\1.00\evento_v1.00.xsd">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+      <None Update="Schemas\1.00\NFSe_v1.00.xsd">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+      <None Update="Schemas\1.00\pedRegEvento_v1.00.xsd">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+      <None Update="Schemas\1.00\tiposComplexos_v1.00.xsd">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+      <None Update="Schemas\1.00\tiposEventos_v1.00.xsd">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+      <None Update="Schemas\1.00\tiposSimples_v1.00.xsd">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+      <None Update="Schemas\1.00\xmldsig-core-schema_v1.00.xsd">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
     </ItemGroup>
     
 </Project>
