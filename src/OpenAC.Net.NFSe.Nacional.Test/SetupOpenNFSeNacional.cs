@@ -1,14 +1,20 @@
 ﻿namespace OpenAC.Net.NFSe.Nacional.Test;
 using OpenAC.Net.NFSe.Nacional.Common;
+using System.Reflection;
 
 public class SetupOpenNFSeNacional
 {
     #region Propriedades 
-    public static string NumDPS = "2";
     public static string CodMun = "3525300";
     public static int TipoInscricaoFederal = 2; //2 CNPJ; 1 CPF;
     public static string InscricaoFederal = "42250933000187";
+
+    //Emissão
+    public static string NumDPS = "3";
     public static string SerieDPS = "1";
+
+    //Evento
+    public static string NumEvento = "1";
     #endregion
 
     public static void Configuracao(OpenNFSeNacional openNFSeNacional)
@@ -20,11 +26,6 @@ public class SetupOpenNFSeNacional
         openNFSeNacional.Configuracoes.Geral.RetirarEspacos = true;
         openNFSeNacional.Configuracoes.Arquivos.PathSalvar =
             "C:\\_Projects\\sites\\OpenAC.Net.NFSe.Nacional\\src\\OpenAC.Net.NFSe.Nacional.Test\\XML";
-        openNFSeNacional.Configuracoes.Arquivos.PathSchemas =
-            "C:\\_Projects\\sites\\OpenAC.Net.NFSe.Nacional\\src\\OpenAC.Net.NFSe.Nacional\\Schemas\\1.00";
-
-        var dps = new Dps();
-        dps.Versao = "1.00";
-        dps.Informacoes = new Common.InfDps();
+        openNFSeNacional.Configuracoes.Arquivos.PathSchemas = AppContext.BaseDirectory + "\\Schemas\\1.00";
     }
 }

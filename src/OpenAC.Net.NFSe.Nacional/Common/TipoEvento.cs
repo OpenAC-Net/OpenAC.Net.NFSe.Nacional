@@ -1,12 +1,12 @@
 ﻿// ***********************************************************************
 // Assembly         : OpenAC.Net.NFSe.Nacional
-// Author           : RFTD
+// Author           : LUCASMORAES804
 // Created          : 09-09-2023
 //
-// Last Modified By : RFTD
-// Last Modified On : 09-09-2023
+// Last Modified By : LUCASMORAES804
+// Last Modified On : 06-05-2024
 // ***********************************************************************
-// <copyright file="PedidoRegistroEvento.cs" company="OpenAC .Net">
+// <copyright file="EventoRejeicaoTomador.cs" company="OpenAC .Net">
 //		        		   The MIT License (MIT)
 //	     		    Copyright (c) 2014-2023 Grupo OpenAC.Net
 //
@@ -29,44 +29,24 @@
 // <summary></summary>
 // ***********************************************************************
 
-using OpenAC.Net.DFe.Core;
-using OpenAC.Net.DFe.Core.Attributes;
-using OpenAC.Net.DFe.Core.Common;
-using OpenAC.Net.DFe.Core.Document;
-using OpenAC.Net.DFe.Core.Serializer;
-using System.Security.Cryptography.Xml;
-
 namespace OpenAC.Net.NFSe.Nacional.Common;
 
-[DFeSignInfoElement("infPedReg")]
-[DFeRoot("pedRegEvento", Namespace = "http://www.sped.fazenda.gov.br/nfse")]
-public sealed class PedidoRegistroEvento : DFeSignDocument<PedidoRegistroEvento>
+public struct TipoEvento
 {
-    #region Properties
-
-    [DFeAttribute(TipoCampo.Str, "versao", Ocorrencia = Ocorrencia.Obrigatoria)]
-    public string Versao { get; set; } = string.Empty;
-
-    [DFeElement("infPedReg", Ocorrencia = Ocorrencia.Obrigatoria)]
-    public InfPedReg Informacoes { get; set; } = new();
-
-    #endregion Properties
-    
-    public PedidoRegistroEvento()
-    {
-        Signature = new DFeSignature();
-    }
-    
-    #region Methods
-
-    public void Assinar(ConfiguracaoNFSe configuracao)
-    {
-        var options = DFeSaveOptions.DisableFormatting;
-        if (configuracao.Geral.RetirarAcentos)
-            options |= DFeSaveOptions.RemoveAccents;
-        
-        AssinarDocumento(configuracao.Certificados.ObterCertificado(), options, false, SignDigest.SHA1, SignedXml.XmlDsigC14NTransformUrl);
-    }
-
-    #endregion Methods
+    public const string Cancelamento = "101101";
+    public const string CancelamentoPorSubstituicao = "105102";
+    public const string SolicitacaoCancelamento = "101103";
+    public const string CancelamentoDeferido = "105104";
+    public const string CancelamentoIndeferido = "105105";
+    public const string ConfirmacaoPrestador = "202201";
+    public const string ConfirmacaoTomador = "203202";
+    public const string ConfirmacaoIntermediario = "203203";
+    public const string ConfirmacaoTacita = "203204";
+    public const string RejeicaoPrestador = "203205";
+    public const string RejeicaoTomador = "203206";
+    public const string RejeicaoIntermediario = "203207";
+    public const string AnulacaoRejeicao = "203208";
+    public const string CancelamentoOficio = "305101";
+    public const string BloqueioOficio = "305102";
+    public const string DesbloqueioOficio = "305103";
 }
