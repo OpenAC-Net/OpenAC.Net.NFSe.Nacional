@@ -3,6 +3,7 @@ using OpenAC.Net.NFSe.Nacional.Common;
 
 namespace OpenAC.Net.NFSe.Nacional.Test;
 
+[TestClass]
 public class TestEmissao
 {
     [TestMethod]
@@ -112,15 +113,27 @@ public class TestEmissao
 
         var chaveNFse = "35253002242250933000187000000000000324057909658427";
 
+        var cancelamento = new EventoCancelamento()
+        {
+            CodMotivo = MotivoCancelamento.ErroEmissao,
+            Motivo = "Dados inválidos"
+        };
+
         var evento = new PedidoRegistroEvento();
         evento.Versao = "1.00";
         evento.Informacoes = new()
         {
-            Id = "PRE" + chaveNFse + TipoEvento.Cancelamento,
+            Id = "PRE" + chaveNFse + TipoEvento.Cancelamento + SetupOpenNFSeNacional.NumEvento.PadLeft(3, '0'),
             ChNFSe = chaveNFse,
             CNPJAutor = SetupOpenNFSeNacional.InscricaoFederal,
             DhEvento = DateTime.Now,
             TipoAmbiente = DFe.Core.Common.DFeTipoAmbiente.Homologacao,
+            NumeroPedido = SetupOpenNFSeNacional.NumEvento.ToInt32(),
+            Evento = cancelamento
         };
+
+        var retorno = await openNFSeNacional.EnviarAsync(evento);
+
+        Assert.IsTrue(retorno.Sucesso);
     }
 }

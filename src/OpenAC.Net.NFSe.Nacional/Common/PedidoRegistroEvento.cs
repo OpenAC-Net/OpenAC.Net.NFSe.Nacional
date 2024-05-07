@@ -34,6 +34,7 @@ using OpenAC.Net.DFe.Core.Attributes;
 using OpenAC.Net.DFe.Core.Common;
 using OpenAC.Net.DFe.Core.Document;
 using OpenAC.Net.DFe.Core.Serializer;
+using System.Security.Cryptography.Xml;
 
 namespace OpenAC.Net.NFSe.Nacional.Common;
 
@@ -51,6 +52,11 @@ public sealed class PedidoRegistroEvento : DFeSignDocument<PedidoRegistroEvento>
 
     #endregion Properties
     
+    public PedidoRegistroEvento()
+    {
+        Signature = new DFeSignature();
+    }
+    
     #region Methods
 
     public void Assinar(ConfiguracaoNFSe configuracao)
@@ -59,7 +65,7 @@ public sealed class PedidoRegistroEvento : DFeSignDocument<PedidoRegistroEvento>
         if (configuracao.Geral.RetirarAcentos)
             options |= DFeSaveOptions.RemoveAccents;
         
-        AssinarDocumento(configuracao.Certificados.ObterCertificado(), options, false, SignDigest.SHA1);
+        AssinarDocumento(configuracao.Certificados.ObterCertificado(), options, false, SignDigest.SHA1, SignedXml.XmlDsigC14NTransformUrl);
     }
 
     #endregion Methods
