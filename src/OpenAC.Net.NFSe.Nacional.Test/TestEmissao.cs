@@ -104,6 +104,7 @@ public class TestEmissao
         Assert.IsTrue(retorno.Sucesso);
     }
 
+    [TestMethod]
     public async Task CancelamentoNFSe()
     {
         var openNFSeNacional = new OpenNFSeNacional();
@@ -115,7 +116,11 @@ public class TestEmissao
         evento.Versao = "1.00";
         evento.Informacoes = new()
         {
-            Id = "PRE" + chaveNFse + SetupOpenNFSeNacional.NumEvento.PadLeft(3, '0')
+            Id = "PRE" + chaveNFse + TipoEvento.Cancelamento,
+            ChNFSe = chaveNFse,
+            CNPJAutor = SetupOpenNFSeNacional.InscricaoFederal,
+            DhEvento = DateTime.Now,
+            TipoAmbiente = DFe.Core.Common.DFeTipoAmbiente.Homologacao,
         };
     }
 }

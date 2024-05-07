@@ -47,8 +47,8 @@ public sealed class InfPedReg
     public DFeTipoAmbiente TipoAmbiente { get; set; } = DFeTipoAmbiente.Homologacao;
     
     [DFeElement(TipoCampo.Str, "verAplic", Min = 1, Max = 20, Ocorrencia = Ocorrencia.Obrigatoria)]
-    public string VersaoAplicacao { get; set; } = "OpenAC .Net NFSe Nacional";
-    
+    public string VersaoAplicacao { get; set; } = "OpenAC.NFSe.Nacional";
+
     [DFeElement(TipoCampo.DatHorTz, "dhEvento", Ocorrencia = Ocorrencia.Obrigatoria)]
     public DateTimeOffset DhEvento { get; set; }
     
