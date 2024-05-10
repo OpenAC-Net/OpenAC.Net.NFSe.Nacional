@@ -136,4 +136,69 @@ public class TestEmissao
 
         Assert.IsTrue(retorno.Sucesso);
     }
+    
+    /*[TestMethod]
+    public async Task CancelamentoNFSePorSubstituicao()
+    {
+        var openNFSeNacional = new OpenNFSeNacional();
+        SetupOpenNFSeNacional.Configuracao(openNFSeNacional);
+
+        var chaveNFse = "35253002242250933000187000000000000524050500187874";
+
+        var cancelamentoPorSubstituicao = new EventoCancelamentoPorSubstituicao()
+        {
+            CodMotivo = JustificativaSubstituicao.Outros,
+            Motivo = "Dados Inválidos",
+            ChaveSubstituta = "35253002242250933000187000000000000624050073048925"
+        };
+
+        var evento = new PedidoRegistroEvento();
+        evento.Versao = "1.00";
+        evento.Informacoes = new()
+        {
+            Id = "PRE" + chaveNFse + TipoEvento.CancelamentoPorSubstituicao + SetupOpenNFSeNacional.NumEvento.PadLeft(3, '0'),
+            ChNFSe = chaveNFse,
+            CNPJAutor = SetupOpenNFSeNacional.InscricaoFederal,
+            DhEvento = DateTime.Now,
+            TipoAmbiente = DFe.Core.Common.DFeTipoAmbiente.Homologacao,
+            NumeroPedido = SetupOpenNFSeNacional.NumEvento.ToInt32(),
+            Evento = cancelamentoPorSubstituicao
+        };
+
+        var retorno = await openNFSeNacional.EnviarAsync(evento);
+
+        Assert.IsTrue(retorno.Sucesso);
+    }*/
+    
+    [TestMethod]
+    public async Task SolicitacaoCancelamentoCancelamentoNFSe()
+    {
+        var openNFSeNacional = new OpenNFSeNacional();
+        SetupOpenNFSeNacional.Configuracao(openNFSeNacional);
+
+        var chaveNFse = "35253002242250933000187000000000000724054029982347";
+
+        var solicitacaoCancelamento = new EventoSolicitacaoCancelamento()
+        {
+            CodMotivo = JustificativaAnalise.Outros,
+            Motivo = "Dados Inválidos",
+        };
+
+        var evento = new PedidoRegistroEvento();
+        evento.Versao = "1.00";
+        evento.Informacoes = new()
+        {
+            Id = "PRE" + chaveNFse + TipoEvento.SolicitacaoCancelamento + SetupOpenNFSeNacional.NumEvento.PadLeft(3, '0'),
+            ChNFSe = chaveNFse,
+            CNPJAutor = SetupOpenNFSeNacional.InscricaoFederal,
+            DhEvento = DateTime.Now,
+            TipoAmbiente = DFe.Core.Common.DFeTipoAmbiente.Homologacao,
+            NumeroPedido = SetupOpenNFSeNacional.NumEvento.ToInt32(),
+            Evento = solicitacaoCancelamento
+        };
+
+        var retorno = await openNFSeNacional.EnviarAsync(evento);
+
+        Assert.IsTrue(retorno.Sucesso);
+    }
 }
