@@ -19,8 +19,8 @@ public class SetupOpenNFSeNacional
 
     public static void Configuracao(OpenNFSeNacional openNFSeNacional)
     {
-        openNFSeNacional.Configuracoes.Certificados.CertificadoBytes = File.ReadAllBytes("C:\\Users\\MICRO\\Documents\\DC SYSTEM\\42.250.933 LUCAS APARECIDO DE MORAES_42250933000187.pfx");
-        openNFSeNacional.Configuracoes.Certificados.Senha = "Dcsystem031996";
+        openNFSeNacional.Configuracoes.Certificados.CertificadoBytes = File.ReadAllBytes("Caminho do certificado");
+        openNFSeNacional.Configuracoes.Certificados.Senha = "Senha do certificado";
         openNFSeNacional.Configuracoes.Geral.Salvar = true;
         openNFSeNacional.Configuracoes.Geral.RetirarAcentos = true;
         openNFSeNacional.Configuracoes.Geral.RetirarEspacos = true;
