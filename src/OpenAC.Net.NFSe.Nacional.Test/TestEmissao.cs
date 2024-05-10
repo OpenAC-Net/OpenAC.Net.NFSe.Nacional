@@ -171,7 +171,7 @@ public class TestEmissao
     }*/
     
     [TestMethod]
-    public async Task SolicitacaoCancelamentoCancelamentoNFSe()
+    public async Task SolicitacaoCancelamentoNFSe()
     {
         var openNFSeNacional = new OpenNFSeNacional();
         SetupOpenNFSeNacional.Configuracao(openNFSeNacional);
