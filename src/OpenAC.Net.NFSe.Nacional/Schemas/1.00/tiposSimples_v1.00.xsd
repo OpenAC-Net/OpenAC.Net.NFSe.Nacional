@@ -244,7 +244,7 @@
         Código do motivo da solicitação de análise fiscal para cancelamento de NFS-e:
         1 - Erro na Emissão;
         2 - Serviço não Prestado;
-        3 - Outros.
+        9 - Outros.
       </xs:documentation>
     </xs:annotation>
     <xs:restriction base="xs:string">

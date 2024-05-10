@@ -6,7 +6,7 @@ namespace OpenAC.Net.NFSe.Nacional.Common;
 /// Código do motivo da solicitação de análise fiscal para cancelamento de NFS-e:
 /// 1 - Erro na Emissão;
 /// 2 - Serviço não Prestado;
-/// 3 - Outros.
+/// 9 - Outros.
 /// </summary>
 public enum JustificativaAnalise
 {
@@ -16,6 +16,6 @@ public enum JustificativaAnalise
     [DFeEnum("2")]
     ServicoNãoPrestado,
     
-    [DFeEnum("3")]
+    [DFeEnum("9")]
     Outros
 }

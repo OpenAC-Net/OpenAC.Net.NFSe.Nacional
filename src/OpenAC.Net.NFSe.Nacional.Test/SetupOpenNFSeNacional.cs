@@ -10,7 +10,7 @@ public class SetupOpenNFSeNacional
     public static string InscricaoFederal = "42250933000187";
 
     //Emissão
-    public static string NumDPS = "3";
+    public static string NumDPS = "7";
     public static string SerieDPS = "1";
 
     //Evento
