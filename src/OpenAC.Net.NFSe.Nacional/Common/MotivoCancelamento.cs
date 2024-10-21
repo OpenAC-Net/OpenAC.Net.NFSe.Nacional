@@ -47,6 +47,6 @@ public enum MotivoCancelamento
     [DFeEnum("2")]
     ServicoNaoPrestado,
     
-    [DFeEnum("3")]
+    [DFeEnum("9")]
     Outros
 }
