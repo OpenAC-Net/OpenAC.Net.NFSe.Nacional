@@ -26,7 +26,7 @@ public class TestEmissao
         var toma = new InfoPessoaNFSe()
         {
             CNPJ = "52309133000148",
-            Nome = "Lecom AutomaÁ„o de Processos",
+            Nome = "Lecom Automa√ß√£o de Processos",
             Endereco = new EnderecoNFSe
             {
                 Bairro = "Centro",
@@ -49,7 +49,7 @@ public class TestEmissao
             Informacoes = new InformacoesServico
             {
                 CodTributacaoNacional = "080201",
-                Descricao = "Referente ao serviÁo prestado"
+                Descricao = "Referente ao servi√ßo prestado"
             }
         };
 
@@ -63,7 +63,7 @@ public class TestEmissao
             {
                 Municipal = new TributoMunicipal
                 {
-                    ISSQN = TributoISSQN.OperaÁ„oTributavel,
+                    ISSQN = TributoISSQN.Opera√ß√£oTributavel,
                     TipoRetencaoISSQN = TipoRetencaoISSQN.NaoRetido,
                 },
                 Total = new TotalTributos
@@ -116,7 +116,7 @@ public class TestEmissao
         var cancelamento = new EventoCancelamento()
         {
             CodMotivo = MotivoCancelamento.ErroEmissao,
-            Motivo = "Dados inv·lidos"
+            Motivo = "Dados inv√°lidos"
         };
 
         var evento = new PedidoRegistroEvento();
@@ -148,7 +148,7 @@ public class TestEmissao
         var cancelamentoPorSubstituicao = new EventoCancelamentoPorSubstituicao()
         {
             CodMotivo = JustificativaSubstituicao.Outros,
-            Motivo = "Dados Inv·lidos",
+            Motivo = "Dados Inv√°lidos",
             ChaveSubstituta = "35253002242250933000187000000000000624050073048925"
         };
 
@@ -181,7 +181,7 @@ public class TestEmissao
         var solicitacaoCancelamento = new EventoSolicitacaoCancelamento()
         {
             CodMotivo = JustificativaAnalise.Outros,
-            Motivo = "Dados Inv·lidos",
+            Motivo = "Dados Inv√°lidos",
         };
 
         var evento = new PedidoRegistroEvento();
