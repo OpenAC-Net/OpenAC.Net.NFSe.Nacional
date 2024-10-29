@@ -29,8 +29,6 @@
 // <summary></summary>
 // ***********************************************************************
 
-using System.Security.Cryptography.Xml;
-using OpenAC.Net.DFe.Core;
 using OpenAC.Net.DFe.Core.Attributes;
 using OpenAC.Net.DFe.Core.Common;
 using OpenAC.Net.DFe.Core.Document;
@@ -42,6 +40,15 @@ namespace OpenAC.Net.NFSe.Nacional.Common;
 [DFeRoot("DPS", Namespace = "http://www.sped.fazenda.gov.br/nfse")]
 public sealed class Dps : DFeSignDocument<Dps>
 {
+    #region Constructors
+
+    public Dps()
+    {
+        Signature = new DFeSignature();
+    }
+
+    #endregion Constructors
+    
     #region Properties
 
     [DFeAttribute(TipoCampo.Str, "versao", Ocorrencia = Ocorrencia.Obrigatoria)]
@@ -51,20 +58,20 @@ public sealed class Dps : DFeSignDocument<Dps>
     public InfDps Informacoes { get; set; } = new();
 
     #endregion Properties
-
-    public Dps()
-    {
-        Signature = new DFeSignature();
-    }
+    
     #region Methods
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="configuracao"></param>
     public void Assinar(ConfiguracaoNFSe configuracao)
     {
         var options = DFeSaveOptions.DisableFormatting;
         if (configuracao.Geral.RetirarAcentos)
             options |= DFeSaveOptions.RemoveAccents;
         
-        AssinarDocumento(configuracao.Certificados.ObterCertificado(), options, false, SignDigest.SHA1, SignedXml.XmlDsigC14NTransformUrl);
+        AssinarDocumento(configuracao.Certificados.ObterCertificado(), options, false);
     }
 
     #endregion Methods

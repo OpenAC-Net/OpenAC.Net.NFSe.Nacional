@@ -29,12 +29,10 @@
 // <summary></summary>
 // ***********************************************************************
 
-using OpenAC.Net.DFe.Core;
 using OpenAC.Net.DFe.Core.Attributes;
 using OpenAC.Net.DFe.Core.Common;
 using OpenAC.Net.DFe.Core.Document;
 using OpenAC.Net.DFe.Core.Serializer;
-using System.Security.Cryptography.Xml;
 
 namespace OpenAC.Net.NFSe.Nacional.Common;
 
@@ -42,6 +40,15 @@ namespace OpenAC.Net.NFSe.Nacional.Common;
 [DFeRoot("pedRegEvento", Namespace = "http://www.sped.fazenda.gov.br/nfse")]
 public sealed class PedidoRegistroEvento : DFeSignDocument<PedidoRegistroEvento>
 {
+    #region Constructors
+
+    public PedidoRegistroEvento()
+    {
+        Signature = new DFeSignature();
+    }
+
+    #endregion Constructors
+    
     #region Properties
 
     [DFeAttribute(TipoCampo.Str, "versao", Ocorrencia = Ocorrencia.Obrigatoria)]
@@ -52,11 +59,6 @@ public sealed class PedidoRegistroEvento : DFeSignDocument<PedidoRegistroEvento>
 
     #endregion Properties
     
-    public PedidoRegistroEvento()
-    {
-        Signature = new DFeSignature();
-    }
-    
     #region Methods
 
     public void Assinar(ConfiguracaoNFSe configuracao)
@@ -65,7 +67,7 @@ public sealed class PedidoRegistroEvento : DFeSignDocument<PedidoRegistroEvento>
         if (configuracao.Geral.RetirarAcentos)
             options |= DFeSaveOptions.RemoveAccents;
         
-        AssinarDocumento(configuracao.Certificados.ObterCertificado(), options, false, SignDigest.SHA1, SignedXml.XmlDsigC14NTransformUrl);
+        AssinarDocumento(configuracao.Certificados.ObterCertificado(), options, false);
     }
 
     #endregion Methods
