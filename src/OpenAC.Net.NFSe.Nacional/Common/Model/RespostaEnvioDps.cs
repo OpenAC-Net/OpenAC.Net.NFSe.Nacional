@@ -1,14 +1,14 @@
 ﻿// ***********************************************************************
 // Assembly         : OpenAC.Net.NFSe.Nacional
-// Author           : RFTD
+// Author           : Rafael Dias
 // Created          : 09-09-2023
 //
-// Last Modified By : RFTD
-// Last Modified On : 09-09-2023
+// Last Modified By : Rafael Dias
+// Last Modified On : 30-10-2024
 // ***********************************************************************
-// <copyright file="EventoEnvioResposta.cs" company="OpenAC .Net">
+// <copyright file="RespostaEnvioDps.cs" company="OpenAC .Net">
 //		        		   The MIT License (MIT)
-//	     		    Copyright (c) 2014-2023 Grupo OpenAC.Net
+//	     		    Copyright (c) 2014-2024 Grupo OpenAC.Net
 //
 //	 Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the "Software"),
@@ -30,26 +30,36 @@
 // ***********************************************************************
 
 using System;
+using System.Collections.Generic;
 using System.Text.Json.Serialization;
+using OpenAC.Net.Core.Extensions;
 using OpenAC.Net.DFe.Core.Common;
 using OpenAC.Net.NFSe.Nacional.Common.Converter;
-using OpenAC.Net.NFSe.Nacional.Webservice;
 
 namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 
-public sealed class EventoEnvioResposta
+public sealed class RespostaEnvioDps : RespostaBase
 {
-    [JsonPropertyName("tipoAmbiente")]
-    [JsonConverter(typeof(TipoAmbienteJsonConverter))]
-    public DFeTipoAmbiente Ambiente { get; set; }
+    #region Fields
 
-    [JsonPropertyName("versaoAplicativo")]
-    public string VersaoAplicativo { get; set; } = string.Empty;
+    private NotaFiscalServico? nota;
 
-    [JsonPropertyName("dataHoraProcessamento")]
-    public DateTime DataHoraProcessamento { get; set; }
+    #endregion Fields
     
-    [JsonPropertyName("eventoXmlGZipB64")]
+    #region Properties
+
+    [JsonPropertyName("idDps")]
+    public string IdDps { get; set; } = string.Empty;
+    
+    [JsonPropertyName("chaveAcesso")]
+    public string ChaveAcesso { get; set; } = string.Empty;
+    
+    [JsonPropertyName("nfseXmlGZipB64")]
     [JsonConverter(typeof(XmlGzipJsonConverter))]
-    public string XmlEvento { get; set; } = string.Empty;
+    public string XmlNFSe { get; set; } = string.Empty;
+
+    [JsonIgnore] 
+    public NotaFiscalServico? NFSe => XmlNFSe.IsEmpty() ? null : nota ??= NotaFiscalServico.Load(XmlNFSe);
+    
+    #endregion Properties
 }

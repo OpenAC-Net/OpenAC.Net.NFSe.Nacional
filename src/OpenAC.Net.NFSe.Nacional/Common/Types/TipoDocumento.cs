@@ -6,7 +6,7 @@
 // Last Modified By : RFTD
 // Last Modified On : 09-09-2023
 // ***********************************************************************
-// <copyright file="StatusNFSe.cs" company="OpenAC .Net">
+// <copyright file="TipoDocumento.cs" company="OpenAC .Net">
 //		        		   The MIT License (MIT)
 //	     		    Copyright (c) 2014-2023 Grupo OpenAC.Net
 //
@@ -29,23 +29,12 @@
 // <summary></summary>
 // ***********************************************************************
 
-using OpenAC.Net.DFe.Core.Attributes;
-
 namespace OpenAC.Net.NFSe.Nacional.Common.Types;
 
-/// <summary>
-/// 100 - NFS-e Gerada;
-/// 101 - NFS-e de Substituição Gerada;
-/// 102 - NFS-e de Decisão Judicial;
-/// 103 - NFS-e Avulsa
-/// </summary>
-public enum StatusNFSe
+public enum TipoDocumento
 {
-    [DFeEnum("100")] Gerada,
-
-    [DFeEnum("101")] SubstituicaoGerada,
-
-    [DFeEnum("102")] DecisaoJudicial,
-
-    [DFeEnum("103")] Avulsa
+    DPS,
+    PEDIDO_REGISTRO_EVENTO,
+    NFSE,
+    EVENTO
 }

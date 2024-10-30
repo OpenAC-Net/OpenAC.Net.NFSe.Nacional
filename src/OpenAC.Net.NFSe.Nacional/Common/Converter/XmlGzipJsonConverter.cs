@@ -37,7 +37,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using OpenAC.Net.Core.Extensions;
 
-namespace OpenAC.Net.NFSe.Nacional.Webservice;
+namespace OpenAC.Net.NFSe.Nacional.Common.Converter;
 
 public class XmlGzipJsonConverter : JsonConverter<string>
 {

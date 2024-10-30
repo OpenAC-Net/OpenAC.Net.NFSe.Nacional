@@ -84,12 +84,61 @@ public sealed class NFSeWebservice : IOpenLog
 
     #region Methods
 
+    #region DANFSe
+
+    /// <summary>
+    /// Retorna o DANFSe de uma NFS-e a partir de sua chave de acesso.
+    /// </summary>
+    /// <param name="chave">Chave de acesso</param>
+    /// <returns>Byte array da DANFSe</returns>
+    public async Task<byte[]> DownloadDANFSeAsync(string chave)
+    {
+        this.Log().Debug($"Webservice: [DANFSe][Envio] - {chave}");
+        
+        var url = NFSeServiceManager.Instance[DFeTipoEmissao.Normal][configuracao.WebServices.Ambiente, DFeSiglaUF.AN][TipoServico.Sefin];
+        var httpResponse = await SendAsync(null, HttpMethod.Get, $"{url}/danfse/{chave}");
+        
+        this.Log().Debug($"Webservice: [DANFSe][Resposta] - {httpResponse.StatusCode}");
+        
+        httpResponse.EnsureSuccessStatusCode();
+        return await httpResponse.Content.ReadAsByteArrayAsync();
+    }
+
+    #endregion DANFSe
+
+    #region DFe
+
+    /// <summary>
+    /// Distribui os DF-e para contribuintes relacionados à NFS-e.
+    /// </summary>
+    /// <param name="nsu">Numero da Nsu</param>
+    /// <returns>Dados da consulta</returns>
+    public async Task<NFSeResponse<RespostaConsultaNsu>> ConsultaNsuAsync(int nsu)
+    {
+        this.Log().Debug($"Webservice: [ConsultaNsu][Envio] - {nsu}");
+        
+        var url = NFSeServiceManager.Instance[DFeTipoEmissao.Normal][configuracao.WebServices.Ambiente, DFeSiglaUF.AN][TipoServico.Adn];
+        var httpResponse = await SendAsync(null, HttpMethod.Get, $"{url}/DFe/{nsu}");
+        
+        var strResponse = await httpResponse.Content.ReadAsStringAsync();
+        
+        this.Log().Debug($"Webservice: [ConsultaNsu][Resposta] - {strResponse}");
+        
+        GravarArquivoEmDisco(strResponse, $"ConsultaNsu-{nsu:000000}-resp.json", "");
+
+        return new NFSeResponse<RespostaConsultaNsu>("", "", strResponse, httpResponse.IsSuccessStatusCode);
+    }
+
+    #endregion DFe
+    
+    #region Eventos
+
     /// <summary>
     /// Recepciona o Pedido de Registro de Evento e gera Eventos de NFS-e, crédito, débito e apuração.
     /// </summary>
     /// <param name="evento">Evento</param>
     /// <returns></returns>
-    public async Task<NFSeResponse<EventoEnvioResposta>> EnviarAsync(PedidoRegistroEvento evento)
+    public async Task<NFSeResponse<RespostaEnvioEvento>> EnviarEventoAsync(PedidoRegistroEvento evento)
     {
         evento.Assinar(configuracao);
         
@@ -121,15 +170,19 @@ public sealed class NFSeWebservice : IOpenLog
         
         GravarArquivoEmDisco(strResponse, $"Evento-{evento.Informacoes.NumeroPedido:000000}-resp.json", documento);
 
-        return new NFSeResponse<EventoEnvioResposta>(evento.Xml, strEnvio, strResponse, httpResponse.IsSuccessStatusCode);
+        return new NFSeResponse<RespostaEnvioEvento>(evento.Xml, strEnvio, strResponse, httpResponse.IsSuccessStatusCode);
     }
-    
+
+    #endregion Eventos
+
+    #region NFS-e
+
     /// <summary>
     /// Recepciona a DPS e Gera a NFS-e de forma síncrona.
     /// </summary>
     /// <param name="dps"></param>
     /// <returns></returns>
-    public async Task<NFSeResponse<DpsEnvioResposta>> EnviarAsync(Dps dps)
+    public async Task<NFSeResponse<RespostaEnvioDps>> EnviarAsync(Dps dps)
     {
         dps.Assinar(configuracao);
         
@@ -161,28 +214,14 @@ public sealed class NFSeWebservice : IOpenLog
         
         GravarArquivoEmDisco(strResponse, $"Enviar-{dps.Informacoes.NumeroDps:000000}-resp.json", documento);
 
-        return new NFSeResponse<DpsEnvioResposta>(dps.Xml, strEnvio, strResponse, httpResponse.IsSuccessStatusCode);
+        return new NFSeResponse<RespostaEnvioDps>(dps.Xml, strEnvio, strResponse, httpResponse.IsSuccessStatusCode);
 
     }
 
-    /// <summary>
-    /// Retorna o DANFSe de uma NFS-e a partir de sua chave de acesso.
-    /// </summary>
-    /// <param name="chave">Chave de acesso</param>
-    /// <returns>Byte array da DANFSe</returns>
-    public async Task<byte[]> DownloadDANFSeAsync(string chave)
-    {
-        this.Log().Debug($"Webservice: [DANFSe][Envio] - {chave}");
-        
-        var url = NFSeServiceManager.Instance[DFeTipoEmissao.Normal][configuracao.WebServices.Ambiente, DFeSiglaUF.AN][TipoServico.Sefin];
-        var httpResponse = await SendAsync(null, HttpMethod.Get, $"{url}/danfse/{chave}");
-        
-        this.Log().Debug($"Webservice: [DANFSe][Resposta] - {httpResponse.StatusCode}");
-        
-        httpResponse.EnsureSuccessStatusCode();
-        return await httpResponse.Content.ReadAsByteArrayAsync();
-    }
-    
+    #endregion NFS-e
+
+    #region Commom
+
     private async Task<HttpResponseMessage> SendAsync(HttpContent? content, HttpMethod method, string url)
     {
         var handler = new HttpClientHandler();
@@ -275,6 +314,9 @@ public sealed class NFSeWebservice : IOpenLog
 
         File.WriteAllText(nomeArquivo, conteudoArquivo, Encoding.UTF8);
     }
+    
 
+    #endregion Commom
+    
     #endregion Methods
 }

@@ -30,7 +30,7 @@
 // ***********************************************************************
 
 using System.Text.Json.Serialization;
-using OpenAC.Net.NFSe.Nacional.Webservice;
+using OpenAC.Net.NFSe.Nacional.Common.Converter;
 
 namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 

@@ -1,12 +1,12 @@
 ﻿// ***********************************************************************
 // Assembly         : OpenAC.Net.NFSe.Nacional
-// Author           : RFTD
+// Author           : Rafael Dias
 // Created          : 09-09-2023
 //
-// Last Modified By : RFTD
-// Last Modified On : 09-09-2023
+// Last Modified By : Rafael Dias
+// Last Modified On : 30-10-2024
 // ***********************************************************************
-// <copyright file="StatusNFSe.cs" company="OpenAC .Net">
+// <copyright file="RespostaEnvioEvento.cs" company="OpenAC .Net">
 //		        		   The MIT License (MIT)
 //	     		    Copyright (c) 2014-2023 Grupo OpenAC.Net
 //
@@ -29,23 +29,16 @@
 // <summary></summary>
 // ***********************************************************************
 
-using OpenAC.Net.DFe.Core.Attributes;
+using System;
+using System.Text.Json.Serialization;
+using OpenAC.Net.DFe.Core.Common;
+using OpenAC.Net.NFSe.Nacional.Common.Converter;
 
-namespace OpenAC.Net.NFSe.Nacional.Common.Types;
+namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 
-/// <summary>
-/// 100 - NFS-e Gerada;
-/// 101 - NFS-e de Substituição Gerada;
-/// 102 - NFS-e de Decisão Judicial;
-/// 103 - NFS-e Avulsa
-/// </summary>
-public enum StatusNFSe
+public sealed class RespostaEnvioEvento : RespostaBase
 {
-    [DFeEnum("100")] Gerada,
-
-    [DFeEnum("101")] SubstituicaoGerada,
-
-    [DFeEnum("102")] DecisaoJudicial,
-
-    [DFeEnum("103")] Avulsa
+    [JsonPropertyName("eventoXmlGZipB64")]
+    [JsonConverter(typeof(XmlGzipJsonConverter))]
+    public string XmlEvento { get; set; } = string.Empty;
 }

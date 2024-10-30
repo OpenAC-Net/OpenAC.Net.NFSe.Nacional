@@ -1,14 +1,14 @@
 ﻿// ***********************************************************************
 // Assembly         : OpenAC.Net.NFSe.Nacional
-// Author           : LUCASMORAES804
-// Created          : 09-09-2023
+// Author           : Rafael Dias
+// Created          : 30-10-2024
 //
-// Last Modified By : LUCASMORAES804
-// Last Modified On : 06-05-2024
+// Last Modified By : Rafael Dias
+// Last Modified On : 30-10-2024
 // ***********************************************************************
-// <copyright file="EventoRejeicaoTomador.cs" company="OpenAC .Net">
+// <copyright file="TipoEvento.cs" company="OpenAC .Net">
 //		        		   The MIT License (MIT)
-//	     		    Copyright (c) 2014-2023 Grupo OpenAC.Net
+//	     		    Copyright (c) 2014-2024 Grupo OpenAC.Net
 //
 //	 Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the "Software"),
@@ -31,22 +31,24 @@
 
 namespace OpenAC.Net.NFSe.Nacional.Common.Types;
 
-public struct TipoEvento
+public enum TipoEvento
 {
-    public const string Cancelamento = "101101";
-    public const string CancelamentoPorSubstituicao = "105102";
-    public const string SolicitacaoCancelamento = "101103";
-    public const string CancelamentoDeferido = "105104";
-    public const string CancelamentoIndeferido = "105105";
-    public const string ConfirmacaoPrestador = "202201";
-    public const string ConfirmacaoTomador = "203202";
-    public const string ConfirmacaoIntermediario = "203203";
-    public const string ConfirmacaoTacita = "203204";
-    public const string RejeicaoPrestador = "203205";
-    public const string RejeicaoTomador = "203206";
-    public const string RejeicaoIntermediario = "203207";
-    public const string AnulacaoRejeicao = "203208";
-    public const string CancelamentoOficio = "305101";
-    public const string BloqueioOficio = "305102";
-    public const string DesbloqueioOficio = "305103";
+    CANCELAMENTO,
+    SOLICITACAO_CANCELAMENTO_ANALISE_FISCAL,
+    CANCELAMENTO_POR_SUBSTITUICAO,
+    CANCELAMENTO_DEFERIDO_ANALISE_FISCAL,
+    CANCELAMENTO_INDEFERIDO_ANALISE_FISCAL,
+    CONFIRMACAO_PRESTADOR,
+    REJEICAO_PRESTADOR,
+    CONFIRMACAO_TOMADOR,
+    REJEICAO_TOMADOR,
+    CONFIRMACAO_INTERMEDIARIO,
+    REJEICAO_INTERMEDIARIO,
+    CONFIRMACAO_TACITA,
+    ANULACAO_REJEICAO,
+    CANCELAMENTO_POR_OFICIO,
+    BLOQUEIO_POR_OFICIO,
+    DESBLOQUEIO_POR_OFICIO,
+    INCLUSAO_NFSE_DAN,
+    TRIBUTOS_NFSE_RECOLHIDOS
 }

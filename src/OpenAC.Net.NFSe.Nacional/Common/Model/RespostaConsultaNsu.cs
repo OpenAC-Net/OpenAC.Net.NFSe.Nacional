@@ -1,12 +1,12 @@
 ﻿// ***********************************************************************
 // Assembly         : OpenAC.Net.NFSe.Nacional
-// Author           : RFTD
-// Created          : 09-09-2023
+// Author           : Rafael Dias
+// Created          : 30-10-2024
 //
-// Last Modified By : RFTD
-// Last Modified On : 09-09-2023
+// Last Modified By : Rafael Dias
+// Last Modified On : 30-10-2024
 // ***********************************************************************
-// <copyright file="RetornoEnvio.cs" company="OpenAC .Net">
+// <copyright file="RespostaConsultaNsu.cs" company="OpenAC .Net">
 //		        		   The MIT License (MIT)
 //	     		    Copyright (c) 2014-2023 Grupo OpenAC.Net
 //
@@ -29,54 +29,21 @@
 // <summary></summary>
 // ***********************************************************************
 
-using System;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
-using OpenAC.Net.Core.Extensions;
-using OpenAC.Net.DFe.Core.Common;
-using OpenAC.Net.NFSe.Nacional.Common.Converter;
-using OpenAC.Net.NFSe.Nacional.Webservice;
+using OpenAC.Net.NFSe.Nacional.Common.Types;
 
 namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 
-public sealed class DpsEnvioResposta
+/// <summary>
+/// Classe RespostaConsultaNsu
+/// </summary>
+public sealed class RespostaConsultaNsu : RespostaBase
 {
-    #region Fields
-
-    private NotaFiscalServico? nota;
-
-    #endregion Fields
+    [JsonPropertyName("StatusProcessamento")]
+    [JsonConverter(typeof(JsonStringEnumConverter<StatusProcessamentoDistribuicao>))]
+    public StatusProcessamentoDistribuicao StatusProcessamento { get; set; }
     
-    #region Properties
-
-    [JsonPropertyName("tipoAmbiente")]
-    [JsonConverter(typeof(TipoAmbienteJsonConverter))]
-    public DFeTipoAmbiente Ambiente { get; set; }
-
-    [JsonPropertyName("versaoAplicativo")]
-    public string VersaoAplicativo { get; set; } = string.Empty;
-
-    [JsonPropertyName("dataHoraProcessamento")]
-    public DateTime DataHoraProcessamento { get; set; }
-    
-    [JsonPropertyName("idDps")]
-    public string IdDps { get; set; } = string.Empty;
-    
-    [JsonPropertyName("chaveAcesso")]
-    public string ChaveAcesso { get; set; } = string.Empty;
-    
-    [JsonPropertyName("nfseXmlGZipB64")]
-    [JsonConverter(typeof(XmlGzipJsonConverter))]
-    public string XmlNFSe { get; set; } = string.Empty;
-
-    [JsonIgnore] 
-    public NotaFiscalServico? NFSe => XmlNFSe.IsEmpty() ? null : nota ??= NotaFiscalServico.Load(XmlNFSe);
-    
-    [JsonPropertyName("alertas")] 
-    public List<MensagemProcessamento> Alertas { get; set; } = new();
-    
-    [JsonPropertyName("erros")] 
-    public List<MensagemProcessamento> Erros { get; set; } = new();
-    
-    #endregion Properties
+    [JsonPropertyName("LoteDFe")]
+    public List<DFe> Lote { get; set; } = new();
 }

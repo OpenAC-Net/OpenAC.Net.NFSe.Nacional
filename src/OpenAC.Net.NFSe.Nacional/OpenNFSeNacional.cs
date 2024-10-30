@@ -61,9 +61,33 @@ public sealed class OpenNFSeNacional
 
     #region Methods
 
-    public Task<NFSeResponse<DpsEnvioResposta>> EnviarAsync(Dps dps) => webservice.EnviarAsync(dps);
+    /// <summary>
+    /// Recepciona a DPS e Gera a NFS-e de forma síncrona.
+    /// </summary>
+    /// <param name="dps"></param>
+    /// <returns></returns>
+    public Task<NFSeResponse<RespostaEnvioDps>> EnviarAsync(Dps dps) => webservice.EnviarAsync(dps);
     
-    public Task<NFSeResponse<EventoEnvioResposta>> EnviarAsync(PedidoRegistroEvento evento) => webservice.EnviarAsync(evento);
+    /// <summary>
+    /// Recepciona o Pedido de Registro de Evento e gera Eventos de NFS-e, crédito, débito e apuração.
+    /// </summary>
+    /// <param name="evento">Evento</param>
+    /// <returns></returns>
+    public Task<NFSeResponse<RespostaEnvioEvento>> EnviarEventoAsync(PedidoRegistroEvento evento) => webservice.EnviarEventoAsync(evento);
+    
+    /// <summary>
+    /// Distribui os DF-e para contribuintes relacionados à NFS-e.
+    /// </summary>
+    /// <param name="nsu">Numero da Nsu</param>
+    /// <returns>Dados da consulta</returns>
+    public Task<NFSeResponse<RespostaConsultaNsu>> ConsultaNsuAsync(int nsu) => webservice.ConsultaNsuAsync(nsu);
+    
+    /// <summary>
+    /// Retorna o DANFSe de uma NFS-e a partir de sua chave de acesso.
+    /// </summary>
+    /// <param name="chave">Chave de acesso</param>
+    /// <returns>Byte array da DANFSe</returns>
+    public Task<byte[]> DownloadDANFSeAsync(string chave) => webservice.DownloadDANFSeAsync(chave);
 
     #endregion
 }

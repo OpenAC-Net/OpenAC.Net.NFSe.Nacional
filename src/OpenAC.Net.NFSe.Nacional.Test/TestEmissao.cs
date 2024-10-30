@@ -126,7 +126,7 @@ public class TestEmissao
         evento.Versao = "1.00";
         evento.Informacoes = new()
         {
-            Id = "PRE" + chaveNFse + TipoEvento.Cancelamento + SetupOpenNFSeNacional.NumEvento.PadLeft(3, '0'),
+            Id = "PRE" + chaveNFse + TipoEventoCod.Cancelamento + SetupOpenNFSeNacional.NumEvento.PadLeft(3, '0'),
             ChNFSe = chaveNFse,
             CNPJAutor = SetupOpenNFSeNacional.InscricaoFederal,
             DhEvento = DateTime.Now,
@@ -135,7 +135,7 @@ public class TestEmissao
             Evento = cancelamento
         };
 
-        var retorno = await openNFSeNacional.EnviarAsync(evento);
+        var retorno = await openNFSeNacional.EnviarEventoAsync(evento);
 
         Assert.IsTrue(retorno.Sucesso);
     }
@@ -191,7 +191,7 @@ public class TestEmissao
         evento.Versao = "1.00";
         evento.Informacoes = new()
         {
-            Id = "PRE" + chaveNFse + TipoEvento.SolicitacaoCancelamento + SetupOpenNFSeNacional.NumEvento.PadLeft(3, '0'),
+            Id = "PRE" + chaveNFse + TipoEventoCod.SolicitacaoCancelamento + SetupOpenNFSeNacional.NumEvento.PadLeft(3, '0'),
             ChNFSe = chaveNFse,
             CNPJAutor = SetupOpenNFSeNacional.InscricaoFederal,
             DhEvento = DateTime.Now,
@@ -200,7 +200,7 @@ public class TestEmissao
             Evento = solicitacaoCancelamento
         };
 
-        var retorno = await openNFSeNacional.EnviarAsync(evento);
+        var retorno = await openNFSeNacional.EnviarEventoAsync(evento);
 
         Assert.IsTrue(retorno.Sucesso);
     }
