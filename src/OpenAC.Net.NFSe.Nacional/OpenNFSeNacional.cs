@@ -80,7 +80,14 @@ public sealed class OpenNFSeNacional
     /// </summary>
     /// <param name="nsu">Numero da Nsu</param>
     /// <returns>Dados da consulta</returns>
-    public Task<NFSeResponse<RespostaConsultaNsu>> ConsultaNsuAsync(int nsu) => webservice.ConsultaNsuAsync(nsu);
+    public Task<NFSeResponse<RespostaConsultaDFe>> ConsultaNsuAsync(int nsu) => webservice.ConsultaNsuAsync(nsu);
+    
+    /// <summary>
+    /// Distribui os DF-e vinculados à chave de acesso informada
+    /// </summary>
+    /// <param name="chave">chave da NFSe</param>
+    /// <returns>Dados da consulta</returns>
+    public Task<NFSeResponse<RespostaConsultaDFe>> ConsultaChaveAsync(string chave) => webservice.ConsultaChaveAsync(chave);
     
     /// <summary>
     /// Retorna o DANFSe de uma NFS-e a partir de sua chave de acesso.
@@ -88,6 +95,20 @@ public sealed class OpenNFSeNacional
     /// <param name="chave">Chave de acesso</param>
     /// <returns>Byte array da DANFSe</returns>
     public Task<byte[]> DownloadDANFSeAsync(string chave) => webservice.DownloadDANFSeAsync(chave);
+    
+    /// <summary>
+    /// Retorna a chave de acesso da NFS-e a partir do identificador do DPS.
+    /// </summary>
+    /// <param name="id">Identificação da Dps</param>
+    /// <returns>Dados da consulta</returns>
+    public Task<NFSeResponse<RespostaConsultaChaveDps>> ConsultaChaveDpsAsync(string id) => webservice.ConsultaChaveDpsAsync(id);
+    
+    /// <summary>
+    /// Verifica se uma NFS-e foi emitida a partir do Id do DPS.
+    /// </summary>
+    /// <param name="id">Identificação da Dps</param>
+    /// <returns></returns>
+    public Task<bool> ConsultaExisteDpsAsync(string id) => webservice.ConsultaExisteDpsAsync(id);
 
     #endregion
 }

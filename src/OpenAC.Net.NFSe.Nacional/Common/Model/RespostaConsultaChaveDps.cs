@@ -6,7 +6,7 @@
 // Last Modified By : Rafael Dias
 // Last Modified On : 30-10-2024
 // ***********************************************************************
-// <copyright file="RespostaConsultaNsu.cs" company="OpenAC .Net">
+// <copyright file="RespostaConsultaChaveDps.cs" company="OpenAC .Net">
 //		        		   The MIT License (MIT)
 //	     		    Copyright (c) 2014-2023 Grupo OpenAC.Net
 //
@@ -29,21 +29,15 @@
 // <summary></summary>
 // ***********************************************************************
 
-using System.Collections.Generic;
 using System.Text.Json.Serialization;
-using OpenAC.Net.NFSe.Nacional.Common.Types;
 
 namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 
-/// <summary>
-/// Classe RespostaConsultaNsu
-/// </summary>
-public sealed class RespostaConsultaNsu : RespostaBase
+public sealed class RespostaConsultaChaveDps : RespostaBase
 {
-    [JsonPropertyName("StatusProcessamento")]
-    [JsonConverter(typeof(JsonStringEnumConverter<StatusProcessamentoDistribuicao>))]
-    public StatusProcessamentoDistribuicao StatusProcessamento { get; set; }
+    [JsonPropertyName("idDps")]
+    public string IdDps { get; set; } = string.Empty;
     
-    [JsonPropertyName("LoteDFe")]
-    public List<DFe> Lote { get; set; } = new();
+    [JsonPropertyName("chaveAcesso")]
+    public string Chave { get; set; } = string.Empty;
 }

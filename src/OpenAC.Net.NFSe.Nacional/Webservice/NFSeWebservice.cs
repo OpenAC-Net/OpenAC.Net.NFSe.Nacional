@@ -31,6 +31,7 @@
 
 using System;
 using System.IO;
+using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
@@ -111,9 +112,9 @@ public sealed class NFSeWebservice : IOpenLog
     /// <summary>
     /// Distribui os DF-e para contribuintes relacionados à NFS-e.
     /// </summary>
-    /// <param name="nsu">Numero da Nsu</param>
+    /// <param name="nsu">Numero Nsu</param>
     /// <returns>Dados da consulta</returns>
-    public async Task<NFSeResponse<RespostaConsultaNsu>> ConsultaNsuAsync(int nsu)
+    public async Task<NFSeResponse<RespostaConsultaDFe>> ConsultaNsuAsync(int nsu)
     {
         this.Log().Debug($"Webservice: [ConsultaNsu][Envio] - {nsu}");
         
@@ -126,10 +127,77 @@ public sealed class NFSeWebservice : IOpenLog
         
         GravarArquivoEmDisco(strResponse, $"ConsultaNsu-{nsu:000000}-resp.json", "");
 
-        return new NFSeResponse<RespostaConsultaNsu>("", "", strResponse, httpResponse.IsSuccessStatusCode);
+        return new NFSeResponse<RespostaConsultaDFe>("", "", strResponse, httpResponse.IsSuccessStatusCode);
+    }
+    
+    /// <summary>
+    /// Distribui os DF-e vinculados à chave de acesso informada
+    /// </summary>
+    /// <param name="chave">chave da NFSe</param>
+    /// <returns>Dados da consulta</returns>
+    public async Task<NFSeResponse<RespostaConsultaDFe>> ConsultaChaveAsync(string chave)
+    {
+        this.Log().Debug($"Webservice: [ConsultaChave][Envio] - {chave}");
+        
+        var url = NFSeServiceManager.Instance[DFeTipoEmissao.Normal][configuracao.WebServices.Ambiente, DFeSiglaUF.AN][TipoServico.Adn];
+        var httpResponse = await SendAsync(null, HttpMethod.Get, $"{url}/NFSe/{chave}/Eventos");
+        
+        var strResponse = await httpResponse.Content.ReadAsStringAsync();
+        
+        this.Log().Debug($"Webservice: [ConsultaChave][Resposta] - {strResponse}");
+        
+        GravarArquivoEmDisco(strResponse, $"ConsultaChave-{chave}-resp.json", "");
+
+        return new NFSeResponse<RespostaConsultaDFe>("", "", strResponse, httpResponse.IsSuccessStatusCode);
     }
 
     #endregion DFe
+    
+    #region DPS
+
+    /// <summary>
+    /// Retorna a chave de acesso da NFS-e a partir do identificador do DPS.
+    /// </summary>
+    /// <param name="id">Identificação da Dps</param>
+    /// <returns>Dados da consulta</returns>
+    public async Task<NFSeResponse<RespostaConsultaChaveDps>> ConsultaChaveDpsAsync(string id)
+    {
+        this.Log().Debug($"Webservice: [ConsultaChaveDps][Envio] - {id}");
+        
+        var url = NFSeServiceManager.Instance[DFeTipoEmissao.Normal][configuracao.WebServices.Ambiente, DFeSiglaUF.AN][TipoServico.Sefin];
+        var httpResponse = await SendAsync(null, HttpMethod.Get, $"{url}/dps/{id}");
+        
+        var strResponse = await httpResponse.Content.ReadAsStringAsync();
+        
+        this.Log().Debug($"Webservice: [ConsultaChaveDps][Resposta] - {strResponse}");
+        
+        GravarArquivoEmDisco(strResponse, $"ConsultaChaveDps-{id}-resp.json", "");
+
+        return new NFSeResponse<RespostaConsultaChaveDps>("", "", strResponse, httpResponse.IsSuccessStatusCode);
+    }
+    
+    /// <summary>
+    /// Verifica se uma NFS-e foi emitida a partir do Id do DPS.
+    /// </summary>
+    /// <param name="id">Identificação da Dps</param>
+    /// <returns></returns>
+    public async Task<bool> ConsultaExisteDpsAsync(string id)
+    {
+        this.Log().Debug($"Webservice: [ConsultaExisteDps][Envio] - {id}");
+        
+        var url = NFSeServiceManager.Instance[DFeTipoEmissao.Normal][configuracao.WebServices.Ambiente, DFeSiglaUF.AN][TipoServico.Sefin];
+        var httpResponse = await SendAsync(null, HttpMethod.Head, $"{url}/dps/{id}");
+        
+        var strResponse = await httpResponse.Content.ReadAsStringAsync();
+        
+        this.Log().Debug($"Webservice: [ConsultaExisteDps][Resposta] - {strResponse}");
+        
+        GravarArquivoEmDisco(strResponse, $"ConsultaChaveDps-{id}-resp.json", "");
+
+        return httpResponse.StatusCode == HttpStatusCode.OK;
+    }
+    
+    #endregion DPS
     
     #region Eventos
 
