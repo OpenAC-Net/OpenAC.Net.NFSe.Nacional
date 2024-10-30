@@ -1,4 +1,4 @@
-﻿// ***********************************************************************
+// ***********************************************************************
 // Assembly         : OpenAC.Net.NFSe.Nacional
 // Author           : RFTD
 // Created          : 09-09-2023
@@ -6,7 +6,7 @@
 // Last Modified By : RFTD
 // Last Modified On : 09-09-2023
 // ***********************************************************************
-// <copyright file="OpenNFSeNacional.cs" company="OpenAC .Net">
+// <copyright file="EnderecoNacional.cs" company="OpenAC .Net">
 //		        		   The MIT License (MIT)
 //	     		    Copyright (c) 2014-2023 Grupo OpenAC.Net
 //
@@ -29,41 +29,20 @@
 // <summary></summary>
 // ***********************************************************************
 
-using System.Threading.Tasks;
-using OpenAC.Net.NFSe.Nacional.Common;
-using OpenAC.Net.NFSe.Nacional.Common.Model;
-using OpenAC.Net.NFSe.Nacional.Webservice;
+using OpenAC.Net.DFe.Core.Attributes;
+using OpenAC.Net.DFe.Core.Serializer;
 
-namespace OpenAC.Net.NFSe.Nacional;
+namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 
-public sealed class OpenNFSeNacional
+public sealed class MunicipioNacional : IMunicipio
 {
-    #region Fields
-    
-    private readonly NFSeWebservice webservice;
-    
-    #endregion Fields
-
-    #region Constructors
-
-    public OpenNFSeNacional()
-    {
-        webservice = new NFSeWebservice(Configuracoes);
-    }
-
-    #endregion Constructors
-    
     #region Properties
 
-    public ConfiguracaoNFSe Configuracoes { get; } = new();
+    [DFeElement(TipoCampo.StrNumber, "cMun", Min = 0, Max = 7, Ocorrencia = Ocorrencia.Obrigatoria)]
+    public string CodMunicipio { get; set; } = string.Empty;
+    
+    [DFeElement(TipoCampo.Str, "CEP", Min = 8, Max = 8, Ocorrencia = Ocorrencia.Obrigatoria)]
+    public string CEP { get; set; } = string.Empty;
 
     #endregion Properties
-
-    #region Methods
-
-    public Task<NFSeResponse<DpsEnvioResposta>> EnviarAsync(Dps dps) => webservice.EnviarAsync(dps);
-    
-    public Task<NFSeResponse<EventoEnvioResposta>> EnviarAsync(PedidoRegistroEvento evento) => webservice.EnviarAsync(evento);
-
-    #endregion
 }

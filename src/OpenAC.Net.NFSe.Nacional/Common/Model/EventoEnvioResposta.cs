@@ -6,7 +6,7 @@
 // Last Modified By : RFTD
 // Last Modified On : 09-09-2023
 // ***********************************************************************
-// <copyright file="OpenNFSeNacional.cs" company="OpenAC .Net">
+// <copyright file="EventoEnvioResposta.cs" company="OpenAC .Net">
 //		        		   The MIT License (MIT)
 //	     		    Copyright (c) 2014-2023 Grupo OpenAC.Net
 //
@@ -29,41 +29,27 @@
 // <summary></summary>
 // ***********************************************************************
 
-using System.Threading.Tasks;
-using OpenAC.Net.NFSe.Nacional.Common;
-using OpenAC.Net.NFSe.Nacional.Common.Model;
+using System;
+using System.Text.Json.Serialization;
+using OpenAC.Net.DFe.Core.Common;
+using OpenAC.Net.NFSe.Nacional.Common.Converter;
 using OpenAC.Net.NFSe.Nacional.Webservice;
 
-namespace OpenAC.Net.NFSe.Nacional;
+namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 
-public sealed class OpenNFSeNacional
+public sealed class EventoEnvioResposta
 {
-    #region Fields
+    [JsonPropertyName("tipoAmbiente")]
+    [JsonConverter(typeof(TipoAmbienteJsonConverter))]
+    public DFeTipoAmbiente Ambiente { get; set; }
+
+    [JsonPropertyName("versaoAplicativo")]
+    public string VersaoAplicativo { get; set; } = string.Empty;
+
+    [JsonPropertyName("dataHoraProcessamento")]
+    public DateTime DataHoraProcessamento { get; set; }
     
-    private readonly NFSeWebservice webservice;
-    
-    #endregion Fields
-
-    #region Constructors
-
-    public OpenNFSeNacional()
-    {
-        webservice = new NFSeWebservice(Configuracoes);
-    }
-
-    #endregion Constructors
-    
-    #region Properties
-
-    public ConfiguracaoNFSe Configuracoes { get; } = new();
-
-    #endregion Properties
-
-    #region Methods
-
-    public Task<NFSeResponse<DpsEnvioResposta>> EnviarAsync(Dps dps) => webservice.EnviarAsync(dps);
-    
-    public Task<NFSeResponse<EventoEnvioResposta>> EnviarAsync(PedidoRegistroEvento evento) => webservice.EnviarAsync(evento);
-
-    #endregion
+    [JsonPropertyName("eventoXmlGZipB64")]
+    [JsonConverter(typeof(XmlGzipJsonConverter))]
+    public string XmlEvento { get; set; } = string.Empty;
 }

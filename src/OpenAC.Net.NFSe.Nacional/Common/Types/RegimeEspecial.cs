@@ -1,4 +1,4 @@
-﻿// ***********************************************************************
+// ***********************************************************************
 // Assembly         : OpenAC.Net.NFSe.Nacional
 // Author           : RFTD
 // Created          : 09-09-2023
@@ -6,7 +6,7 @@
 // Last Modified By : RFTD
 // Last Modified On : 09-09-2023
 // ***********************************************************************
-// <copyright file="OpenNFSeNacional.cs" company="OpenAC .Net">
+// <copyright file="RegimeEspecial.cs" company="OpenAC .Net">
 //		        		   The MIT License (MIT)
 //	     		    Copyright (c) 2014-2023 Grupo OpenAC.Net
 //
@@ -29,41 +29,40 @@
 // <summary></summary>
 // ***********************************************************************
 
-using System.Threading.Tasks;
-using OpenAC.Net.NFSe.Nacional.Common;
-using OpenAC.Net.NFSe.Nacional.Common.Model;
-using OpenAC.Net.NFSe.Nacional.Webservice;
+using OpenAC.Net.DFe.Core.Attributes;
 
-namespace OpenAC.Net.NFSe.Nacional;
+namespace OpenAC.Net.NFSe.Nacional.Common.Types;
 
-public sealed class OpenNFSeNacional
+/// <summary>
+/// Tipos de Regimes Especiais de Tributação:
+/// 0 - Nenhum;
+/// 1 - Ato Cooperado (Cooperativa);
+/// 2 - Estimativa;
+/// 3 - Microempresa Municipal;
+/// 4 - Notário ou Registrador;
+/// 5 - Profissional Autônomo;
+/// 6 - Sociedade de Profissionais;
+/// </summary>
+public enum RegimeEspecial
 {
-    #region Fields
+    [DFeEnum("0")]
+    Nenhum,
     
-    private readonly NFSeWebservice webservice;
+    [DFeEnum("1")]
+    Cooperativa,
     
-    #endregion Fields
-
-    #region Constructors
-
-    public OpenNFSeNacional()
-    {
-        webservice = new NFSeWebservice(Configuracoes);
-    }
-
-    #endregion Constructors
+    [DFeEnum("2")]
+    Estimativa,
     
-    #region Properties
-
-    public ConfiguracaoNFSe Configuracoes { get; } = new();
-
-    #endregion Properties
-
-    #region Methods
-
-    public Task<NFSeResponse<DpsEnvioResposta>> EnviarAsync(Dps dps) => webservice.EnviarAsync(dps);
+    [DFeEnum("3")]
+    MicroempresaMunicipal,
     
-    public Task<NFSeResponse<EventoEnvioResposta>> EnviarAsync(PedidoRegistroEvento evento) => webservice.EnviarAsync(evento);
-
-    #endregion
+    [DFeEnum("4")]
+    NotarioRegistrador,
+    
+    [DFeEnum("5")]
+    ProfissionalAutonomo,
+    
+    [DFeEnum("6")]
+    SociedadeProfissionais,
 }

@@ -6,7 +6,7 @@
 // Last Modified By : RFTD
 // Last Modified On : 09-09-2023
 // ***********************************************************************
-// <copyright file="OpenNFSeNacional.cs" company="OpenAC .Net">
+// <copyright file="IdDeducaoReducao.cs" company="OpenAC .Net">
 //		        		   The MIT License (MIT)
 //	     		    Copyright (c) 2014-2023 Grupo OpenAC.Net
 //
@@ -29,41 +29,48 @@
 // <summary></summary>
 // ***********************************************************************
 
-using System.Threading.Tasks;
-using OpenAC.Net.NFSe.Nacional.Common;
-using OpenAC.Net.NFSe.Nacional.Common.Model;
-using OpenAC.Net.NFSe.Nacional.Webservice;
+using OpenAC.Net.DFe.Core.Attributes;
 
-namespace OpenAC.Net.NFSe.Nacional;
+namespace OpenAC.Net.NFSe.Nacional.Common.Types;
 
-public sealed class OpenNFSeNacional
+/// <summary>
+/// Identificação da Dedução/Redução:
+/// 1 – Alimentação e bebidas/frigobar;
+/// 2 – Materiais;
+/// 3 – Produção externa;
+/// 4 – Reembolso de despesas;
+/// 5 – Repasse consorciado;
+/// 6 – Repasse plano de saúde;
+/// 7 – Serviços;
+/// 8 – Subempreitada de mão de obra;
+/// 99 – Outras deduções;
+/// </summary>
+public enum TipoDeducaoReducao
 {
-    #region Fields
+    [DFeEnum("1")]
+    AlimentacaoBebidasFrigobar,
     
-    private readonly NFSeWebservice webservice;
+    [DFeEnum("2")]
+    Materiais,
     
-    #endregion Fields
-
-    #region Constructors
-
-    public OpenNFSeNacional()
-    {
-        webservice = new NFSeWebservice(Configuracoes);
-    }
-
-    #endregion Constructors
+    [DFeEnum("3")]
+    ProducaoExterna,
     
-    #region Properties
-
-    public ConfiguracaoNFSe Configuracoes { get; } = new();
-
-    #endregion Properties
-
-    #region Methods
-
-    public Task<NFSeResponse<DpsEnvioResposta>> EnviarAsync(Dps dps) => webservice.EnviarAsync(dps);
+    [DFeEnum("4")]
+    ReembolsoDespesas,
     
-    public Task<NFSeResponse<EventoEnvioResposta>> EnviarAsync(PedidoRegistroEvento evento) => webservice.EnviarAsync(evento);
-
-    #endregion
+    [DFeEnum("5")]
+    RepasseConsorciado,
+    
+    [DFeEnum("6")]
+    RepassePlanSaude,
+    
+    [DFeEnum("7")]
+    Servicos,
+    
+    [DFeEnum("8")]
+    SubempreitadaMaoObra,
+    
+    [DFeEnum("99")]
+    Outras
 }

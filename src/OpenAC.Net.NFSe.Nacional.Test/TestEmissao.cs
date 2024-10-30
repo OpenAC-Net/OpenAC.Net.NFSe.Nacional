@@ -1,5 +1,6 @@
 using OpenAC.Net.Core.Extensions;
-using OpenAC.Net.NFSe.Nacional.Common;
+using OpenAC.Net.NFSe.Nacional.Common.Model;
+using OpenAC.Net.NFSe.Nacional.Common.Types;
 
 namespace OpenAC.Net.NFSe.Nacional.Test;
 
@@ -79,26 +80,28 @@ public class TestEmissao
         };
 
 
-        var dps = new Common.Dps();
-        dps.Versao = "1.00";
-        dps.Informacoes = new()
+        var dps = new Dps
         {
-            Id = "DPS" + SetupOpenNFSeNacional.CodMun +
-                        SetupOpenNFSeNacional.TipoInscricaoFederal +
-                        SetupOpenNFSeNacional.InscricaoFederal.PadLeft(14, '0') +
-                        SetupOpenNFSeNacional.SerieDPS.PadLeft(5, '0') +
-                        SetupOpenNFSeNacional.NumDPS.PadLeft(15, '0'),
-            TipoAmbiente = DFe.Core.Common.DFeTipoAmbiente.Homologacao,
-            DhEmissao = DateTime.Now,
-            LocalidadeEmitente = SetupOpenNFSeNacional.CodMun,
-            Serie = SetupOpenNFSeNacional.SerieDPS,
-            NumeroDps = SetupOpenNFSeNacional.NumDPS.ToInt32(),
-            Competencia = DateTime.Now,
-            TipoEmitente = EmitenteDps.Prestador,
-            Prestador = prest,
-            Tomador = toma,
-            Servico = serv,
-            Valores = valores
+            Versao = "1.00",
+            Informacoes = new InfDps
+            {
+                Id = "DPS" + SetupOpenNFSeNacional.CodMun +
+                     SetupOpenNFSeNacional.TipoInscricaoFederal +
+                     SetupOpenNFSeNacional.InscricaoFederal.PadLeft(14, '0') +
+                     SetupOpenNFSeNacional.SerieDPS.PadLeft(5, '0') +
+                     SetupOpenNFSeNacional.NumDPS.PadLeft(15, '0'),
+                TipoAmbiente = DFe.Core.Common.DFeTipoAmbiente.Homologacao,
+                DhEmissao = DateTime.Now,
+                LocalidadeEmitente = SetupOpenNFSeNacional.CodMun,
+                Serie = SetupOpenNFSeNacional.SerieDPS,
+                NumeroDps = SetupOpenNFSeNacional.NumDPS.ToInt32(),
+                Competencia = DateTime.Now,
+                TipoEmitente = EmitenteDps.Prestador,
+                Prestador = prest,
+                Tomador = toma,
+                Servico = serv,
+                Valores = valores
+            }
         };
         var retorno = await openNFSeNacional.EnviarAsync(dps);
 

@@ -6,7 +6,7 @@
 // Last Modified By : RFTD
 // Last Modified On : 09-09-2023
 // ***********************************************************************
-// <copyright file="OpenNFSeNacional.cs" company="OpenAC .Net">
+// <copyright file="EnderecoExterior.cs" company="OpenAC .Net">
 //		        		   The MIT License (MIT)
 //	     		    Copyright (c) 2014-2023 Grupo OpenAC.Net
 //
@@ -29,41 +29,19 @@
 // <summary></summary>
 // ***********************************************************************
 
-using System.Threading.Tasks;
-using OpenAC.Net.NFSe.Nacional.Common;
-using OpenAC.Net.NFSe.Nacional.Common.Model;
-using OpenAC.Net.NFSe.Nacional.Webservice;
+using OpenAC.Net.DFe.Core.Attributes;
+using OpenAC.Net.DFe.Core.Serializer;
 
-namespace OpenAC.Net.NFSe.Nacional;
+namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 
-public sealed class OpenNFSeNacional
+public sealed class EnderecoExterior
 {
-    #region Fields
+    [DFeElement(TipoCampo.Str, "cEndPost", Min = 1, Max = 11, Ocorrencia = Ocorrencia.Obrigatoria)]
+    public string EnderecoPostal { get; set; } = string.Empty;
     
-    private readonly NFSeWebservice webservice;
+    [DFeElement(TipoCampo.Str, "xCidade", Min = 1, Max = 60, Ocorrencia = Ocorrencia.Obrigatoria)]
+    public string Cidade { get; set; } = string.Empty;
     
-    #endregion Fields
-
-    #region Constructors
-
-    public OpenNFSeNacional()
-    {
-        webservice = new NFSeWebservice(Configuracoes);
-    }
-
-    #endregion Constructors
-    
-    #region Properties
-
-    public ConfiguracaoNFSe Configuracoes { get; } = new();
-
-    #endregion Properties
-
-    #region Methods
-
-    public Task<NFSeResponse<DpsEnvioResposta>> EnviarAsync(Dps dps) => webservice.EnviarAsync(dps);
-    
-    public Task<NFSeResponse<EventoEnvioResposta>> EnviarAsync(PedidoRegistroEvento evento) => webservice.EnviarAsync(evento);
-
-    #endregion
+    [DFeElement(TipoCampo.Str, "xEstProvReg", Min = 1, Max = 60, Ocorrencia = Ocorrencia.Obrigatoria)]
+    public string EstadoProvincia { get; set; } = string.Empty;
 }

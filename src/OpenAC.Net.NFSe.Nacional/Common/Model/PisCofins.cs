@@ -6,7 +6,7 @@
 // Last Modified By : RFTD
 // Last Modified On : 09-09-2023
 // ***********************************************************************
-// <copyright file="OpenNFSeNacional.cs" company="OpenAC .Net">
+// <copyright file="PisCofins.cs" company="OpenAC .Net">
 //		        		   The MIT License (MIT)
 //	     		    Copyright (c) 2014-2023 Grupo OpenAC.Net
 //
@@ -29,41 +29,32 @@
 // <summary></summary>
 // ***********************************************************************
 
-using System.Threading.Tasks;
-using OpenAC.Net.NFSe.Nacional.Common;
-using OpenAC.Net.NFSe.Nacional.Common.Model;
-using OpenAC.Net.NFSe.Nacional.Webservice;
+using OpenAC.Net.DFe.Core.Attributes;
+using OpenAC.Net.DFe.Core.Serializer;
+using OpenAC.Net.NFSe.Nacional.Common.Types;
 
-namespace OpenAC.Net.NFSe.Nacional;
+namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 
-public sealed class OpenNFSeNacional
+public sealed class PisCofins
 {
-    #region Fields
+    [DFeElement(TipoCampo.Enum, "CST", Min = 2, Max = 2, Ocorrencia = Ocorrencia.Obrigatoria)]
+    public TipoCST Cst { get; set; } = TipoCST.Nenhum;
     
-    private readonly NFSeWebservice webservice;
+    [DFeElement(TipoCampo.De2, "vBCPisCofins", Min = 4, Max = 18, Ocorrencia = Ocorrencia.NaoObrigatoria)]
+    public decimal? ValorBcCofins { get; set; }
     
-    #endregion Fields
-
-    #region Constructors
-
-    public OpenNFSeNacional()
-    {
-        webservice = new NFSeWebservice(Configuracoes);
-    }
-
-    #endregion Constructors
+    [DFeElement(TipoCampo.De2, "pAliqPis", Min = 4, Max = 7, Ocorrencia = Ocorrencia.NaoObrigatoria)]
+    public decimal? AliquotaPis{ get; set; }
     
-    #region Properties
-
-    public ConfiguracaoNFSe Configuracoes { get; } = new();
-
-    #endregion Properties
-
-    #region Methods
-
-    public Task<NFSeResponse<DpsEnvioResposta>> EnviarAsync(Dps dps) => webservice.EnviarAsync(dps);
+    [DFeElement(TipoCampo.De2, "pAliqCofins", Min = 4, Max = 7, Ocorrencia = Ocorrencia.NaoObrigatoria)]
+    public decimal? AliquotaCofins{ get; set; }
     
-    public Task<NFSeResponse<EventoEnvioResposta>> EnviarAsync(PedidoRegistroEvento evento) => webservice.EnviarAsync(evento);
-
-    #endregion
+    [DFeElement(TipoCampo.De2, "vPis", Min = 4, Max = 18, Ocorrencia = Ocorrencia.NaoObrigatoria)]
+    public decimal? ValorPis { get; set; }
+    
+    [DFeElement(TipoCampo.De2, "vCofins", Min = 4, Max = 18, Ocorrencia = Ocorrencia.NaoObrigatoria)]
+    public decimal? ValorCofins { get; set; }
+    
+    [DFeElement(TipoCampo.Enum, "tpRetPisCofins", Min = 1, Max = 1, Ocorrencia = Ocorrencia.NaoObrigatoria)]
+    public TipoRetencaoPisCofins? TipoRetencao { get; set; }
 }

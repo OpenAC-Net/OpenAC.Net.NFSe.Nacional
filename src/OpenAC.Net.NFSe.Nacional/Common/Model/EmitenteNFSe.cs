@@ -6,7 +6,7 @@
 // Last Modified By : RFTD
 // Last Modified On : 09-09-2023
 // ***********************************************************************
-// <copyright file="OpenNFSeNacional.cs" company="OpenAC .Net">
+// <copyright file="NotaFiscalServico.cs" company="OpenAC .Net">
 //		        		   The MIT License (MIT)
 //	     		    Copyright (c) 2014-2023 Grupo OpenAC.Net
 //
@@ -29,41 +29,38 @@
 // <summary></summary>
 // ***********************************************************************
 
-using System.Threading.Tasks;
-using OpenAC.Net.NFSe.Nacional.Common;
-using OpenAC.Net.NFSe.Nacional.Common.Model;
-using OpenAC.Net.NFSe.Nacional.Webservice;
+using OpenAC.Net.DFe.Core.Attributes;
+using OpenAC.Net.DFe.Core.Serializer;
 
-namespace OpenAC.Net.NFSe.Nacional;
+namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 
-public sealed class OpenNFSeNacional
+public sealed class EmitenteNFSe
 {
-    #region Fields
-    
-    private readonly NFSeWebservice webservice;
-    
-    #endregion Fields
-
-    #region Constructors
-
-    public OpenNFSeNacional()
-    {
-        webservice = new NFSeWebservice(Configuracoes);
-    }
-
-    #endregion Constructors
-    
     #region Properties
 
-    public ConfiguracaoNFSe Configuracoes { get; } = new();
+    [DFeElement(TipoCampo.StrNumber, "CNPJ", Min = 14, Max = 14, Ocorrencia = Ocorrencia.NaoObrigatoria)]
+    public string? CNPJ { get; set; }
+    
+    [DFeElement(TipoCampo.StrNumber, "CPF", Min = 11, Max = 11, Ocorrencia = Ocorrencia.NaoObrigatoria)]
+    public string? CPF { get; set; }
+
+    [DFeElement(TipoCampo.StrNumber, "IM", Min = 1, Max = 15, Ocorrencia = Ocorrencia.NaoObrigatoria)]
+    public string? InscricaoMunicipal { get; set; }
+
+    [DFeElement(TipoCampo.Str, "xNome", Min = 1, Max = 300, Ocorrencia = Ocorrencia.Obrigatoria)]
+    public string RazaoSocial { get; set; } = string.Empty;
+    
+    [DFeElement(TipoCampo.Str, "xFant", Min = 1, Max = 150, Ocorrencia = Ocorrencia.NaoObrigatoria)]
+    public string? NomeFantasia { get; set; }
+
+    [DFeElement("enderNac", Ocorrencia = Ocorrencia.Obrigatoria)]
+    public EnderecoEmitente Endereco { get; set; } = new();
+    
+    [DFeElement(TipoCampo.StrNumber, "fone", Min = 6, Max = 20, Ocorrencia = Ocorrencia.NaoObrigatoria)]
+    public string? Telefone { get; set; }
+    
+    [DFeElement(TipoCampo.Str, "email", Min = 1, Max = 80, Ocorrencia = Ocorrencia.NaoObrigatoria)]
+    public string? Email { get; set; }
 
     #endregion Properties
-
-    #region Methods
-
-    public Task<NFSeResponse<DpsEnvioResposta>> EnviarAsync(Dps dps) => webservice.EnviarAsync(dps);
-    
-    public Task<NFSeResponse<EventoEnvioResposta>> EnviarAsync(PedidoRegistroEvento evento) => webservice.EnviarAsync(evento);
-
-    #endregion
 }

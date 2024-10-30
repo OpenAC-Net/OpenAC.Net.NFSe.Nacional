@@ -6,7 +6,7 @@
 // Last Modified By : RFTD
 // Last Modified On : 09-09-2023
 // ***********************************************************************
-// <copyright file="OpenNFSeNacional.cs" company="OpenAC .Net">
+// <copyright file="ObjetoLocacao.cs" company="OpenAC .Net">
 //		        		   The MIT License (MIT)
 //	     		    Copyright (c) 2014-2023 Grupo OpenAC.Net
 //
@@ -29,41 +29,37 @@
 // <summary></summary>
 // ***********************************************************************
 
-using System.Threading.Tasks;
-using OpenAC.Net.NFSe.Nacional.Common;
-using OpenAC.Net.NFSe.Nacional.Common.Model;
-using OpenAC.Net.NFSe.Nacional.Webservice;
 
-namespace OpenAC.Net.NFSe.Nacional;
+using OpenAC.Net.DFe.Core.Attributes;
 
-public sealed class OpenNFSeNacional
+namespace OpenAC.Net.NFSe.Nacional.Common.Types;
+
+/// <summary>
+/// Tipo de objetos da locação, sublocação, arrendamento, direito de passagem ou permissão de uso:
+/// 1 - Ferrovia;
+/// 2 - Rodovia;
+/// 3 - Postes;
+/// 4 - Cabos;
+/// 5 - Dutos;
+/// 6 - Condutos de qualquer natureza;
+/// </summary>
+public enum ObjetoLocacao
 {
-    #region Fields
+    [DFeEnum("1")]
+    Ferrovia = 1,
     
-    private readonly NFSeWebservice webservice;
+    [DFeEnum("2")]
+    Rodovia,
     
-    #endregion Fields
-
-    #region Constructors
-
-    public OpenNFSeNacional()
-    {
-        webservice = new NFSeWebservice(Configuracoes);
-    }
-
-    #endregion Constructors
+    [DFeEnum("3")]
+    Postes,
     
-    #region Properties
-
-    public ConfiguracaoNFSe Configuracoes { get; } = new();
-
-    #endregion Properties
-
-    #region Methods
-
-    public Task<NFSeResponse<DpsEnvioResposta>> EnviarAsync(Dps dps) => webservice.EnviarAsync(dps);
+    [DFeEnum("4")]
+    Cabos,
     
-    public Task<NFSeResponse<EventoEnvioResposta>> EnviarAsync(PedidoRegistroEvento evento) => webservice.EnviarAsync(evento);
-
-    #endregion
+    [DFeEnum("5")]
+    Dutos,
+    
+    [DFeEnum("6")]
+    Condutos
 }

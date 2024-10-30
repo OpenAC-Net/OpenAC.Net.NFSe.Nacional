@@ -6,7 +6,7 @@
 // Last Modified By : RFTD
 // Last Modified On : 09-09-2023
 // ***********************************************************************
-// <copyright file="OpenNFSeNacional.cs" company="OpenAC .Net">
+// <copyright file="InformacoesLocacao.cs" company="OpenAC .Net">
 //		        		   The MIT License (MIT)
 //	     		    Copyright (c) 2014-2023 Grupo OpenAC.Net
 //
@@ -29,41 +29,23 @@
 // <summary></summary>
 // ***********************************************************************
 
-using System.Threading.Tasks;
-using OpenAC.Net.NFSe.Nacional.Common;
-using OpenAC.Net.NFSe.Nacional.Common.Model;
-using OpenAC.Net.NFSe.Nacional.Webservice;
+using OpenAC.Net.DFe.Core.Attributes;
+using OpenAC.Net.DFe.Core.Serializer;
+using OpenAC.Net.NFSe.Nacional.Common.Types;
 
-namespace OpenAC.Net.NFSe.Nacional;
+namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 
-public sealed class OpenNFSeNacional
+public sealed class InformacoesLocacao
 {
-    #region Fields
+    [DFeElement(TipoCampo.Enum, "categ", Ocorrencia = Ocorrencia.Obrigatoria)]
+    public CategoriaLocacao Categoria { get; set; } = CategoriaLocacao.Locacao;
     
-    private readonly NFSeWebservice webservice;
+    [DFeElement(TipoCampo.Enum, "objeto", Ocorrencia = Ocorrencia.Obrigatoria)]
+    public ObjetoLocacao Objeto { get; set; }
+
+    [DFeElement(TipoCampo.Int, "extensao", Min = 1, Max = 5, Ocorrencia = Ocorrencia.Obrigatoria)]
+    public int ExtensaoTotal { get; set; }
     
-    #endregion Fields
-
-    #region Constructors
-
-    public OpenNFSeNacional()
-    {
-        webservice = new NFSeWebservice(Configuracoes);
-    }
-
-    #endregion Constructors
-    
-    #region Properties
-
-    public ConfiguracaoNFSe Configuracoes { get; } = new();
-
-    #endregion Properties
-
-    #region Methods
-
-    public Task<NFSeResponse<DpsEnvioResposta>> EnviarAsync(Dps dps) => webservice.EnviarAsync(dps);
-    
-    public Task<NFSeResponse<EventoEnvioResposta>> EnviarAsync(PedidoRegistroEvento evento) => webservice.EnviarAsync(evento);
-
-    #endregion
+    [DFeElement(TipoCampo.Int, "nPostes", Min = 1, Max = 6, Ocorrencia = Ocorrencia.Obrigatoria)]
+    public int NumeroPostes { get; set; }
 }

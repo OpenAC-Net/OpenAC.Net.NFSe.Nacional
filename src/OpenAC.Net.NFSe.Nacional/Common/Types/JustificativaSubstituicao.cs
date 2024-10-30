@@ -6,7 +6,7 @@
 // Last Modified By : RFTD
 // Last Modified On : 09-09-2023
 // ***********************************************************************
-// <copyright file="OpenNFSeNacional.cs" company="OpenAC .Net">
+// <copyright file="IEventoNFSe.cs" company="OpenAC .Net">
 //		        		   The MIT License (MIT)
 //	     		    Copyright (c) 2014-2023 Grupo OpenAC.Net
 //
@@ -29,41 +29,36 @@
 // <summary></summary>
 // ***********************************************************************
 
-using System.Threading.Tasks;
-using OpenAC.Net.NFSe.Nacional.Common;
-using OpenAC.Net.NFSe.Nacional.Common.Model;
-using OpenAC.Net.NFSe.Nacional.Webservice;
+using OpenAC.Net.DFe.Core.Attributes;
 
-namespace OpenAC.Net.NFSe.Nacional;
+namespace OpenAC.Net.NFSe.Nacional.Common.Types;
 
-public sealed class OpenNFSeNacional
+/// <summary>
+/// Código de justificativa para substituição de NFS-e:
+/// 01 - Desenquadramento de NFS-e do Simples Nacional;
+/// 02 - Enquadramento de NFS-e no Simples Nacional;
+/// 03 - Inclusão Retroativa de Imunidade/Isenção para NFS-e;
+/// 04 - Exclusão Retroativa de Imunidade/Isenção para NFS-e;
+/// 05 - Rejeição de NFS-e pelo tomador ou pelo intermediário se responsável pelo recolhimento do tributo;
+/// 99 - Outros;
+/// </summary>
+public enum JustificativaSubstituicao
 {
-    #region Fields
+    [DFeEnum("01")]
+    DesenquadramentoSimplesNacional,
     
-    private readonly NFSeWebservice webservice;
+    [DFeEnum("02")]
+    EnquadramentoSimplesNacional,
     
-    #endregion Fields
-
-    #region Constructors
-
-    public OpenNFSeNacional()
-    {
-        webservice = new NFSeWebservice(Configuracoes);
-    }
-
-    #endregion Constructors
+    [DFeEnum("03")]
+    InclusaoRetroativaImunidadeIsencao,
     
-    #region Properties
-
-    public ConfiguracaoNFSe Configuracoes { get; } = new();
-
-    #endregion Properties
-
-    #region Methods
-
-    public Task<NFSeResponse<DpsEnvioResposta>> EnviarAsync(Dps dps) => webservice.EnviarAsync(dps);
+    [DFeEnum("04")]
+    ExclusaoRetroativaImunidadeIsencao,
     
-    public Task<NFSeResponse<EventoEnvioResposta>> EnviarAsync(PedidoRegistroEvento evento) => webservice.EnviarAsync(evento);
-
-    #endregion
+    [DFeEnum("05")]
+    RejeicaoNFSeTomadorIntermediário,
+    
+    [DFeEnum("99")]
+    Outros
 }

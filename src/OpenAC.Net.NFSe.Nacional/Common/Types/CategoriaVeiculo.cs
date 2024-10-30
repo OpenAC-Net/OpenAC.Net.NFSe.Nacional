@@ -6,7 +6,7 @@
 // Last Modified By : RFTD
 // Last Modified On : 09-09-2023
 // ***********************************************************************
-// <copyright file="OpenNFSeNacional.cs" company="OpenAC .Net">
+// <copyright file="CategoriaVeiculo.cs" company="OpenAC .Net">
 //		        		   The MIT License (MIT)
 //	     		    Copyright (c) 2014-2023 Grupo OpenAC.Net
 //
@@ -29,41 +29,56 @@
 // <summary></summary>
 // ***********************************************************************
 
-using System.Threading.Tasks;
-using OpenAC.Net.NFSe.Nacional.Common;
-using OpenAC.Net.NFSe.Nacional.Common.Model;
-using OpenAC.Net.NFSe.Nacional.Webservice;
+using OpenAC.Net.DFe.Core.Attributes;
 
-namespace OpenAC.Net.NFSe.Nacional;
+namespace OpenAC.Net.NFSe.Nacional.Common.Types;
 
-public sealed class OpenNFSeNacional
+/// <summary>
+/// Categorias de veículos para cobrança:
+/// 00 - Categoria de veículos (tipo não informado na nota de origem)
+/// 01 - Automóvel, caminhonete e furgão;
+/// 02 - Caminhão leve, ônibus, caminhão trator e furgão;
+/// 03 - Automóvel e caminhonete com semireboque;
+/// 04 - Caminhão, caminhão-trator, caminhão-trator com semi-reboque e ônibus;
+/// 05 - Automóvel e caminhonete com reboque;
+/// 06 - Caminhão com reboque;
+/// 07 - Caminhão trator com semi-reboque;
+/// 08 - Motocicletas, motonetas e bicicletas motorizadas;
+/// 09 - Veículo especial;
+/// 10 - Veículo Isento;
+/// </summary>
+public enum CategoriaVeiculo
 {
-    #region Fields
+    [DFeEnum("00")]
+    NaoInformado,
     
-    private readonly NFSeWebservice webservice;
+    [DFeEnum("01")]
+    AutomovelCaminhoneteFurgao,
     
-    #endregion Fields
-
-    #region Constructors
-
-    public OpenNFSeNacional()
-    {
-        webservice = new NFSeWebservice(Configuracoes);
-    }
-
-    #endregion Constructors
+    [DFeEnum("02")]
+    CaminhaoLeveonibusCaminhaoTratorFurgao,
     
-    #region Properties
-
-    public ConfiguracaoNFSe Configuracoes { get; } = new();
-
-    #endregion Properties
-
-    #region Methods
-
-    public Task<NFSeResponse<DpsEnvioResposta>> EnviarAsync(Dps dps) => webservice.EnviarAsync(dps);
+    [DFeEnum("03")]
+    AutomovelCaminhoneteComSemireboque,
     
-    public Task<NFSeResponse<EventoEnvioResposta>> EnviarAsync(PedidoRegistroEvento evento) => webservice.EnviarAsync(evento);
-
-    #endregion
+    [DFeEnum("04")]
+    CaminhaoCaminhãoTratorCaminhaoTratorComSemiReboqueOnibus,
+    
+    [DFeEnum("05")]
+    AutomovelCaminhoneteReboque,
+    
+    [DFeEnum("06")]
+    CaminhaoComReboque,
+    
+    [DFeEnum("07")]
+    CaminhaoTratorComSemiReboque,
+    
+    [DFeEnum("08")]
+    MotocicletasMotonetasBicicletasMotorizadas,
+    
+    [DFeEnum("09")]
+    VeiculoSspecial,
+    
+    [DFeEnum("10")]
+    VeiculoIsento
 }

@@ -6,7 +6,7 @@
 // Last Modified By : RFTD
 // Last Modified On : 09-09-2023
 // ***********************************************************************
-// <copyright file="OpenNFSeNacional.cs" company="OpenAC .Net">
+// <copyright file="VinculoPrestador.cs" company="OpenAC .Net">
 //		        		   The MIT License (MIT)
 //	     		    Copyright (c) 2014-2023 Grupo OpenAC.Net
 //
@@ -29,41 +29,40 @@
 // <summary></summary>
 // ***********************************************************************
 
-using System.Threading.Tasks;
-using OpenAC.Net.NFSe.Nacional.Common;
-using OpenAC.Net.NFSe.Nacional.Common.Model;
-using OpenAC.Net.NFSe.Nacional.Webservice;
+using OpenAC.Net.DFe.Core.Attributes;
 
-namespace OpenAC.Net.NFSe.Nacional;
+namespace OpenAC.Net.NFSe.Nacional.Common.Types;
 
-public sealed class OpenNFSeNacional
+/// <summary>
+/// Vínculo entre as partes no negócio:
+/// 0 - Sem vínculo com o tomador/ Prestador
+/// 1 - Controlada;
+/// 2 - Controladora;
+/// 3 - Coligada;
+/// 4 - Matriz;
+/// 5 - Filial ou sucursal;
+/// 6 - Outro vínculo;
+/// </summary>
+public enum VinculoPrestador
 {
-    #region Fields
+    [DFeEnum("0")]
+    SemVinculo = 0,
     
-    private readonly NFSeWebservice webservice;
+    [DFeEnum("1")]
+    Controlada = 1,
     
-    #endregion Fields
-
-    #region Constructors
-
-    public OpenNFSeNacional()
-    {
-        webservice = new NFSeWebservice(Configuracoes);
-    }
-
-    #endregion Constructors
+    [DFeEnum("2")]
+    Controladora = 2,
     
-    #region Properties
-
-    public ConfiguracaoNFSe Configuracoes { get; } = new();
-
-    #endregion Properties
-
-    #region Methods
-
-    public Task<NFSeResponse<DpsEnvioResposta>> EnviarAsync(Dps dps) => webservice.EnviarAsync(dps);
+    [DFeEnum("3")]
+    Coligada = 3,
     
-    public Task<NFSeResponse<EventoEnvioResposta>> EnviarAsync(PedidoRegistroEvento evento) => webservice.EnviarAsync(evento);
-
-    #endregion
+    [DFeEnum("4")]
+    Matriz = 4,
+    
+    [DFeEnum("5")]
+    Filial = 5,
+    
+    [DFeEnum("6")]
+    Outro = 6
 }

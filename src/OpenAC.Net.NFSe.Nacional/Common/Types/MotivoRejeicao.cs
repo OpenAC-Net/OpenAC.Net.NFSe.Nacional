@@ -6,7 +6,7 @@
 // Last Modified By : RFTD
 // Last Modified On : 09-09-2023
 // ***********************************************************************
-// <copyright file="OpenNFSeNacional.cs" company="OpenAC .Net">
+// <copyright file="MotivoRejeicao.cs" company="OpenAC .Net">
 //		        		   The MIT License (MIT)
 //	     		    Copyright (c) 2014-2023 Grupo OpenAC.Net
 //
@@ -29,41 +29,37 @@
 // <summary></summary>
 // ***********************************************************************
 
-using System.Threading.Tasks;
-using OpenAC.Net.NFSe.Nacional.Common;
-using OpenAC.Net.NFSe.Nacional.Common.Model;
-using OpenAC.Net.NFSe.Nacional.Webservice;
+using OpenAC.Net.DFe.Core.Attributes;
 
-namespace OpenAC.Net.NFSe.Nacional;
+namespace OpenAC.Net.NFSe.Nacional.Common.Types;
 
-public sealed class OpenNFSeNacional
+/// <summary>
+/// Motivo da Rejeição da NFS-e:
+/// 
+/// 1 - NFS-e em duplicidade;
+/// 2 - NFS-e já emitida pelo tomador;
+/// 3 - Não ocorrência do fato gerador;
+/// 4 - Erro quanto a responsabilidade tributária;
+/// 5 - Erro quanto ao valor do serviço, valor das deduções ou serviço prestado ou data do fato gerador;
+/// 9 - Outros;
+/// </summary>
+public enum MotivoRejeicao
 {
-    #region Fields
+    [DFeEnum("1")]
+    Duplicidade,
     
-    private readonly NFSeWebservice webservice;
+    [DFeEnum("2")]
+    EmitidadaTomador,
     
-    #endregion Fields
-
-    #region Constructors
-
-    public OpenNFSeNacional()
-    {
-        webservice = new NFSeWebservice(Configuracoes);
-    }
-
-    #endregion Constructors
+    [DFeEnum("3")]
+    NaoOcorrencia,
     
-    #region Properties
-
-    public ConfiguracaoNFSe Configuracoes { get; } = new();
-
-    #endregion Properties
-
-    #region Methods
-
-    public Task<NFSeResponse<DpsEnvioResposta>> EnviarAsync(Dps dps) => webservice.EnviarAsync(dps);
+    [DFeEnum("4")]
+    ErroResponsabilidadeTributaria,
     
-    public Task<NFSeResponse<EventoEnvioResposta>> EnviarAsync(PedidoRegistroEvento evento) => webservice.EnviarAsync(evento);
-
-    #endregion
+    [DFeEnum("5")]
+    ErroValores,
+    
+    [DFeEnum("9")]
+    Outros
 }

@@ -6,7 +6,7 @@
 // Last Modified By : RFTD
 // Last Modified On : 09-09-2023
 // ***********************************************************************
-// <copyright file="OpenNFSeNacional.cs" company="OpenAC .Net">
+// <copyright file="ValoresDeducaoReducao.cs" company="OpenAC .Net">
 //		        		   The MIT License (MIT)
 //	     		    Copyright (c) 2014-2023 Grupo OpenAC.Net
 //
@@ -29,41 +29,21 @@
 // <summary></summary>
 // ***********************************************************************
 
-using System.Threading.Tasks;
-using OpenAC.Net.NFSe.Nacional.Common;
-using OpenAC.Net.NFSe.Nacional.Common.Model;
-using OpenAC.Net.NFSe.Nacional.Webservice;
+using System.Collections.Generic;
+using OpenAC.Net.DFe.Core.Attributes;
+using OpenAC.Net.DFe.Core.Serializer;
 
-namespace OpenAC.Net.NFSe.Nacional;
+namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 
-public sealed class OpenNFSeNacional
+public sealed class ValoresDeducaoReducao
 {
-    #region Fields
-    
-    private readonly NFSeWebservice webservice;
-    
-    #endregion Fields
+    [DFeElement(TipoCampo.De2, "pDR", Min = 4, Max = 6, Ocorrencia = Ocorrencia.Obrigatoria)]
+    public decimal Porcentagem { get; set; }
 
-    #region Constructors
+    [DFeElement(TipoCampo.De2, "vDR", Min = 4, Max = 18, Ocorrencia = Ocorrencia.Obrigatoria)]
+    public decimal Valor { get; set; }
 
-    public OpenNFSeNacional()
-    {
-        webservice = new NFSeWebservice(Configuracoes);
-    }
-
-    #endregion Constructors
-    
-    #region Properties
-
-    public ConfiguracaoNFSe Configuracoes { get; } = new();
-
-    #endregion Properties
-
-    #region Methods
-
-    public Task<NFSeResponse<DpsEnvioResposta>> EnviarAsync(Dps dps) => webservice.EnviarAsync(dps);
-    
-    public Task<NFSeResponse<EventoEnvioResposta>> EnviarAsync(PedidoRegistroEvento evento) => webservice.EnviarAsync(evento);
-
-    #endregion
+    [DFeCollection("documentos")]
+    [DFeItem(typeof(DocumentoDeducaoReducao), "docDedRed")]
+    public List<DocumentoDeducaoReducao> Documentos { get; set; } = new();
 }

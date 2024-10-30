@@ -6,7 +6,7 @@
 // Last Modified By : RFTD
 // Last Modified On : 09-09-2023
 // ***********************************************************************
-// <copyright file="OpenNFSeNacional.cs" company="OpenAC .Net">
+// <copyright file="Dps.cs" company="OpenAC .Net">
 //		        		   The MIT License (MIT)
 //	     		    Copyright (c) 2014-2023 Grupo OpenAC.Net
 //
@@ -29,41 +29,50 @@
 // <summary></summary>
 // ***********************************************************************
 
-using System.Threading.Tasks;
-using OpenAC.Net.NFSe.Nacional.Common;
-using OpenAC.Net.NFSe.Nacional.Common.Model;
-using OpenAC.Net.NFSe.Nacional.Webservice;
+using OpenAC.Net.DFe.Core.Attributes;
+using OpenAC.Net.DFe.Core.Common;
+using OpenAC.Net.DFe.Core.Document;
+using OpenAC.Net.DFe.Core.Serializer;
 
-namespace OpenAC.Net.NFSe.Nacional;
+namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 
-public sealed class OpenNFSeNacional
+[DFeSignInfoElement("infDPS")]
+[DFeRoot("DPS", Namespace = "http://www.sped.fazenda.gov.br/nfse")]
+public sealed class Dps : DFeSignDocument<Dps>
 {
-    #region Fields
-    
-    private readonly NFSeWebservice webservice;
-    
-    #endregion Fields
-
     #region Constructors
 
-    public OpenNFSeNacional()
+    public Dps()
     {
-        webservice = new NFSeWebservice(Configuracoes);
+        Signature = new DFeSignature();
     }
 
     #endregion Constructors
     
     #region Properties
 
-    public ConfiguracaoNFSe Configuracoes { get; } = new();
+    [DFeAttribute(TipoCampo.Str, "versao", Ocorrencia = Ocorrencia.Obrigatoria)]
+    public string Versao { get; set; } = string.Empty;
+
+    [DFeElement("infDPS", Ocorrencia = Ocorrencia.Obrigatoria)]
+    public InfDps Informacoes { get; set; } = new();
 
     #endregion Properties
-
+    
     #region Methods
 
-    public Task<NFSeResponse<DpsEnvioResposta>> EnviarAsync(Dps dps) => webservice.EnviarAsync(dps);
-    
-    public Task<NFSeResponse<EventoEnvioResposta>> EnviarAsync(PedidoRegistroEvento evento) => webservice.EnviarAsync(evento);
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="configuracao"></param>
+    public void Assinar(ConfiguracaoNFSe configuracao)
+    {
+        var options = DFeSaveOptions.DisableFormatting;
+        if (configuracao.Geral.RetirarAcentos)
+            options |= DFeSaveOptions.RemoveAccents;
+        
+        AssinarDocumento(configuracao.Certificados.ObterCertificado(), options, false);
+    }
 
-    #endregion
+    #endregion Methods
 }

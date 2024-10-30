@@ -6,7 +6,7 @@
 // Last Modified By : RFTD
 // Last Modified On : 09-09-2023
 // ***********************************************************************
-// <copyright file="OpenNFSeNacional.cs" company="OpenAC .Net">
+// <copyright file="MensagemProcessamento.cs" company="OpenAC .Net">
 //		        		   The MIT License (MIT)
 //	     		    Copyright (c) 2014-2023 Grupo OpenAC.Net
 //
@@ -29,41 +29,29 @@
 // <summary></summary>
 // ***********************************************************************
 
-using System.Threading.Tasks;
-using OpenAC.Net.NFSe.Nacional.Common;
-using OpenAC.Net.NFSe.Nacional.Common.Model;
-using OpenAC.Net.NFSe.Nacional.Webservice;
+using System.Collections.Generic;
 
-namespace OpenAC.Net.NFSe.Nacional;
+namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 
-public sealed class OpenNFSeNacional
+public sealed class MensagemProcessamento
 {
-    #region Fields
-    
-    private readonly NFSeWebservice webservice;
-    
-    #endregion Fields
+    //Comentado, pois por mais que no swagger está minúsculo, está retornando maiúsculo
+    //[JsonPropertyName("mensagem")]
+    public string Mensagem { get; set; } = string.Empty;
 
-    #region Constructors
+    //Comentado, pois por mais que no swagger está minúsculo, está retornando maiúsculo
+    //[JsonPropertyName("codigo")]
+    public string Codigo { get; set; } = string.Empty;
 
-    public OpenNFSeNacional()
-    {
-        webservice = new NFSeWebservice(Configuracoes);
-    }
+    //Comentado, pois por mais que no swagger está minúsculo, está retornando maiúsculo
+    //[JsonPropertyName("descricao")]
+    public string Descricao { get; set; } = string.Empty;
 
-    #endregion Constructors
-    
-    #region Properties
+    //Comentado, pois por mais que no swagger está minúsculo, está retornando maiúsculo
+    //[JsonPropertyName("complemento")]
+    public string Complemento { get; set; } = string.Empty;
 
-    public ConfiguracaoNFSe Configuracoes { get; } = new();
-
-    #endregion Properties
-
-    #region Methods
-
-    public Task<NFSeResponse<DpsEnvioResposta>> EnviarAsync(Dps dps) => webservice.EnviarAsync(dps);
-    
-    public Task<NFSeResponse<EventoEnvioResposta>> EnviarAsync(PedidoRegistroEvento evento) => webservice.EnviarAsync(evento);
-
-    #endregion
+    //Comentado, pois por mais que no swagger está minúsculo, está retornando maiúsculo
+    //[JsonPropertyName("parametros")] 
+    public List<string> Parametros { get; set; } = new();
 }

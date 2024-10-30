@@ -6,7 +6,7 @@
 // Last Modified By : RFTD
 // Last Modified On : 09-09-2023
 // ***********************************************************************
-// <copyright file="OpenNFSeNacional.cs" company="OpenAC .Net">
+// <copyright file="ExploracaoRodoviaria.cs" company="OpenAC .Net">
 //		        		   The MIT License (MIT)
 //	     		    Copyright (c) 2014-2023 Grupo OpenAC.Net
 //
@@ -29,41 +29,32 @@
 // <summary></summary>
 // ***********************************************************************
 
-using System.Threading.Tasks;
-using OpenAC.Net.NFSe.Nacional.Common;
-using OpenAC.Net.NFSe.Nacional.Common.Model;
-using OpenAC.Net.NFSe.Nacional.Webservice;
+using OpenAC.Net.DFe.Core.Attributes;
+using OpenAC.Net.DFe.Core.Serializer;
+using OpenAC.Net.NFSe.Nacional.Common.Types;
 
-namespace OpenAC.Net.NFSe.Nacional;
+namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 
-public sealed class OpenNFSeNacional
+public sealed class ExploracaoRodoviaria
 {
-    #region Fields
+    [DFeElement(TipoCampo.Enum, "categVeic", Ocorrencia = Ocorrencia.Obrigatoria)]
+    public CategoriaVeiculo Categoria { get; set; }
+
+    [DFeElement(TipoCampo.Int, "nEixos", Min = 1, Max = 2, Ocorrencia = Ocorrencia.Obrigatoria)]
+    public int NumeroEixos { get; set; }
     
-    private readonly NFSeWebservice webservice;
+    [DFeElement(TipoCampo.Enum, "categVeic", Ocorrencia = Ocorrencia.Obrigatoria)]
+    public TipoRodagem TipoRodagem { get; set; }
     
-    #endregion Fields
+    [DFeElement(TipoCampo.Int, "sentido", Min = 1, Max = 3, Ocorrencia = Ocorrencia.Obrigatoria)]
+    public int OrientacaoPesagem { get; set; }
 
-    #region Constructors
-
-    public OpenNFSeNacional()
-    {
-        webservice = new NFSeWebservice(Configuracoes);
-    }
-
-    #endregion Constructors
+    [DFeElement(TipoCampo.Str, "placa", Min = 7, Max = 7, Ocorrencia = Ocorrencia.Obrigatoria)]
+    public string Placa { get; set; } = string.Empty;
     
-    #region Properties
-
-    public ConfiguracaoNFSe Configuracoes { get; } = new();
-
-    #endregion Properties
-
-    #region Methods
-
-    public Task<NFSeResponse<DpsEnvioResposta>> EnviarAsync(Dps dps) => webservice.EnviarAsync(dps);
+    [DFeElement(TipoCampo.Str, "codAcessoPed", Min = 10, Max = 10, Ocorrencia = Ocorrencia.Obrigatoria)]
+    public string CodAcessoPedagio { get; set; } = string.Empty;
     
-    public Task<NFSeResponse<EventoEnvioResposta>> EnviarAsync(PedidoRegistroEvento evento) => webservice.EnviarAsync(evento);
-
-    #endregion
+    [DFeElement(TipoCampo.Str, "codContrato", Min = 4, Max = 4, Ocorrencia = Ocorrencia.Obrigatoria)]
+    public string CodContrato { get; set; } = string.Empty;
 }

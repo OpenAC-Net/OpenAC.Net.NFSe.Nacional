@@ -1,4 +1,4 @@
-﻿// ***********************************************************************
+// ***********************************************************************
 // Assembly         : OpenAC.Net.NFSe.Nacional
 // Author           : RFTD
 // Created          : 09-09-2023
@@ -6,7 +6,7 @@
 // Last Modified By : RFTD
 // Last Modified On : 09-09-2023
 // ***********************************************************************
-// <copyright file="OpenNFSeNacional.cs" company="OpenAC .Net">
+// <copyright file="RegimeTributario.cs" company="OpenAC .Net">
 //		        		   The MIT License (MIT)
 //	     		    Copyright (c) 2014-2023 Grupo OpenAC.Net
 //
@@ -29,41 +29,25 @@
 // <summary></summary>
 // ***********************************************************************
 
-using System.Threading.Tasks;
-using OpenAC.Net.NFSe.Nacional.Common;
-using OpenAC.Net.NFSe.Nacional.Common.Model;
-using OpenAC.Net.NFSe.Nacional.Webservice;
 
-namespace OpenAC.Net.NFSe.Nacional;
+using OpenAC.Net.DFe.Core.Attributes;
+using OpenAC.Net.DFe.Core.Serializer;
+using OpenAC.Net.NFSe.Nacional.Common.Types;
 
-public sealed class OpenNFSeNacional
+namespace OpenAC.Net.NFSe.Nacional.Common.Model;
+
+public sealed class RegimeTributario
 {
-    #region Fields
-    
-    private readonly NFSeWebservice webservice;
-    
-    #endregion Fields
-
-    #region Constructors
-
-    public OpenNFSeNacional()
-    {
-        webservice = new NFSeWebservice(Configuracoes);
-    }
-
-    #endregion Constructors
-    
     #region Properties
 
-    public ConfiguracaoNFSe Configuracoes { get; } = new();
+    [DFeElement(TipoCampo.Enum, "opSimpNac", Ocorrencia = Ocorrencia.Obrigatoria)]
+    public OptanteSimplesNacional OptanteSimplesNacional { get; set; } = OptanteSimplesNacional.NaoOptante;
+
+    [DFeElement(TipoCampo.Enum, "regApTribSN", Ocorrencia = Ocorrencia.NaoObrigatoria)]
+    public RegimeApuracao? RegimeApuracao { get; set; }
+
+    [DFeElement(TipoCampo.Enum, "regEspTrib", Ocorrencia = Ocorrencia.Obrigatoria)]
+    public RegimeEspecial RegimeEspecial { get; set; } = RegimeEspecial.Nenhum;
 
     #endregion Properties
-
-    #region Methods
-
-    public Task<NFSeResponse<DpsEnvioResposta>> EnviarAsync(Dps dps) => webservice.EnviarAsync(dps);
-    
-    public Task<NFSeResponse<EventoEnvioResposta>> EnviarAsync(PedidoRegistroEvento evento) => webservice.EnviarAsync(evento);
-
-    #endregion
 }

@@ -1,4 +1,4 @@
-﻿// ***********************************************************************
+// ***********************************************************************
 // Assembly         : OpenAC.Net.NFSe.Nacional
 // Author           : RFTD
 // Created          : 09-09-2023
@@ -6,7 +6,7 @@
 // Last Modified By : RFTD
 // Last Modified On : 09-09-2023
 // ***********************************************************************
-// <copyright file="OpenNFSeNacional.cs" company="OpenAC .Net">
+// <copyright file="ServicoNFSe.cs" company="OpenAC .Net">
 //		        		   The MIT License (MIT)
 //	     		    Copyright (c) 2014-2023 Grupo OpenAC.Net
 //
@@ -29,41 +29,33 @@
 // <summary></summary>
 // ***********************************************************************
 
-using System.Threading.Tasks;
-using OpenAC.Net.NFSe.Nacional.Common;
-using OpenAC.Net.NFSe.Nacional.Common.Model;
-using OpenAC.Net.NFSe.Nacional.Webservice;
+using OpenAC.Net.DFe.Core.Attributes;
 
-namespace OpenAC.Net.NFSe.Nacional;
+namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 
-public sealed class OpenNFSeNacional
+public sealed class ServicoNFSe
 {
-    #region Fields
+    [DFeElement("locPrest", Ocorrencia = Ocorrencia.Obrigatoria)]
+    public LocalidadeNFSe Localidade { get; set; } = new();
+
+    [DFeElement("cServ", Ocorrencia = Ocorrencia.Obrigatoria)]
+    public InformacoesServico Informacoes { get; set; } = new();
     
-    private readonly NFSeWebservice webservice;
+    [DFeElement("comExt", Ocorrencia = Ocorrencia.NaoObrigatoria)]
+    public ServicoExterior? ServicoExterior { get; set; }
     
-    #endregion Fields
-
-    #region Constructors
-
-    public OpenNFSeNacional()
-    {
-        webservice = new NFSeWebservice(Configuracoes);
-    }
-
-    #endregion Constructors
+    [DFeElement("lsadppu", Ocorrencia = Ocorrencia.NaoObrigatoria)]
+    public InformacoesLocacao? InformacoesLocacao { get; set; }
     
-    #region Properties
-
-    public ConfiguracaoNFSe Configuracoes { get; } = new();
-
-    #endregion Properties
-
-    #region Methods
-
-    public Task<NFSeResponse<DpsEnvioResposta>> EnviarAsync(Dps dps) => webservice.EnviarAsync(dps);
+    [DFeElement("obra", Ocorrencia = Ocorrencia.NaoObrigatoria)]
+    public ObraNFSe? Obra { get; set; }
     
-    public Task<NFSeResponse<EventoEnvioResposta>> EnviarAsync(PedidoRegistroEvento evento) => webservice.EnviarAsync(evento);
-
-    #endregion
+    [DFeElement("atvEvento", Ocorrencia = Ocorrencia.NaoObrigatoria)]
+    public EventoServicoNFSe? Evento { get; set; }
+    
+    [DFeElement("explRod", Ocorrencia = Ocorrencia.NaoObrigatoria)]
+    public ExploracaoRodoviaria? ExploracaoRodoviaria { get; set; }
+    
+    [DFeElement("infoCompl", Ocorrencia = Ocorrencia.NaoObrigatoria)]
+    public InformacoesComplementares? InformacoesComplementares { get; set; }
 }

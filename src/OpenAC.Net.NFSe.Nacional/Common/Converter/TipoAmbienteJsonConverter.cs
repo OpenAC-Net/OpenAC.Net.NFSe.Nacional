@@ -6,7 +6,7 @@
 // Last Modified By : RFTD
 // Last Modified On : 09-09-2023
 // ***********************************************************************
-// <copyright file="OpenNFSeNacional.cs" company="OpenAC .Net">
+// <copyright file="TipoAmbienteJsonConverter.cs" company="OpenAC .Net">
 //		        		   The MIT License (MIT)
 //	     		    Copyright (c) 2014-2023 Grupo OpenAC.Net
 //
@@ -29,41 +29,23 @@
 // <summary></summary>
 // ***********************************************************************
 
-using System.Threading.Tasks;
-using OpenAC.Net.NFSe.Nacional.Common;
-using OpenAC.Net.NFSe.Nacional.Common.Model;
-using OpenAC.Net.NFSe.Nacional.Webservice;
+using System;
+using System.Text.Json;
+using System.Text.Json.Serialization;
+using OpenAC.Net.DFe.Core.Common;
 
-namespace OpenAC.Net.NFSe.Nacional;
+namespace OpenAC.Net.NFSe.Nacional.Common.Converter;
 
-public sealed class OpenNFSeNacional
+public class TipoAmbienteJsonConverter : JsonConverter<DFeTipoAmbiente>
 {
-    #region Fields
-    
-    private readonly NFSeWebservice webservice;
-    
-    #endregion Fields
-
-    #region Constructors
-
-    public OpenNFSeNacional()
+    public override DFeTipoAmbiente Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
-        webservice = new NFSeWebservice(Configuracoes);
+        var valor = reader.GetInt32();
+        return (DFeTipoAmbiente) valor;
     }
 
-    #endregion Constructors
-    
-    #region Properties
-
-    public ConfiguracaoNFSe Configuracoes { get; } = new();
-
-    #endregion Properties
-
-    #region Methods
-
-    public Task<NFSeResponse<DpsEnvioResposta>> EnviarAsync(Dps dps) => webservice.EnviarAsync(dps);
-    
-    public Task<NFSeResponse<EventoEnvioResposta>> EnviarAsync(PedidoRegistroEvento evento) => webservice.EnviarAsync(evento);
-
-    #endregion
+    public override void Write(Utf8JsonWriter writer, DFeTipoAmbiente value, JsonSerializerOptions options)
+    {
+        writer.WriteNumberValue((int)value);
+    }
 }

@@ -6,7 +6,7 @@
 // Last Modified By : RFTD
 // Last Modified On : 09-09-2023
 // ***********************************************************************
-// <copyright file="OpenNFSeNacional.cs" company="OpenAC .Net">
+// <copyright file="EventoCancelamentoOficio.cs" company="OpenAC .Net">
 //		        		   The MIT License (MIT)
 //	     		    Copyright (c) 2014-2023 Grupo OpenAC.Net
 //
@@ -29,41 +29,22 @@
 // <summary></summary>
 // ***********************************************************************
 
-using System.Threading.Tasks;
-using OpenAC.Net.NFSe.Nacional.Common;
-using OpenAC.Net.NFSe.Nacional.Common.Model;
-using OpenAC.Net.NFSe.Nacional.Webservice;
+using OpenAC.Net.DFe.Core.Attributes;
+using OpenAC.Net.DFe.Core.Serializer;
 
-namespace OpenAC.Net.NFSe.Nacional;
+namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 
-public sealed class OpenNFSeNacional
+public sealed class EventoCancelamentoOficio : IEventoNFSe
 {
-    #region Fields
+    [DFeElement(TipoCampo.Str, "xDesc", Ocorrencia = Ocorrencia.Obrigatoria)]
+    public string Descricao { get; set; } = "Cancelamento de NFS-e por Ofício";
+
+    [DFeElement(TipoCampo.Str, "CPFAgTrib", Min = 11, Max = 11, Ocorrencia = Ocorrencia.Obrigatoria)]
+    public string CPFAgTrib { get; set; } = string.Empty;
     
-    private readonly NFSeWebservice webservice;
+    [DFeElement(TipoCampo.StrNumber, "nProcAdm", Min = 1, Max = 30, Ocorrencia = Ocorrencia.NaoObrigatoria)]
+    public string? NumProcessoAdm { get; set; } 
     
-    #endregion Fields
-
-    #region Constructors
-
-    public OpenNFSeNacional()
-    {
-        webservice = new NFSeWebservice(Configuracoes);
-    }
-
-    #endregion Constructors
-    
-    #region Properties
-
-    public ConfiguracaoNFSe Configuracoes { get; } = new();
-
-    #endregion Properties
-
-    #region Methods
-
-    public Task<NFSeResponse<DpsEnvioResposta>> EnviarAsync(Dps dps) => webservice.EnviarAsync(dps);
-    
-    public Task<NFSeResponse<EventoEnvioResposta>> EnviarAsync(PedidoRegistroEvento evento) => webservice.EnviarAsync(evento);
-
-    #endregion
+    [DFeElement(TipoCampo.Str, "xProcAdm", Min = 15, Max = 255, Ocorrencia = Ocorrencia.Obrigatoria)]
+    public string DescricaoProcessoAdm { get; set; } = string.Empty;
 }

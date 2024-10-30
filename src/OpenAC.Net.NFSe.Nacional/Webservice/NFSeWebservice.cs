@@ -42,9 +42,14 @@ using OpenAC.Net.Core.Logging;
 using OpenAC.Net.DFe.Core;
 using OpenAC.Net.DFe.Core.Common;
 using OpenAC.Net.NFSe.Nacional.Common;
+using OpenAC.Net.NFSe.Nacional.Common.Model;
+using OpenAC.Net.NFSe.Nacional.Common.Types;
 
 namespace OpenAC.Net.NFSe.Nacional.Webservice;
 
+/// <summary>
+/// Classe para comunicação com o webservice da NFSe.
+/// </summary>
 public sealed class NFSeWebservice : IOpenLog
 {
     #region Internal Types
@@ -66,6 +71,10 @@ public sealed class NFSeWebservice : IOpenLog
 
     #region Constructors
 
+    /// <summary>
+    /// Inicializa uma nova intancia da classe.
+    /// </summary>
+    /// <param name="configuracaoNFSe"></param>
     public NFSeWebservice(ConfiguracaoNFSe configuracaoNFSe)
     {
         configuracao = configuracaoNFSe;
@@ -73,8 +82,13 @@ public sealed class NFSeWebservice : IOpenLog
 
     #endregion Constructors
 
-    #region MyRegion
+    #region Methods
 
+    /// <summary>
+    /// Recepciona o Pedido de Registro de Evento e gera Eventos de NFS-e, crédito, débito e apuração.
+    /// </summary>
+    /// <param name="evento">Evento</param>
+    /// <returns></returns>
     public async Task<NFSeResponse<EventoEnvioResposta>> EnviarAsync(PedidoRegistroEvento evento)
     {
         evento.Assinar(configuracao);
@@ -99,7 +113,7 @@ public sealed class NFSeWebservice : IOpenLog
         GravarArquivoEmDisco(strEnvio, $"Evento-{evento.Informacoes.NumeroPedido:000000}-env.json", documento);
         
         var url = NFSeServiceManager.Instance[DFeTipoEmissao.Normal][configuracao.WebServices.Ambiente, DFeSiglaUF.AN][TipoServico.Sefin];
-        var httpResponse = await SendAsync(content, HttpMethod.Post, url + $"/nfse/{evento.Informacoes.ChNFSe}/eventos");
+        var httpResponse = await SendAsync(content, HttpMethod.Post, $"{url}/nfse/{evento.Informacoes.ChNFSe}/eventos");
         
         var strResponse = await httpResponse.Content.ReadAsStringAsync();
         
@@ -110,6 +124,11 @@ public sealed class NFSeWebservice : IOpenLog
         return new NFSeResponse<EventoEnvioResposta>(evento.Xml, strEnvio, strResponse, httpResponse.IsSuccessStatusCode);
     }
     
+    /// <summary>
+    /// Recepciona a DPS e Gera a NFS-e de forma síncrona.
+    /// </summary>
+    /// <param name="dps"></param>
+    /// <returns></returns>
     public async Task<NFSeResponse<DpsEnvioResposta>> EnviarAsync(Dps dps)
     {
         dps.Assinar(configuracao);
@@ -134,7 +153,7 @@ public sealed class NFSeWebservice : IOpenLog
         GravarArquivoEmDisco(strEnvio, $"Enviar-{dps.Informacoes.NumeroDps:000000}-env.json", documento);
         
         var url = NFSeServiceManager.Instance[DFeTipoEmissao.Normal][configuracao.WebServices.Ambiente, DFeSiglaUF.AN][TipoServico.Sefin];
-        var httpResponse = await SendAsync(content, HttpMethod.Post, url + "/nfse");
+        var httpResponse = await SendAsync(content, HttpMethod.Post, $"{url}/nfse");
         
         var strResponse = await httpResponse.Content.ReadAsStringAsync();
         
@@ -146,7 +165,25 @@ public sealed class NFSeWebservice : IOpenLog
 
     }
 
-    private async Task<HttpResponseMessage> SendAsync(HttpContent content, HttpMethod method, string url)
+    /// <summary>
+    /// Retorna o DANFSe de uma NFS-e a partir de sua chave de acesso.
+    /// </summary>
+    /// <param name="chave">Chave de acesso</param>
+    /// <returns>Byte array da DANFSe</returns>
+    public async Task<byte[]> DownloadDANFSeAsync(string chave)
+    {
+        this.Log().Debug($"Webservice: [DANFSe][Envio] - {chave}");
+        
+        var url = NFSeServiceManager.Instance[DFeTipoEmissao.Normal][configuracao.WebServices.Ambiente, DFeSiglaUF.AN][TipoServico.Sefin];
+        var httpResponse = await SendAsync(null, HttpMethod.Get, $"{url}/danfse/{chave}");
+        
+        this.Log().Debug($"Webservice: [DANFSe][Resposta] - {httpResponse.StatusCode}");
+        
+        httpResponse.EnsureSuccessStatusCode();
+        return await httpResponse.Content.ReadAsByteArrayAsync();
+    }
+    
+    private async Task<HttpResponseMessage> SendAsync(HttpContent? content, HttpMethod method, string url)
     {
         var handler = new HttpClientHandler();
 

@@ -31,6 +31,7 @@
 
 using OpenAC.Net.DFe.Core.Common;
 using OpenAC.Net.NFSe.Nacional.Common;
+using OpenAC.Net.NFSe.Nacional.Common.Types;
 
 namespace OpenAC.Net.NFSe.Nacional;
 

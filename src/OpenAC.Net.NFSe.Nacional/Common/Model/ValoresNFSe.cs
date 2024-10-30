@@ -6,7 +6,7 @@
 // Last Modified By : RFTD
 // Last Modified On : 09-09-2023
 // ***********************************************************************
-// <copyright file="OpenNFSeNacional.cs" company="OpenAC .Net">
+// <copyright file="ValoresNFSe.cs" company="OpenAC .Net">
 //		        		   The MIT License (MIT)
 //	     		    Copyright (c) 2014-2023 Grupo OpenAC.Net
 //
@@ -29,41 +29,37 @@
 // <summary></summary>
 // ***********************************************************************
 
-using System.Threading.Tasks;
-using OpenAC.Net.NFSe.Nacional.Common;
-using OpenAC.Net.NFSe.Nacional.Common.Model;
-using OpenAC.Net.NFSe.Nacional.Webservice;
+using OpenAC.Net.DFe.Core.Attributes;
+using OpenAC.Net.DFe.Core.Serializer;
 
-namespace OpenAC.Net.NFSe.Nacional;
+namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 
-public sealed class OpenNFSeNacional
+public sealed class ValoresNFSe
 {
-    #region Fields
+    [DFeElement(TipoCampo.De2, "vCalcDR", Min = 4, Max = 18, Ocorrencia = Ocorrencia.NaoObrigatoria)]
+    public decimal? ValorBcReducaoDeducao { get; set; }
     
-    private readonly NFSeWebservice webservice;
+    [DFeElement(TipoCampo.Str, "tpBM", Min = 1, Max = 40, Ocorrencia = Ocorrencia.NaoObrigatoria)]
+    public string? TipoBeneficioMunicipal { get; set; }
     
-    #endregion Fields
-
-    #region Constructors
-
-    public OpenNFSeNacional()
-    {
-        webservice = new NFSeWebservice(Configuracoes);
-    }
-
-    #endregion Constructors
+    [DFeElement(TipoCampo.De2, "vCalcBM", Min = 4, Max = 18, Ocorrencia = Ocorrencia.NaoObrigatoria)]
+    public decimal? ValorBcBeneficioMunicipal { get; set; }
     
-    #region Properties
-
-    public ConfiguracaoNFSe Configuracoes { get; } = new();
-
-    #endregion Properties
-
-    #region Methods
-
-    public Task<NFSeResponse<DpsEnvioResposta>> EnviarAsync(Dps dps) => webservice.EnviarAsync(dps);
+    [DFeElement(TipoCampo.De2, "vBC", Min = 4, Max = 18, Ocorrencia = Ocorrencia.NaoObrigatoria)]
+    public decimal? ValorBc { get; set; }
     
-    public Task<NFSeResponse<EventoEnvioResposta>> EnviarAsync(PedidoRegistroEvento evento) => webservice.EnviarAsync(evento);
-
-    #endregion
+    [DFeElement(TipoCampo.De2, "pAliqAplic", Min = 4, Max = 4, Ocorrencia = Ocorrencia.NaoObrigatoria)]
+    public decimal? Aliquota { get; set; }
+    
+    [DFeElement(TipoCampo.De2, "vISSQN", Min = 4, Max = 18, Ocorrencia = Ocorrencia.NaoObrigatoria)]
+    public decimal? ValorISSQN { get; set; }
+    
+    [DFeElement(TipoCampo.De2, "vTotalRet", Min = 4, Max = 18, Ocorrencia = Ocorrencia.NaoObrigatoria)]
+    public decimal? TotalRetido { get; set; }
+    
+    [DFeElement(TipoCampo.De2, "vLiq", Min = 4, Max = 18, Ocorrencia = Ocorrencia.NaoObrigatoria)]
+    public decimal? ValorLiquido { get; set; }
+    
+    [DFeElement(TipoCampo.Str, "xOutInf", Min = 1, Max = 2000, Ocorrencia = Ocorrencia.NaoObrigatoria)]
+    public string? OutrasInformacoes { get; set; }
 }
