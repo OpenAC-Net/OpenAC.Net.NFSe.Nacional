@@ -55,6 +55,9 @@ public sealed class OpenNFSeNacional
     
     #region Properties
 
+    /// <summary>
+    /// Configurações do Componente.
+    /// </summary>
     public ConfiguracaoNFSe Configuracoes { get; } = new();
 
     #endregion Properties
