@@ -1,5 +1,6 @@
 using OpenAC.Net.Core.Extensions;
-using OpenAC.Net.NFSe.Nacional.Common;
+using OpenAC.Net.NFSe.Nacional.Common.Model;
+using OpenAC.Net.NFSe.Nacional.Common.Types;
 
 namespace OpenAC.Net.NFSe.Nacional.Test;
 
@@ -79,26 +80,28 @@ public class TestEmissao
         };
 
 
-        var dps = new Common.Dps();
-        dps.Versao = "1.00";
-        dps.Informacoes = new()
+        var dps = new Dps
         {
-            Id = "DPS" + SetupOpenNFSeNacional.CodMun +
-                        SetupOpenNFSeNacional.TipoInscricaoFederal +
-                        SetupOpenNFSeNacional.InscricaoFederal.PadLeft(14, '0') +
-                        SetupOpenNFSeNacional.SerieDPS.PadLeft(5, '0') +
-                        SetupOpenNFSeNacional.NumDPS.PadLeft(15, '0'),
-            TipoAmbiente = DFe.Core.Common.DFeTipoAmbiente.Homologacao,
-            DhEmissao = DateTime.Now,
-            LocalidadeEmitente = SetupOpenNFSeNacional.CodMun,
-            Serie = SetupOpenNFSeNacional.SerieDPS,
-            NumeroDps = SetupOpenNFSeNacional.NumDPS.ToInt32(),
-            Competencia = DateTime.Now,
-            TipoEmitente = EmitenteDps.Prestador,
-            Prestador = prest,
-            Tomador = toma,
-            Servico = serv,
-            Valores = valores
+            Versao = "1.00",
+            Informacoes = new InfDps
+            {
+                Id = "DPS" + SetupOpenNFSeNacional.CodMun +
+                     SetupOpenNFSeNacional.TipoInscricaoFederal +
+                     SetupOpenNFSeNacional.InscricaoFederal.PadLeft(14, '0') +
+                     SetupOpenNFSeNacional.SerieDPS.PadLeft(5, '0') +
+                     SetupOpenNFSeNacional.NumDPS.PadLeft(15, '0'),
+                TipoAmbiente = DFe.Core.Common.DFeTipoAmbiente.Homologacao,
+                DhEmissao = DateTime.Now,
+                LocalidadeEmitente = SetupOpenNFSeNacional.CodMun,
+                Serie = SetupOpenNFSeNacional.SerieDPS,
+                NumeroDps = SetupOpenNFSeNacional.NumDPS.ToInt32(),
+                Competencia = DateTime.Now,
+                TipoEmitente = EmitenteDps.Prestador,
+                Prestador = prest,
+                Tomador = toma,
+                Servico = serv,
+                Valores = valores
+            }
         };
         var retorno = await openNFSeNacional.EnviarAsync(dps);
 
@@ -123,7 +126,7 @@ public class TestEmissao
         evento.Versao = "1.00";
         evento.Informacoes = new()
         {
-            Id = "PRE" + chaveNFse + TipoEvento.Cancelamento + SetupOpenNFSeNacional.NumEvento.PadLeft(3, '0'),
+            Id = "PRE" + chaveNFse + TipoEventoCod.Cancelamento + SetupOpenNFSeNacional.NumEvento.PadLeft(3, '0'),
             ChNFSe = chaveNFse,
             CNPJAutor = SetupOpenNFSeNacional.InscricaoFederal,
             DhEvento = DateTime.Now,
@@ -132,7 +135,7 @@ public class TestEmissao
             Evento = cancelamento
         };
 
-        var retorno = await openNFSeNacional.EnviarAsync(evento);
+        var retorno = await openNFSeNacional.EnviarEventoAsync(evento);
 
         Assert.IsTrue(retorno.Sucesso);
     }
@@ -188,7 +191,7 @@ public class TestEmissao
         evento.Versao = "1.00";
         evento.Informacoes = new()
         {
-            Id = "PRE" + chaveNFse + TipoEvento.SolicitacaoCancelamento + SetupOpenNFSeNacional.NumEvento.PadLeft(3, '0'),
+            Id = "PRE" + chaveNFse + TipoEventoCod.SolicitacaoCancelamento + SetupOpenNFSeNacional.NumEvento.PadLeft(3, '0'),
             ChNFSe = chaveNFse,
             CNPJAutor = SetupOpenNFSeNacional.InscricaoFederal,
             DhEvento = DateTime.Now,
@@ -197,7 +200,7 @@ public class TestEmissao
             Evento = solicitacaoCancelamento
         };
 
-        var retorno = await openNFSeNacional.EnviarAsync(evento);
+        var retorno = await openNFSeNacional.EnviarEventoAsync(evento);
 
         Assert.IsTrue(retorno.Sucesso);
     }

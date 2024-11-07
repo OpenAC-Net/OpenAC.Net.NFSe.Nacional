@@ -2,9 +2,13 @@
 using OpenAC.Net.DFe.Core.Collection;
 using OpenAC.Net.DFe.Core.Common;
 using OpenAC.Net.DFe.Core.Service;
+using OpenAC.Net.NFSe.Nacional.Common.Types;
 
 namespace OpenAC.Net.NFSe.Nacional.Webservice;
 
+/// <summary>
+/// Gerenciador de serviços
+/// </summary>
 public sealed class NFSeServiceManager : DFeServices<TipoServico>
 {
     #region Fields
@@ -51,7 +55,10 @@ public sealed class NFSeServiceManager : DFeServices<TipoServico>
 
     #region Properties
 
-    public static NFSeServiceManager Instance = instance ??= new NFSeServiceManager();
+    /// <summary>
+    /// Retorna a instancia do gerenciado de serviços
+    /// </summary>
+    public static readonly NFSeServiceManager Instance = instance ??= new NFSeServiceManager();
 
     #endregion Properties
 }

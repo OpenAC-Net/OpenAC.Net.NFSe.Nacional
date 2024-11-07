@@ -1,11 +1,5 @@
 blank_issues_enabled: false
 contact_links:
-  - name: Padrim
-    url: https://www.padrim.com.br/openac-net
-    about: Se OpenNFSe for um componente vital em sua aplicação comercial ou de código aberto e/ou você quiser contribuir para seu sucesso contínuo, por favor considere fazer uma pequena contribuição monetária.
-  - name: Apoia-se
-    url: https://apoia.se/openac-net
-    about: Se OpenNFSe for um componente vital em sua aplicação comercial ou de código aberto e/ou você quiser contribuir para seu sucesso contínuo, por favor considere fazer uma pequena contribuição monetária.
   - name: Suporte da comunidade
     url: https://discord.com/invite/brdmJ7Yv6w
     about: Faça perguntas e seja ajudado direto para comuniadade OpenAC.
