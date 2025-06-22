@@ -36,114 +36,168 @@ namespace OpenAC.Net.NFSe.Nacional.Common.Types;
 
 /// <summary>
 /// Mecanismo de apoio/fomento ao Comércio Exterior utilizado pelo tomador do serviço:
-/// 00 - Desconhecido (tipo não informado na nota de origem);
-/// 01 - Nenhum;
-/// 02 - Adm. Pública e Repr. Internacional;
-/// 03 - Alugueis e Arrend. Mercantil de maquinas, equip., embarc. e aeronaves;
-/// 04 - Arrendamento Mercantil de aeronave para empresa de transporte aéreo público;
-/// 05 - Comissão a agentes externos na exportação;
-/// 06 - Despesas de armazenagem, mov. e transporte de carga no exterior;
-/// 07 - Eventos FIFA (subsidiária);
-/// 08 - Eventos FIFA;
-/// 09 - Fretes, arrendamentos de embarcações ou aeronaves e outros;
-/// 10 - Material Aeronáutico;
-/// 11 - Promoção de Bens no Exterior;
-/// 12 - Promoção de Dest. Turísticos Brasileiros;
-/// 13 - Promoção do Brasil no Exterior;
-/// 14 - Promoção Serviços no Exterior;
-/// 15 - RECINE;
-/// 16 - RECOPA;
-/// 17 - Registro e Manutenção de marcas, patentes e cultivares;
-/// 18 - REICOMP;
-/// 19 - REIDI;
-/// 20 - REPENEC;
-/// 21 - REPES;
-/// 22 - RETAERO;
-/// 23 - RETID;
-/// 24 - Royalties, Assistência Técnica, Científica e Assemelhados;
-/// 25 - Serviços de avaliação da conformidade vinculados aos Acordos da OMC;
-/// 26 - ZPE;
 /// </summary>
 public enum ApoioComercioExteriorTomador
 {
+    /// <summary>
+    /// 00 - Desconhecido (tipo não informado na nota de origem)
+    /// </summary>
     [DFeEnum("00")]
     Desconhecido,
     
+    /// <summary>
+    /// 01 - Nenhum
+    /// </summary>
     [DFeEnum("01")]
     Nenhum,
     
+    /// <summary>
+    /// 02 - Adm. Pública e Repr. Internacional
+    /// </summary>
     [DFeEnum("02")]
     AdmPublicaReprInternacional,
     
+    /// <summary>
+    /// 03 - Alugueis e Arrend. Mercantil de maquinas, equip., embarc. e aeronaves
+    /// </summary>
     [DFeEnum("03")]
     AlugueisArrendMercantil,
     
+    /// <summary>
+    /// 04 - Arrendamento Mercantil de aeronave para empresa de transporte aéreo público
+    /// </summary>
     [DFeEnum("04")]
     ArrendamentoMercantilAeronaveTransportePublico,
     
+    /// <summary>
+    /// 05 - Comissão a agentes externos na exportação
+    /// </summary>
     [DFeEnum("05")]
     ComissaoAgentesExternosExportacao,
     
+    /// <summary>
+    /// 06 - Despesas de armazenagem, mov. e transporte de carga no exterior
+    /// </summary>
     [DFeEnum("06")]
     DespesasArmazenagemMovTransporteCargaExterior,
     
+    /// <summary>
+    /// 07 - Eventos FIFA (subsidiária)
+    /// </summary>
     [DFeEnum("07")]
     EventosFIFASubsidiaria,
     
+    /// <summary>
+    /// 08 - Eventos FIFA
+    /// </summary>
     [DFeEnum("08")]
     EventosFIFA,
     
+    /// <summary>
+    /// 09 - Fretes, arrendamentos de embarcações ou aeronaves e outros
+    /// </summary>
     [DFeEnum("09")]
     FretesArrendamentosEmbarcacoesAeronavesOutros,
     
+    /// <summary>
+    /// 10 - Material Aeronáutico
+    /// </summary>
     [DFeEnum("10")]
     MaterialAeronautico,
     
+    /// <summary>
+    /// 11 - Promoção de Bens no Exterior
+    /// </summary>
     [DFeEnum("11")]
     PromocaoBensExterior,
     
+    /// <summary>
+    /// 12 - Promoção de Dest. Turísticos Brasileiros
+    /// </summary>
     [DFeEnum("12")]
     PromocaoDestTuristicosBrasileiros,
     
+    /// <summary>
+    /// 13 - Promoção do Brasil no Exterior
+    /// </summary>
     [DFeEnum("13")]
     PromocaoBrasilExterior,
     
+    /// <summary>
+    /// 14 - Promoção Serviços no Exterior
+    /// </summary>
     [DFeEnum("14")]
     PromocaoServicosExterior,
     
+    /// <summary>
+    /// 15 - RECINE
+    /// </summary>
     [DFeEnum("15")]
     RECINE,
     
+    /// <summary>
+    /// 16 - RECOPA
+    /// </summary>
     [DFeEnum("16")]
     RECOPA,
     
+    /// <summary>
+    /// 17 - Registro e Manutenção de marcas, patentes e cultivares
+    /// </summary>
     [DFeEnum("17")]
     RegistroManutencaoMarcasPatentesCultivares,
     
+    /// <summary>
+    /// 18 - REICOMP
+    /// </summary>
     [DFeEnum("18")]
     REICOMP,
     
+    /// <summary>
+    /// 19 - REIDI
+    /// </summary>
     [DFeEnum("19")]
     REIDI,
     
+    /// <summary>
+    /// 20 - REPENEC
+    /// </summary>
     [DFeEnum("20")]
     REPENEC,
     
+    /// <summary>
+    /// 21 - REPES
+    /// </summary>
     [DFeEnum("21")]
     REPES,
     
+    /// <summary>
+    /// 22 - RETAERO
+    /// </summary>
     [DFeEnum("22")]
     RETAERO,
     
+    /// <summary>
+    /// 23 - RETID
+    /// </summary>
     [DFeEnum("23")]
     RETID,
     
+    /// <summary>
+    /// 24 - Royalties, Assistência Técnica, Científica e Assemelhados
+    /// </summary>
     [DFeEnum("24")]
     RoyaltiesAssistanciaTecnicaCientíficaAssemelhados,
     
+    /// <summary>
+    /// 25 - Serviços de avaliação da conformidade vinculados aos Acordos da OMC
+    /// </summary>
     [DFeEnum("25")]
     ServiçosAvaliacaoConformidadeVinculadosAcordosOMC,
     
+    /// <summary>
+    /// 26 - ZPE
+    /// </summary>
     [DFeEnum("26")]
     ZPE
 }

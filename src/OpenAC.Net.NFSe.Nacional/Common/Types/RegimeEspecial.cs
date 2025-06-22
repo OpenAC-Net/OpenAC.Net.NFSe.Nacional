@@ -34,35 +34,49 @@ using OpenAC.Net.DFe.Core.Attributes;
 namespace OpenAC.Net.NFSe.Nacional.Common.Types;
 
 /// <summary>
-/// Tipos de Regimes Especiais de Tributação:
-/// 0 - Nenhum;
-/// 1 - Ato Cooperado (Cooperativa);
-/// 2 - Estimativa;
-/// 3 - Microempresa Municipal;
-/// 4 - Notário ou Registrador;
-/// 5 - Profissional Autônomo;
-/// 6 - Sociedade de Profissionais;
+/// Tipos de Regimes Especiais de Tributação.
 /// </summary>
 public enum RegimeEspecial
 {
+    /// <summary>
+    /// 0 - Nenhum
+    /// </summary>
     [DFeEnum("0")]
     Nenhum,
-    
+
+    /// <summary>
+    /// 1 - Ato Cooperado (Cooperativa)
+    /// </summary>
     [DFeEnum("1")]
     Cooperativa,
-    
+
+    /// <summary>
+    /// 2 - Estimativa
+    /// </summary>
     [DFeEnum("2")]
     Estimativa,
-    
+
+    /// <summary>
+    /// 3 - Microempresa Municipal
+    /// </summary>
     [DFeEnum("3")]
     MicroempresaMunicipal,
-    
+
+    /// <summary>
+    /// 4 - Notário ou Registrador
+    /// </summary>
     [DFeEnum("4")]
     NotarioRegistrador,
-    
+
+    /// <summary>
+    /// 5 - Profissional Autônomo
+    /// </summary>
     [DFeEnum("5")]
     ProfissionalAutonomo,
-    
+
+    /// <summary>
+    /// 6 - Sociedade de Profissionais
+    /// </summary>
     [DFeEnum("6")]
     SociedadeProfissionais,
 }

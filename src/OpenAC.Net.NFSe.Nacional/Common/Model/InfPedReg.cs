@@ -37,34 +37,64 @@ using OpenAC.Net.NFSe.Nacional.Common.Types;
 
 namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 
+/// <summary>
+/// Representa as informações do pedido de registro de evento da NFSe Nacional.
+/// </summary>
 public sealed class InfPedReg
 {
     #region Properties
 
+    /// <summary>
+    /// Identificador único do pedido.
+    /// </summary>
     [DFeAttribute(TipoCampo.Str, "Id")] 
     public string Id { get; set; } = string.Empty;
     
+    /// <summary>
+    /// Tipo de ambiente (Produção ou Homologação).
+    /// </summary>
     [DFeElement(TipoCampo.Enum, "tpAmb", Ocorrencia = Ocorrencia.Obrigatoria)]
     public DFeTipoAmbiente TipoAmbiente { get; set; } = DFeTipoAmbiente.Homologacao;
     
+    /// <summary>
+    /// Versão do aplicativo emissor.
+    /// </summary>
     [DFeElement(TipoCampo.Str, "verAplic", Min = 1, Max = 20, Ocorrencia = Ocorrencia.Obrigatoria)]
     public string VersaoAplicacao { get; set; } = "OpenAC.NFSe.Nacional";
 
+    /// <summary>
+    /// Data e hora do evento.
+    /// </summary>
     [DFeElement(TipoCampo.DatHorTz, "dhEvento", Ocorrencia = Ocorrencia.Obrigatoria)]
     public DateTimeOffset DhEvento { get; set; }
     
+    /// <summary>
+    /// CNPJ do autor do evento.
+    /// </summary>
     [DFeElement(TipoCampo.StrNumber, "CNPJAutor", Min = 14, Max = 14, Ocorrencia = Ocorrencia.NaoObrigatoria)]
     public string? CNPJAutor { get; set; }
     
+    /// <summary>
+    /// CPF do autor do evento.
+    /// </summary>
     [DFeElement(TipoCampo.StrNumber, "CPFAutor", Min = 11, Max = 11, Ocorrencia = Ocorrencia.NaoObrigatoria)]
     public string? CPFAutor { get; set; }
 
+    /// <summary>
+    /// Chave da NFSe relacionada ao evento.
+    /// </summary>
     [DFeElement(TipoCampo.Str, "chNFSe", Min = 50, Max = 50, Ocorrencia = Ocorrencia.Obrigatoria)]
     public string ChNFSe { get; set; } = string.Empty;
     
+    /// <summary>
+    /// Número do pedido de registro do evento.
+    /// </summary>
     [DFeElement(TipoCampo.Int, "nPedRegEvento", Min = 1, Max = 3, Ocorrencia = Ocorrencia.Obrigatoria)]
     public int NumeroPedido { get; set; }
 
+    /// <summary>
+    /// Evento relacionado à NFSe.
+    /// </summary>
     [DFeItem(typeof(EventoCancelamento), $"e{TipoEventoCod.Cancelamento}")]
     [DFeItem(typeof(EventoCancelamentoPorSubstituicao), $"e{TipoEventoCod.CancelamentoPorSubstituicao}")]
     [DFeItem(typeof(EventoSolicitacaoCancelamento), $"e{TipoEventoCod.SolicitacaoCancelamento}")]

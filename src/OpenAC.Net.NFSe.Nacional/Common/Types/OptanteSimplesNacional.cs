@@ -34,19 +34,25 @@ using OpenAC.Net.DFe.Core.Attributes;
 namespace OpenAC.Net.NFSe.Nacional.Common.Types;
 
 /// <summary>
-/// Situação perante o Simples Nacional:
-/// 1 - Não Optante;
-/// 2 - Optante - Microempreendedor Individual (MEI);
-/// 3 - Optante - Microempresa ou Empresa de Pequeno Porte (ME/EPP);
+/// Indica se o prestador é optante pelo Simples Nacional.
 /// </summary>
 public enum OptanteSimplesNacional
 {
+    /// <summary>
+    /// Não optante pelo Simples Nacional.
+    /// </summary>
     [DFeEnum("1")]
     NaoOptante,
     
+    /// <summary>
+    /// Optante pelo Simples Nacional - MEI.
+    /// </summary>
     [DFeEnum("2")]
     OptanteMEI,
     
+    /// <summary>
+    /// Optante pelo Simples Nacional - ME/EPP.
+    /// </summary>
     [DFeEnum("3")]
     OptanteMEEPP
 }

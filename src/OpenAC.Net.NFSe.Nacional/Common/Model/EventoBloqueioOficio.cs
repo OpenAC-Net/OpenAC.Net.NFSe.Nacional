@@ -34,17 +34,32 @@ using OpenAC.Net.DFe.Core.Serializer;
 
 namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 
+/// <summary>
+/// Representa o evento de bloqueio de NFS-e por ofício.
+/// </summary>
 public sealed class EventoBloqueioOficio : IEventoNFSe
 {
+    /// <summary>
+    /// Descrição do evento.
+    /// </summary>
     [DFeElement(TipoCampo.Str, "xDesc", Ocorrencia = Ocorrencia.Obrigatoria)]
     public string Descricao { get; set; } = "Bloqueio de NFS-e por Ofício";
 
+    /// <summary>
+    /// CPF do agente tributário responsável pelo bloqueio.
+    /// </summary>
     [DFeElement(TipoCampo.Str, "CPFAgTrib", Min = 11, Max = 11, Ocorrencia = Ocorrencia.Obrigatoria)]
     public string CPFAgTrib { get; set; } = string.Empty;
     
+    /// <summary>
+    /// Motivo do bloqueio.
+    /// </summary>
     [DFeElement(TipoCampo.Str, "xMotivo", Min = 15, Max = 255, Ocorrencia = Ocorrencia.Obrigatoria)]
     public string Motivo { get; set; } = string.Empty;
     
+    /// <summary>
+    /// Código do evento.
+    /// </summary>
     [DFeElement(TipoCampo.Str, "codEvento", Min = 7, Max = 7, Ocorrencia = Ocorrencia.Obrigatoria)]
     public string CodEvento { get; set; } = string.Empty;
 }

@@ -37,15 +37,24 @@ using OpenAC.Net.DFe.Core.Serializer;
 
 namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 
+/// <summary>
+/// Representa a Nota Fiscal de Serviço Eletrônica (NFSe).
+/// </summary>
 [DFeSignInfoElement("infNFSe")]
 [DFeRoot("NFSe", Namespace = "http://www.sped.fazenda.gov.br/nfse")]
 public class NotaFiscalServico : DFeSignDocument<NotaFiscalServico>
 {
     #region Properties
 
+    /// <summary>
+    /// Versão do layout da NFSe.
+    /// </summary>
     [DFeAttribute(TipoCampo.Str, "versao", Ocorrencia = Ocorrencia.Obrigatoria)]
     public string Versao { get; set; } = string.Empty;
     
+    /// <summary>
+    /// Informações da NFSe.
+    /// </summary>
     [DFeElement("infNFSe", Ocorrencia = Ocorrencia.Obrigatoria)]
     public InfNFSe Informacoes { get; set; } = new();
 
@@ -53,6 +62,10 @@ public class NotaFiscalServico : DFeSignDocument<NotaFiscalServico>
     
     #region Methods
 
+    /// <summary>
+    /// Assina digitalmente a NFSe utilizando as configurações fornecidas.
+    /// </summary>
+    /// <param name="configuracao">Configuração da NFSe.</param>
     public void Assinar(ConfiguracaoNFSe configuracao)
     {
         var options = DFeSaveOptions.DisableFormatting;

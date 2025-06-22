@@ -31,8 +31,18 @@
 
 namespace OpenAC.Net.NFSe.Nacional.Common.Types;
 
+/// <summary>
+/// Enumeração dos tipos de schema NFSe.
+/// </summary>
 public enum SchemaNFSe
 {
+    /// <summary>
+    /// Documento de Prestação de Serviço (DPS).
+    /// </summary>
     DPS = 0,
+
+    /// <summary>
+    /// Evento relacionado ao NFSe.
+    /// </summary>
     Evento = 1,
 }

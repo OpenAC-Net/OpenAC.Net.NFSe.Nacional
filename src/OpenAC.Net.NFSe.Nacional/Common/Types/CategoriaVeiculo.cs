@@ -34,51 +34,73 @@ using OpenAC.Net.DFe.Core.Attributes;
 namespace OpenAC.Net.NFSe.Nacional.Common.Types;
 
 /// <summary>
-/// Categorias de veículos para cobrança:
-/// 00 - Categoria de veículos (tipo não informado na nota de origem)
-/// 01 - Automóvel, caminhonete e furgão;
-/// 02 - Caminhão leve, ônibus, caminhão trator e furgão;
-/// 03 - Automóvel e caminhonete com semireboque;
-/// 04 - Caminhão, caminhão-trator, caminhão-trator com semi-reboque e ônibus;
-/// 05 - Automóvel e caminhonete com reboque;
-/// 06 - Caminhão com reboque;
-/// 07 - Caminhão trator com semi-reboque;
-/// 08 - Motocicletas, motonetas e bicicletas motorizadas;
-/// 09 - Veículo especial;
-/// 10 - Veículo Isento;
+/// Categorias de veículos para cobrança.
 /// </summary>
 public enum CategoriaVeiculo
 {
+    /// <summary>
+    /// 00 - Categoria de veículos (tipo não informado na nota de origem)
+    /// </summary>
     [DFeEnum("00")]
     NaoInformado,
-    
+
+    /// <summary>
+    /// 01 - Automóvel, caminhonete e furgão
+    /// </summary>
     [DFeEnum("01")]
     AutomovelCaminhoneteFurgao,
-    
+
+    /// <summary>
+    /// 02 - Caminhão leve, ônibus, caminhão trator e furgão
+    /// </summary>
     [DFeEnum("02")]
     CaminhaoLeveonibusCaminhaoTratorFurgao,
-    
+
+    /// <summary>
+    /// 03 - Automóvel e caminhonete com semireboque
+    /// </summary>
     [DFeEnum("03")]
     AutomovelCaminhoneteComSemireboque,
-    
+
+    /// <summary>
+    /// 04 - Caminhão, caminhão-trator, caminhão-trator com semi-reboque e ônibus
+    /// </summary>
     [DFeEnum("04")]
     CaminhaoCaminhãoTratorCaminhaoTratorComSemiReboqueOnibus,
-    
+
+    /// <summary>
+    /// 05 - Automóvel e caminhonete com reboque
+    /// </summary>
     [DFeEnum("05")]
     AutomovelCaminhoneteReboque,
-    
+
+    /// <summary>
+    /// 06 - Caminhão com reboque
+    /// </summary>
     [DFeEnum("06")]
     CaminhaoComReboque,
-    
+
+    /// <summary>
+    /// 07 - Caminhão trator com semi-reboque
+    /// </summary>
     [DFeEnum("07")]
     CaminhaoTratorComSemiReboque,
-    
+
+    /// <summary>
+    /// 08 - Motocicletas, motonetas e bicicletas motorizadas
+    /// </summary>
     [DFeEnum("08")]
     MotocicletasMotonetasBicicletasMotorizadas,
-    
+
+    /// <summary>
+    /// 09 - Veículo especial
+    /// </summary>
     [DFeEnum("09")]
     VeiculoSspecial,
-    
+
+    /// <summary>
+    /// 10 - Veículo Isento
+    /// </summary>
     [DFeEnum("10")]
     VeiculoIsento
 }

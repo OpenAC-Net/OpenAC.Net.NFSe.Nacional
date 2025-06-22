@@ -36,41 +36,80 @@ using OpenAC.Net.NFSe.Nacional.Common.Types;
 
 namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 
+/// <summary>
+/// Representa um documento utilizado para dedução ou redução no contexto da NFSe.
+/// </summary>
 public sealed class DocumentoDeducaoReducao
 {
+    /// <summary>
+    /// Chave da NFSe utilizada para dedução/redução (50 dígitos).
+    /// </summary>
     [DFeElement(TipoCampo.StrNumber, "chNFSe", Min = 50, Max = 50, Ocorrencia = Ocorrencia.NaoObrigatoria)]
     public string? ChaveNFSe { get; set; }
     
+    /// <summary>
+    /// Chave da NFe utilizada para dedução/redução (44 dígitos).
+    /// </summary>
     [DFeElement(TipoCampo.StrNumber, "chNFSe", Min = 44, Max = 44, Ocorrencia = Ocorrencia.NaoObrigatoria)]
     public string? ChaveNFe { get; set; }
     
+    /// <summary>
+    /// Chave da NFSe do município.
+    /// </summary>
     [DFeElement("NFSeMun", Ocorrencia = Ocorrencia.NaoObrigatoria)]
     public ChaveNFSeMunicipio? ChaveNFSeMunicipio { get; set; }
     
+    /// <summary>
+    /// Documento NFNFS relacionado.
+    /// </summary>
     [DFeElement("NFNFS", Ocorrencia = Ocorrencia.NaoObrigatoria)]
     public DocumentoNFNFS? DocumentoNFNFS { get; set; }
     
+    /// <summary>
+    /// Número do documento fiscal.
+    /// </summary>
     [DFeElement(TipoCampo.StrNumber, "nDocFisc", Min = 1, Max = 255, Ocorrencia = Ocorrencia.NaoObrigatoria)]
     public string? NumeroDocumentoFiscal { get; set; }
     
+    /// <summary>
+    /// Número do documento.
+    /// </summary>
     [DFeElement(TipoCampo.StrNumber, "nDoc", Min = 1, Max = 255, Ocorrencia = Ocorrencia.NaoObrigatoria)]
     public string? NumeroDocumento { get; set; }
     
+    /// <summary>
+    /// Tipo de dedução ou redução.
+    /// </summary>
     [DFeElement(TipoCampo.Enum, "nDoc", Ocorrencia = Ocorrencia.Obrigatoria)]
     public TipoDeducaoReducao TipoDeducaoReducao { get; set; }
     
+    /// <summary>
+    /// Descrição da dedução ou redução.
+    /// </summary>
     [DFeElement(TipoCampo.StrNumber, "xDescOutDed", Min = 1, Max = 255, Ocorrencia = Ocorrencia.NaoObrigatoria)]
     public string? DescricaoReducaoDeducao { get; set; }
     
+    /// <summary>
+    /// Data de emissão do documento.
+    /// </summary>
     [DFeElement(TipoCampo.Dat, "dtEmiDoc", Ocorrencia = Ocorrencia.Obrigatoria)]
     public DateTime DataEmissao { get; set; }
     
+    /// <summary>
+    /// Valor dedutível ou redutível.
+    /// </summary>
     [DFeElement(TipoCampo.De2, "vDedutivelRedutivel", Min = 4, Max = 18, Ocorrencia = Ocorrencia.Obrigatoria)]
     public decimal ValorDedutivelRedutivel { get; set; }
 
+    /// <summary>
+    /// Valor da dedução ou redução.
+    /// </summary>
     [DFeElement(TipoCampo.De2, "vDeducaoReducao", Min = 4, Max = 18, Ocorrencia = Ocorrencia.Obrigatoria)]
     public decimal ValorReducaoDeducao { get; set; }
 
+    /// <summary>
+    /// Informações do fornecedor.
+    /// </summary>
     [DFeElement("fornec", Ocorrencia = Ocorrencia.NaoObrigatoria)]
     public InfoPessoaNFSe? Fornecedor { get; set; }
 }

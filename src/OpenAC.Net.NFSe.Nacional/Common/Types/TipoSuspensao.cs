@@ -34,15 +34,19 @@ using OpenAC.Net.DFe.Core.Attributes;
 namespace OpenAC.Net.NFSe.Nacional.Common.Types;
 
 /// <summary>
-/// Opção para Exigibilidade Suspensa:
-/// 1 - Exigibilidade Suspensa por Decisão Judicial;
-/// 2 - Exigibilidade Suspensa por Processo Administrativo;
+/// Opção para Exigibilidade Suspensa.
 /// </summary>
 public enum TipoSuspensao
 {
+    /// <summary>
+    /// Exigibilidade Suspensa por Decisão Judicial.
+    /// </summary>
     [DFeEnum("1")]
     PorDecisaoJudicial,
-    
+
+    /// <summary>
+    /// Exigibilidade Suspensa por Processo Administrativo.
+    /// </summary>
     [DFeEnum("2")]
     PorProcessoAdministrativo
 }

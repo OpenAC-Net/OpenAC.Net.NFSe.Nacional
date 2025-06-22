@@ -34,27 +34,37 @@ using OpenAC.Net.DFe.Core.Attributes;
 namespace OpenAC.Net.NFSe.Nacional.Common.Types;
 
 /// <summary>
-///  Modo de Prestação:
-///  0 - Desconhecido (tipo não informado na nota de origem);
-///  1 - Transfronteiriço;
-///  2 - Consumo no Brasil;
-///  3 - Presença Comercial no Exterior;
-///  4 - Movimento Temporário de Pessoas Físicas;
+/// Modo de Prestação.
 /// </summary>
 public enum ModoPrestacao
 {
+    /// <summary>
+    /// 0 - Desconhecido (tipo não informado na nota de origem)
+    /// </summary>
     [DFeEnum("0")]
     Desconhecido = 0,
     
+    /// <summary>
+    /// 1 - Transfronteiriço
+    /// </summary>
     [DFeEnum("1")]
     Transfronteirico = 1,
     
+    /// <summary>
+    /// 2 - Consumo no Brasil
+    /// </summary>
     [DFeEnum("2")]
     ConsumoBrasil = 2,
     
+    /// <summary>
+    /// 3 - Presença Comercial no Exterior
+    /// </summary>
     [DFeEnum("3")]
     PresencaComercialExterior = 3,
     
+    /// <summary>
+    /// 4 - Movimento Temporário de Pessoas Físicas
+    /// </summary>
     [DFeEnum("4")]
     MovimentoTemporarioPessoasFisicas = 4
 }

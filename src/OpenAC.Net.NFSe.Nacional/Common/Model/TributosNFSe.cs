@@ -33,14 +33,26 @@ using OpenAC.Net.DFe.Core.Attributes;
 
 namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 
+/// <summary>
+/// Representa os tributos de uma NFSe, incluindo municipal, federal e o total.
+/// </summary>
 public sealed class TributosNFSe
 {
+    /// <summary>
+    /// Tributo municipal obrigatório.
+    /// </summary>
     [DFeElement("tribMun", Ocorrencia = Ocorrencia.Obrigatoria)]
     public TributoMunicipal Municipal { get; set; } = new();
-    
+
+    /// <summary>
+    /// Tributo federal opcional.
+    /// </summary>
     [DFeElement("tribFed", Ocorrencia = Ocorrencia.NaoObrigatoria)]
     public TributoFederal? Federal { get; set; }
-    
+
+    /// <summary>
+    /// Total dos tributos obrigatório.
+    /// </summary>
     [DFeElement("totTrib", Ocorrencia = Ocorrencia.Obrigatoria)]
     public TotalTributos Total { get; set; } = new();
 }

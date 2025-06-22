@@ -34,14 +34,26 @@ using OpenAC.Net.DFe.Core.Serializer;
 
 namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 
+/// <summary>
+/// Representa as informações de anulação ou rejeição.
+/// </summary>
 public sealed class InfoAnulacaoRejeicao
 {
+    /// <summary>
+    /// CPF do agente tributário responsável.
+    /// </summary>
     [DFeElement(TipoCampo.Str, "CPFAgTrib", Min = 11, Max = 11, Ocorrencia = Ocorrencia.Obrigatoria)]
     public string CPFAgTrib { get; set; } = string.Empty;
     
+    /// <summary>
+    /// Código do manifesto de rejeição.
+    /// </summary>
     [DFeElement(TipoCampo.StrNumber, "idEvManifRej", Min = 59, Max = 59, Ocorrencia = Ocorrencia.Obrigatoria)]
     public string CodManifestoRejeicao { get; set; } = string.Empty;
     
+    /// <summary>
+    /// Motivo da anulação ou rejeição.
+    /// </summary>
     [DFeElement(TipoCampo.Str, "xMotivo", Min = 15, Max = 255, Ocorrencia = Ocorrencia.Obrigatoria)]
     public string Motivo { get; set; } = string.Empty;
 }

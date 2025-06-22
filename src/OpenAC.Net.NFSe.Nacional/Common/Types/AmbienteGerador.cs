@@ -35,15 +35,19 @@ using OpenAC.Net.DFe.Core.Attributes;
 namespace OpenAC.Net.NFSe.Nacional.Common.Types;
 
 /// <summary>
-/// Tipo Ambiente Gerador de NFS-e:
-/// 1 - Prefeitura;
-/// 2 - Sistema Nacional da NFS-e;
+/// Define o tipo de ambiente gerador da NFS-e.
 /// </summary>
 public enum AmbienteGerador
 {
+    /// <summary>
+    /// Prefeitura.
+    /// </summary>
     [DFeEnum("1")]
     Prefeitura,
-    
+
+    /// <summary>
+    /// Sistema Nacional da NFS-e.
+    /// </summary>
     [DFeEnum("2")]
     Nacional
 }

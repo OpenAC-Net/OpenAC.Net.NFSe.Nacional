@@ -31,6 +31,9 @@
 
 namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 
+/// <summary>
+/// Representa um município.
+/// </summary>
 public interface IMunicipio
 {
     

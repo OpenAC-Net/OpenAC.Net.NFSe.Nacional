@@ -34,14 +34,26 @@ using OpenAC.Net.DFe.Core.Attributes;
 
 namespace OpenAC.Net.NFSe.Nacional.Common.Types;
 
+/// <summary>
+/// Define o tipo de emitente da DPS.
+/// </summary>
 public enum EmitenteDps
 {
+    /// <summary>
+    /// Prestador do serviço.
+    /// </summary>
     [DFeEnum("1")]
     Prestador = 1,
     
+    /// <summary>
+    /// Tomador do serviço.
+    /// </summary>
     [DFeEnum("2")]
     Tomador = 2,
     
+    /// <summary>
+    /// Intermediário do serviço.
+    /// </summary>
     [DFeEnum("3")]
     Intermediário = 3
 }

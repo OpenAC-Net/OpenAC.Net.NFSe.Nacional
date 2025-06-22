@@ -35,42 +35,60 @@ namespace OpenAC.Net.NFSe.Nacional.Common.Types;
 
 /// <summary>
 /// Mecanismo de apoio/fomento ao Comércio Exterior utilizado pelo prestador do serviço:
-/// 00 - Desconhecido (tipo não informado na nota de origem);
-/// 01 - Nenhum;
-/// 02 - ACC - Adiantamento sobre Contrato de Câmbio – Redução a Zero do IR e do IOF;
-/// 03 - ACE – Adiantamento sobre Cambiais Entregues - Redução a Zero do IR e do IOF;
-/// 04 - BNDES-Exim Pós-Embarque – Serviços;
-/// 05 - BNDES-Exim Pré-Embarque - Serviços;
-/// 06 - FGE - Fundo de Garantia à Exportação;
-/// 07 - PROEX - EQUALIZAÇÃO
-/// 08 - PROEX - Financiamento;
 /// </summary>
 public enum ApoioComercioExteriorPrestador
 {
+    /// <summary>
+    /// 00 - Desconhecido (tipo não informado na nota de origem)
+    /// </summary>
     [DFeEnum("00")]
     Desconhecido = 0,
     
+    /// <summary>
+    /// 01 - Nenhum
+    /// </summary>
     [DFeEnum("01")]
     Nenhum = 1,
     
+    /// <summary>
+    /// 02 - ACC - Adiantamento sobre Contrato de Câmbio – Redução a Zero do IR e do IOF
+    /// </summary>
     [DFeEnum("02")]
     ACC = 2,
     
+    /// <summary>
+    /// 03 - ACE – Adiantamento sobre Cambiais Entregues - Redução a Zero do IR e do IOF
+    /// </summary>
     [DFeEnum("03")]
     ACE = 3,
     
+    /// <summary>
+    /// 04 - BNDES-Exim Pós-Embarque – Serviços
+    /// </summary>
     [DFeEnum("04")]
     BNDESEximPosEmbarque = 4,
     
+    /// <summary>
+    /// 05 - BNDES-Exim Pré-Embarque - Serviços
+    /// </summary>
     [DFeEnum("05")]
     BNDESEximPreEmbarque = 5,
     
+    /// <summary>
+    /// 06 - FGE - Fundo de Garantia à Exportação
+    /// </summary>
     [DFeEnum("06")]
     FGE = 6,
     
+    /// <summary>
+    /// 07 - PROEX - EQUALIZAÇÃO
+    /// </summary>
     [DFeEnum("07")]
     PROEXEqualizacao = 7,
     
+    /// <summary>
+    /// 08 - PROEX - Financiamento
+    /// </summary>
     [DFeEnum("08")]
     PROEXFinanciamento = 8
 }

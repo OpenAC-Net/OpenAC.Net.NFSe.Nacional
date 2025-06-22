@@ -33,11 +33,20 @@ using System.Text.Json.Serialization;
 
 namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 
+/// <summary>
+/// Representa a resposta da consulta por chave de DPS.
+/// </summary>
 public sealed class RespostaConsultaChaveDps : RespostaBase
 {
+    /// <summary>
+    /// Identificador da DPS.
+    /// </summary>
     [JsonPropertyName("idDps")]
     public string IdDps { get; set; } = string.Empty;
     
+    /// <summary>
+    /// Chave de acesso da DPS.
+    /// </summary>
     [JsonPropertyName("chaveAcesso")]
     public string Chave { get; set; } = string.Empty;
 }

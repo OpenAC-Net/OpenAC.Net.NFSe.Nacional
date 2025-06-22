@@ -36,23 +36,29 @@ using OpenAC.Net.NFSe.Nacional.Webservice;
 
 namespace OpenAC.Net.NFSe.Nacional;
 
+/// <summary>
+/// Classe principal para integração com a NFS-e Nacional.
+/// </summary>
 public sealed class OpenNFSeNacional
 {
     #region Fields
-    
+
     private readonly NFSeWebservice webservice;
-    
+
     #endregion Fields
 
     #region Constructors
 
+    /// <summary>
+    /// Inicializa uma nova instância de <see cref="OpenNFSeNacional"/>.
+    /// </summary>
     public OpenNFSeNacional()
     {
         webservice = new NFSeWebservice(Configuracoes);
     }
 
     #endregion Constructors
-    
+
     #region Properties
 
     /// <summary>
@@ -65,52 +71,52 @@ public sealed class OpenNFSeNacional
     #region Methods
 
     /// <summary>
-    /// Recepciona a DPS e Gera a NFS-e de forma síncrona.
+    /// Recepciona a DPS e gera a NFS-e de forma assíncrona.
     /// </summary>
-    /// <param name="dps"></param>
-    /// <returns></returns>
+    /// <param name="dps">Objeto <see cref="Dps"/> a ser enviado.</param>
+    /// <returns>Resposta do envio contendo informações da NFS-e gerada.</returns>
     public Task<NFSeResponse<RespostaEnvioDps>> EnviarAsync(Dps dps) => webservice.EnviarAsync(dps);
-    
+
     /// <summary>
-    /// Recepciona o Pedido de Registro de Evento e gera Eventos de NFS-e, crédito, débito e apuração.
+    /// Recepciona o Pedido de Registro de Evento e gera eventos de NFS-e, crédito, débito e apuração.
     /// </summary>
-    /// <param name="evento">Evento</param>
-    /// <returns></returns>
+    /// <param name="evento">Objeto <see cref="PedidoRegistroEvento"/> representando o evento.</param>
+    /// <returns>Resposta do envio do evento.</returns>
     public Task<NFSeResponse<RespostaEnvioEvento>> EnviarEventoAsync(PedidoRegistroEvento evento) => webservice.EnviarEventoAsync(evento);
-    
+
     /// <summary>
     /// Distribui os DF-e para contribuintes relacionados à NFS-e.
     /// </summary>
-    /// <param name="nsu">Numero da Nsu</param>
-    /// <returns>Dados da consulta</returns>
+    /// <param name="nsu">Número do NSU.</param>
+    /// <returns>Dados da consulta dos DF-e.</returns>
     public Task<NFSeResponse<RespostaConsultaDFe>> ConsultaNsuAsync(int nsu) => webservice.ConsultaNsuAsync(nsu);
-    
+
     /// <summary>
-    /// Distribui os DF-e vinculados à chave de acesso informada
+    /// Distribui os DF-e vinculados à chave de acesso informada.
     /// </summary>
-    /// <param name="chave">chave da NFSe</param>
-    /// <returns>Dados da consulta</returns>
+    /// <param name="chave">Chave de acesso da NFS-e.</param>
+    /// <returns>Dados da consulta dos DF-e.</returns>
     public Task<NFSeResponse<RespostaConsultaDFe>> ConsultaChaveAsync(string chave) => webservice.ConsultaChaveAsync(chave);
-    
+
     /// <summary>
     /// Retorna o DANFSe de uma NFS-e a partir de sua chave de acesso.
     /// </summary>
-    /// <param name="chave">Chave de acesso</param>
-    /// <returns>Byte array da DANFSe</returns>
+    /// <param name="chave">Chave de acesso da NFS-e.</param>
+    /// <returns>Array de bytes contendo o DANFSe.</returns>
     public Task<byte[]> DownloadDANFSeAsync(string chave) => webservice.DownloadDANFSeAsync(chave);
-    
+
     /// <summary>
     /// Retorna a chave de acesso da NFS-e a partir do identificador do DPS.
     /// </summary>
-    /// <param name="id">Identificação da Dps</param>
-    /// <returns>Dados da consulta</returns>
+    /// <param name="id">Identificação da DPS.</param>
+    /// <returns>Dados da consulta da chave de acesso.</returns>
     public Task<NFSeResponse<RespostaConsultaChaveDps>> ConsultaChaveDpsAsync(string id) => webservice.ConsultaChaveDpsAsync(id);
-    
+
     /// <summary>
     /// Verifica se uma NFS-e foi emitida a partir do Id do DPS.
     /// </summary>
-    /// <param name="id">Identificação da Dps</param>
-    /// <returns></returns>
+    /// <param name="id">Identificação da DPS.</param>
+    /// <returns>True se a NFS-e existe, caso contrário, false.</returns>
     public Task<bool> ConsultaExisteDpsAsync(string id) => webservice.ConsultaExisteDpsAsync(id);
 
     #endregion

@@ -29,15 +29,19 @@
 // <summary></summary>
 // ***********************************************************************
 
-using System;
 using System.Text.Json.Serialization;
-using OpenAC.Net.DFe.Core.Common;
 using OpenAC.Net.NFSe.Nacional.Common.Converter;
 
 namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 
+/// <summary>
+/// Representa a resposta do envio de evento, contendo o XML do evento em formato GZip e Base64.
+/// </summary>
 public sealed class RespostaEnvioEvento : RespostaBase
 {
+    /// <summary>
+    /// Obtém ou define o XML do evento compactado em GZip e codificado em Base64.
+    /// </summary>
     [JsonPropertyName("eventoXmlGZipB64")]
     [JsonConverter(typeof(XmlGzipJsonConverter))]
     public string XmlEvento { get; set; } = string.Empty;

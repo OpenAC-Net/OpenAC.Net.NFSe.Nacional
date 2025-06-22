@@ -34,35 +34,49 @@ using OpenAC.Net.DFe.Core.Attributes;
 namespace OpenAC.Net.NFSe.Nacional.Common.Types;
 
 /// <summary>
-/// Vínculo entre as partes no negócio:
-/// 0 - Sem vínculo com o tomador/ Prestador
-/// 1 - Controlada;
-/// 2 - Controladora;
-/// 3 - Coligada;
-/// 4 - Matriz;
-/// 5 - Filial ou sucursal;
-/// 6 - Outro vínculo;
+/// Vínculo entre as partes no negócio.
 /// </summary>
 public enum VinculoPrestador
 {
+    /// <summary>
+    /// Sem vínculo com o tomador/Prestador.
+    /// </summary>
     [DFeEnum("0")]
     SemVinculo = 0,
-    
+
+    /// <summary>
+    /// Controlada.
+    /// </summary>
     [DFeEnum("1")]
     Controlada = 1,
-    
+
+    /// <summary>
+    /// Controladora.
+    /// </summary>
     [DFeEnum("2")]
     Controladora = 2,
-    
+
+    /// <summary>
+    /// Coligada.
+    /// </summary>
     [DFeEnum("3")]
     Coligada = 3,
-    
+
+    /// <summary>
+    /// Matriz.
+    /// </summary>
     [DFeEnum("4")]
     Matriz = 4,
-    
+
+    /// <summary>
+    /// Filial ou sucursal.
+    /// </summary>
     [DFeEnum("5")]
     Filial = 5,
-    
+
+    /// <summary>
+    /// Outro vínculo.
+    /// </summary>
     [DFeEnum("6")]
     Outro = 6
 }

@@ -35,14 +35,26 @@ using OpenAC.Net.NFSe.Nacional.Common.Types;
 
 namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 
+/// <summary>
+/// Representa o evento de solicitação de análise fiscal para cancelamento de NFS-e.
+/// </summary>
 public sealed class EventoSolicitacaoCancelamento : IEventoNFSe
 {
+    /// <summary>
+    /// Descrição do evento.
+    /// </summary>
     [DFeElement(TipoCampo.Str, "xDesc", Ocorrencia = Ocorrencia.Obrigatoria)]
     public string Descricao { get; set; } = "Solicitação de Análise Fiscal para Cancelamento de NFS-e";
     
+    /// <summary>
+    /// Código do motivo da solicitação.
+    /// </summary>
     [DFeElement(TipoCampo.Enum, "cMotivo", Ocorrencia = Ocorrencia.Obrigatoria)]
     public JustificativaAnalise CodMotivo { get; set; }
     
+    /// <summary>
+    /// Justificativa detalhada do motivo da solicitação.
+    /// </summary>
     [DFeElement(TipoCampo.Str, "xMotivo", Min = 15, Max = 255, Ocorrencia = Ocorrencia.Obrigatoria)]
     public string Motivo { get; set; } = string.Empty;
 }

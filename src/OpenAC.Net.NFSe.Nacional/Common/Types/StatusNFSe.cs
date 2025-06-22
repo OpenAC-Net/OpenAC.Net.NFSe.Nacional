@@ -33,19 +33,33 @@ using OpenAC.Net.DFe.Core.Attributes;
 
 namespace OpenAC.Net.NFSe.Nacional.Common.Types;
 
+
 /// <summary>
-/// 100 - NFS-e Gerada;
-/// 101 - NFS-e de Substituição Gerada;
-/// 102 - NFS-e de Decisão Judicial;
-/// 103 - NFS-e Avulsa
+/// Status da NFS-e.
 /// </summary>
 public enum StatusNFSe
 {
-    [DFeEnum("100")] Gerada,
+    /// <summary>
+    /// 100 - NFS-e Gerada
+    /// </summary>
+    [DFeEnum("100")] 
+    Gerada,
 
-    [DFeEnum("101")] SubstituicaoGerada,
+    /// <summary>
+    /// 101 - NFS-e de Substituição Gerada
+    /// </summary>
+    [DFeEnum("101")] 
+    SubstituicaoGerada,
 
-    [DFeEnum("102")] DecisaoJudicial,
+    /// <summary>
+    /// 102 - NFS-e de Decisão Judicial
+    /// </summary>
+    [DFeEnum("102")] 
+    DecisaoJudicial,
 
-    [DFeEnum("103")] Avulsa
+    /// <summary>
+    /// 103 - NFS-e Avulsa
+    /// </summary>
+    [DFeEnum("103")] 
+    Avulsa
 }

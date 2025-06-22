@@ -34,11 +34,20 @@ using OpenAC.Net.DFe.Core.Serializer;
 
 namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 
+/// <summary>
+/// Representa a localidade de prestação de serviço na NFSe.
+/// </summary>
 public sealed class LocalidadeNFSe
 {
+    /// <summary>
+    /// Código do município de prestação do serviço (7 dígitos).
+    /// </summary>
     [DFeElement(TipoCampo.StrNumber, "cLocPrestacao", Min = 7, Max = 7, Ocorrencia = Ocorrencia.NaoObrigatoria)]
     public string? CodMunicipioPrestacao { get; set; }
     
+    /// <summary>
+    /// Código do país de prestação do serviço (2 dígitos).
+    /// </summary>
     [DFeElement(TipoCampo.StrNumber, "cPaisPrestacao", Min = 2, Max = 2, Ocorrencia = Ocorrencia.NaoObrigatoria)]
     public string? CodPaisPrestacao { get; set; }
 }

@@ -34,14 +34,26 @@ using OpenAC.Net.DFe.Core.Serializer;
 
 namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 
+/// <summary>
+/// Representa a chave de identificação de uma NFSe no município.
+/// </summary>
 public sealed class ChaveNFSeMunicipio
 {
+    /// <summary>
+    /// Código do município (7 dígitos).
+    /// </summary>
     [DFeElement(TipoCampo.Str, "cMunNFSeMun", Min = 7, Max = 7, Ocorrencia = Ocorrencia.Obrigatoria)]
     public string CodMunicipio { get; set; } = string.Empty;
     
+    /// <summary>
+    /// Número da NFSe (1 a 15 dígitos).
+    /// </summary>
     [DFeElement(TipoCampo.Str, "nNFSeMun", Min = 1, Max = 15, Ocorrencia = Ocorrencia.Obrigatoria)]
     public int Numero { get; set; }
     
+    /// <summary>
+    /// Código de verificação da NFSe (1 a 9 caracteres).
+    /// </summary>
     [DFeElement(TipoCampo.Str, "cVerifNFSeMun", Min = 1, Max = 9, Ocorrencia = Ocorrencia.Obrigatoria)]
     public string CodVerificacao { get; set; } = string.Empty;
 }

@@ -33,25 +33,33 @@ using System.Collections.Generic;
 
 namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 
+/// <summary>
+/// Representa uma mensagem de processamento retornada pela API.
+/// </summary>
 public sealed class MensagemProcessamento
 {
-    //Comentado, pois por mais que no swagger está minúsculo, está retornando maiúsculo
-    //[JsonPropertyName("mensagem")]
+    /// <summary>
+    /// Mensagem principal do processamento.
+    /// </summary>
     public string Mensagem { get; set; } = string.Empty;
 
-    //Comentado, pois por mais que no swagger está minúsculo, está retornando maiúsculo
-    //[JsonPropertyName("codigo")]
+    /// <summary>
+    /// Código associado à mensagem.
+    /// </summary>
     public string Codigo { get; set; } = string.Empty;
 
-    //Comentado, pois por mais que no swagger está minúsculo, está retornando maiúsculo
-    //[JsonPropertyName("descricao")]
+    /// <summary>
+    /// Descrição detalhada da mensagem.
+    /// </summary>
     public string Descricao { get; set; } = string.Empty;
 
-    //Comentado, pois por mais que no swagger está minúsculo, está retornando maiúsculo
-    //[JsonPropertyName("complemento")]
+    /// <summary>
+    /// Complemento adicional da mensagem.
+    /// </summary>
     public string Complemento { get; set; } = string.Empty;
 
-    //Comentado, pois por mais que no swagger está minúsculo, está retornando maiúsculo
-    //[JsonPropertyName("parametros")] 
+    /// <summary>
+    /// Lista de parâmetros relacionados à mensagem.
+    /// </summary>
     public List<string> Parametros { get; set; } = new();
 }

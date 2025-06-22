@@ -40,9 +40,15 @@ namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 /// </summary>
 public sealed class TotalTributos
 {
+    /// <summary>
+    /// Valor total aproximado dos tributos.
+    /// </summary>
     [DFeElement("vTotTrib", Ocorrencia = Ocorrencia.NaoObrigatoria)]
     public ValorTotalTributos? ValorTotal { get; set; }
     
+    /// <summary>
+    /// Percentual aproximado do total dos tributos.
+    /// </summary>
     [DFeElement("pTotTrib", Ocorrencia = Ocorrencia.NaoObrigatoria)]
     public PorcentagemTotalTributos? PorcentagemTotal { get; set; }
 
