@@ -31,10 +31,28 @@
 
 namespace OpenAC.Net.NFSe.Nacional.Common.Types;
 
+/// <summary>
+/// Define os tipos de documentos suportados pelo sistema.
+/// </summary>
 public enum TipoDocumento
 {
+    /// <summary>
+    /// Documento de Prestação de Serviço (DPS).
+    /// </summary>
     DPS,
+
+    /// <summary>
+    /// Pedido de Registro de Evento.
+    /// </summary>
     PEDIDO_REGISTRO_EVENTO,
+
+    /// <summary>
+    /// Nota Fiscal de Serviço Eletrônica (NFS-e).
+    /// </summary>
     NFSE,
+
+    /// <summary>
+    /// Evento relacionado ao documento.
+    /// </summary>
     EVENTO
 }

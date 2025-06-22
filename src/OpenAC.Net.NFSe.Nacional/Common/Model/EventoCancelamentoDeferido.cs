@@ -35,20 +35,38 @@ using OpenAC.Net.NFSe.Nacional.Common.Types;
 
 namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 
+/// <summary>
+/// Representa o evento de cancelamento de NFS-e deferido por análise fiscal.
+/// </summary>
 public sealed class EventoCancelamentoDeferido : IEventoNFSe
 {
+    /// <summary>
+    /// Descrição do evento.
+    /// </summary>
     [DFeElement(TipoCampo.Str, "xDesc", Ocorrencia = Ocorrencia.Obrigatoria)]
     public string Descricao { get; set; } = "Cancelamento de NFS-e Deferido por Análise Fiscal";
 
+    /// <summary>
+    /// CPF do agente tributário responsável.
+    /// </summary>
     [DFeElement(TipoCampo.Str, "CPFAgTrib", Min = 11, Max = 11, Ocorrencia = Ocorrencia.Obrigatoria)]
     public string CPFAgTrib { get; set; } = string.Empty;
     
+    /// <summary>
+    /// Número do processo administrativo, se houver.
+    /// </summary>
     [DFeElement(TipoCampo.StrNumber, "nProcAdm", Min = 1, Max = 30, Ocorrencia = Ocorrencia.NaoObrigatoria)]
     public string? NumProcessoAdm { get; set; } 
     
+    /// <summary>
+    /// Código do motivo do deferimento.
+    /// </summary>
     [DFeElement(TipoCampo.Enum, "cMotivo", Ocorrencia = Ocorrencia.Obrigatoria)]
     public CodRespostaAnaliseDeferido CodMotivo { get; set; }
     
+    /// <summary>
+    /// Motivo detalhado do deferimento.
+    /// </summary>
     [DFeElement(TipoCampo.Str, "xMotivo", Min = 15, Max = 255, Ocorrencia = Ocorrencia.Obrigatoria)]
     public string Motivo { get; set; } = string.Empty;
 }

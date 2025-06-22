@@ -6,7 +6,7 @@
 // Last Modified By : RFTD
 // Last Modified On : 09-09-2023
 // ***********************************************************************
-// <copyright file="ConfiguracaoNFSe.cs" company="OpenAC .Net">
+// <copyright file="NFSeGeralConfig.cs" company="OpenAC .Net">
 //		        		   The MIT License (MIT)
 //	     		    Copyright (c) 2014-2023 Grupo OpenAC.Net
 //
@@ -30,21 +30,22 @@
 // ***********************************************************************
 
 using OpenAC.Net.DFe.Core.Common;
+using OpenAC.Net.NFSe.Nacional.Common.Types;
 
-namespace OpenAC.Net.NFSe.Nacional;
+namespace OpenAC.Net.NFSe.Nacional.Common;
 
-public sealed class ConfiguracaoNFSe : DFeConfigBase<NFSeGeralConfig, NFSeWebserviceConfig, 
-    NFSeCertificadoConfig, NFSeArquivoConfig>
+/// <summary>
+/// Representa a configuração geral para NFSe.
+/// </summary>
+public sealed class NFSeGeralConfig : DFeGeralConfigBase
 {
-    #region Constructors
+    #region Properties
 
-    public ConfiguracaoNFSe()
-    {
-        Geral = new NFSeGeralConfig();
-        WebServices = new NFSeWebserviceConfig();
-        Certificados = new NFSeCertificadoConfig();
-        Arquivos = new NFSeArquivoConfig();
-    }
+    /// <summary>
+    /// Obtém ou define a versão da NFSe.
+    /// </summary>
+    /// <value>A versão da NFSe.</value>
+    public VersaoNFSe Versao { get; set; } = VersaoNFSe.Ve100;
 
-    #endregion Constructors
+    #endregion Properties
 }

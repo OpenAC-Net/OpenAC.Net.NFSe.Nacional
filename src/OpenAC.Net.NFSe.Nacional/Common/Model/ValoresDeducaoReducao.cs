@@ -35,14 +35,26 @@ using OpenAC.Net.DFe.Core.Serializer;
 
 namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 
+/// <summary>
+/// Representa os valores de dedução ou redução, incluindo porcentagem, valor e documentos relacionados.
+/// </summary>
 public sealed class ValoresDeducaoReducao
 {
+    /// <summary>
+    /// Porcentagem de dedução ou redução.
+    /// </summary>
     [DFeElement(TipoCampo.De2, "pDR", Min = 4, Max = 6, Ocorrencia = Ocorrencia.Obrigatoria)]
     public decimal Porcentagem { get; set; }
 
+    /// <summary>
+    /// Valor de dedução ou redução.
+    /// </summary>
     [DFeElement(TipoCampo.De2, "vDR", Min = 4, Max = 18, Ocorrencia = Ocorrencia.Obrigatoria)]
     public decimal Valor { get; set; }
 
+    /// <summary>
+    /// Lista de documentos de dedução ou redução.
+    /// </summary>
     [DFeCollection("documentos")]
     [DFeItem(typeof(DocumentoDeducaoReducao), "docDedRed")]
     public List<DocumentoDeducaoReducao> Documentos { get; set; } = new();

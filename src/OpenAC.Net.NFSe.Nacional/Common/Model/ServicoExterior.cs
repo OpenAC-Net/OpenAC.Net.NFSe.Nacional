@@ -35,36 +35,68 @@ using OpenAC.Net.NFSe.Nacional.Common.Types;
 
 namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 
+/// <summary>
+/// Representa os dados de serviço prestado no exterior.
+/// </summary>
 public sealed class ServicoExterior
 {
-
+    /// <summary>
+    /// Modalidade da prestação do serviço.
+    /// </summary>
     [DFeElement(TipoCampo.Enum, "mdPrestacao", Ocorrencia = Ocorrencia.Obrigatoria)]
     public ModoPrestacao Modo { get; set; } = ModoPrestacao.Desconhecido;
 
+    /// <summary>
+    /// Vínculo do prestador.
+    /// </summary>
     [DFeElement(TipoCampo.Enum, "vincPrest", Ocorrencia = Ocorrencia.Obrigatoria)]
     public VinculoPrestador Vinculo { get; set; } = VinculoPrestador.SemVinculo;
 
+    /// <summary>
+    /// Código da moeda (3 dígitos).
+    /// </summary>
     [DFeElement(TipoCampo.Int, "tpMoeda", Min = 3, Max = 3, Ocorrencia = Ocorrencia.Obrigatoria)]
     public int CodMoeda { get; set; }
 
+    /// <summary>
+    /// Valor do serviço na moeda informada.
+    /// </summary>
     [DFeElement(TipoCampo.De2, "vServMoeda", Min = 4, Max = 18, Ocorrencia = Ocorrencia.Obrigatoria)]
     public decimal ValorServico { get; set; }
     
+    /// <summary>
+    /// Apoio ao comércio exterior pelo prestador.
+    /// </summary>
     [DFeElement(TipoCampo.Enum, "mecAFComexP", Ocorrencia = Ocorrencia.Obrigatoria)]
     public ApoioComercioExteriorPrestador ApoioComercioExteriorPrestador { get; set; } = ApoioComercioExteriorPrestador.Desconhecido;
     
+    /// <summary>
+    /// Apoio ao comércio exterior pelo tomador.
+    /// </summary>
     [DFeElement(TipoCampo.Enum, "mecAFComexT", Ocorrencia = Ocorrencia.Obrigatoria)]
     public ApoioComercioExteriorTomador ApoioComercioExteriorTomador { get; set; } = ApoioComercioExteriorTomador.Desconhecido;
     
+    /// <summary>
+    /// Movimentação temporária de bens.
+    /// </summary>
     [DFeElement(TipoCampo.Enum, "movTempBens", Ocorrencia = Ocorrencia.Obrigatoria)]
     public MovimentacaoTemporariaBens MovimentacaoTemporariaBens { get; set; } = MovimentacaoTemporariaBens.Desconhecido;
     
+    /// <summary>
+    /// Número da Declaração de Importação (DI).
+    /// </summary>
     [DFeElement(TipoCampo.StrNumber, "nDI", Min = 1, Max = 12, Ocorrencia = Ocorrencia.NaoObrigatoria)]
     public string? NumeroDeclaracaoImportacao { get; set; }
     
+    /// <summary>
+    /// Número do Registro de Exportação (RE).
+    /// </summary>
     [DFeElement(TipoCampo.StrNumber, "nRE", Min = 1, Max = 12, Ocorrencia = Ocorrencia.NaoObrigatoria)]
     public string? NumeroRegistroExportacao { get; set; }
 
+    /// <summary>
+    /// Compartilhamento de informações com o MDIC.
+    /// </summary>
     [DFeElement(TipoCampo.Enum, "mdic", Ocorrencia = Ocorrencia.Obrigatoria)]
     public CompartilharMDIC CompartilharMDIC { get; set; } = CompartilharMDIC.NaoEnviar;
-} 
+}

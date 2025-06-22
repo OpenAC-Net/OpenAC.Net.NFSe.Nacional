@@ -36,12 +36,18 @@ using OpenAC.Net.DFe.Core.Serializer;
 
 namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 
+/// <summary>
+/// Representa o documento DPS (Documento de Prestação de Serviço) para NFSe Nacional.
+/// </summary>
 [DFeSignInfoElement("infDPS")]
 [DFeRoot("DPS", Namespace = "http://www.sped.fazenda.gov.br/nfse")]
 public sealed class Dps : DFeSignDocument<Dps>
 {
     #region Constructors
 
+    /// <summary>
+    /// Inicializa uma nova instância da classe <see cref="Dps"/>.
+    /// </summary>
     public Dps()
     {
         Signature = new DFeSignature();
@@ -51,20 +57,26 @@ public sealed class Dps : DFeSignDocument<Dps>
     
     #region Properties
 
+    /// <summary>
+    /// Obtém ou define a versão do layout do DPS.
+    /// </summary>
     [DFeAttribute(TipoCampo.Str, "versao", Ocorrencia = Ocorrencia.Obrigatoria)]
     public string Versao { get; set; } = string.Empty;
 
+    /// <summary>
+    /// Obtém ou define as informações do DPS.
+    /// </summary>
     [DFeElement("infDPS", Ocorrencia = Ocorrencia.Obrigatoria)]
     public InfDps Informacoes { get; set; } = new();
 
     #endregion Properties
     
     #region Methods
-
+    
     /// <summary>
-    /// 
+    /// Assina o documento DPS utilizando as configurações fornecidas.
     /// </summary>
-    /// <param name="configuracao"></param>
+    /// <param name="configuracao">Configuração da NFSe.</param>
     public void Assinar(ConfiguracaoNFSe configuracao)
     {
         var options = DFeSaveOptions.DisableFormatting;

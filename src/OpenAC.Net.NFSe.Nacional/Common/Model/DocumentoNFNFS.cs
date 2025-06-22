@@ -34,14 +34,26 @@ using OpenAC.Net.DFe.Core.Serializer;
 
 namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 
+/// <summary>
+/// Representa o documento NF/NFS com número, modelo e série.
+/// </summary>
 public sealed class DocumentoNFNFS
 {
+    /// <summary>
+    /// Número do documento NF/NFS.
+    /// </summary>
     [DFeElement(TipoCampo.Int, "nNFS", Min = 1, Max = 7, Ocorrencia = Ocorrencia.Obrigatoria)]
     public int Numero { get; set; } = 1;
     
+    /// <summary>
+    /// Modelo do documento NF/NFS.
+    /// </summary>
     [DFeElement(TipoCampo.Int, "modNFS", Min = 1, Max = 15, Ocorrencia = Ocorrencia.Obrigatoria)]
     public int Modelo { get; set; } = 1;
     
+    /// <summary>
+    /// Série do documento NF/NFS.
+    /// </summary>
     [DFeElement(TipoCampo.StrNumber, "serieNFS", Min = 1, Max = 15, Ocorrencia = Ocorrencia.NaoObrigatoria)]
     public string? Serie { get; set; }
 }

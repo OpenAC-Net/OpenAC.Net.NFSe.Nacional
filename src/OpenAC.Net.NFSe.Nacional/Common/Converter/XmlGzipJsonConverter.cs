@@ -39,12 +39,22 @@ using OpenAC.Net.Core.Extensions;
 
 namespace OpenAC.Net.NFSe.Nacional.Common.Converter;
 
+/// <summary>
+/// Conversor JSON para strings XML compactadas em GZip e codificadas em Base64.
+/// </summary>
 public class XmlGzipJsonConverter : JsonConverter<string>
 {
+    /// <summary>
+    /// Lê uma string codificada em Base64 e compactada em GZip de JSON, descompacta e retorna o XML como string.
+    /// </summary>
+    /// <param name="reader">Leitor JSON.</param>
+    /// <param name="typeToConvert">Tipo a ser convertido.</param>
+    /// <param name="options">Opções do serializador JSON.</param>
+    /// <returns>String XML descompactada.</returns>
     public override string? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
         var dados = reader.GetString();
-        if (dados.IsEmpty()) return dados;
+        if (dados!.IsEmpty()) return dados;
 
         using var memoryStream = new MemoryStream(Convert.FromBase64String(dados!));
         using var gZipStream = new GZipStream(memoryStream, CompressionMode.Decompress);
@@ -56,6 +66,12 @@ public class XmlGzipJsonConverter : JsonConverter<string>
         return Encoding.UTF8.GetString(outputBytes);
     }
 
+    /// <summary>
+    /// Escreve uma string XML como Base64 compactado em GZip no JSON.
+    /// </summary>
+    /// <param name="writer">Gravador JSON.</param>
+    /// <param name="value">String XML a ser compactada e escrita.</param>
+    /// <param name="options">Opções do serializador JSON.</param>
     public override void Write(Utf8JsonWriter writer, string value, JsonSerializerOptions options)
     {
         if (value.IsEmpty())
@@ -69,9 +85,7 @@ public class XmlGzipJsonConverter : JsonConverter<string>
         using (var gZipStream = new GZipStream(memoryStream, CompressionMode.Compress))
             gZipStream.Write(dados, 0, dados.Length);
 
-        byte[] compressedBytes = memoryStream.ToArray();
-        string base64String = Convert.ToBase64String(compressedBytes);
-
+        var compressedBytes = memoryStream.ToArray();
         writer.WriteBase64StringValue(compressedBytes);
     }
 }

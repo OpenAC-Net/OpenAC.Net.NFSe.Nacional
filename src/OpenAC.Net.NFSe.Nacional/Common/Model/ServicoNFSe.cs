@@ -33,29 +33,56 @@ using OpenAC.Net.DFe.Core.Attributes;
 
 namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 
+/// <summary>
+/// Representa o serviço da NFSe, contendo informações obrigatórias e opcionais conforme o layout nacional.
+/// </summary>
 public sealed class ServicoNFSe
 {
+    /// <summary>
+    /// Localidade da prestação do serviço.
+    /// </summary>
     [DFeElement("locPrest", Ocorrencia = Ocorrencia.Obrigatoria)]
     public LocalidadeNFSe Localidade { get; set; } = new();
 
+    /// <summary>
+    /// Informações do serviço prestado.
+    /// </summary>
     [DFeElement("cServ", Ocorrencia = Ocorrencia.Obrigatoria)]
     public InformacoesServico Informacoes { get; set; } = new();
     
+    /// <summary>
+    /// Informações sobre serviço prestado no exterior.
+    /// </summary>
     [DFeElement("comExt", Ocorrencia = Ocorrencia.NaoObrigatoria)]
     public ServicoExterior? ServicoExterior { get; set; }
     
+    /// <summary>
+    /// Informações de locação, se aplicável.
+    /// </summary>
     [DFeElement("lsadppu", Ocorrencia = Ocorrencia.NaoObrigatoria)]
     public InformacoesLocacao? InformacoesLocacao { get; set; }
     
+    /// <summary>
+    /// Informações sobre obra, se aplicável.
+    /// </summary>
     [DFeElement("obra", Ocorrencia = Ocorrencia.NaoObrigatoria)]
     public ObraNFSe? Obra { get; set; }
     
+    /// <summary>
+    /// Informações sobre evento do serviço, se aplicável.
+    /// </summary>
     [DFeElement("atvEvento", Ocorrencia = Ocorrencia.NaoObrigatoria)]
     public EventoServicoNFSe? Evento { get; set; }
     
+    /// <summary>
+    /// Informações sobre exploração rodoviária, se aplicável.
+    /// </summary>
     [DFeElement("explRod", Ocorrencia = Ocorrencia.NaoObrigatoria)]
     public ExploracaoRodoviaria? ExploracaoRodoviaria { get; set; }
     
+    /// <summary>
+    /// Informações complementares do serviço.
+    /// </summary>
     [DFeElement("infoCompl", Ocorrencia = Ocorrencia.NaoObrigatoria)]
     public InformacoesComplementares? InformacoesComplementares { get; set; }
 }

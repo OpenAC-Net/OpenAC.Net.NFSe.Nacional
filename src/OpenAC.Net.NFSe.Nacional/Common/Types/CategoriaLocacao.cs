@@ -34,27 +34,37 @@ using OpenAC.Net.DFe.Core.Attributes;
 namespace OpenAC.Net.NFSe.Nacional.Common.Types;
 
 /// <summary>
-/// Categorias do serviço:
-/// 1 - Locação;
-/// 2 - Sublocação;
-/// 3 - Arrendamento;
-/// 4 - Direito de passagem;
-/// 5 - Permissão de uso;
+/// Categorias do serviço de locação.
 /// </summary>
 public enum CategoriaLocacao
 {
+    /// <summary>
+    /// 1 - Locação
+    /// </summary>
     [DFeEnum("1")]
     Locacao = 1,
-    
+
+    /// <summary>
+    /// 2 - Sublocação
+    /// </summary>
     [DFeEnum("2")]
     Sublocacao,
-    
+
+    /// <summary>
+    /// 3 - Arrendamento
+    /// </summary>
     [DFeEnum("3")]
     Arrendamento,
-    
+
+    /// <summary>
+    /// 4 - Direito de passagem
+    /// </summary>
     [DFeEnum("4")]
     DireitoPassagem,
-    
+
+    /// <summary>
+    /// 5 - Permissão de uso
+    /// </summary>
     [DFeEnum("5")]
     PermissaoUso
 }

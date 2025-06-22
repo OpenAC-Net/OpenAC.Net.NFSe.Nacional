@@ -34,11 +34,20 @@ using OpenAC.Net.DFe.Core.Serializer;
 
 namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 
+/// <summary>
+/// Representa os valores do serviço na NFSe.
+/// </summary>
 public sealed class ValoresServico
 {
+    /// <summary>
+    /// Valor recebido referente ao serviço (opcional).
+    /// </summary>
     [DFeElement(TipoCampo.De2, "vReceb", Min = 4, Max = 18, Ocorrencia = Ocorrencia.NaoObrigatoria)]
     public decimal? ValorRecebido { get; set; }
 
+    /// <summary>
+    /// Valor do serviço (obrigatório).
+    /// </summary>
     [DFeElement(TipoCampo.De2, "vServ", Min = 4, Max = 18, Ocorrencia = Ocorrencia.Obrigatoria)]
     public decimal Valor { get; set; }
 }

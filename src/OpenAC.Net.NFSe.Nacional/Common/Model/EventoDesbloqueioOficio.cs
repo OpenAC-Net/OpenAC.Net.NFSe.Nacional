@@ -34,14 +34,26 @@ using OpenAC.Net.DFe.Core.Serializer;
 
 namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 
+/// <summary>
+/// Representa o evento de desbloqueio de NFS-e por ofício.
+/// </summary>
 public sealed class EventoDesbloqueioOficio : IEventoNFSe
 {
+    /// <summary>
+    /// Descrição do evento.
+    /// </summary>
     [DFeElement(TipoCampo.Str, "xDesc", Ocorrencia = Ocorrencia.Obrigatoria)]
     public string Descricao { get; set; } = "Desbloqueio de NFS-e por Ofício";
 
+    /// <summary>
+    /// CPF do agente tributário responsável pelo desbloqueio.
+    /// </summary>
     [DFeElement(TipoCampo.Str, "CPFAgTrib", Min = 11, Max = 11, Ocorrencia = Ocorrencia.Obrigatoria)]
     public string CPFAgTrib { get; set; } = string.Empty;
 
+    /// <summary>
+    /// Código de manifestação do evento de desbloqueio por ofício.
+    /// </summary>
     [DFeElement(TipoCampo.StrNumber, "idBloqOfic", Min = 59, Max = 59, Ocorrencia = Ocorrencia.Obrigatoria)]
     public string CodManifestacaoEvento { get; set; } = string.Empty;
 }

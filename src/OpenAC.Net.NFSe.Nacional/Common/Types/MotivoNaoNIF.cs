@@ -33,14 +33,26 @@ using OpenAC.Net.DFe.Core.Attributes;
 
 namespace OpenAC.Net.NFSe.Nacional.Common.Types;
 
+/// <summary>
+/// Motivos para não informar o NIF (Número de Identificação Fiscal).
+/// </summary>
 public enum MotivoNaoNIF
 {
+    /// <summary>
+    /// Não informado por ser nota de origem.
+    /// </summary>
     [DFeEnum("0")]
     NaoInformadoNotaOrigem = 0,
     
+    /// <summary>
+    /// Dispensado da obrigatoriedade de informar o NIF.
+    /// </summary>
     [DFeEnum("1")]
     Dispensado = 1,
     
+    /// <summary>
+    /// Não exigido informar o NIF.
+    /// </summary>
     [DFeEnum("2")]
     NaoExigido = 2
 }

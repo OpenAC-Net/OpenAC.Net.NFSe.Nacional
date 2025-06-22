@@ -6,7 +6,7 @@
 // Last Modified By : RFTD
 // Last Modified On : 09-09-2023
 // ***********************************************************************
-// <copyright file="NFSeGeralConfig.cs" company="OpenAC .Net">
+// <copyright file="NFSeWebserviceConfig.cs" company="OpenAC .Net">
 //		        		   The MIT License (MIT)
 //	     		    Copyright (c) 2014-2023 Grupo OpenAC.Net
 //
@@ -26,20 +26,19 @@
 // ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 // </copyright>
-// <summary></summary>
+// <summary>
+//     Defines the configuration settings for the NFSe web service.
+// </summary>
 // ***********************************************************************
 
 using OpenAC.Net.DFe.Core.Common;
-using OpenAC.Net.NFSe.Nacional.Common;
-using OpenAC.Net.NFSe.Nacional.Common.Types;
 
-namespace OpenAC.Net.NFSe.Nacional;
-
-public sealed class NFSeGeralConfig : DFeGeralConfigBase
+namespace OpenAC.Net.NFSe.Nacional.Common
 {
-    #region Properties
-
-    public VersaoNFSe Versao { get; set; }
-
-    #endregion Properties
+    /// <summary>
+    /// Representa as configurações para os webservices da NFSe.
+    /// </summary>
+    public sealed class NFSeWebserviceConfig : DFeWebserviceConfigBase
+    {
+    }
 }

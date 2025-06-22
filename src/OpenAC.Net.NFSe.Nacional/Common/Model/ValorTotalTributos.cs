@@ -34,14 +34,26 @@ using OpenAC.Net.DFe.Core.Serializer;
 
 namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 
+/// <summary>
+/// Representa os valores totais dos tributos federais, estaduais e municipais.
+/// </summary>
 public sealed class ValorTotalTributos
 {
+    /// <summary>
+    /// Valor total dos tributos federais.
+    /// </summary>
     [DFeElement(TipoCampo.De2, "vTotTribFed", Min = 4, Max = 18, Ocorrencia = Ocorrencia.Obrigatoria)]
     public decimal TotalFederal { get; set; }
     
+    /// <summary>
+    /// Valor total dos tributos estaduais.
+    /// </summary>
     [DFeElement(TipoCampo.De2, "vTotTribEst", Min = 4, Max = 18, Ocorrencia = Ocorrencia.Obrigatoria)]
     public decimal TotalEstadual{ get; set; }
     
+    /// <summary>
+    /// Valor total dos tributos municipais.
+    /// </summary>
     [DFeElement(TipoCampo.De2, "vTotTribMun", Min = 4, Max = 18, Ocorrencia = Ocorrencia.Obrigatoria)]
     public decimal TotalMunicipal { get; set; }
 }

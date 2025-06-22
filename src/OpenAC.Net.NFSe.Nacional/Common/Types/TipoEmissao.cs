@@ -34,15 +34,19 @@ using OpenAC.Net.DFe.Core.Attributes;
 namespace OpenAC.Net.NFSe.Nacional.Common.Types;
 
 /// <summary>
-/// Tipo de emissão da NFS-e:
-/// 1 - Emissão normal no modelo da NFS-e Nacional;
-/// 2 - Emissão original em leiaute próprio do município com transcrição para o modelo da NFS-e Nacional.
+/// Tipo de emissão da NFS-e.
 /// </summary>
 public enum TipoEmissao
 {
+    /// <summary>
+    /// Emissão normal no modelo da NFS-e Nacional.
+    /// </summary>
     [DFeEnum("1")]
     ModeloNacional,
-    
+
+    /// <summary>
+    /// Emissão original em leiaute próprio do município com transcrição para o modelo da NFS-e Nacional.
+    /// </summary>
     [DFeEnum("2")]
     ModeloMunicipio
 }

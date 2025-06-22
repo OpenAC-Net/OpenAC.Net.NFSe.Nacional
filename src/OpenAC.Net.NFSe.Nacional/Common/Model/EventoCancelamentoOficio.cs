@@ -34,17 +34,32 @@ using OpenAC.Net.DFe.Core.Serializer;
 
 namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 
+/// <summary>
+/// Representa o evento de cancelamento de NFS-e por ofício.
+/// </summary>
 public sealed class EventoCancelamentoOficio : IEventoNFSe
 {
+    /// <summary>
+    /// Descrição do evento.
+    /// </summary>
     [DFeElement(TipoCampo.Str, "xDesc", Ocorrencia = Ocorrencia.Obrigatoria)]
     public string Descricao { get; set; } = "Cancelamento de NFS-e por Ofício";
 
+    /// <summary>
+    /// CPF do agente tributário responsável pelo cancelamento.
+    /// </summary>
     [DFeElement(TipoCampo.Str, "CPFAgTrib", Min = 11, Max = 11, Ocorrencia = Ocorrencia.Obrigatoria)]
     public string CPFAgTrib { get; set; } = string.Empty;
     
+    /// <summary>
+    /// Número do processo administrativo relacionado ao cancelamento.
+    /// </summary>
     [DFeElement(TipoCampo.StrNumber, "nProcAdm", Min = 1, Max = 30, Ocorrencia = Ocorrencia.NaoObrigatoria)]
     public string? NumProcessoAdm { get; set; } 
     
+    /// <summary>
+    /// Descrição do processo administrativo.
+    /// </summary>
     [DFeElement(TipoCampo.Str, "xProcAdm", Min = 15, Max = 255, Ocorrencia = Ocorrencia.Obrigatoria)]
     public string DescricaoProcessoAdm { get; set; } = string.Empty;
 }

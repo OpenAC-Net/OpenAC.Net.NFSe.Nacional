@@ -35,10 +35,21 @@ using OpenAC.Net.Core.Logging;
 
 namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 
-public sealed class NFSeResponse<T>: IOpenLog where T : class, new()
+/// <summary>
+/// Representa a resposta de uma operação NFSe, contendo os dados de envio, retorno e resultado desserializado.
+/// </summary>
+/// <typeparam name="T">Tipo do resultado esperado na resposta.</typeparam>
+public sealed class NFSeResponse<T> : IOpenLog where T : class, new()
 {
     #region Constructors
 
+    /// <summary>
+    /// Inicializa uma nova instância da classe <see cref="NFSeResponse{T}"/>.
+    /// </summary>
+    /// <param name="xmlEnvio">XML enviado na requisição.</param>
+    /// <param name="envio">Dados de envio em formato JSON.</param>
+    /// <param name="resposta">Resposta recebida em formato JSON.</param>
+    /// <param name="sucesso">Indica se a operação foi bem-sucedida.</param>
     internal NFSeResponse(string xmlEnvio, string envio, string resposta, bool sucesso)
     {
         XmlEnvio = xmlEnvio;
@@ -57,17 +68,32 @@ public sealed class NFSeResponse<T>: IOpenLog where T : class, new()
     }
 
     #endregion Constructors
-    
+
     #region Properties
 
+    /// <summary>
+    /// Obtém o XML enviado na requisição.
+    /// </summary>
     public string XmlEnvio { get; }
 
+    /// <summary>
+    /// Obtém os dados de envio em formato JSON.
+    /// </summary>
     public string JsonEnvio { get; }
 
+    /// <summary>
+    /// Obtém a resposta recebida em formato JSON.
+    /// </summary>
     public string JsonRetorno { get; }
-    
+
+    /// <summary>
+    /// Indica se a operação foi bem-sucedida.
+    /// </summary>
     public bool Sucesso { get; }
-    
+
+    /// <summary>
+    /// Obtém o resultado desserializado da resposta.
+    /// </summary>
     public T? Resultado { get; }
 
     #endregion Properties

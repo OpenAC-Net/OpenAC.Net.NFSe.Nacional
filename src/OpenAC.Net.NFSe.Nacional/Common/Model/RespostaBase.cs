@@ -37,21 +37,39 @@ using OpenAC.Net.NFSe.Nacional.Common.Converter;
 
 namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 
+/// <summary>
+/// Classe base para respostas de operações NFSe.
+/// </summary>
 public abstract class RespostaBase
 {
+    /// <summary>
+    /// Ambiente em que a operação foi realizada.
+    /// </summary>
     [JsonPropertyName("tipoAmbiente")]
     [JsonConverter(typeof(TipoAmbienteJsonConverter))]
     public DFeTipoAmbiente Ambiente { get; set; }
 
+    /// <summary>
+    /// Versão do aplicativo emissor.
+    /// </summary>
     [JsonPropertyName("versaoAplicativo")]
     public string VersaoAplicativo { get; set; } = string.Empty;
 
+    /// <summary>
+    /// Data e hora do processamento da resposta.
+    /// </summary>
     [JsonPropertyName("dataHoraProcessamento")]
     public DateTimeOffset DataHoraProcessamento { get; set; }
     
+    /// <summary>
+    /// Lista de alertas retornados no processamento.
+    /// </summary>
     [JsonPropertyName("alertas")] 
     public List<MensagemProcessamento> Alertas { get; set; } = new();
     
+    /// <summary>
+    /// Lista de erros retornados no processamento.
+    /// </summary>
     [JsonPropertyName("erros")] 
     public List<MensagemProcessamento> Erros { get; set; } = new();
 }

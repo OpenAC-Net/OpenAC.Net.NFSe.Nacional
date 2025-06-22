@@ -34,13 +34,22 @@ using OpenAC.Net.DFe.Core.Serializer;
 
 namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 
+/// <summary>
+/// Representa um município no padrão nacional.
+/// </summary>
 public sealed class MunicipioNacional : IMunicipio
 {
     #region Properties
 
+    /// <summary>
+    /// Código do município (cMun).
+    /// </summary>
     [DFeElement(TipoCampo.StrNumber, "cMun", Min = 0, Max = 7, Ocorrencia = Ocorrencia.Obrigatoria)]
     public string CodMunicipio { get; set; } = string.Empty;
     
+    /// <summary>
+    /// Código de Endereçamento Postal (CEP).
+    /// </summary>
     [DFeElement(TipoCampo.Str, "CEP", Min = 8, Max = 8, Ocorrencia = Ocorrencia.Obrigatoria)]
     public string CEP { get; set; } = string.Empty;
 

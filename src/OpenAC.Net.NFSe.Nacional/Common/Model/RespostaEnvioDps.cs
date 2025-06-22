@@ -29,35 +29,50 @@
 // <summary></summary>
 // ***********************************************************************
 
-using System;
-using System.Collections.Generic;
 using System.Text.Json.Serialization;
 using OpenAC.Net.Core.Extensions;
-using OpenAC.Net.DFe.Core.Common;
 using OpenAC.Net.NFSe.Nacional.Common.Converter;
 
 namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 
+/// <summary>
+/// Representa a resposta do envio de DPS (Documento de Prestação de Serviço).
+/// </summary>
 public sealed class RespostaEnvioDps : RespostaBase
 {
     #region Fields
 
+    /// <summary>
+    /// Instância da nota fiscal de serviço carregada a partir do XML.
+    /// </summary>
     private NotaFiscalServico? nota;
 
     #endregion Fields
     
     #region Properties
 
+    /// <summary>
+    /// Identificador da DPS.
+    /// </summary>
     [JsonPropertyName("idDps")]
     public string IdDps { get; set; } = string.Empty;
     
+    /// <summary>
+    /// Chave de acesso da DPS.
+    /// </summary>
     [JsonPropertyName("chaveAcesso")]
     public string ChaveAcesso { get; set; } = string.Empty;
     
+    /// <summary>
+    /// XML da NFSe compactado em GZip e codificado em Base64.
+    /// </summary>
     [JsonPropertyName("nfseXmlGZipB64")]
     [JsonConverter(typeof(XmlGzipJsonConverter))]
     public string XmlNFSe { get; set; } = string.Empty;
 
+    /// <summary>
+    /// Instância da nota fiscal de serviço desserializada a partir do XML.
+    /// </summary>
     [JsonIgnore] 
     public NotaFiscalServico? NFSe => XmlNFSe.IsEmpty() ? null : nota ??= NotaFiscalServico.Load(XmlNFSe);
     

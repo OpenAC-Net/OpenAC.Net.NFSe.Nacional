@@ -34,15 +34,19 @@ using OpenAC.Net.DFe.Core.Attributes;
 namespace OpenAC.Net.NFSe.Nacional.Common.Types;
 
 /// <summary>
-/// Resposta da solicitação de análise fiscal para cancelamento de NFS-e:
-/// 1 - Cancelamento de NFS-e Indeferido;
-/// 2 - Cancelamento de NFS-e Indeferido Sem Análise de Mérito.
+/// Resposta da solicitação de análise fiscal para cancelamento de NFS-e.
 /// </summary>
 public enum CodRespostaAnaliseIndeferido
 {
+    /// <summary>
+    /// Cancelamento de NFS-e Indeferido.
+    /// </summary>
     [DFeEnum("1")]
     Indeferido,
-    
+
+    /// <summary>
+    /// Cancelamento de NFS-e Indeferido Sem Análise de Mérito.
+    /// </summary>
     [DFeEnum("2")]
     IndeferidoSemAnaliseMerito
 }

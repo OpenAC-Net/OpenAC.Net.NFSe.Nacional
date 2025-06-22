@@ -35,17 +35,32 @@ using OpenAC.Net.NFSe.Nacional.Common.Types;
 
 namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 
+/// <summary>
+/// Representa o evento de cancelamento de NFS-e por substituição.
+/// </summary>
 public sealed class EventoCancelamentoPorSubstituicao : IEventoNFSe
 {
+    /// <summary>
+    /// Descrição do evento.
+    /// </summary>
     [DFeElement(TipoCampo.Str, "xDesc", Ocorrencia = Ocorrencia.Obrigatoria)]
     public string Descricao { get; set; } = "Cancelamento de NFS-e por Substituição";
     
+    /// <summary>
+    /// Código do motivo da substituição.
+    /// </summary>
     [DFeElement(TipoCampo.Enum, "cMotivo", Ocorrencia = Ocorrencia.Obrigatoria)]
     public JustificativaSubstituicao CodMotivo { get; set; }
     
+    /// <summary>
+    /// Motivo detalhado da substituição.
+    /// </summary>
     [DFeElement(TipoCampo.Str, "xMotivo", Min = 15, Max = 255, Ocorrencia = Ocorrencia.Obrigatoria)]
     public string Motivo { get; set; } = string.Empty;
     
+    /// <summary>
+    /// Chave da NFS-e substituta.
+    /// </summary>
     [DFeElement(TipoCampo.Str, "chSubstituta", Min = 50, Max = 50, Ocorrencia = Ocorrencia.Obrigatoria)]
     public string ChaveSubstituta { get; set; } = string.Empty;
 }

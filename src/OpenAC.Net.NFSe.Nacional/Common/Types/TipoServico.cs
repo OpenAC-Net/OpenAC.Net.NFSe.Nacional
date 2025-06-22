@@ -31,8 +31,17 @@
 
 namespace OpenAC.Net.NFSe.Nacional.Common.Types;
 
+/// <summary>
+/// Define os tipos de serviço disponíveis.
+/// </summary>
 public enum TipoServico
 {
+    /// <summary>
+    /// Serviço SEFIN.
+    /// </summary>
     Sefin,
+    /// <summary>
+    /// Serviço ADN.
+    /// </summary>
     Adn
 }

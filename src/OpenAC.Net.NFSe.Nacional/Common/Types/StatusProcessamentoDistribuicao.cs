@@ -32,9 +32,23 @@
 
 namespace OpenAC.Net.NFSe.Nacional.Common.Types;
 
+/// <summary>
+/// Representa o status do processamento da distribuição de documentos.
+/// </summary>
 public enum StatusProcessamentoDistribuicao
 {
+    /// <summary>
+    /// Ocorreu uma rejeição no processamento.
+    /// </summary>
     REJEICAO,
+
+    /// <summary>
+    /// Nenhum documento foi localizado.
+    /// </summary>
     NENHUM_DOCUMENTO_LOCALIZADO,
+
+    /// <summary>
+    /// Documentos foram localizados.
+    /// </summary>
     DOCUMENTOS_LOCALIZADOS
 }

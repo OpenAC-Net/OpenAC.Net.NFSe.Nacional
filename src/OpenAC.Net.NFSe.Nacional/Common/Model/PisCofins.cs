@@ -35,26 +35,50 @@ using OpenAC.Net.NFSe.Nacional.Common.Types;
 
 namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 
+/// <summary>
+/// Representa os dados de PIS e COFINS para NFSe.
+/// </summary>
 public sealed class PisCofins
 {
+    /// <summary>
+    /// Código de Situação Tributária do PIS/COFINS.
+    /// </summary>
     [DFeElement(TipoCampo.Enum, "CST", Min = 2, Max = 2, Ocorrencia = Ocorrencia.Obrigatoria)]
     public TipoCST Cst { get; set; } = TipoCST.Nenhum;
     
+    /// <summary>
+    /// Valor da base de cálculo do PIS/COFINS.
+    /// </summary>
     [DFeElement(TipoCampo.De2, "vBCPisCofins", Min = 4, Max = 18, Ocorrencia = Ocorrencia.NaoObrigatoria)]
     public decimal? ValorBcCofins { get; set; }
     
+    /// <summary>
+    /// Alíquota do PIS.
+    /// </summary>
     [DFeElement(TipoCampo.De2, "pAliqPis", Min = 4, Max = 7, Ocorrencia = Ocorrencia.NaoObrigatoria)]
     public decimal? AliquotaPis{ get; set; }
     
+    /// <summary>
+    /// Alíquota do COFINS.
+    /// </summary>
     [DFeElement(TipoCampo.De2, "pAliqCofins", Min = 4, Max = 7, Ocorrencia = Ocorrencia.NaoObrigatoria)]
     public decimal? AliquotaCofins{ get; set; }
     
+    /// <summary>
+    /// Valor do PIS.
+    /// </summary>
     [DFeElement(TipoCampo.De2, "vPis", Min = 4, Max = 18, Ocorrencia = Ocorrencia.NaoObrigatoria)]
     public decimal? ValorPis { get; set; }
     
+    /// <summary>
+    /// Valor do COFINS.
+    /// </summary>
     [DFeElement(TipoCampo.De2, "vCofins", Min = 4, Max = 18, Ocorrencia = Ocorrencia.NaoObrigatoria)]
     public decimal? ValorCofins { get; set; }
     
+    /// <summary>
+    /// Tipo de retenção do PIS/COFINS.
+    /// </summary>
     [DFeElement(TipoCampo.Enum, "tpRetPisCofins", Min = 1, Max = 1, Ocorrencia = Ocorrencia.NaoObrigatoria)]
     public TipoRetencaoPisCofins? TipoRetencao { get; set; }
 }

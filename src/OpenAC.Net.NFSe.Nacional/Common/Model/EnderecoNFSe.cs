@@ -34,23 +34,41 @@ using OpenAC.Net.DFe.Core.Serializer;
 
 namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 
+/// <summary>
+/// Representa o endereço utilizado na NFSe.
+/// </summary>
 public sealed class EnderecoNFSe
 {
     #region Properties
 
+    /// <summary>
+    /// Município do endereço.
+    /// </summary>
     [DFeItem(typeof(MunicipioNacional), "endNac")]
     [DFeItem(typeof(MunicipioExterior), "endExt")]
     public IMunicipio? Municipio { get; set; }
 
+    /// <summary>
+    /// Logradouro do endereço.
+    /// </summary>
     [DFeElement(TipoCampo.Str, "xLgr", Min = 1, Max = 255, Ocorrencia = Ocorrencia.Obrigatoria)]
     public string Logradouro { get; set; } = string.Empty;
 
+    /// <summary>
+    /// Número do endereço.
+    /// </summary>
     [DFeElement(TipoCampo.Str, "nro", Min = 1, Max = 60, Ocorrencia = Ocorrencia.Obrigatoria)]
     public string Numero { get; set; } = string.Empty;
     
+    /// <summary>
+    /// Complemento do endereço.
+    /// </summary>
     [DFeElement(TipoCampo.Str, "xCpl", Min = 1, Max = 156, Ocorrencia = Ocorrencia.NaoObrigatoria)]
     public string? Complemento { get; set; }
     
+    /// <summary>
+    /// Bairro do endereço.
+    /// </summary>
     [DFeElement(TipoCampo.Str, "xBairro", Min = 1, Max = 60, Ocorrencia = Ocorrencia.Obrigatoria)]
     public string Bairro { get; set; } = string.Empty;
     

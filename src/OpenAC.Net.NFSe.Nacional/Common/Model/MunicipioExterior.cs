@@ -34,19 +34,34 @@ using OpenAC.Net.DFe.Core.Serializer;
 
 namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 
+/// <summary>
+/// Representa um município localizado no exterior.
+/// </summary>
 public sealed class MunicipioExterior : IMunicipio
 {
     #region Properties
 
+    /// <summary>
+    /// Código do país (cPais).
+    /// </summary>
     [DFeElement(TipoCampo.Int, "cPais", Min = 2, Max = 2, Ocorrencia = Ocorrencia.Obrigatoria)]
     public int CodigoPais { get; set; }
 
+    /// <summary>
+    /// Endereço postal (cEndPost).
+    /// </summary>
     [DFeElement(TipoCampo.Str, "cEndPost", Min = 1, Max = 11, Ocorrencia = Ocorrencia.Obrigatoria)]
     public string EnderecoPostal { get; set; } = string.Empty;
     
+    /// <summary>
+    /// Nome da cidade (xCidade).
+    /// </summary>
     [DFeElement(TipoCampo.Str, "xCidade", Min = 1, Max = 60, Ocorrencia = Ocorrencia.Obrigatoria)]
     public string Cidade { get; set; } = string.Empty;
     
+    /// <summary>
+    /// Estado, província ou região (xEstProvReg).
+    /// </summary>
     [DFeElement(TipoCampo.Str, "xEstProvReg", Min = 1, Max = 60, Ocorrencia = Ocorrencia.Obrigatoria)]
     public string EstadoProvincia { get; set; } = string.Empty;
 

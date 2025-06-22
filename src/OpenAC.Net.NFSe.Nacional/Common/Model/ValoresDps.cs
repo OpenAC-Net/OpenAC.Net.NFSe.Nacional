@@ -33,17 +33,32 @@ using OpenAC.Net.DFe.Core.Attributes;
 
 namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 
+/// <summary>
+/// Representa os valores de uma DPS (Documento de Prestação de Serviço).
+/// </summary>
 public sealed class ValoresDps
 {
+    /// <summary>
+    /// Valores do serviço prestado.
+    /// </summary>
     [DFeElement("vServPrest", Ocorrencia = Ocorrencia.Obrigatoria)]
     public ValoresServico ValoresServico { get; set; } = new();
-    
+
+    /// <summary>
+    /// Valores de desconto, condicionados ou incondicionados.
+    /// </summary>
     [DFeElement("vDescCondIncond", Ocorrencia = Ocorrencia.NaoObrigatoria)]
     public ValoresDesconto? ValoresDesconto { get; set; }
-    
+
+    /// <summary>
+    /// Valores de dedução ou redução.
+    /// </summary>
     [DFeElement("vDedRed", Ocorrencia = Ocorrencia.NaoObrigatoria)]
     public ValoresDeducaoReducao? ValoresDeducaoReducao { get; set; }
-    
+
+    /// <summary>
+    /// Tributos incidentes na operação.
+    /// </summary>
     [DFeElement("trib", Ocorrencia = Ocorrencia.Obrigatoria)]
     public TributosNFSe Tributos { get; set; } = new();
 }

@@ -34,15 +34,19 @@ using OpenAC.Net.DFe.Core.Attributes;
 namespace OpenAC.Net.NFSe.Nacional.Common.Types;
 
 /// <summary>
-/// Tipo de retencao do Pis/Cofins:
-/// 1 - Retido;
-/// 2 - Não Retido;
+/// Tipo de retenção do PIS/COFINS.
 /// </summary>
 public enum TipoRetencaoPisCofins
 {
+    /// <summary>
+    /// 1 - Retido
+    /// </summary>
     [DFeEnum("1")]
     Retido,
-    
+
+    /// <summary>
+    /// 2 - Não Retido
+    /// </summary>
     [DFeEnum("2")]
     NaoRetido
 }

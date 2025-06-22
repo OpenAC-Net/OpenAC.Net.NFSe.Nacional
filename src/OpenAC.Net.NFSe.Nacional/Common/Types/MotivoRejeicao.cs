@@ -34,32 +34,43 @@ using OpenAC.Net.DFe.Core.Attributes;
 namespace OpenAC.Net.NFSe.Nacional.Common.Types;
 
 /// <summary>
-/// Motivo da Rejeição da NFS-e:
-/// 
-/// 1 - NFS-e em duplicidade;
-/// 2 - NFS-e já emitida pelo tomador;
-/// 3 - Não ocorrência do fato gerador;
-/// 4 - Erro quanto a responsabilidade tributária;
-/// 5 - Erro quanto ao valor do serviço, valor das deduções ou serviço prestado ou data do fato gerador;
-/// 9 - Outros;
+/// Motivo da Rejeição da NFS-e.
 /// </summary>
 public enum MotivoRejeicao
 {
+    /// <summary>
+    /// 1 - NFS-e em duplicidade.
+    /// </summary>
     [DFeEnum("1")]
     Duplicidade,
-    
+
+    /// <summary>
+    /// 2 - NFS-e já emitida pelo tomador.
+    /// </summary>
     [DFeEnum("2")]
     EmitidadaTomador,
-    
+
+    /// <summary>
+    /// 3 - Não ocorrência do fato gerador.
+    /// </summary>
     [DFeEnum("3")]
     NaoOcorrencia,
-    
+
+    /// <summary>
+    /// 4 - Erro quanto a responsabilidade tributária.
+    /// </summary>
     [DFeEnum("4")]
     ErroResponsabilidadeTributaria,
-    
+
+    /// <summary>
+    /// 5 - Erro quanto ao valor do serviço, valor das deduções ou serviço prestado ou data do fato gerador.
+    /// </summary>
     [DFeEnum("5")]
     ErroValores,
-    
+
+    /// <summary>
+    /// 9 - Outros.
+    /// </summary>
     [DFeEnum("9")]
     Outros
 }

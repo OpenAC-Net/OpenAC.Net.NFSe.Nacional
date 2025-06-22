@@ -34,19 +34,25 @@ using OpenAC.Net.DFe.Core.Attributes;
 namespace OpenAC.Net.NFSe.Nacional.Common.Types;
 
 /// <summary>
-/// Tipo do Benefício Municipal:
-/// 1 - Alíquota Diferenciada;
-/// 2 - Redução da BC;
-/// 3 - Isenção;
+/// Enumera os tipos de benefício municipal.
 /// </summary>
 public enum TipoBeneficioMunicipal
 {
+    /// <summary>
+    /// Alíquota diferenciada.
+    /// </summary>
     [DFeEnum("1")]
     AliquotaDiferenciada,
-    
+
+    /// <summary>
+    /// Redução da base de cálculo.
+    /// </summary>
     [DFeEnum("2")]
     ReducaoBC,
-    
+
+    /// <summary>
+    /// Isenção.
+    /// </summary>
     [DFeEnum("3")]
     Isencao
 }

@@ -31,7 +31,13 @@
 
 namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 
+/// <summary>
+/// Representa um evento da NFSe.
+/// </summary>
 public interface IEventoNFSe
 {
+    /// <summary>
+    /// Descrição do evento.
+    /// </summary>
     string Descricao { get; set; }
 }

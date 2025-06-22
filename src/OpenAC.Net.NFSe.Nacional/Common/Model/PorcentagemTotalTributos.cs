@@ -34,14 +34,26 @@ using OpenAC.Net.DFe.Core.Serializer;
 
 namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 
+/// <summary>
+/// Representa os percentuais totais de tributos federais, estaduais e municipais.
+/// </summary>
 public sealed class PorcentagemTotalTributos
 {
+    /// <summary>
+    /// Percentual total de tributos federais.
+    /// </summary>
     [DFeElement(TipoCampo.De2, "pTotTribFed", Min = 4, Max = 7, Ocorrencia = Ocorrencia.Obrigatoria)]
     public decimal TotalFederal { get; set; }
     
+    /// <summary>
+    /// Percentual total de tributos estaduais.
+    /// </summary>
     [DFeElement(TipoCampo.De2, "pTotTribEst", Min = 4, Max = 7, Ocorrencia = Ocorrencia.Obrigatoria)]
     public decimal TotalEstadual{ get; set; }
     
+    /// <summary>
+    /// Percentual total de tributos municipais.
+    /// </summary>
     [DFeElement(TipoCampo.De2, "pTotTribMun", Min = 4, Max = 7, Ocorrencia = Ocorrencia.Obrigatoria)]
     public decimal TotalMunicipal { get; set; }
 }

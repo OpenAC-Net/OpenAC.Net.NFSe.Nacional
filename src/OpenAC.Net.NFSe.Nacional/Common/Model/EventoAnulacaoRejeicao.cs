@@ -34,11 +34,20 @@ using OpenAC.Net.DFe.Core.Serializer;
 
 namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 
-public sealed class EventoAnulacaoRejeicao: IEventoNFSe
+/// <summary>
+/// Representa o evento de anulação de rejeição de NFSe.
+/// </summary>
+public sealed class EventoAnulacaoRejeicao : IEventoNFSe
 {
+    /// <summary>
+    /// Descrição do evento.
+    /// </summary>
     [DFeElement(TipoCampo.Str, "xDesc", Ocorrencia = Ocorrencia.Obrigatoria)]
     public string Descricao { get; set; } = "Anulação da Rejeição";
     
+    /// <summary>
+    /// Informações detalhadas da anulação da rejeição.
+    /// </summary>
     [DFeElement("infAnRej", Ocorrencia = Ocorrencia.Obrigatoria)]
     public InfoAnulacaoRejeicao Informacoes { get; set; } = new();
 }

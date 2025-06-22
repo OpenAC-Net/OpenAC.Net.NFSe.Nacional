@@ -49,16 +49,28 @@ using OpenAC.Net.NFSe.Nacional.Common.Types;
 namespace OpenAC.Net.NFSe.Nacional.Webservice;
 
 /// <summary>
-/// Classe para comunicação com o webservice da NFSe.
+/// Classe responsável pela comunicação com o webservice da NFSe Nacional.
 /// </summary>
 public sealed class NFSeWebservice : IOpenLog
 {
     #region Internal Types
 
+    /// <summary>
+    /// Tipos de arquivos manipulados pelo webservice.
+    /// </summary>
     private enum TipoArquivo
     {
+        /// <summary>
+        /// Arquivo de comunicação com o webservice.
+        /// </summary>
         Webservice,
+        /// <summary>
+        /// Arquivo de RPS (Recibo Provisório de Serviços).
+        /// </summary>
         Rps,
+        /// <summary>
+        /// Arquivo de NFS-e (Nota Fiscal de Serviço eletrônica).
+        /// </summary>
         NFSe
     }
     
@@ -66,6 +78,9 @@ public sealed class NFSeWebservice : IOpenLog
     
     #region Fields
 
+    /// <summary>
+    /// Configuração utilizada pelo webservice.
+    /// </summary>
     private readonly ConfiguracaoNFSe configuracao;
 
     #endregion Fields
@@ -73,9 +88,9 @@ public sealed class NFSeWebservice : IOpenLog
     #region Constructors
 
     /// <summary>
-    /// Inicializa uma nova intancia da classe.
+    /// Inicializa uma nova instância da classe <see cref="NFSeWebservice"/>.
     /// </summary>
-    /// <param name="configuracaoNFSe"></param>
+    /// <param name="configuracaoNFSe">Configuração da NFSe.</param>
     public NFSeWebservice(ConfiguracaoNFSe configuracaoNFSe)
     {
         configuracao = configuracaoNFSe;
@@ -90,8 +105,8 @@ public sealed class NFSeWebservice : IOpenLog
     /// <summary>
     /// Retorna o DANFSe de uma NFS-e a partir de sua chave de acesso.
     /// </summary>
-    /// <param name="chave">Chave de acesso</param>
-    /// <returns>Byte array da DANFSe</returns>
+    /// <param name="chave">Chave de acesso da NFS-e.</param>
+    /// <returns>Array de bytes contendo o DANFSe.</returns>
     public async Task<byte[]> DownloadDANFSeAsync(string chave)
     {
         this.Log().Debug($"Webservice: [DANFSe][Envio] - {chave}");
@@ -112,8 +127,8 @@ public sealed class NFSeWebservice : IOpenLog
     /// <summary>
     /// Distribui os DF-e para contribuintes relacionados à NFS-e.
     /// </summary>
-    /// <param name="nsu">Numero Nsu</param>
-    /// <returns>Dados da consulta</returns>
+    /// <param name="nsu">Número NSU.</param>
+    /// <returns>Resposta da consulta contendo os DF-e.</returns>
     public async Task<NFSeResponse<RespostaConsultaDFe>> ConsultaNsuAsync(int nsu)
     {
         this.Log().Debug($"Webservice: [ConsultaNsu][Envio] - {nsu}");
@@ -131,10 +146,10 @@ public sealed class NFSeWebservice : IOpenLog
     }
     
     /// <summary>
-    /// Distribui os DF-e vinculados à chave de acesso informada
+    /// Distribui os DF-e vinculados à chave de acesso informada.
     /// </summary>
-    /// <param name="chave">chave da NFSe</param>
-    /// <returns>Dados da consulta</returns>
+    /// <param name="chave">Chave de acesso da NFS-e.</param>
+    /// <returns>Resposta da consulta contendo os DF-e.</returns>
     public async Task<NFSeResponse<RespostaConsultaDFe>> ConsultaChaveAsync(string chave)
     {
         this.Log().Debug($"Webservice: [ConsultaChave][Envio] - {chave}");
@@ -158,8 +173,8 @@ public sealed class NFSeWebservice : IOpenLog
     /// <summary>
     /// Retorna a chave de acesso da NFS-e a partir do identificador do DPS.
     /// </summary>
-    /// <param name="id">Identificação da Dps</param>
-    /// <returns>Dados da consulta</returns>
+    /// <param name="id">Identificação do DPS.</param>
+    /// <returns>Resposta da consulta contendo a chave de acesso.</returns>
     public async Task<NFSeResponse<RespostaConsultaChaveDps>> ConsultaChaveDpsAsync(string id)
     {
         this.Log().Debug($"Webservice: [ConsultaChaveDps][Envio] - {id}");
@@ -179,8 +194,8 @@ public sealed class NFSeWebservice : IOpenLog
     /// <summary>
     /// Verifica se uma NFS-e foi emitida a partir do Id do DPS.
     /// </summary>
-    /// <param name="id">Identificação da Dps</param>
-    /// <returns></returns>
+    /// <param name="id">Identificação do DPS.</param>
+    /// <returns>True se existir, caso contrário false.</returns>
     public async Task<bool> ConsultaExisteDpsAsync(string id)
     {
         this.Log().Debug($"Webservice: [ConsultaExisteDps][Envio] - {id}");
@@ -204,8 +219,8 @@ public sealed class NFSeWebservice : IOpenLog
     /// <summary>
     /// Recepciona o Pedido de Registro de Evento e gera Eventos de NFS-e, crédito, débito e apuração.
     /// </summary>
-    /// <param name="evento">Evento</param>
-    /// <returns></returns>
+    /// <param name="evento">Evento a ser enviado.</param>
+    /// <returns>Resposta do envio do evento.</returns>
     public async Task<NFSeResponse<RespostaEnvioEvento>> EnviarEventoAsync(PedidoRegistroEvento evento)
     {
         evento.Assinar(configuracao);
@@ -246,10 +261,10 @@ public sealed class NFSeWebservice : IOpenLog
     #region NFS-e
 
     /// <summary>
-    /// Recepciona a DPS e Gera a NFS-e de forma síncrona.
+    /// Recepciona a DPS e gera a NFS-e de forma síncrona.
     /// </summary>
-    /// <param name="dps"></param>
-    /// <returns></returns>
+    /// <param name="dps">DPS a ser enviada.</param>
+    /// <returns>Resposta do envio da DPS.</returns>
     public async Task<NFSeResponse<RespostaEnvioDps>> EnviarAsync(Dps dps)
     {
         dps.Assinar(configuracao);
@@ -290,6 +305,13 @@ public sealed class NFSeWebservice : IOpenLog
 
     #region Commom
 
+    /// <summary>
+    /// Envia uma requisição HTTP para o webservice.
+    /// </summary>
+    /// <param name="content">Conteúdo da requisição.</param>
+    /// <param name="method">Método HTTP.</param>
+    /// <param name="url">URL do serviço.</param>
+    /// <returns>Resposta HTTP.</returns>
     private async Task<HttpResponseMessage> SendAsync(HttpContent? content, HttpMethod method, string url)
     {
         var handler = new HttpClientHandler();
@@ -315,8 +337,9 @@ public sealed class NFSeWebservice : IOpenLog
     /// Valida o XML de acordo com o schema.
     /// </summary>
     /// <param name="schema">O schema que será usado na verificação.</param>
-    /// <param name="xml"></param>
-    /// <returns>Se estiver tudo OK retorna null, caso contrário as mensagens de alertas e erros.</returns>
+    /// <param name="xml">Conteúdo XML a ser validado.</param>
+    /// <exception cref="XmlSchemaException">Lançada se o arquivo de schema não for encontrado.</exception>
+    /// <exception cref="XmlSchemaValidationException">Lançada se houver erros de validação.</exception>
     private void ValidarSchema(SchemaNFSe schema, string xml)
     {
         var schemaFile = configuracao.Arquivos.GetSchema(schema);
@@ -330,12 +353,12 @@ public sealed class NFSeWebservice : IOpenLog
     }
 
     /// <summary>
-    /// Grava o xml da Dps no disco
+    /// Grava o xml da Dps no disco.
     /// </summary>
-    /// <param name="conteudoArquivo"></param>
-    /// <param name="nomeArquivo"></param>
-    /// <param name="documento"></param>
-    /// <param name="data"></param>
+    /// <param name="conteudoArquivo">Conteúdo do arquivo.</param>
+    /// <param name="nomeArquivo">Nome do arquivo.</param>
+    /// <param name="documento">Documento do prestador.</param>
+    /// <param name="data">Data de emissão.</param>
     private void GravarDpsEmDisco(string conteudoArquivo, string nomeArquivo, string? documento, DateTime data)
     {
         if (configuracao.Arquivos.Salvar == false) return;
@@ -344,12 +367,12 @@ public sealed class NFSeWebservice : IOpenLog
     }
 
     /// <summary>
-    /// Grava o xml da NFSe no disco
+    /// Grava o xml da NFSe no disco.
     /// </summary>
-    /// <param name="conteudoArquivo"></param>
-    /// <param name="nomeArquivo"></param>
-    /// <param name="documento"></param>
-    /// <param name="data"></param>
+    /// <param name="conteudoArquivo">Conteúdo do arquivo.</param>
+    /// <param name="nomeArquivo">Nome do arquivo.</param>
+    /// <param name="documento">Documento do prestador.</param>
+    /// <param name="data">Data de emissão.</param>
     private void GravarNFSeEmDisco(string conteudoArquivo, string nomeArquivo, string? documento, DateTime data)
     {
         if (configuracao.Arquivos.Salvar == false) return;
@@ -358,11 +381,11 @@ public sealed class NFSeWebservice : IOpenLog
     }
 
     /// <summary>
-    /// Grava o xml de comunicação com o webservice no disco
+    /// Grava o xml de comunicação com o webservice no disco.
     /// </summary>
-    /// <param name="conteudoArquivo"></param>
-    /// <param name="nomeArquivo"></param>
-    /// <param name="documento"></param>
+    /// <param name="conteudoArquivo">Conteúdo do arquivo.</param>
+    /// <param name="nomeArquivo">Nome do arquivo.</param>
+    /// <param name="documento">Documento do prestador.</param>
     private void GravarArquivoEmDisco(string conteudoArquivo, string nomeArquivo, string? documento)
     {
         if (configuracao.Geral.Salvar == false) return;
@@ -370,6 +393,14 @@ public sealed class NFSeWebservice : IOpenLog
         GravarArquivoEmDisco(TipoArquivo.Webservice, conteudoArquivo, nomeArquivo, documento);
     }
     
+    /// <summary>
+    /// Grava o arquivo no disco conforme o tipo especificado.
+    /// </summary>
+    /// <param name="tipo">Tipo do arquivo.</param>
+    /// <param name="conteudoArquivo">Conteúdo do arquivo.</param>
+    /// <param name="nomeArquivo">Nome do arquivo.</param>
+    /// <param name="documento">Documento do prestador.</param>
+    /// <param name="data">Data de emissão (opcional).</param>
     private void GravarArquivoEmDisco(TipoArquivo tipo, string conteudoArquivo, string nomeArquivo, string? documento, DateTime? data = null)
     {
         nomeArquivo = tipo switch

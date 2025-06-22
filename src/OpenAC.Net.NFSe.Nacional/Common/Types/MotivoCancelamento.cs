@@ -34,19 +34,25 @@ using OpenAC.Net.DFe.Core.Attributes;
 namespace OpenAC.Net.NFSe.Nacional.Common.Types;
 
 /// <summary>
-/// Código do motivo da solicitação de análise fiscal para cancelamento de NFS-e:
-/// 1 - Erro na Emissão;
-/// 2 - Serviço não Prestado;
-/// 3 - Outros.
+/// Código do motivo da solicitação de análise fiscal para cancelamento de NFS-e.
 /// </summary>
 public enum MotivoCancelamento
 {
+    /// <summary>
+    /// Erro na Emissão.
+    /// </summary>
     [DFeEnum("1")]
     ErroEmissao,
-    
+
+    /// <summary>
+    /// Serviço não Prestado.
+    /// </summary>
     [DFeEnum("2")]
     ServicoNaoPrestado,
-    
+
+    /// <summary>
+    /// Outros motivos.
+    /// </summary>
     [DFeEnum("9")]
     Outros
 }

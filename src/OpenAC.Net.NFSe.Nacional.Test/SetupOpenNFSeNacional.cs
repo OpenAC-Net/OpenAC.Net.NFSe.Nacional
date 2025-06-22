@@ -1,6 +1,4 @@
 ﻿namespace OpenAC.Net.NFSe.Nacional.Test;
-using OpenAC.Net.NFSe.Nacional.Common;
-using System.Reflection;
 
 public class SetupOpenNFSeNacional
 {
