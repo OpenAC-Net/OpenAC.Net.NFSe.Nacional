@@ -35,26 +35,50 @@ using OpenAC.Net.NFSe.Nacional.Common.Types;
 
 namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 
+/// <summary>
+/// Representa os tributos municipais relacionados ao ISSQN.
+/// </summary>
 public sealed class TributoMunicipal
 {
+    /// <summary>
+    /// Informações do tributo ISSQN.
+    /// </summary>
     [DFeElement(TipoCampo.Enum, "tribISSQN", Ocorrencia = Ocorrencia.Obrigatoria)]
     public TributoISSQN ISSQN { get; set; }
 
+    /// <summary>
+    /// Código do país de resultado (opcional, 2 caracteres).
+    /// </summary>
     [DFeElement(TipoCampo.Str, "cPaisResult", Min = 2, Max = 2, Ocorrencia = Ocorrencia.NaoObrigatoria)]
     public string? CodPais { get; set; }
     
+    /// <summary>
+    /// Benefício municipal (opcional).
+    /// </summary>
     [DFeElement("tribMun", Ocorrencia = Ocorrencia.NaoObrigatoria)]
     public BeneficioMunicipal? Beneficio { get; set; }
     
+    /// <summary>
+    /// Suspensão de exigibilidade (opcional).
+    /// </summary>
     [DFeElement("tribMun", Ocorrencia = Ocorrencia.NaoObrigatoria)]
     public ExigibilidadeSuspensa? Suspensao { get; set; }
     
+    /// <summary>
+    /// Tipo de imunidade (opcional).
+    /// </summary>
     [DFeElement(TipoCampo.Enum, "tpImunidade", Ocorrencia = Ocorrencia.NaoObrigatoria)]
     public TipoImunidade? TipoImunidade { get; set; }
     
+    /// <summary>
+    /// Alíquota do tributo (opcional, 4 a 7 dígitos).
+    /// </summary>
     [DFeElement(TipoCampo.De2, "pAliq", Min = 4, Max = 7, Ocorrencia = Ocorrencia.NaoObrigatoria)]
     public decimal? Aliquota{ get; set; }
     
+    /// <summary>
+    /// Tipo de retenção do ISSQN (opcional).
+    /// </summary>
     [DFeElement(TipoCampo.Enum, "tpRetISSQN", Ocorrencia = Ocorrencia.NaoObrigatoria)]
     public TipoRetencaoISSQN? TipoRetencaoISSQN { get; set; }
 }

@@ -34,17 +34,32 @@ using OpenAC.Net.DFe.Core.Serializer;
 
 namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 
+/// <summary>
+/// Representa os tributos federais retidos na fonte.
+/// </summary>
 public sealed class TributoFederal
 {
+    /// <summary>
+    /// Informações de PIS e COFINS.
+    /// </summary>
     [DFeElement("piscofins", Ocorrencia = Ocorrencia.NaoObrigatoria)]
     public PisCofins? PisCofins { get; set; }
     
+    /// <summary>
+    /// Valor retido de Contribuição Previdenciária (CP).
+    /// </summary>
     [DFeElement(TipoCampo.De2, "vRetCP", Min = 4, Max = 18, Ocorrencia = Ocorrencia.NaoObrigatoria)]
     public decimal? ValorCP { get; set; }
     
+    /// <summary>
+    /// Valor retido de IRRF.
+    /// </summary>
     [DFeElement(TipoCampo.De2, "vRetIRRF", Min = 4, Max = 18, Ocorrencia = Ocorrencia.NaoObrigatoria)]
     public decimal? ValorIRRF { get; set; }
     
+    /// <summary>
+    /// Valor retido de CSLL.
+    /// </summary>
     [DFeElement(TipoCampo.De2, "vRetCSLL", Min = 4, Max = 18, Ocorrencia = Ocorrencia.NaoObrigatoria)]
     public decimal? ValorCSLL{ get; set; }
 }

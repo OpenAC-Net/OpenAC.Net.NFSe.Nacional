@@ -34,19 +34,25 @@ using OpenAC.Net.DFe.Core.Attributes;
 namespace OpenAC.Net.NFSe.Nacional.Common.Types;
 
 /// <summary>
-/// Tipo de retencao do ISSQN:
-/// 1 - Não Retido;
-/// 2 - Retido pelo Tomador;
-/// 3 - Retido pelo Intermediario;
+/// Tipo de retenção do ISSQN.
 /// </summary>
 public enum TipoRetencaoISSQN
 {
+    /// <summary>
+    /// 1 - Não Retido.
+    /// </summary>
     [DFeEnum("1")]
     NaoRetido,
     
+    /// <summary>
+    /// 2 - Retido pelo Tomador.
+    /// </summary>
     [DFeEnum("2")]
     RetidoTomador,
     
+    /// <summary>
+    /// 3 - Retido pelo Intermediário.
+    /// </summary>
     [DFeEnum("3")]
     RetidoIntermediario
 }

@@ -35,16 +35,28 @@ using OpenAC.Net.NFSe.Nacional.Common.Types;
 
 namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 
+/// <summary>
+/// Representa uma DPS substituída, contendo informações sobre a chave, motivo e descrição da substituição.
+/// </summary>
 public sealed class DpsSubstituida
 {
     #region Properties
 
+    /// <summary>
+    /// Chave da DPS substituída.
+    /// </summary>
     [DFeElement(TipoCampo.Str, "chSubstda", Min = 50, Max = 50, Ocorrencia = Ocorrencia.Obrigatoria)]
     public string ChaveSubstituida { get; set; } = string.Empty;
 
+    /// <summary>
+    /// Código do motivo da substituição.
+    /// </summary>
     [DFeElement(TipoCampo.Enum, "cMotivo", Min = 2, Max = 2, Ocorrencia = Ocorrencia.Obrigatoria)]
     public MotivoSubstituicao CodigoMotivo { get; set; }
 
+    /// <summary>
+    /// Descrição do motivo da substituição.
+    /// </summary>
     [DFeElement(TipoCampo.Str, "xMotivo", Min = 15, Max = 255, Ocorrencia = Ocorrencia.NaoObrigatoria)]
     public string? Motivo { get; set; }
 

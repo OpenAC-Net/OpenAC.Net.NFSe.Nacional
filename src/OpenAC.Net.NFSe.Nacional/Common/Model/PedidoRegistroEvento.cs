@@ -36,12 +36,18 @@ using OpenAC.Net.DFe.Core.Serializer;
 
 namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 
+/// <summary>
+/// Representa o pedido de registro de evento para a NFSe Nacional.
+/// </summary>
 [DFeSignInfoElement("infPedReg")]
 [DFeRoot("pedRegEvento", Namespace = "http://www.sped.fazenda.gov.br/nfse")]
 public sealed class PedidoRegistroEvento : DFeSignDocument<PedidoRegistroEvento>
 {
     #region Constructors
 
+    /// <summary>
+    /// Inicializa uma nova instância da classe <see cref="PedidoRegistroEvento"/>.
+    /// </summary>
     public PedidoRegistroEvento()
     {
         Signature = new DFeSignature();
@@ -51,9 +57,15 @@ public sealed class PedidoRegistroEvento : DFeSignDocument<PedidoRegistroEvento>
     
     #region Properties
 
+    /// <summary>
+    /// Versão do layout do pedido.
+    /// </summary>
     [DFeAttribute(TipoCampo.Str, "versao", Ocorrencia = Ocorrencia.Obrigatoria)]
     public string Versao { get; set; } = string.Empty;
 
+    /// <summary>
+    /// Informações do pedido de registro de evento.
+    /// </summary>
     [DFeElement("infPedReg", Ocorrencia = Ocorrencia.Obrigatoria)]
     public InfPedReg Informacoes { get; set; } = new();
 
@@ -61,6 +73,10 @@ public sealed class PedidoRegistroEvento : DFeSignDocument<PedidoRegistroEvento>
     
     #region Methods
 
+    /// <summary>
+    /// Realiza a assinatura digital do pedido utilizando as configurações fornecidas.
+    /// </summary>
+    /// <param name="configuracao">Configuração da NFSe.</param>
     public void Assinar(ConfiguracaoNFSe configuracao)
     {
         var options = DFeSaveOptions.DisableFormatting;

@@ -36,14 +36,30 @@ using OpenAC.Net.DFe.Core.Common;
 
 namespace OpenAC.Net.NFSe.Nacional.Common.Converter;
 
+/// <summary>
+/// Conversor JSON para o enum <see cref="DFeTipoAmbiente"/>.
+/// </summary>
 public class TipoAmbienteJsonConverter : JsonConverter<DFeTipoAmbiente>
 {
+    /// <summary>
+    /// Lê e converte o valor JSON para <see cref="DFeTipoAmbiente"/>.
+    /// </summary>
+    /// <param name="reader">Leitor JSON.</param>
+    /// <param name="typeToConvert">Tipo a ser convertido.</param>
+    /// <param name="options">Opções de serialização.</param>
+    /// <returns>Valor convertido para <see cref="DFeTipoAmbiente"/>.</returns>
     public override DFeTipoAmbiente Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
         var valor = reader.GetInt32();
         return (DFeTipoAmbiente) valor;
     }
 
+    /// <summary>
+    /// Escreve o valor de <see cref="DFeTipoAmbiente"/> como número no JSON.
+    /// </summary>
+    /// <param name="writer">Gravador JSON.</param>
+    /// <param name="value">Valor a ser escrito.</param>
+    /// <param name="options">Opções de serialização.</param>
     public override void Write(Utf8JsonWriter writer, DFeTipoAmbiente value, JsonSerializerOptions options)
     {
         writer.WriteNumberValue((int)value);

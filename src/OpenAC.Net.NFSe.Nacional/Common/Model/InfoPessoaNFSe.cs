@@ -35,37 +35,70 @@ using OpenAC.Net.NFSe.Nacional.Common.Types;
 
 namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 
+/// <summary>
+/// Representa as informações de identificação de uma pessoa para NFSe.
+/// </summary>
 public class InfoPessoaNFSe
 {
     #region Properties
 
+    /// <summary>
+    /// CNPJ da pessoa.
+    /// </summary>
     [DFeElement(TipoCampo.StrNumber, "CNPJ", Min = 14, Max = 14, Ocorrencia = Ocorrencia.NaoObrigatoria, Ordem = 0)]
     public string? CNPJ { get; set; }
     
+    /// <summary>
+    /// CPF da pessoa.
+    /// </summary>
     [DFeElement(TipoCampo.StrNumber, "CPF", Min = 11, Max = 11, Ocorrencia = Ocorrencia.NaoObrigatoria, Ordem = 0)]
     public string? CPF { get; set; }
     
+    /// <summary>
+    /// NIF (Número de Identificação Fiscal) da pessoa.
+    /// </summary>
     [DFeElement(TipoCampo.StrNumber, "NIF", Min = 1, Max = 40, Ocorrencia = Ocorrencia.NaoObrigatoria, Ordem = 1)]
     public string? Nif { get; set; }
 
+    /// <summary>
+    /// Código do motivo para ausência de NIF.
+    /// </summary>
     [DFeElement(TipoCampo.Enum, "cNaoNIF", Ocorrencia = Ocorrencia.NaoObrigatoria, Ordem = 2)]
     public MotivoNaoNIF? CodigoNaoNif { get; set; }
 
+    /// <summary>
+    /// Número do CAEPF.
+    /// </summary>
     [DFeElement(TipoCampo.Str, "CAEPF", Min = 14, Max = 14, Ocorrencia = Ocorrencia.NaoObrigatoria, Ordem = 3)]
     public string? NumeroCAEPF { get; set; }
 
+    /// <summary>
+    /// Inscrição municipal.
+    /// </summary>
     [DFeElement(TipoCampo.StrNumber, "IM", Min = 1, Max = 15, Ocorrencia = Ocorrencia.NaoObrigatoria, Ordem = 4)]
     public string? InscricaoMunicipal { get; set; }
 
+    /// <summary>
+    /// Nome da pessoa.
+    /// </summary>
     [DFeElement(TipoCampo.Str, "xNome", Min = 1, Max = 300, Ocorrencia = Ocorrencia.NaoObrigatoria, Ordem = 5)]
     public string? Nome { get; set; }
 
+    /// <summary>
+    /// Endereço da pessoa.
+    /// </summary>
     [DFeElement("end", Ocorrencia = Ocorrencia.NaoObrigatoria, Ordem = 5)]
     public EnderecoNFSe Endereco { get; set; }
     
+    /// <summary>
+    /// Telefone de contato.
+    /// </summary>
     [DFeElement(TipoCampo.StrNumber, "fone", Min = 6, Max = 20, Ocorrencia = Ocorrencia.NaoObrigatoria, Ordem = 6)]
     public string? Telefone { get; set; }
     
+    /// <summary>
+    /// E-mail de contato.
+    /// </summary>
     [DFeElement(TipoCampo.Str, "email", Min = 1, Max = 80, Ocorrencia = Ocorrencia.NaoObrigatoria, Ordem = 7)]
     public string? Email { get; set; }
 

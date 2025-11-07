@@ -6,7 +6,7 @@
 // Last Modified By : RFTD
 // Last Modified On : 09-09-2023
 // ***********************************************************************
-// <copyright file="NFSeWebserviceConfig.cs" company="OpenAC .Net">
+// <copyright file="NFSeCertificadoConfig.cs" company="OpenAC .Net">
 //		        		   The MIT License (MIT)
 //	     		    Copyright (c) 2014-2023 Grupo OpenAC.Net
 //
@@ -31,9 +31,12 @@
 
 using OpenAC.Net.DFe.Core.Common;
 
-namespace OpenAC.Net.NFSe.Nacional;
+namespace OpenAC.Net.NFSe.Nacional.Common;
 
-public sealed class NFSeWebserviceConfig : DFeWebserviceConfigBase
+/// <summary>
+/// Representa a configuração para certificados NFSe.
+/// </summary>
+public sealed class NFSeCertificadoConfig : DFeCertificadosConfigBase
 {
     
 }

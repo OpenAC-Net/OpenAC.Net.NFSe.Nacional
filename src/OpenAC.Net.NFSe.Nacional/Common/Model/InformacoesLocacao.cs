@@ -35,17 +35,32 @@ using OpenAC.Net.NFSe.Nacional.Common.Types;
 
 namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 
+/// <summary>
+/// Representa as informações de locação.
+/// </summary>
 public sealed class InformacoesLocacao
 {
+    /// <summary>
+    /// Categoria da locação.
+    /// </summary>
     [DFeElement(TipoCampo.Enum, "categ", Ocorrencia = Ocorrencia.Obrigatoria)]
     public CategoriaLocacao Categoria { get; set; } = CategoriaLocacao.Locacao;
     
+    /// <summary>
+    /// Objeto da locação.
+    /// </summary>
     [DFeElement(TipoCampo.Enum, "objeto", Ocorrencia = Ocorrencia.Obrigatoria)]
     public ObjetoLocacao Objeto { get; set; }
 
+    /// <summary>
+    /// Extensão total da locação.
+    /// </summary>
     [DFeElement(TipoCampo.Int, "extensao", Min = 1, Max = 5, Ocorrencia = Ocorrencia.Obrigatoria)]
     public int ExtensaoTotal { get; set; }
     
+    /// <summary>
+    /// Número de postes.
+    /// </summary>
     [DFeElement(TipoCampo.Int, "nPostes", Min = 1, Max = 6, Ocorrencia = Ocorrencia.Obrigatoria)]
     public int NumeroPostes { get; set; }
 }

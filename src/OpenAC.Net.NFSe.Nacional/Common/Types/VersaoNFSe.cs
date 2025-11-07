@@ -31,7 +31,13 @@
 
 namespace OpenAC.Net.NFSe.Nacional.Common.Types;
 
+/// <summary>
+/// Enumeração das versões suportadas do padrão NFSe.
+/// </summary>
 public enum VersaoNFSe
 {
+    /// <summary>
+    /// Versão 1.00 do padrão NFSe.
+    /// </summary>
     Ve100
 }

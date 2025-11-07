@@ -34,8 +34,14 @@ using OpenAC.Net.DFe.Core.Serializer;
 
 namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 
-public sealed class EventoConfirmacaoTacita: IEventoNFSe
+/// <summary>
+/// Representa o evento de confirmação tácita para NFSe.
+/// </summary>
+public sealed class EventoConfirmacaoTacita : IEventoNFSe
 {
+    /// <summary>
+    /// Descrição do evento.
+    /// </summary>
     [DFeElement(TipoCampo.Str, "xDesc", Ocorrencia = Ocorrencia.Obrigatoria)]
     public string Descricao { get; set; } = "Confirmação Tácita";
 }

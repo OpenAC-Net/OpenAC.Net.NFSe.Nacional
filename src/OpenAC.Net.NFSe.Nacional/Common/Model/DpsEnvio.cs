@@ -34,8 +34,14 @@ using OpenAC.Net.NFSe.Nacional.Common.Converter;
 
 namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 
+/// <summary>
+/// Representa o envio de uma DPS (Documento Provisório de Serviço) em formato XML compactado e codificado.
+/// </summary>
 public sealed class DpsEnvio
 {
+    /// <summary>
+    /// Obtém ou define o XML da DPS compactado em GZip e codificado em Base64.
+    /// </summary>
     [JsonPropertyName("dpsXmlGZipB64")]
     [JsonConverter(typeof(XmlGzipJsonConverter))]
     public string XmlDps { get; set; } = string.Empty;

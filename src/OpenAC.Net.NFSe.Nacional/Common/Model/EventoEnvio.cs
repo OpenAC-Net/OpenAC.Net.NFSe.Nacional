@@ -35,8 +35,14 @@ using OpenAC.Net.NFSe.Nacional.Common.Converter;
 
 namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 
+/// <summary>
+/// Representa o envio de um evento em formato XML compactado e codificado.
+/// </summary>
 public sealed class EventoEnvio
 {
+    /// <summary>
+    /// Obtém ou define o XML do evento compactado em GZip e codificado em Base64.
+    /// </summary>
     [JsonPropertyName("pedidoRegistroEventoXmlGZipB64")]
     [JsonConverter(typeof(XmlGzipJsonConverter))]
     public string XmlEvento { get; set; } = string.Empty;

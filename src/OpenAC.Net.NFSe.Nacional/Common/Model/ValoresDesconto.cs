@@ -34,11 +34,20 @@ using OpenAC.Net.DFe.Core.Serializer;
 
 namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 
+/// <summary>
+/// Representa os valores de desconto condicional e incondicional.
+/// </summary>
 public sealed class ValoresDesconto
 {
+    /// <summary>
+    /// Valor do desconto incondicional.
+    /// </summary>
     [DFeElement(TipoCampo.De2, "vDescIncond", Min = 4, Max = 18, Ocorrencia = Ocorrencia.NaoObrigatoria)]
     public decimal? ValorIncodicional { get; set; }
 
+    /// <summary>
+    /// Valor do desconto condicional.
+    /// </summary>
     [DFeElement(TipoCampo.De2, "vDescCond", Min = 4, Max = 18, Ocorrencia = Ocorrencia.NaoObrigatoria)]
     public decimal? ValorCondicional { get; set; }
 }

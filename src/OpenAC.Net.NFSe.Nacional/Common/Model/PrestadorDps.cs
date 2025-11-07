@@ -33,10 +33,16 @@ using OpenAC.Net.DFe.Core.Attributes;
 
 namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 
+/// <summary>
+/// Representa o prestador de serviços na DPS.
+/// </summary>
 public sealed class PrestadorDps : InfoPessoaNFSe
 {
     #region Properties
 
+    /// <summary>
+    /// Regime tributário do prestador.
+    /// </summary>
     [DFeElement("regTrib", Ocorrencia = Ocorrencia.Obrigatoria, Ordem = 8)]
     public RegimeTributario Regime { get; set; } = new();
 

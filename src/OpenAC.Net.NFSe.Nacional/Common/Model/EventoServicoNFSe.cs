@@ -36,22 +36,40 @@ using OpenAC.Net.DFe.Core.Serializer;
 
 namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 
+/// <summary>
+/// Representa um evento de serviço para NFSe.
+/// </summary>
 public sealed class EventoServicoNFSe
 {
     #region Properties
 
+    /// <summary>
+    /// Descrição do evento.
+    /// </summary>
     [DFeElement(TipoCampo.Str, "desc", Min = 1, Max = 255, Ocorrencia = Ocorrencia.Obrigatoria)]
     public string Descricao { get; set; } = string.Empty;
     
+    /// <summary>
+    /// Data de início do evento.
+    /// </summary>
     [DFeElement(TipoCampo.Dat, "dtIni", Min = 1, Max = 255, Ocorrencia = Ocorrencia.Obrigatoria)]
     public DateTime DataInicio { get; set; } = DateTime.Today;
     
+    /// <summary>
+    /// Data de término do evento.
+    /// </summary>
     [DFeElement(TipoCampo.Dat, "dtFim", Min = 1, Max = 255, Ocorrencia = Ocorrencia.Obrigatoria)]
     public DateTime DataFim { get; set; } = DateTime.Today;
     
+    /// <summary>
+    /// Identificador do evento.
+    /// </summary>
     [DFeElement(TipoCampo.Str, "id", Min = 1, Max = 30, Ocorrencia = Ocorrencia.NaoObrigatoria)]
     public string IdEvento { get; set; } = string.Empty;
 
+    /// <summary>
+    /// Endereço relacionado ao evento.
+    /// </summary>
     [DFeElement("end", Ocorrencia = Ocorrencia.NaoObrigatoria)]
     public EnderecoSimplesNFSe? Endereco { get; set; }
 
@@ -59,8 +77,14 @@ public sealed class EventoServicoNFSe
     
     #region Methods
 
+    /// <summary>
+    /// Indica se a propriedade IdEvento deve ser serializada.
+    /// </summary>
     private bool ShouldSerializeIdEvento() => Endereco == null;
     
+    /// <summary>
+    /// Indica se a propriedade Endereco deve ser serializada.
+    /// </summary>
     private bool ShouldSerializeEndereco() => IdEvento.IsEmpty();
     
     #endregion Methods

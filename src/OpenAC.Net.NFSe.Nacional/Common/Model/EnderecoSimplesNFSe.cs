@@ -35,25 +35,46 @@ using OpenAC.Net.DFe.Core.Serializer;
 
 namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 
+/// <summary>
+/// Representa um endereço simples para NFSe.
+/// </summary>
 public sealed class EnderecoSimplesNFSe
 {
     #region Properties
 
+    /// <summary>
+    /// Código de Endereçamento Postal (CEP).
+    /// </summary>
     [DFeElement(TipoCampo.Str, "CEP", Min = 8, Max = 8, Ocorrencia = Ocorrencia.Obrigatoria)]
     public string CEP { get; set; } = string.Empty;
 
+    /// <summary>
+    /// Endereço no exterior, caso aplicável.
+    /// </summary>
     [DFeElement("endExt", Ocorrencia = Ocorrencia.NaoObrigatoria)]
     public EnderecoExterior? EnderecoExterior { get; set; }
     
+    /// <summary>
+    /// Logradouro do endereço.
+    /// </summary>
     [DFeElement(TipoCampo.Str, "xLgr", Min = 1, Max = 255, Ocorrencia = Ocorrencia.Obrigatoria)]
     public string Logradouro { get; set; } = string.Empty;
 
+    /// <summary>
+    /// Número do endereço.
+    /// </summary>
     [DFeElement(TipoCampo.Str, "nro", Min = 1, Max = 60, Ocorrencia = Ocorrencia.Obrigatoria)]
     public string Numero { get; set; } = string.Empty;
     
+    /// <summary>
+    /// Complemento do endereço.
+    /// </summary>
     [DFeElement(TipoCampo.Str, "xCpl", Min = 1, Max = 156, Ocorrencia = Ocorrencia.NaoObrigatoria)]
     public string? Complemento { get; set; }
     
+    /// <summary>
+    /// Bairro do endereço.
+    /// </summary>
     [DFeElement(TipoCampo.Str, "xBairro", Min = 1, Max = 60, Ocorrencia = Ocorrencia.Obrigatoria)]
     public string Bairro { get; set; } = string.Empty;
 
@@ -61,9 +82,15 @@ public sealed class EnderecoSimplesNFSe
 
     #region Methods
 
+    /// <summary>
+    /// Indica se o campo CEP deve ser serializado.
+    /// </summary>
     private bool ShouldSerializeCEP() => EnderecoExterior == null;
     
-    private bool ShouldSerializeEnderecoExterior() => CEP.IsEmpty();
+    /// <summary>
+    /// Indica se o campo EnderecoExterior deve ser serializado.
+    /// </summary>
+    private bool ShouldSerializeEnderecoExterior() => !CEP.IsEmpty();
     
     #endregion Methods
 }

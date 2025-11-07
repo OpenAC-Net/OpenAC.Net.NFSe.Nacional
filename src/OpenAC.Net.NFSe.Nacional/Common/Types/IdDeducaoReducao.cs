@@ -34,43 +34,61 @@ using OpenAC.Net.DFe.Core.Attributes;
 namespace OpenAC.Net.NFSe.Nacional.Common.Types;
 
 /// <summary>
-/// Identificação da Dedução/Redução:
-/// 1 – Alimentação e bebidas/frigobar;
-/// 2 – Materiais;
-/// 3 – Produção externa;
-/// 4 – Reembolso de despesas;
-/// 5 – Repasse consorciado;
-/// 6 – Repasse plano de saúde;
-/// 7 – Serviços;
-/// 8 – Subempreitada de mão de obra;
-/// 99 – Outras deduções;
+/// Identificação da Dedução/Redução.
 /// </summary>
 public enum TipoDeducaoReducao
 {
+    /// <summary>
+    /// Alimentação e bebidas/frigobar.
+    /// </summary>
     [DFeEnum("1")]
     AlimentacaoBebidasFrigobar,
-    
+
+    /// <summary>
+    /// Materiais.
+    /// </summary>
     [DFeEnum("2")]
     Materiais,
-    
+
+    /// <summary>
+    /// Produção externa.
+    /// </summary>
     [DFeEnum("3")]
     ProducaoExterna,
-    
+
+    /// <summary>
+    /// Reembolso de despesas.
+    /// </summary>
     [DFeEnum("4")]
     ReembolsoDespesas,
-    
+
+    /// <summary>
+    /// Repasse consorciado.
+    /// </summary>
     [DFeEnum("5")]
     RepasseConsorciado,
-    
+
+    /// <summary>
+    /// Repasse plano de saúde.
+    /// </summary>
     [DFeEnum("6")]
     RepassePlanSaude,
-    
+
+    /// <summary>
+    /// Serviços.
+    /// </summary>
     [DFeEnum("7")]
     Servicos,
-    
+
+    /// <summary>
+    /// Subempreitada de mão de obra.
+    /// </summary>
     [DFeEnum("8")]
     SubempreitadaMaoObra,
-    
+
+    /// <summary>
+    /// Outras deduções.
+    /// </summary>
     [DFeEnum("99")]
     Outras
 }

@@ -33,11 +33,20 @@ using OpenAC.Net.DFe.Core.Attributes;
 
 namespace OpenAC.Net.NFSe.Nacional.Common.Types;
 
+/// <summary>
+/// Tipos de rodagem.
+/// </summary>
 public enum TipoRodagem
 {
+    /// <summary>
+    /// Rodagem simples.
+    /// </summary>
     [DFeEnum("1")]
     Simples,
-    
+
+    /// <summary>
+    /// Rodagem dupla.
+    /// </summary>
     [DFeEnum("2")]
     Dupla
 }

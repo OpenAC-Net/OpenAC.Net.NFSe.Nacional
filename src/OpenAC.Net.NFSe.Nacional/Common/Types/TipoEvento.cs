@@ -31,24 +31,98 @@
 
 namespace OpenAC.Net.NFSe.Nacional.Common.Types;
 
+/// <summary>
+/// Define os tipos de eventos possíveis para NFSe.
+/// </summary>
 public enum TipoEvento
 {
+    /// <summary>
+    /// Cancelamento da NFSe.
+    /// </summary>
     CANCELAMENTO,
+
+    /// <summary>
+    /// Solicitação de cancelamento em análise fiscal.
+    /// </summary>
     SOLICITACAO_CANCELAMENTO_ANALISE_FISCAL,
+
+    /// <summary>
+    /// Cancelamento por substituição.
+    /// </summary>
     CANCELAMENTO_POR_SUBSTITUICAO,
+
+    /// <summary>
+    /// Cancelamento deferido após análise fiscal.
+    /// </summary>
     CANCELAMENTO_DEFERIDO_ANALISE_FISCAL,
+
+    /// <summary>
+    /// Cancelamento indeferido após análise fiscal.
+    /// </summary>
     CANCELAMENTO_INDEFERIDO_ANALISE_FISCAL,
+
+    /// <summary>
+    /// Confirmação pelo prestador.
+    /// </summary>
     CONFIRMACAO_PRESTADOR,
+
+    /// <summary>
+    /// Rejeição pelo prestador.
+    /// </summary>
     REJEICAO_PRESTADOR,
+
+    /// <summary>
+    /// Confirmação pelo tomador.
+    /// </summary>
     CONFIRMACAO_TOMADOR,
+
+    /// <summary>
+    /// Rejeição pelo tomador.
+    /// </summary>
     REJEICAO_TOMADOR,
+
+    /// <summary>
+    /// Confirmação pelo intermediário.
+    /// </summary>
     CONFIRMACAO_INTERMEDIARIO,
+
+    /// <summary>
+    /// Rejeição pelo intermediário.
+    /// </summary>
     REJEICAO_INTERMEDIARIO,
+
+    /// <summary>
+    /// Confirmação tácita.
+    /// </summary>
     CONFIRMACAO_TACITA,
+
+    /// <summary>
+    /// Anulação de rejeição.
+    /// </summary>
     ANULACAO_REJEICAO,
+
+    /// <summary>
+    /// Cancelamento por ofício.
+    /// </summary>
     CANCELAMENTO_POR_OFICIO,
+
+    /// <summary>
+    /// Bloqueio por ofício.
+    /// </summary>
     BLOQUEIO_POR_OFICIO,
+
+    /// <summary>
+    /// Desbloqueio por ofício.
+    /// </summary>
     DESBLOQUEIO_POR_OFICIO,
+
+    /// <summary>
+    /// Inclusão de NFSe DAN.
+    /// </summary>
     INCLUSAO_NFSE_DAN,
+
+    /// <summary>
+    /// Tributos da NFSe recolhidos.
+    /// </summary>
     TRIBUTOS_NFSE_RECOLHIDOS
 }

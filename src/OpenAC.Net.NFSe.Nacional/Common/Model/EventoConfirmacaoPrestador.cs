@@ -34,8 +34,14 @@ using OpenAC.Net.DFe.Core.Serializer;
 
 namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 
-public sealed class EventoConfirmacaoPrestador: IEventoNFSe
+/// <summary>
+/// Representa o evento de confirmação do prestador no processo de NFSe.
+/// </summary>
+public sealed class EventoConfirmacaoPrestador : IEventoNFSe
 {
+    /// <summary>
+    /// Descrição do evento. Valor fixo: "Confirmação do Prestador".
+    /// </summary>
     [DFeElement(TipoCampo.Str, "xDesc", Ocorrencia = Ocorrencia.Obrigatoria)]
     public string Descricao { get; set; } = "Confirmação do Prestador";
 }

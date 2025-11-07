@@ -35,14 +35,18 @@ namespace OpenAC.Net.NFSe.Nacional.Common.Types;
 
 /// <summary>
 /// Compartilhar as informações da NFS-e gerada a partir desta DPS com a Secretaria de Comércio Exterior:
-/// 0 - Não enviar para o MDIC;
-/// 1 - Enviar para o MDIC;
 /// </summary>
 public enum CompartilharMDIC
 {
+    /// <summary>
+    /// 0 - Não enviar para o MDIC;
+    /// </summary>
     [DFeEnum("0")]
     NaoEnviar,
     
+    /// <summary>
+    /// 1 - Enviar para o MDIC;
+    /// </summary>
     [DFeEnum("1")]
     Enviar
 }

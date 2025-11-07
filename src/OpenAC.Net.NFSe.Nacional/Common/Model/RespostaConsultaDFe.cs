@@ -36,14 +36,20 @@ using OpenAC.Net.NFSe.Nacional.Common.Types;
 namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 
 /// <summary>
-/// Classe RespostaConsultaNsu
+/// Representa a resposta da consulta de DFe.
 /// </summary>
 public sealed class RespostaConsultaDFe : RespostaBase
 {
+    /// <summary>
+    /// Status do processamento da distribuição.
+    /// </summary>
     [JsonPropertyName("StatusProcessamento")]
     [JsonConverter(typeof(JsonStringEnumConverter<StatusProcessamentoDistribuicao>))]
     public StatusProcessamentoDistribuicao StatusProcessamento { get; set; }
     
+    /// <summary>
+    /// Lista de documentos fiscais eletrônicos retornados.
+    /// </summary>
     [JsonPropertyName("LoteDFe")]
     public List<DFe> Lote { get; set; } = new();
 }

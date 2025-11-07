@@ -13,18 +13,18 @@ public class TestEmissao
         var openNFSeNacional = new OpenNFSeNacional();
         SetupOpenNFSeNacional.Configuracao(openNFSeNacional);
 
-        var prest = new PrestadorDps()
+        var prest = new PrestadorDps
         {
             CNPJ = SetupOpenNFSeNacional.InscricaoFederal,
             Email = "teste@teste.com",
-            Regime = new RegimeTributario()
+            Regime = new RegimeTributario
             {
                 OptanteSimplesNacional = OptanteSimplesNacional.OptanteMEI,
                 RegimeEspecial = RegimeEspecial.Nenhum
             }
         };
 
-        var toma = new InfoPessoaNFSe()
+        var toma = new InfoPessoaNFSe
         {
             CNPJ = "52309133000148",
             Nome = "Lecom Automação de Processos",
@@ -41,9 +41,9 @@ public class TestEmissao
             }
         };
 
-        var serv = new ServicoNFSe()
+        var serv = new ServicoNFSe
         {
-            Localidade = new LocalidadeNFSe()
+            Localidade = new LocalidadeNFSe
             {
                 CodMunicipioPrestacao = "3525300"
             },
@@ -54,7 +54,7 @@ public class TestEmissao
             }
         };
 
-        var valores = new ValoresDps()
+        var valores = new ValoresDps
         {
             ValoresServico = new ValoresServico
             {
@@ -69,7 +69,7 @@ public class TestEmissao
                 },
                 Total = new TotalTributos
                 {
-                    PorcentagemTotal = new PorcentagemTotalTributos()
+                    PorcentagemTotal = new PorcentagemTotalTributos
                     {
                         TotalEstadual = 0,
                         TotalFederal = 0,
@@ -116,7 +116,7 @@ public class TestEmissao
 
         var chaveNFse = "35253002242250933000187000000000000324057909658427";
 
-        var cancelamento = new EventoCancelamento()
+        var cancelamento = new EventoCancelamento
         {
             CodMotivo = MotivoCancelamento.ErroEmissao,
             Motivo = "Dados inválidos"
@@ -181,7 +181,7 @@ public class TestEmissao
 
         var chaveNFse = "35253002242250933000187000000000000724054029982347";
 
-        var solicitacaoCancelamento = new EventoSolicitacaoCancelamento()
+        var solicitacaoCancelamento = new EventoSolicitacaoCancelamento
         {
             CodMotivo = JustificativaAnalise.Outros,
             Motivo = "Dados Inválidos",

@@ -32,16 +32,24 @@
 namespace OpenAC.Net.NFSe.Nacional.Common.Types;
 
 /// <summary>
-/// Operação está vinculada à Movimentação Temporária de Bens:
-/// 0 - Desconhecido (tipo não informado na nota de origem);
-/// 1 - Não
-/// 2 - Vinculada - Declaração de Importação
-/// 3 - Vinculada - Declaração de Exportação
+/// Indica se a operação está vinculada à Movimentação Temporária de Bens.
 /// </summary>
 public enum MovimentacaoTemporariaBens
 {
+    /// <summary>
+    /// 0 - Desconhecido (tipo não informado na nota de origem)
+    /// </summary>
     Desconhecido,
+    /// <summary>
+    /// 1 - Não
+    /// </summary>
     Nao,
+    /// <summary>
+    /// 2 - Vinculada - Declaração de Importação
+    /// </summary>
     DeclaracaoImportacao,
+    /// <summary>
+    /// 3 - Vinculada - Declaração de Exportação
+    /// </summary>
     DeclaracaoExportacao
 }

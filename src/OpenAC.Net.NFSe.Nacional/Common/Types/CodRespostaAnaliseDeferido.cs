@@ -32,10 +32,12 @@
 namespace OpenAC.Net.NFSe.Nacional.Common.Types;
 
 /// <summary>
-/// Resposta da análise da solicitação do cancelamento extemporâneo de NFS-e:
-/// 1 - Cancelamento Extemporâneo Deferido.
+/// Código de resposta para análise da solicitação de cancelamento extemporâneo de NFS-e.
 /// </summary>
 public enum CodRespostaAnaliseDeferido
 {
+    /// <summary>
+    /// 1 - Cancelamento Extemporâneo Deferido.
+    /// </summary>
     CancelamentoExtemporaneoDeferido
 }

@@ -34,19 +34,25 @@ using OpenAC.Net.DFe.Core.Attributes;
 namespace OpenAC.Net.NFSe.Nacional.Common.Types;
 
 /// <summary>
-/// Processo de Emissão da DPS:
-/// 1 - Emissão com aplicativo do contribuinte (via Web Service);
-/// 2 - Emissão com aplicativo disponibilizado pelo fisco (Web);
-/// 3 - Emissão com aplicativo disponibilizado pelo fisco (App);
+/// Processo de Emissão da DPS.
 /// </summary>
 public enum ProcessoEmissao
 {
+    /// <summary>
+    /// Emissão com aplicativo do contribuinte (via Web Service).
+    /// </summary>
     [DFeEnum("1")]
     AplicativoContribuinte,
     
+    /// <summary>
+    /// Emissão com aplicativo disponibilizado pelo fisco (Web).
+    /// </summary>
     [DFeEnum("2")]
     AplicativoFiscoWeb,
     
+    /// <summary>
+    /// Emissão com aplicativo disponibilizado pelo fisco (App).
+    /// </summary>
     [DFeEnum("3")]
     AplicativoFiscoApp,
 }

@@ -34,47 +34,67 @@ using OpenAC.Net.DFe.Core.Attributes;
 namespace OpenAC.Net.NFSe.Nacional.Common.Types;
 
 /// <summary>
-/// Código de Situação Tributária do PIS/COFINS (CST):
-/// 00 - Nenhum;
-/// 01 - Operação Tributável com Alíquota Básica;
-/// 02 - Operação Tributável com Alíquota Diferenciada;
-/// 03 - Operação Tributável com Alíquota por Unidade de Medida de Produto;
-/// 04 - Operação Tributável monofásica - Revenda a Alíquota Zero;
-/// 05 - Operação Tributável por Substituição Tributária;
-/// 06 - Operação Tributável a Alíquota Zero;
-/// 07 - Operação Tributável da Contribuição;
-/// 08 - Operação sem Incidência da Contribuição;
-/// 09 - Operação com Suspensão da Contribuição;
+/// Código de Situação Tributária do PIS/COFINS (CST).
 /// </summary>
 public enum TipoCST
 {
+    /// <summary>
+    /// 00 - Nenhum
+    /// </summary>
     [DFeEnum("00")]
     Nenhum,
-    
+
+    /// <summary>
+    /// 01 - Operação Tributável com Alíquota Básica
+    /// </summary>
     [DFeEnum("01")]
     AliquotaBasica,
-    
+
+    /// <summary>
+    /// 02 - Operação Tributável com Alíquota Diferenciada
+    /// </summary>
     [DFeEnum("02")]
     AliquotaDiferenciada,
-    
+
+    /// <summary>
+    /// 03 - Operação Tributável com Alíquota por Unidade de Medida de Produto
+    /// </summary>
     [DFeEnum("03")]
     AliquotaUnidadeMedidaProduto,
-    
+
+    /// <summary>
+    /// 04 - Operação Tributável monofásica - Revenda a Alíquota Zero
+    /// </summary>
     [DFeEnum("04")]
     RevendaAliquotaZero,
-    
+
+    /// <summary>
+    /// 05 - Operação Tributável por Substituição Tributária
+    /// </summary>
     [DFeEnum("05")]
     SubstituicaoTributaria,
-    
+
+    /// <summary>
+    /// 06 - Operação Tributável a Alíquota Zero
+    /// </summary>
     [DFeEnum("06")]
     AliquotaZero,
-    
+
+    /// <summary>
+    /// 07 - Operação Tributável da Contribuição
+    /// </summary>
     [DFeEnum("07")]
     Contribuicao,
-    
+
+    /// <summary>
+    /// 08 - Operação sem Incidência da Contribuição
+    /// </summary>
     [DFeEnum("08")]
     SemIncidenciaContribuicao,
-    
+
+    /// <summary>
+    /// 09 - Operação com Suspensão da Contribuição
+    /// </summary>
     [DFeEnum("09")]
     ComSuspensaoContribuicao
 }

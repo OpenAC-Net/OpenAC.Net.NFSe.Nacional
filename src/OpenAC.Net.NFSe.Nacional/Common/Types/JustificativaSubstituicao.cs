@@ -34,31 +34,43 @@ using OpenAC.Net.DFe.Core.Attributes;
 namespace OpenAC.Net.NFSe.Nacional.Common.Types;
 
 /// <summary>
-/// Código de justificativa para substituição de NFS-e:
-/// 01 - Desenquadramento de NFS-e do Simples Nacional;
-/// 02 - Enquadramento de NFS-e no Simples Nacional;
-/// 03 - Inclusão Retroativa de Imunidade/Isenção para NFS-e;
-/// 04 - Exclusão Retroativa de Imunidade/Isenção para NFS-e;
-/// 05 - Rejeição de NFS-e pelo tomador ou pelo intermediário se responsável pelo recolhimento do tributo;
-/// 99 - Outros;
+/// Código de justificativa para substituição de NFS-e.
 /// </summary>
 public enum JustificativaSubstituicao
 {
+    /// <summary>
+    /// 01 - Desenquadramento de NFS-e do Simples Nacional
+    /// </summary>
     [DFeEnum("01")]
     DesenquadramentoSimplesNacional,
-    
+
+    /// <summary>
+    /// 02 - Enquadramento de NFS-e no Simples Nacional
+    /// </summary>
     [DFeEnum("02")]
     EnquadramentoSimplesNacional,
-    
+
+    /// <summary>
+    /// 03 - Inclusão Retroativa de Imunidade/Isenção para NFS-e
+    /// </summary>
     [DFeEnum("03")]
     InclusaoRetroativaImunidadeIsencao,
-    
+
+    /// <summary>
+    /// 04 - Exclusão Retroativa de Imunidade/Isenção para NFS-e
+    /// </summary>
     [DFeEnum("04")]
     ExclusaoRetroativaImunidadeIsencao,
-    
+
+    /// <summary>
+    /// 05 - Rejeição de NFS-e pelo tomador ou pelo intermediário se responsável pelo recolhimento do tributo
+    /// </summary>
     [DFeEnum("05")]
     RejeicaoNFSeTomadorIntermediário,
-    
+
+    /// <summary>
+    /// 99 - Outros
+    /// </summary>
     [DFeEnum("99")]
     Outros
 }

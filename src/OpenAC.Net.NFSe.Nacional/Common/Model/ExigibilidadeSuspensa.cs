@@ -35,11 +35,20 @@ using OpenAC.Net.NFSe.Nacional.Common.Types;
 
 namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 
+/// <summary>
+/// Representa a exigibilidade suspensa de um serviço.
+/// </summary>
 public sealed class ExigibilidadeSuspensa
 {
+    /// <summary>
+    /// Tipo de suspensão da exigibilidade.
+    /// </summary>
     [DFeElement(TipoCampo.Enum, "tpSusp", Ocorrencia = Ocorrencia.Obrigatoria)]
     public TipoSuspensao TipoSuspensao { get; set; }
     
+    /// <summary>
+    /// Número do processo relacionado à suspensão.
+    /// </summary>
     [DFeElement(TipoCampo.StrNumber, "nProcesso", Min = 1, Max = 30, Ocorrencia = Ocorrencia.Obrigatoria)]
     public string? NumeroProcesso { get; set; }
 }

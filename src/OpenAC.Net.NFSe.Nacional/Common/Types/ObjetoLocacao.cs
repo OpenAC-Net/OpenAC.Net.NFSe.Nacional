@@ -35,31 +35,43 @@ using OpenAC.Net.DFe.Core.Attributes;
 namespace OpenAC.Net.NFSe.Nacional.Common.Types;
 
 /// <summary>
-/// Tipo de objetos da locação, sublocação, arrendamento, direito de passagem ou permissão de uso:
-/// 1 - Ferrovia;
-/// 2 - Rodovia;
-/// 3 - Postes;
-/// 4 - Cabos;
-/// 5 - Dutos;
-/// 6 - Condutos de qualquer natureza;
+/// Tipo de objetos da locação, sublocação, arrendamento, direito de passagem ou permissão de uso.
 /// </summary>
 public enum ObjetoLocacao
 {
+    /// <summary>
+    /// Ferrovia.
+    /// </summary>
     [DFeEnum("1")]
     Ferrovia = 1,
-    
+
+    /// <summary>
+    /// Rodovia.
+    /// </summary>
     [DFeEnum("2")]
     Rodovia,
-    
+
+    /// <summary>
+    /// Postes.
+    /// </summary>
     [DFeEnum("3")]
     Postes,
-    
+
+    /// <summary>
+    /// Cabos.
+    /// </summary>
     [DFeEnum("4")]
     Cabos,
-    
+
+    /// <summary>
+    /// Dutos.
+    /// </summary>
     [DFeEnum("5")]
     Dutos,
-    
+
+    /// <summary>
+    /// Condutos de qualquer natureza.
+    /// </summary>
     [DFeEnum("6")]
     Condutos
 }

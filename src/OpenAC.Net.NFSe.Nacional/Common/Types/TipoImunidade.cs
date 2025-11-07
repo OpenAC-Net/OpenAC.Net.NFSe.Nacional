@@ -35,31 +35,42 @@ namespace OpenAC.Net.NFSe.Nacional.Common.Types;
 
 /// <summary>
 /// Identificação da Imunidade do ISSQN – somente para o caso de Imunidade.
-/// Tipos de Imunidades:
-/// 0 - Imunidade (tipo não informado na nota de origem);
-/// 1 - Patrimônio, renda ou serviços, uns dos outros (CF88, Art 150, VI, a);
-/// 2 - Templos de qualquer culto (CF88, Art 150, VI, b);
-/// 3 - Patrimônio, renda ou serviços dos partidos políticos, inclusive suas fundações, das entidades sindicais dos trabalhadores, das instituições de        educação e de assistência social, sem fins lucrativos, atendidos os requisitos da lei (CF88, Art 150, VI, c);
-/// 4 - Livros, jornais, periódicos e o papel destinado a sua impressão (CF88, Art 150, VI, d);
-/// 5 - Fonogramas e videofonogramas musicais produzidos no Brasil contendo obras musicais ou literomusicais de autores brasileiros e/ou obras em geral interpretadas por artistas brasileiros bem como os suportes materiais ou arquivos digitais que os contenham, salvo na etapa de replicação industrial de mídias ópticas de leitura a laser.   (CF88, Art 150, VI, e);
 /// </summary>
 public enum TipoImunidade
 {
+    /// <summary>
+    /// Imunidade (tipo não informado na nota de origem)
+    /// </summary>
     [DFeEnum("0")]
     Imunidade,
-    
+
+    /// <summary>
+    /// Patrimônio, renda ou serviços, uns dos outros (CF88, Art 150, VI, a)
+    /// </summary>
     [DFeEnum("1")]
     CF88Art150VIa,
-    
+
+    /// <summary>
+    /// Templos de qualquer culto (CF88, Art 150, VI, b)
+    /// </summary>
     [DFeEnum("2")]
     CF88Art150VIb,
-    
+
+    /// <summary>
+    /// Patrimônio, renda ou serviços dos partidos políticos, inclusive suas fundações, das entidades sindicais dos trabalhadores, das instituições de educação e de assistência social, sem fins lucrativos, atendidos os requisitos da lei (CF88, Art 150, VI, c)
+    /// </summary>
     [DFeEnum("3")]
     CF88Art150VIc,
-    
+
+    /// <summary>
+    /// Livros, jornais, periódicos e o papel destinado a sua impressão (CF88, Art 150, VI, d)
+    /// </summary>
     [DFeEnum("4")]
     CF88Art150VId,
-    
+
+    /// <summary>
+    /// Fonogramas e videofonogramas musicais produzidos no Brasil contendo obras musicais ou literomusicais de autores brasileiros e/ou obras em geral interpretadas por artistas brasileiros bem como os suportes materiais ou arquivos digitais que os contenham, salvo na etapa de replicação industrial de mídias ópticas de leitura a laser. (CF88, Art 150, VI, e)
+    /// </summary>
     [DFeEnum("5")]
     CF88Art150VIe
 }

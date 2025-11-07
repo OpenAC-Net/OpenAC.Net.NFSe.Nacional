@@ -36,16 +36,28 @@ using OpenAC.Net.NFSe.Nacional.Common.Types;
 
 namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 
+/// <summary>
+/// Representa o regime tributário de um prestador de serviço.
+/// </summary>
 public sealed class RegimeTributario
 {
     #region Properties
 
+    /// <summary>
+    /// Indica se o prestador é optante pelo Simples Nacional.
+    /// </summary>
     [DFeElement(TipoCampo.Enum, "opSimpNac", Ocorrencia = Ocorrencia.Obrigatoria)]
     public OptanteSimplesNacional OptanteSimplesNacional { get; set; } = OptanteSimplesNacional.NaoOptante;
 
+    /// <summary>
+    /// Regime de apuração do Simples Nacional, se aplicável.
+    /// </summary>
     [DFeElement(TipoCampo.Enum, "regApTribSN", Ocorrencia = Ocorrencia.NaoObrigatoria)]
     public RegimeApuracao? RegimeApuracao { get; set; }
 
+    /// <summary>
+    /// Regime especial tributário do prestador.
+    /// </summary>
     [DFeElement(TipoCampo.Enum, "regEspTrib", Ocorrencia = Ocorrencia.Obrigatoria)]
     public RegimeEspecial RegimeEspecial { get; set; } = RegimeEspecial.Nenhum;
 

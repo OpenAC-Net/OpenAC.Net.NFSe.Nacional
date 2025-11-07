@@ -35,26 +35,50 @@ using OpenAC.Net.NFSe.Nacional.Common.Types;
 
 namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 
+/// <summary>
+/// Representa os dados de exploração rodoviária.
+/// </summary>
 public sealed class ExploracaoRodoviaria
 {
+    /// <summary>
+    /// Categoria do veículo.
+    /// </summary>
     [DFeElement(TipoCampo.Enum, "categVeic", Ocorrencia = Ocorrencia.Obrigatoria)]
     public CategoriaVeiculo Categoria { get; set; }
 
+    /// <summary>
+    /// Número de eixos do veículo.
+    /// </summary>
     [DFeElement(TipoCampo.Int, "nEixos", Min = 1, Max = 2, Ocorrencia = Ocorrencia.Obrigatoria)]
     public int NumeroEixos { get; set; }
     
+    /// <summary>
+    /// Tipo de rodagem do veículo.
+    /// </summary>
     [DFeElement(TipoCampo.Enum, "categVeic", Ocorrencia = Ocorrencia.Obrigatoria)]
     public TipoRodagem TipoRodagem { get; set; }
     
+    /// <summary>
+    /// Orientação da pesagem (sentido).
+    /// </summary>
     [DFeElement(TipoCampo.Int, "sentido", Min = 1, Max = 3, Ocorrencia = Ocorrencia.Obrigatoria)]
     public int OrientacaoPesagem { get; set; }
 
+    /// <summary>
+    /// Placa do veículo.
+    /// </summary>
     [DFeElement(TipoCampo.Str, "placa", Min = 7, Max = 7, Ocorrencia = Ocorrencia.Obrigatoria)]
     public string Placa { get; set; } = string.Empty;
     
+    /// <summary>
+    /// Código de acesso do pedágio.
+    /// </summary>
     [DFeElement(TipoCampo.Str, "codAcessoPed", Min = 10, Max = 10, Ocorrencia = Ocorrencia.Obrigatoria)]
     public string CodAcessoPedagio { get; set; } = string.Empty;
     
+    /// <summary>
+    /// Código do contrato.
+    /// </summary>
     [DFeElement(TipoCampo.Str, "codContrato", Min = 4, Max = 4, Ocorrencia = Ocorrencia.Obrigatoria)]
     public string CodContrato { get; set; } = string.Empty;
 }
