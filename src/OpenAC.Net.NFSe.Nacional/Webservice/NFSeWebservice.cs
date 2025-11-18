@@ -269,7 +269,7 @@ public sealed class NFSeWebservice : IOpenLog
     {
         dps.Assinar(configuracao);
         
-        ValidarSchema(SchemaNFSe.DPS, dps.Xml);
+        ValidarSchema(SchemaNFSe.DPS, dps.Xml, dps.Versao);
         
         var documento = dps.Informacoes.Prestador.CPF ?? dps.Informacoes.Prestador.CNPJ;
         
@@ -332,16 +332,18 @@ public sealed class NFSeWebservice : IOpenLog
         
         return await client.SendAsync(request);
     }
-    
+
     /// <summary>
     /// Valida o XML de acordo com o schema.
     /// </summary>
     /// <param name="schema">O schema que será usado na verificação.</param>
     /// <param name="xml">Conteúdo XML a ser validado.</param>
+    /// <param name="versao">Versão do Schema a ser carregado</param>
     /// <exception cref="XmlSchemaException">Lançada se o arquivo de schema não for encontrado.</exception>
     /// <exception cref="XmlSchemaValidationException">Lançada se houver erros de validação.</exception>
-    private void ValidarSchema(SchemaNFSe schema, string xml)
+    private void ValidarSchema(SchemaNFSe schema, string xml, string versao = "1.00")
     {
+        configuracao.Arquivos.VersaoSchema = versao;
         var schemaFile = configuracao.Arquivos.GetSchema(schema);
         if (!File.Exists(schemaFile))
             throw new XmlSchemaException("Nao encontrou o arquivo schema do xml => " + schemaFile);

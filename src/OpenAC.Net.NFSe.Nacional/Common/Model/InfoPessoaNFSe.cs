@@ -88,7 +88,7 @@ public class InfoPessoaNFSe
     /// Endereço da pessoa.
     /// </summary>
     [DFeElement("end", Ocorrencia = Ocorrencia.NaoObrigatoria, Ordem = 5)]
-    public EnderecoNFSe Endereco { get; set; }
+    public EnderecoNFSe Endereco { get; set; }= new EnderecoNFSe()
     
     /// <summary>
     /// Telefone de contato.

@@ -86,11 +86,18 @@ public sealed class NFSeArquivoConfig : DFeArquivosConfigBase<SchemaNFSe>
     /// <value>O caminho para arquivos DPS.</value>
     public string PathDps { get; set; }
 
+    /// <summary>
+    /// Obtém ou define a Versão do Schema.
+    /// </summary>
+    /// <value>A versão </value>
+    public string VersaoSchema { get; set; } = "1.00";
+
+
     #endregion Properties
 
     #region Methods
 
-    
+
     /// <summary>
     /// Obtém o caminho para arquivos NFSe com base na data e CNPJ especificados.
     /// </summary>
@@ -124,8 +131,8 @@ public sealed class NFSeArquivoConfig : DFeArquivosConfigBase<SchemaNFSe>
     {
         return GetPath(PathDps, "Dps", cnpj, data, "Rps");
     }
-    
-    
+
+
     /// <summary>
     /// Obtém o caminho do esquema com base no tipo de esquema especificado.
     /// </summary>
@@ -136,7 +143,7 @@ public sealed class NFSeArquivoConfig : DFeArquivosConfigBase<SchemaNFSe>
     {
         return schema switch
         {
-            SchemaNFSe.DPS => Path.Combine(PathSchemas, "DPS_v1.00.xsd"),
+            SchemaNFSe.DPS => VersaoSchema == "1.00" ? Path.Combine(PathSchemas, "DPS_v1.00.xsd") : Path.Combine(PathSchemas, "DPS_v1.01.xsd"),
             SchemaNFSe.Evento => Path.Combine(PathSchemas, "pedRegEvento_v1.00.xsd"),
             _ => throw new ArgumentOutOfRangeException(nameof(schema), schema, null)
         };
