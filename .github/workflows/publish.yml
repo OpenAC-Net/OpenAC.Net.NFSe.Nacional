@@ -23,24 +23,28 @@ jobs:
       with:
         fetch-depth: 0 # Get all history to allow automatic versioning using MinVer
         
-    - name: Setup NuGet
-      uses: nuget/setup-nuget@v2
-
-    - name: Restore NuGet packages
-      run: nuget restore OpenAC.Net.NFSe.Nacional.sln
-      working-directory: src
-
     # Install the .NET SDK indicated in the global.json file
     - name: Setup .NET
-      uses: actions/setup-dotnet@v4
+      uses: actions/setup-dotnet@v5.0.0
       with:
         dotnet-version: |
           8.x
           9.x
           10.x
-    - run: dotnet msbuild OpenAC.Net.NFSe.Nacional.sln -property:Configuration=Release -property:platform="Any CPU"
+
+    - name: Setup NuGet
+      uses: nuget/setup-nuget@v2.0.1
+      
+    - name: Restore NuGet packages
+      run: nuget restore OpenAC.Net.NFSe.Nacional.sln
       working-directory: src
-    - run: dotnet pack --configuration Release --output ${{ env.NuGetDirectory }}
+
+    - name: Build solution
+      run: dotnet msbuild OpenAC.Net.NFSe.Nacional.sln -property:Configuration=Release -property:platform="Any CPU"
+      working-directory: src
+      
+    - name: Pack NuGet package
+      run: dotnet pack --configuration Release --output ${{ env.NuGetDirectory }}
       working-directory: src
 
     # Publish the NuGet package as an artifact, so they can be used in the following jobs
