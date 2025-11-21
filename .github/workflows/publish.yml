@@ -37,6 +37,7 @@ jobs:
         dotnet-version: |
           8.x
           9.x
+          10.x
     - run: dotnet msbuild OpenAC.Net.NFSe.Nacional.sln -property:Configuration=Release -property:platform="Any CPU"
       working-directory: src
     - run: dotnet pack --configuration Release --output ${{ env.NuGetDirectory }}
