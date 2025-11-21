@@ -44,10 +44,10 @@ public sealed class LocalidadeNFSe
     /// </summary>
     [DFeElement(TipoCampo.StrNumber, "cLocPrestacao", Min = 7, Max = 7, Ocorrencia = Ocorrencia.NaoObrigatoria)]
     public string? CodMunicipioPrestacao { get; set; }
-    
+
     /// <summary>
     /// Código do país de prestação do serviço (2 dígitos).
     /// </summary>
-    [DFeElement(TipoCampo.StrNumber, "cPaisPrestacao", Min = 2, Max = 2, Ocorrencia = Ocorrencia.NaoObrigatoria)]
+    [DFeElement(TipoCampo.Str, "cPaisPrestacao", Min = 2, Max = 2, Ocorrencia = Ocorrencia.NaoObrigatoria)]
     public string? CodPaisPrestacao { get; set; }
 }

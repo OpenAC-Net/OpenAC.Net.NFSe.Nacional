@@ -34,7 +34,11 @@ using OpenAC.Net.DFe.Core.Attributes;
 namespace OpenAC.Net.NFSe.Nacional.Common.Types;
 
 /// <summary>
-/// Tributação do ISSQN sobre o serviço prestado.
+/// Tributação do ISSQN sobre o serviço prestado:
+///        1 - Operação tributável;
+///        2 - Imunidade;
+///        3 - Exportação de serviço;
+///        4 - Não Incidência;
 /// </summary>
 public enum TributoISSQN
 {
@@ -43,22 +47,22 @@ public enum TributoISSQN
     /// </summary>
     [DFeEnum("1")]
     OperaçãoTributavel,
-    
+
     /// <summary>
-    /// Exportação de serviço.
+    /// Imunidade
     /// </summary>
     [DFeEnum("2")]
+    Imunidade,
+
+    /// <summary>
+    /// Exportação de serviço
+    /// </summary>
+    [DFeEnum("3")]
     ExportacaoServico,
-    
+
     /// <summary>
     /// Não Incidência.
     /// </summary>
-    [DFeEnum("3")]
-    NaoIncidencia,
-    
-    /// <summary>
-    /// Imunidade.
-    /// </summary>
     [DFeEnum("4")]
-    Imunidade
+    NaoIncidencia
 }
