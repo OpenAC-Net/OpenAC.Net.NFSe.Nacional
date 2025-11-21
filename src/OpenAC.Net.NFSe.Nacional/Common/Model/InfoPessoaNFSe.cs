@@ -47,13 +47,13 @@ public class InfoPessoaNFSe
     /// </summary>
     [DFeElement(TipoCampo.StrNumber, "CNPJ", Min = 14, Max = 14, Ocorrencia = Ocorrencia.NaoObrigatoria, Ordem = 0)]
     public string? CNPJ { get; set; }
-    
+
     /// <summary>
     /// CPF da pessoa.
     /// </summary>
     [DFeElement(TipoCampo.StrNumber, "CPF", Min = 11, Max = 11, Ocorrencia = Ocorrencia.NaoObrigatoria, Ordem = 0)]
     public string? CPF { get; set; }
-    
+
     /// <summary>
     /// NIF (Número de Identificação Fiscal) da pessoa.
     /// </summary>
@@ -88,14 +88,14 @@ public class InfoPessoaNFSe
     /// Endereço da pessoa.
     /// </summary>
     [DFeElement("end", Ocorrencia = Ocorrencia.NaoObrigatoria, Ordem = 5)]
-    public EnderecoNFSe Endereco { get; set; }= new EnderecoNFSe()
-    
+    public EnderecoNFSe? Endereco { get; set; }
+
     /// <summary>
     /// Telefone de contato.
     /// </summary>
     [DFeElement(TipoCampo.StrNumber, "fone", Min = 6, Max = 20, Ocorrencia = Ocorrencia.NaoObrigatoria, Ordem = 6)]
     public string? Telefone { get; set; }
-    
+
     /// <summary>
     /// E-mail de contato.
     /// </summary>

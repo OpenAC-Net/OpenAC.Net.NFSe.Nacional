@@ -3,7 +3,6 @@ using OpenAC.Net.NFSe.Nacional.Common.Model;
 using OpenAC.Net.NFSe.Nacional.Common.Types;
 using OpenAC.Net.NFSe.Nacional.Test.Extensions;
 using System.Diagnostics;
-using System.Xml.Schema;
 
 namespace OpenAC.Net.NFSe.Nacional.Test;
 
@@ -17,7 +16,7 @@ public class TestEmissaoReformaTributaria
     public async Task EmissaoNFSeComIBSCBS_AliquotaReduzida()
     {
         var openNFSeNacional = new OpenNFSeNacional();
-        SetupOpenNFSeNacional.ConfiguracaoModeloNovoCenario2(openNFSeNacional,"10","1","1");
+        SetupOpenNFSeNacional.ConfiguracaoModeloNovoCenario2(openNFSeNacional, "20", "1", "1");
 
         var prest = new PrestadorDps
         {
@@ -25,16 +24,14 @@ public class TestEmissaoReformaTributaria
             Email = "teste@teste.com",
             Regime = new RegimeTributario
             {
-                OptanteSimplesNacional = OptanteSimplesNacional.NaoOptante ,
+                OptanteSimplesNacional = OptanteSimplesNacional.NaoOptante,
                 RegimeEspecial = RegimeEspecial.SociedadeProfissionais
             }
         };
 
-        // Obtém o Tomador1 do .env
-        var toma = SetupOpenNFSeNacional.ObterTomadorPadrao();
-        
+
         // Ou obtenha um tomador específico:
-        // var toma = SetupOpenNFSeNacional.ObterTomador("2"); // Para Tomador2
+        var toma = SetupOpenNFSeNacional.ObterTomador("2"); // Para Tomador2
 
         var serv = new ServicoNFSe
         {
@@ -89,7 +86,7 @@ public class TestEmissaoReformaTributaria
                 {
                     GrupoIBSCBS = new RTCInfoTributosSitClas
                     {
-                        
+
                         CodigoSituacaoTributaria = "200",
                         CodigoClassificacaoTributaria = "200052",
                         GrupoTributacaoRegular = new RTCInfoTributosTribRegular
@@ -104,7 +101,7 @@ public class TestEmissaoReformaTributaria
 
         var dps = new Dps
         {
-            Versao = "1.01", // Versão da reforma tributária
+            Versao = openNFSeNacional.Configuracoes.Geral.Versao, // Versão da reforma tributária
             Informacoes = new InfDps
             {
                 Id = "DPS" + SetupOpenNFSeNacional.CodMunIBGE +
@@ -132,7 +129,7 @@ public class TestEmissaoReformaTributaria
 
     }
 
-    
+
 
     [TestMethod]
     public async Task EmissaoNFSeComIBSCBS_ComReembolso()
@@ -195,7 +192,7 @@ public class TestEmissaoReformaTributaria
 
         var dps = new Dps
         {
-            Versao = "1.01",
+            Versao = openNFSeNacional.Configuracoes.Geral.Versao,
             Informacoes = new InfDps
             {
                 Id = "DPS" + SetupOpenNFSeNacional.CodMunIBGE +
@@ -301,7 +298,7 @@ public class TestEmissaoReformaTributaria
 
         var dps = new Dps
         {
-            Versao = "1.01",
+            Versao = openNFSeNacional.Configuracoes.Geral.Versao,
             Informacoes = new InfDps
             {
                 Id = "DPS" + SetupOpenNFSeNacional.CodMunIBGE +
@@ -351,10 +348,10 @@ public class TestEmissaoReformaTributaria
     private void OnEnvioSucesso(dynamic retorno)
     {
         Debug.WriteLine("Envio realizado com sucesso!");
-        
+
         // Validações esperadas baseadas no JSON de output
         Assert.IsTrue(retorno.Sucesso, "A emissão deveria ter sucesso");
-        
+
         // TODO: Validar valores calculados pelo sistema:
         // - IBS UF: R$ 0,70 (base R$ 1000 * 0,10% * redução 30% = 0,07%)
         // - IBS Municipal: R$ 0,00 (alíquota 0%)
@@ -362,4 +359,4 @@ public class TestEmissaoReformaTributaria
         // - Total IBS: R$ 0,70
     }
 
- }
+}

@@ -11,7 +11,7 @@ public class TestEmissao
     public async Task EmissaoNFSe()
     {
         var openNFSeNacional = new OpenNFSeNacional();
-        SetupOpenNFSeNacional.ConfiguracaoModeloAtual(openNFSeNacional, "1", "11", "1");
+        SetupOpenNFSeNacional.ConfiguracaoModeloAtual(openNFSeNacional, "1", "13", "1");
 
         var prest = new PrestadorDps
         {
@@ -70,7 +70,7 @@ public class TestEmissao
 
         var dps = new Dps
         {
-            Versao = "1.00",
+            Versao = openNFSeNacional.Configuracoes.Geral.Versao,
             Informacoes = new InfDps
             {
                 Id = "DPS" + SetupOpenNFSeNacional.CodMunIBGE +
@@ -102,7 +102,7 @@ public class TestEmissao
     public async Task EmissaoNFSeOutroTomadorCenario2()
     {
         var openNFSeNacional = new OpenNFSeNacional();
-        SetupOpenNFSeNacional.ConfiguracaoModeloAtual(openNFSeNacional, "1", "1", "1");
+        SetupOpenNFSeNacional.ConfiguracaoModeloAtual(openNFSeNacional, "28", "1", "1");
 
         var prest = new PrestadorDps
         {
@@ -145,6 +145,7 @@ public class TestEmissao
                 {
                     PisCofins = new PisCofins()
                     {
+                        TipoRetencao = TipoRetencaoPisCofins.NaoRetido,
                         Cst = TipoCST.AliquotaBasica,
                         ValorBcCofins = 85000,
                         AliquotaCofins = 7.6m,
@@ -172,7 +173,7 @@ public class TestEmissao
 
         var dps = new Dps
         {
-            Versao = "1.00",
+            Versao = openNFSeNacional.Configuracoes.Geral.Versao,
             Informacoes = new InfDps
             {
                 Id = "DPS" + SetupOpenNFSeNacional.CodMunIBGE +

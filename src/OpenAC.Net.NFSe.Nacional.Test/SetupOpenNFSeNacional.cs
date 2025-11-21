@@ -1,5 +1,7 @@
 ﻿using DotNetEnv;
+using OpenAC.Net.DFe.Core.Extensions;
 using OpenAC.Net.NFSe.Nacional.Common.Model;
+using OpenAC.Net.NFSe.Nacional.Common.Types;
 
 namespace OpenAC.Net.NFSe.Nacional.Test;
 
@@ -35,7 +37,7 @@ public class SetupOpenNFSeNacional
         string serieDps = "1",
         string numEvento = "1")
     {
-        ConfigurarBase(openNFSeNacional, "1.00", "NfseModeloAtual", numDps, serieDps, numEvento);
+        ConfigurarBase(openNFSeNacional, VersaoNFSe.Ve100, "NfseModeloAtual", numDps, serieDps, numEvento);
     }
 
     /// <summary>
@@ -47,7 +49,7 @@ public class SetupOpenNFSeNacional
         string serieDps = "1",
         string numEvento = "1")
     {
-        ConfigurarBase(openNFSeNacional, "1.01", "NfseModeloNovo1", numDps, serieDps, numEvento);
+        ConfigurarBase(openNFSeNacional, VersaoNFSe.Ve101, "NfseModeloNovo1", numDps, serieDps, numEvento);
     }
 
     /// <summary>
@@ -59,7 +61,7 @@ public class SetupOpenNFSeNacional
         string serieDps = "1",
         string numEvento = "1")
     {
-        ConfigurarBase(openNFSeNacional, "1.01", "NfseModeloNovo2", numDps, serieDps, numEvento);
+        ConfigurarBase(openNFSeNacional, VersaoNFSe.Ve101, "NfseModeloNovo2", numDps, serieDps, numEvento);
     }
 
     /// <summary>
@@ -70,7 +72,7 @@ public class SetupOpenNFSeNacional
     public static InfoPessoaNFSe ObterTomador(string numeroTomador = "1")
     {
         var prefixo = $"Tomador{numeroTomador}";
-        
+
         return new InfoPessoaNFSe
         {
             CNPJ = GetEnvOrThrow($"{prefixo}.CNPJ"),
@@ -109,7 +111,7 @@ public class SetupOpenNFSeNacional
 
     private static void ConfigurarBase(
         OpenNFSeNacional openNFSeNacional,
-        string versaoSchema,
+        VersaoNFSe versaoSchema,
         string prefixoEnv,
         string numDps,
         string serieDps,
@@ -131,7 +133,7 @@ public class SetupOpenNFSeNacional
         var pathSalvar = GetEnvOrThrow("Geral.PathSalvar");
 
         // Schema path é inferido da versão
-        var pathSchemas = Path.Combine(AppContext.BaseDirectory, "Schemas", versaoSchema);
+        var pathSchemas = Path.Combine(AppContext.BaseDirectory, "Schemas", versaoSchema.GetDFeValue());
 
         openNFSeNacional.Configuracoes.Certificados.CertificadoBytes =
             File.ReadAllBytes(certificadoPath);

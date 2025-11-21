@@ -29,11 +29,11 @@
 // <summary></summary>
 // ***********************************************************************
 
+using OpenAC.Net.DFe.Core.Common;
+using OpenAC.Net.NFSe.Nacional.Common.Types;
 using System;
 using System.IO;
 using System.Reflection;
-using OpenAC.Net.DFe.Core.Common;
-using OpenAC.Net.NFSe.Nacional.Common.Types;
 
 namespace OpenAC.Net.NFSe.Nacional.Common;
 
@@ -90,7 +90,7 @@ public sealed class NFSeArquivoConfig : DFeArquivosConfigBase<SchemaNFSe>
     /// Obtém ou define a Versão do Schema.
     /// </summary>
     /// <value>A versão </value>
-    public string VersaoSchema { get; set; } = "1.00";
+    public VersaoNFSe VersaoSchema { get; set; } = VersaoNFSe.Ve100;
 
 
     #endregion Properties
@@ -109,7 +109,7 @@ public sealed class NFSeArquivoConfig : DFeArquivosConfigBase<SchemaNFSe>
         return GetPath(PathNFSe, "NFSe", cnpj, data, "NFSe");
     }
 
-    
+
     /// <summary>
     /// Obtém o caminho para arquivos de envio com base na data e CNPJ especificados.
     /// </summary>
@@ -143,13 +143,13 @@ public sealed class NFSeArquivoConfig : DFeArquivosConfigBase<SchemaNFSe>
     {
         return schema switch
         {
-            SchemaNFSe.DPS => VersaoSchema == "1.00" ? Path.Combine(PathSchemas, "DPS_v1.00.xsd") : Path.Combine(PathSchemas, "DPS_v1.01.xsd"),
+            SchemaNFSe.DPS => VersaoSchema == VersaoNFSe.Ve100 ? Path.Combine(PathSchemas, "DPS_v1.00.xsd") : Path.Combine(PathSchemas, "DPS_v1.01.xsd"),
             SchemaNFSe.Evento => Path.Combine(PathSchemas, "pedRegEvento_v1.00.xsd"),
             _ => throw new ArgumentOutOfRangeException(nameof(schema), schema, null)
         };
     }
 
-    
+
     /// <summary>
     /// Manipula alterações no arquivo de serviço.
     /// </summary>
