@@ -33,6 +33,7 @@ using OpenAC.Net.DFe.Core.Attributes;
 using OpenAC.Net.DFe.Core.Common;
 using OpenAC.Net.DFe.Core.Document;
 using OpenAC.Net.DFe.Core.Serializer;
+using OpenAC.Net.NFSe.Nacional.Common.Types;
 
 namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 
@@ -54,14 +55,14 @@ public sealed class Dps : DFeSignDocument<Dps>
     }
 
     #endregion Constructors
-    
+
     #region Properties
 
     /// <summary>
     /// Obtém ou define a versão do layout do DPS.
     /// </summary>
-    [DFeAttribute(TipoCampo.Str, "versao", Ocorrencia = Ocorrencia.Obrigatoria)]
-    public string Versao { get; set; } = string.Empty;
+    [DFeAttribute(TipoCampo.Enum, "versao", Ocorrencia = Ocorrencia.Obrigatoria)]
+    public VersaoNFSe Versao { get; set; } = VersaoNFSe.Ve100;
 
     /// <summary>
     /// Obtém ou define as informações do DPS.
@@ -70,9 +71,9 @@ public sealed class Dps : DFeSignDocument<Dps>
     public InfDps Informacoes { get; set; } = new();
 
     #endregion Properties
-    
+
     #region Methods
-    
+
     /// <summary>
     /// Assina o documento DPS utilizando as configurações fornecidas.
     /// </summary>
@@ -82,7 +83,7 @@ public sealed class Dps : DFeSignDocument<Dps>
         var options = DFeSaveOptions.DisableFormatting;
         if (configuracao.Geral.RetirarAcentos)
             options |= DFeSaveOptions.RemoveAccents;
-        
+
         AssinarDocumento(configuracao.Certificados.ObterCertificado(), options, false);
     }
 
