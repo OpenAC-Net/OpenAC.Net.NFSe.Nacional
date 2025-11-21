@@ -55,7 +55,7 @@ public class TestEmissao
             {
                 Municipal = new TributoMunicipal
                 {
-                    ISSQN = TributoISSQN.OperaçãoTributavel,
+                    ISSQN = TributoISSQN.OperacaoTributavel,
                     TipoRetencaoISSQN = TipoRetencaoISSQN.NaoRetido,
                 },
                 Total = new TotalTributos
@@ -158,7 +158,7 @@ public class TestEmissao
                 },
                 Municipal = new TributoMunicipal
                 {
-                    ISSQN = TributoISSQN.OperaçãoTributavel,
+                    ISSQN = TributoISSQN.OperacaoTributavel,
                     TipoRetencaoISSQN = TipoRetencaoISSQN.NaoRetido,
                 },
                 Total = new TotalTributos
@@ -253,7 +253,7 @@ public class TestEmissao
 
                 Municipal = new TributoMunicipal
                 {
-                    ISSQN = TributoISSQN.OperaçãoTributavel,
+                    ISSQN = TributoISSQN.OperacaoTributavel,
                     TipoRetencaoISSQN = TipoRetencaoISSQN.NaoRetido,
                 },
                 Total = new TotalTributos
@@ -369,7 +369,7 @@ public class TestEmissao
             {
                 Municipal = new TributoMunicipal
                 {
-                    ISSQN = TributoISSQN.OperaçãoTributavel,
+                    ISSQN = TributoISSQN.OperacaoTributavel,
                     TipoRetencaoISSQN = TipoRetencaoISSQN.NaoRetido,
                 },
                 Total = new TotalTributos
@@ -490,7 +490,7 @@ public class TestEmissao
 
                 Municipal = new TributoMunicipal
                 {
-                    ISSQN = TributoISSQN.OperaçãoTributavel,
+                    ISSQN = TributoISSQN.OperacaoTributavel,
                     TipoRetencaoISSQN = TipoRetencaoISSQN.NaoRetido,
                 },
                 Total = new TotalTributos
