@@ -16,7 +16,7 @@ defaults:
     shell: pwsh
 
 jobs:
-  build_solution:
+  create_nuget:
     runs-on: windows-latest
     steps:
     - uses: actions/checkout@v4
@@ -43,37 +43,17 @@ jobs:
       run: dotnet msbuild OpenAC.Net.NFSe.Nacional.sln -property:Configuration=Release -property:platform="Any CPU"
       working-directory: src
 
-  create_nuget:
-    runs-on: windows-latest
-    needs: [ build_solution ]
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0 # Get all history to allow automatic versioning using MinVer
+    - name: Pack NuGet package
+      run: dotnet pack --configuration Release --output ${{ env.NuGetDirectory }}
+      working-directory: src
       
-      # Install the .NET SDK indicated in the global.json file
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v5.0.0
-        with:
-          dotnet-version: |
-            8.x
-            9.x
-            10.x
-
-      - name: Setup NuGet
-        uses: nuget/setup-nuget@v2.0.1
-
-      - name: Pack NuGet package
-        run: dotnet pack --configuration Release --output ${{ env.NuGetDirectory }}
-        working-directory: src
-      
-      # Publish the NuGet package as an artifact, so they can be used in the following jobs
-      - uses: actions/upload-artifact@v5
-        with:
-          name: nuget
-          if-no-files-found: error
-          retention-days: 7
-          path: ${{ env.NuGetDirectory }}/*.nupkg
+    # Publish the NuGet package as an artifact, so they can be used in the following jobs
+    - uses: actions/upload-artifact@v5
+      with:
+        name: nuget
+        if-no-files-found: error
+        retention-days: 7
+        path: ${{ env.NuGetDirectory }}/*.nupkg
 
   validate_nuget:
     runs-on: ubuntu-latest
