@@ -29,6 +29,8 @@
 // <summary></summary>
 // ***********************************************************************
 
+using OpenAC.Net.DFe.Core.Attributes;
+
 namespace OpenAC.Net.NFSe.Nacional.Common.Types;
 
 /// <summary>
@@ -39,17 +41,21 @@ public enum MovimentacaoTemporariaBens
     /// <summary>
     /// 0 - Desconhecido (tipo não informado na nota de origem)
     /// </summary>
+    [DFeEnum("0")]
     Desconhecido,
     /// <summary>
     /// 1 - Não
     /// </summary>
+    [DFeEnum("1")]
     Nao,
     /// <summary>
     /// 2 - Vinculada - Declaração de Importação
     /// </summary>
+    [DFeEnum("2")]
     DeclaracaoImportacao,
     /// <summary>
     /// 3 - Vinculada - Declaração de Exportação
     /// </summary>
+    [DFeEnum("3")]
     DeclaracaoExportacao
 }

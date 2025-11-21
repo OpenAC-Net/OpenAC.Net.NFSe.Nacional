@@ -41,6 +41,19 @@ public class SetupOpenNFSeNacional
     }
 
     /// <summary>
+    /// Configuração padrão com versão 1.00
+    /// </summary>
+    public static void ConfiguracaoModeloAtual2(
+        OpenNFSeNacional openNFSeNacional,
+        string numDps = "1",
+        string serieDps = "1",
+        string numEvento = "1")
+    {
+        ConfigurarBase(openNFSeNacional, VersaoNFSe.Ve100, "NfseModeloAtual2", numDps, serieDps, numEvento);
+    }
+
+
+    /// <summary>
     /// Configuração modelo atual com versão 1.01
     /// </summary>
     public static void ConfiguracaoModeloNovoCenario1(
@@ -73,25 +86,56 @@ public class SetupOpenNFSeNacional
     {
         var prefixo = $"Tomador{numeroTomador}";
 
-        return new InfoPessoaNFSe
+        if (GetEnvOrThrow($"{prefixo}.CodMunicipio") == "9999999")
         {
-            CNPJ = GetEnvOrThrow($"{prefixo}.CNPJ"),
-            Nome = GetEnvOrThrow($"{prefixo}.Nome"),
-            Email = Env.GetString($"{prefixo}.Email"),
-            Telefone = Env.GetString($"{prefixo}.Telefone"),
-            Endereco = new EnderecoNFSe
+            return new InfoPessoaNFSe
             {
-                Logradouro = GetEnvOrThrow($"{prefixo}.Logradouro"),
-                Numero = GetEnvOrThrow($"{prefixo}.Numero"),
-                Complemento = Env.GetString($"{prefixo}.Complemento"),
-                Bairro = GetEnvOrThrow($"{prefixo}.Bairro"),
-                Municipio = new MunicipioNacional
+
+                Nif = GetEnvOrThrow($"{prefixo}.Nif"),
+                Nome = GetEnvOrThrow($"{prefixo}.Nome"),
+                Email = Env.GetString($"{prefixo}.Email"),
+                Telefone = Env.GetString($"{prefixo}.Telefone"),
+                Endereco = new EnderecoNFSe
                 {
-                    CEP = GetEnvOrThrow($"{prefixo}.CEP"),
-                    CodMunicipio = GetEnvOrThrow($"{prefixo}.CodMunicipio")
+                    Logradouro = GetEnvOrThrow($"{prefixo}.Logradouro"),
+                    Numero = GetEnvOrThrow($"{prefixo}.Numero"),
+                    Complemento = Env.GetString($"{prefixo}.Complemento"),
+                    Bairro = GetEnvOrThrow($"{prefixo}.Bairro"),
+
+                    Municipio = new MunicipioExterior
+                    {
+                        CodigoPais = GetEnvOrThrow($"{prefixo}.ISO"),
+                        EnderecoPostal = GetEnvOrThrow($"{prefixo}.CEP"),
+                        Cidade = GetEnvOrThrow($"{prefixo}.NomeMunicipio"),
+                        EstadoProvincia = GetEnvOrThrow($"{prefixo}.State")
+                    }
                 }
-            }
-        };
+            };
+        }
+        else
+            return new InfoPessoaNFSe
+            {
+
+                CNPJ = GetEnvOrThrow($"{prefixo}.CNPJ"),
+                Nome = GetEnvOrThrow($"{prefixo}.Nome"),
+                Email = Env.GetString($"{prefixo}.Email"),
+                Telefone = Env.GetString($"{prefixo}.Telefone"),
+                Endereco = new EnderecoNFSe
+                {
+                    Logradouro = GetEnvOrThrow($"{prefixo}.Logradouro"),
+                    Numero = GetEnvOrThrow($"{prefixo}.Numero"),
+                    Complemento = Env.GetString($"{prefixo}.Complemento"),
+                    Bairro = GetEnvOrThrow($"{prefixo}.Bairro"),
+
+                    Municipio = new MunicipioNacional
+                    {
+                        CEP = GetEnvOrThrow($"{prefixo}.CEP"),
+                        CodMunicipio = GetEnvOrThrow($"{prefixo}.CodMunicipio")
+                    }
+                }
+            };
+
+
     }
 
     /// <summary>
