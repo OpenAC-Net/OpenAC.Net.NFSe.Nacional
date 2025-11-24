@@ -3,8 +3,8 @@
 // Author           : RFTD
 // Created          : 09-09-2023
 //
-// Last Modified By : RFTD
-// Last Modified On : 09-09-2023
+// Last Modified By : RGG
+// Last Modified On : 14-11-2025
 // ***********************************************************************
 // <copyright file="InfDps.cs" company="OpenAC .Net">
 //		        		   The MIT License (MIT)
@@ -133,6 +133,12 @@ public sealed class InfDps
     /// </summary>
     [DFeElement("valores", Ocorrencia = Ocorrencia.Obrigatoria)]
     public ValoresDps Valores { get; set; } = new();
+
+    /// <summary>
+    /// Grupo de informações declaradas pelo emitente referentes ao IBS e à CBS
+    /// </summary>
+    [DFeElement("IBSCBS", Ocorrencia = Ocorrencia.NaoObrigatoria)]
+    public RTCInfoIBSCBS? IBSCBS { get; set; }
 
     #endregion Properties
 }

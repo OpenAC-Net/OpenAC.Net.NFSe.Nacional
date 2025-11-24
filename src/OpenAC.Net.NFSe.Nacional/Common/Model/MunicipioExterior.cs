@@ -44,21 +44,21 @@ public sealed class MunicipioExterior : IMunicipio
     /// <summary>
     /// Código do país (cPais).
     /// </summary>
-    [DFeElement(TipoCampo.Int, "cPais", Min = 2, Max = 2, Ocorrencia = Ocorrencia.Obrigatoria)]
-    public int CodigoPais { get; set; }
+    [DFeElement(TipoCampo.Str, "cPais", Min = 2, Max = 2, Ocorrencia = Ocorrencia.Obrigatoria)]
+    public string CodigoPais { get; set; } = string.Empty;
 
     /// <summary>
     /// Endereço postal (cEndPost).
     /// </summary>
     [DFeElement(TipoCampo.Str, "cEndPost", Min = 1, Max = 11, Ocorrencia = Ocorrencia.Obrigatoria)]
     public string EnderecoPostal { get; set; } = string.Empty;
-    
+
     /// <summary>
     /// Nome da cidade (xCidade).
     /// </summary>
     [DFeElement(TipoCampo.Str, "xCidade", Min = 1, Max = 60, Ocorrencia = Ocorrencia.Obrigatoria)]
     public string Cidade { get; set; } = string.Empty;
-    
+
     /// <summary>
     /// Estado, província ou região (xEstProvReg).
     /// </summary>

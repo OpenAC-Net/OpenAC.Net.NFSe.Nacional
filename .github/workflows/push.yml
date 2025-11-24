@@ -1,0 +1,44 @@
+﻿# yaml-language-server: $schema=https://json.schemastore.org/github-workflow.json
+name: build
+on:
+  workflow_dispatch: # Allow running the workflow manually from the GitHub UI
+  push:
+    branches:
+      - main
+
+env:
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: 1
+  DOTNET_NOLOGO: true
+  NuGetDirectory: ${{ github.workspace }}/nuget
+
+defaults:
+  run:
+    shell: pwsh
+
+jobs:
+  build_solution:
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0 # Get all history to allow automatic versioning using MinVer
+        
+    # Install the .NET SDK indicated in the global.json file
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v5.0.0
+      with:
+        dotnet-version: |
+          8.x
+          9.x
+          10.x
+
+    - name: Setup NuGet
+      uses: nuget/setup-nuget@v2.0.1
+      
+    - name: Restore NuGet packages
+      run: nuget restore OpenAC.Net.NFSe.Nacional.sln
+      working-directory: src
+
+    - name: Build solution
+      run: dotnet msbuild OpenAC.Net.NFSe.Nacional.sln -property:Configuration=Release -property:platform="Any CPU"
+      working-directory: src

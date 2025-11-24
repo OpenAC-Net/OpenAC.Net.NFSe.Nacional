@@ -29,6 +29,8 @@
 // <summary></summary>
 // ***********************************************************************
 
+using OpenAC.Net.DFe.Core.Attributes;
+
 namespace OpenAC.Net.NFSe.Nacional.Common.Types;
 
 /// <summary>
@@ -39,5 +41,11 @@ public enum VersaoNFSe
     /// <summary>
     /// Versão 1.00 do padrão NFSe.
     /// </summary>
-    Ve100
+    [DFeEnum("1.00")]
+    Ve100,
+    /// <summary>
+    /// Versão 1.01 do padrão NFSe.
+    /// </summary>
+    [DFeEnum("1.01")]
+    Ve101
 }
