@@ -1,13 +1,13 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFrameworks>net462;net470;net48;netstandard2.0;net6.0;net7.0;net8.0;net9.0</TargetFrameworks>
+        <TargetFrameworks>net462;net48;netstandard2.0;net8.0;net9.0;net10.0</TargetFrameworks>
         <LangVersion>latest</LangVersion>
         <AssemblyName>OpenAC.Net.NFSe.Nacional</AssemblyName>
         <RootNamespace>OpenAC.Net.NFSe.Nacional</RootNamespace>
         <SignAssembly>true</SignAssembly>
         <AssemblyOriginatorKeyFile>OpenAC.snk</AssemblyOriginatorKeyFile>
-        <Copyright>Copyright © Projeto OpenAC .Net 2014 - 2024</Copyright>
+        <Copyright>Copyright © Projeto OpenAC .Net 2014 - 2025</Copyright>
         <Company>OpenAC .Net - Automação Comercial em .Net</Company>
         <Authors>Projeto OpenAC .Net</Authors>
         <PackageProjectUrl>https://openac.net.br/</PackageProjectUrl>
@@ -20,9 +20,9 @@
         <PackageLicenseFile>LICENSE</PackageLicenseFile>
         <PackageReadmeFile>README.md</PackageReadmeFile>
         <NeutralLanguage>pt-BR</NeutralLanguage>
-        <AssemblyVersion>1.0.0.0</AssemblyVersion>
-        <FileVersion>1.0.0.0</FileVersion>
-        <Version>1.0.0.0</Version>
+        <AssemblyVersion>1.1.0.0</AssemblyVersion>
+        <FileVersion>1.1.0.0</FileVersion>
+        <Version>1.1.0.0</Version>
         <PublishRepositoryUrl>true</PublishRepositoryUrl>
         <EmbedUntrackedSources>true</EmbedUntrackedSources>
         <DebugType>embedded</DebugType>
@@ -37,28 +37,26 @@
     <ItemGroup Condition="'$(TargetFramework)' == 'net462'">
         <Reference Include="System.Security" />
         <PackageReference Include="System.Net.Http" Version="4.3.4" />
-        <PackageReference Include="System.ServiceModel.Http" Version="8.1.2" />
-        <PackageReference Include="System.ServiceModel.Primitives" Version="8.1.2" />
+        <PackageReference Include="System.ServiceModel.Http" Version="10.0.652802" />
+        <PackageReference Include="System.ServiceModel.Primitives" Version="10.0.652802" />
     </ItemGroup>
 
     <ItemGroup Condition="'$(TargetFramework)' == 'net470'">
         <Reference Include="System.Security" />
         <PackageReference Include="System.Net.Http" Version="4.3.4" />
-        <PackageReference Include="System.ServiceModel.Http" Version="8.1.2" />
-        <PackageReference Include="System.ServiceModel.Primitives" Version="8.1.2" />
     </ItemGroup>
 
     <ItemGroup Condition="'$(TargetFramework)' == 'net48'">
         <Reference Include="System.Security" />
         <PackageReference Include="System.Net.Http" Version="4.3.4" />
-        <PackageReference Include="System.ServiceModel.Http" Version="8.1.2" />
-        <PackageReference Include="System.ServiceModel.Primitives" Version="8.1.2" />
+        <PackageReference Include="System.ServiceModel.Http" Version="10.0.652802" />
+        <PackageReference Include="System.ServiceModel.Primitives" Version="10.0.652802" />
     </ItemGroup>
     
     <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
         <PackageReference Include="System.Net.Http" Version="4.3.4" />
-        <PackageReference Include="System.ServiceModel.Http" Version="8.1.2" />
-        <PackageReference Include="System.ServiceModel.Primitives" Version="8.1.2" />
+        <PackageReference Include="System.ServiceModel.Http" Version="10.0.652802" />
+        <PackageReference Include="System.ServiceModel.Primitives" Version="10.0.652802" />
     </ItemGroup>
 
     <ItemGroup>
@@ -68,11 +66,14 @@
         </PackageReference>
         <PackageReference Include="OpenAC.Net.Core" Version="1.6.0" />
         <PackageReference Include="OpenAC.Net.DFe.Core" Version="1.6.0.2" />
-        <PackageReference Include="System.Net.Http.Json" Version="9.0.6" />
+        <PackageReference Include="System.Net.Http.Json" Version="10.0.0" />
     </ItemGroup>    
 
     <ItemGroup>
         <None Update="Schemas\1.00\**\*.*">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </None>
+        <None Update="Schemas\1.01\**\*.*">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </None>
     </ItemGroup>
@@ -100,43 +101,6 @@
             <Pack>True</Pack>
             <PackagePath>content\Schemas\1.01</PackagePath>
         </None>
-    </ItemGroup>
-    <ItemGroup>
-      <Compile Remove="Schemas\1.10\**" />
-      <EmbeddedResource Remove="Schemas\1.10\**" />
-      <None Remove="Schemas\1.10\**" />
-    </ItemGroup>
-    <ItemGroup>
-      <None Update="Schemas\1.01\CNC_v1.00.xsd">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
-      <None Update="Schemas\1.01\DPS_v1.01.xsd">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
-      <None Update="Schemas\1.01\evento_v1.01.xsd">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
-      <None Update="Schemas\1.01\NFSe_v1.01.xsd">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
-      <None Update="Schemas\1.01\pedRegEvento_v1.01.xsd">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
-      <None Update="Schemas\1.01\tiposCnc_v1.00.xsd">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
-      <None Update="Schemas\1.01\tiposComplexos_v1.01.xsd">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
-      <None Update="Schemas\1.01\tiposEventos_v1.01.xsd">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
-      <None Update="Schemas\1.01\tiposSimples_v1.01.xsd">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
-      <None Update="Schemas\1.01\xmldsig-core-schema.xsd">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
     </ItemGroup>
 
 </Project>
