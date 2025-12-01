@@ -31,6 +31,7 @@
 
 using OpenAC.Net.DFe.Core.Attributes;
 using OpenAC.Net.DFe.Core.Serializer;
+using OpenAC.Net.NFSe.Nacional.Common.Types;
 
 namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 
@@ -39,18 +40,19 @@ namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 /// </summary>
 public sealed class ValoresNFSe
 {
+
     /// <summary>
     /// Valor da base de cálculo após redução/dedução.
     /// </summary>
     [DFeElement(TipoCampo.De2, "vCalcDR", Min = 4, Max = 18, Ocorrencia = Ocorrencia.NaoObrigatoria)]
     public decimal? ValorBcReducaoDeducao { get; set; }
 
-    /// <summary>
-    /// Tipo de benefício municipal aplicado.
-    /// </summary>
-    [DFeElement(TipoCampo.Str, "tpBM", Min = 1, Max = 40, Ocorrencia = Ocorrencia.NaoObrigatoria)]
-    public string? TipoBeneficioMunicipal { get; set; }
 
+    /// <summary>
+    /// Tipo do benefício municipal Aplicado
+    /// </summary>
+    [DFeElement(TipoCampo.Enum, "tpBM", Ocorrencia = Ocorrencia.Obrigatoria)]
+    public TipoBeneficioMunicipal TipoBeneficioMunicipal { get; set; }
     /// <summary>
     /// Valor da base de cálculo do benefício municipal.
     /// </summary>
