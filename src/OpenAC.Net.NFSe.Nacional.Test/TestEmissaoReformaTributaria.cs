@@ -7,7 +7,7 @@ using System.Diagnostics;
 namespace OpenAC.Net.NFSe.Nacional.Test;
 
 /// <summary>
-/// Testes para a estrutura de impostos da Reforma Tribut·ria (IBS/CBS) - v1.01
+/// Testes para a estrutura de impostos da Reforma Tribut√°ria (IBS/CBS) - v1.01
 /// </summary>
 [TestClass]
 public class TestEmissaoReformaTributaria
@@ -30,7 +30,7 @@ public class TestEmissaoReformaTributaria
         };
 
 
-        // Ou obtenha um tomador especÌfico:
+        // Ou obtenha um tomador espec√≠fico:
         var toma = SetupOpenNFSeNacional.ObterTomador("2"); // Para Tomador2
 
         var serv = new ServicoNFSe
@@ -44,7 +44,7 @@ public class TestEmissaoReformaTributaria
                 CodNBS = "113011000",
                 CodTributacaoNacional = "171401",
                 CodTributacaoMunicipio = "001",
-                Descricao = "HHDIR - Honor·rios - HORA ñ DIRETOR - R$ 85000,00"
+                Descricao = "HHDIR - Honor√°rios - HORA ¬ñ DIRETOR - R$ 85000,00"
             }
         };
 
@@ -59,7 +59,7 @@ public class TestEmissaoReformaTributaria
             {
                 Municipal = new TributoMunicipal
                 {
-                    ISSQN = TributoISSQN.OperaÁ„oTributavel,
+                    ISSQN = TributoISSQN.OperacaoTributavel,
                     TipoRetencaoISSQN = TipoRetencaoISSQN.NaoRetido,
                 },
                 Total = new TotalTributos
@@ -101,7 +101,7 @@ public class TestEmissaoReformaTributaria
 
         var dps = new Dps
         {
-            Versao = openNFSeNacional.Configuracoes.Geral.Versao, // Vers„o da reforma tribut·ria
+            Versao = openNFSeNacional.Configuracoes.Geral.Versao, // Vers√£o da reforma tribut√°ria
             Informacoes = new InfDps
             {
                 Id = "DPS" + SetupOpenNFSeNacional.CodMunIBGE +
@@ -125,7 +125,7 @@ public class TestEmissaoReformaTributaria
         };
         var retorno = await openNFSeNacional.EnviarAsync(dps);
 
-        Assert.IsTrue(retorno.Sucesso, "A emiss„o com Aliquota Reduzida deveria ter sucesso");
+        Assert.IsTrue(retorno.Sucesso, "A emiss√£o com Aliquota Reduzida deveria ter sucesso");
 
     }
 
@@ -161,7 +161,7 @@ public class TestEmissaoReformaTributaria
             {
                 CodTributacaoNacional = "010101",
                 CodTributacaoMunicipio = "002",
-                Descricao = "ServiÁo com reembolso de despesas"
+                Descricao = "Servi√ßo com reembolso de despesas"
             }
         };
 
@@ -175,7 +175,7 @@ public class TestEmissaoReformaTributaria
             {
                 Municipal = new TributoMunicipal
                 {
-                    ISSQN = TributoISSQN.OperaÁ„oTributavel,
+                    ISSQN = TributoISSQN.OperacaoTributavel,
                     TipoRetencaoISSQN = TipoRetencaoISSQN.NaoRetido,
                 },
                 Total = new TotalTributos
@@ -234,7 +234,7 @@ public class TestEmissaoReformaTributaria
 
         var retorno = await openNFSeNacional.EnviarAsync(dps);
 
-        Assert.IsTrue(retorno.Sucesso, "A emiss„o com reembolso deveria ter sucesso");
+        Assert.IsTrue(retorno.Sucesso, "A emiss√£o com reembolso deveria ter sucesso");
     }
 
     [TestMethod]
@@ -267,7 +267,7 @@ public class TestEmissaoReformaTributaria
             {
                 CodTributacaoNacional = "010101",
                 CodTributacaoMunicipio = "002",
-                Descricao = "ServiÁo com destinat·rio diferente do tomador"
+                Descricao = "Servi√ßo com destinat√°rio diferente do tomador"
             }
         };
 
@@ -281,7 +281,7 @@ public class TestEmissaoReformaTributaria
             {
                 Municipal = new TributoMunicipal
                 {
-                    ISSQN = TributoISSQN.OperaÁ„oTributavel,
+                    ISSQN = TributoISSQN.OperacaoTributavel,
                     TipoRetencaoISSQN = TipoRetencaoISSQN.NaoRetido,
                 },
                 Total = new TotalTributos
@@ -323,7 +323,7 @@ public class TestEmissaoReformaTributaria
                     IndicadorUsoFinal = RTCIndFinal.Nao,
                     CodigoIndicadorOperacao = "000001",
                     IndicadorDestinatario = RTCIndDest.Outro,
-                    // Usa Tomador3 como destinat·rio diferente
+                    // Usa Tomador3 como destinat√°rio diferente
                     Destinatario = SetupOpenNFSeNacional.ObterTomador("3").ToRTCInfoDest(),
                     Valores = new RTCInfoValoresIBSCBS
                     {
@@ -342,20 +342,20 @@ public class TestEmissaoReformaTributaria
 
         var retorno = await openNFSeNacional.EnviarAsync(dps);
 
-        Assert.IsTrue(retorno.Sucesso, "A emiss„o com destinat·rio diferente deveria ter sucesso");
+        Assert.IsTrue(retorno.Sucesso, "A emiss√£o com destinat√°rio diferente deveria ter sucesso");
     }
 
     private void OnEnvioSucesso(dynamic retorno)
     {
         Debug.WriteLine("Envio realizado com sucesso!");
 
-        // ValidaÁıes esperadas baseadas no JSON de output
-        Assert.IsTrue(retorno.Sucesso, "A emiss„o deveria ter sucesso");
+        // Valida√ß√µes esperadas baseadas no JSON de output
+        Assert.IsTrue(retorno.Sucesso, "A emiss√£o deveria ter sucesso");
 
         // TODO: Validar valores calculados pelo sistema:
-        // - IBS UF: R$ 0,70 (base R$ 1000 * 0,10% * reduÁ„o 30% = 0,07%)
-        // - IBS Municipal: R$ 0,00 (alÌquota 0%)
-        // - CBS: R$ 6,30 (base R$ 1000 * 0,90% * reduÁ„o 30% = 0,63%)
+        // - IBS UF: R$ 0,70 (base R$ 1000 * 0,10% * redu√ß√£o 30% = 0,07%)
+        // - IBS Municipal: R$ 0,00 (al√≠quota 0%)
+        // - CBS: R$ 6,30 (base R$ 1000 * 0,90% * redu√ß√£o 30% = 0,63%)
         // - Total IBS: R$ 0,70
     }
 

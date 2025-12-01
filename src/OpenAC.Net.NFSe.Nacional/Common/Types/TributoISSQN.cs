@@ -46,7 +46,7 @@ public enum TributoISSQN
     /// Operação tributável.
     /// </summary>
     [DFeEnum("1")]
-    OperaçãoTributavel,
+    OperacaoTributavel,
 
     /// <summary>
     /// Imunidade
