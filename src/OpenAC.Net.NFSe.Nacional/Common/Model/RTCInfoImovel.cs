@@ -29,12 +29,16 @@ public sealed class RTCInfoImovel
     public string? InscricaoImobiliariaFiscal { get; set; }
 
     #region Choice
-    
+    /// <summary>
+    /// Código CIB (Código do Imóvel na Prefeitura).
+    /// </summary>
     [DFeElement(TipoCampo.Str, "cCIB", Ocorrencia = Ocorrencia.NaoObrigatoria)]
     public string? CodigoCIB { get; set; }
-    
+    /// <summary>
+    /// Endereço do imóvel.
+    /// </summary>
     [DFeElement("end", Ocorrencia = Ocorrencia.NaoObrigatoria)]
     public EnderecoNFSe? Endereco { get; set; }
-    
+
     #endregion
 }

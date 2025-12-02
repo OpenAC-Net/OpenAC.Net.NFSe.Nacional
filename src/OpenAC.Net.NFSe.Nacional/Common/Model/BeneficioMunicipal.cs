@@ -40,24 +40,19 @@ namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 /// </summary>
 public sealed class BeneficioMunicipal
 {
-    /// <summary>
-    /// Tipo do benefício municipal.
-    /// </summary>
-    [DFeElement(TipoCampo.Enum, "tpBM", Ocorrencia = Ocorrencia.Obrigatoria)]
-    public TipoBeneficioMunicipal Tipo { get; set; }
-    
+
     /// <summary>
     /// Número do benefício municipal.
     /// </summary>
     [DFeElement(TipoCampo.StrNumber, "nBM", Min = 1, Max = 14, Ocorrencia = Ocorrencia.Obrigatoria)]
     public string NumeroBeneficio { get; set; } = string.Empty;
-    
+
     /// <summary>
     /// Valor da redução da base de cálculo do benefício municipal.
     /// </summary>
     [DFeElement(TipoCampo.De2, "vRedBCBM", Min = 4, Max = 18, Ocorrencia = Ocorrencia.NaoObrigatoria)]
     public decimal? ValorReducao { get; set; }
-    
+
     /// <summary>
     /// Percentual de redução da base de cálculo do benefício municipal.
     /// </summary>

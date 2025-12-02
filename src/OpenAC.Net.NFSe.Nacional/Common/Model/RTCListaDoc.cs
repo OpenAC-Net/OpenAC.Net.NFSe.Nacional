@@ -25,18 +25,24 @@ namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 public sealed class RTCListaDoc
 {
     #region Choice
-    
+    /// <summary>
+    /// Lista de documentos fiscais eletrônicos nacionais (NF-e, CT-e, MDF-e, NFS-e, etc.).
+    /// </summary>
     [DFeElement("dFeNacional", Ocorrencia = Ocorrencia.NaoObrigatoria)]
     public RTCListaDocDFe? DocumentoFeNacional { get; set; }
-    
+    /// <summary>
+    /// lista de Outros documentos fiscais 
+    /// </summary>
     [DFeElement("docFiscalOutro", Ocorrencia = Ocorrencia.NaoObrigatoria)]
     public RTCListaDocFiscalOutro? DocumentoFiscalOutro { get; set; }
-    
+    /// <summary>
+    /// Lista de outros documentos não fiscais.
+    /// </summary>
     [DFeElement("docOutro", Ocorrencia = Ocorrencia.NaoObrigatoria)]
     public RTCListaDocOutro? DocumentoOutro { get; set; }
-    
+
     #endregion
-    
+
     /// <summary>
     /// Grupo de informações do fornecedor do documento referenciado.
     /// </summary>
