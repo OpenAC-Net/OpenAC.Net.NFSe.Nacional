@@ -24,21 +24,29 @@ namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 public sealed class RTCListaDocFornec
 {
     #region Choice
-    
+    /// <summary>
+    /// CNPJ do Fornecedor do serviço.
+    /// </summary>
     [DFeElement(TipoCampo.Str, "CNPJ", Ocorrencia = Ocorrencia.NaoObrigatoria)]
     public string? CNPJ { get; set; }
-    
+    /// <summary>
+    /// CPF do Fornecedor do serviço.
+    /// </summary>
     [DFeElement(TipoCampo.Str, "CPF", Ocorrencia = Ocorrencia.NaoObrigatoria)]
     public string? CPF { get; set; }
-    
+    /// <summary>
+    /// NIF do Fornecedor do serviço.
+    /// </summary>
     [DFeElement(TipoCampo.Str, "NIF", Ocorrencia = Ocorrencia.NaoObrigatoria)]
     public string? NIF { get; set; }
-    
+    /// <summary>
+    /// Indicador de ausência de NIF do Fornecedor do serviço.
+    /// </summary>
     [DFeElement(TipoCampo.Enum, "cNaoNIF", Ocorrencia = Ocorrencia.NaoObrigatoria)]
     public CodNaoNIF? CodigoNaoNIF { get; set; }
-    
+
     #endregion
-    
+
     /// <summary>
     /// Nome / Razão Social do Fornecedor do serviço.
     /// </summary>
