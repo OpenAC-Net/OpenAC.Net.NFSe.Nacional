@@ -225,7 +225,7 @@ public sealed class NFSeWebservice : IOpenLog
     {
         evento.Assinar(configuracao);
 
-        ValidarSchema(SchemaNFSe.Evento, evento.Xml);
+        ValidarSchema(SchemaNFSe.Evento, evento.Xml, evento.Versao);
 
         var documento = evento.Informacoes.CPFAutor ?? evento.Informacoes.CNPJAutor;
 
