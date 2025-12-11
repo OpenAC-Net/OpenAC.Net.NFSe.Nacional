@@ -34,6 +34,7 @@ using OpenAC.Net.NFSe.Nacional.Common.Types;
 using System;
 using System.IO;
 using System.Reflection;
+using OpenAC.Net.DFe.Core.Extensions;
 
 namespace OpenAC.Net.NFSe.Nacional.Common;
 
@@ -141,10 +142,11 @@ public sealed class NFSeArquivoConfig : DFeArquivosConfigBase<SchemaNFSe>
     /// <exception cref="ArgumentOutOfRangeException">Lançada quando o tipo de esquema não é reconhecido.</exception>
     public override string GetSchema(SchemaNFSe schema)
     {
+        var dfeVersion = VersaoSchema.GetDFeValue();
         return schema switch
         {
-            SchemaNFSe.DPS => VersaoSchema == VersaoNFSe.Ve100 ? Path.Combine(PathSchemas, "DPS_v1.00.xsd") : Path.Combine(PathSchemas, "DPS_v1.01.xsd"),
-            SchemaNFSe.Evento => Path.Combine(PathSchemas, "pedRegEvento_v1.00.xsd"),
+            SchemaNFSe.DPS => Path.Combine(PathSchemas, $"DPS_v{dfeVersion}.xsd") ,
+            SchemaNFSe.Evento => Path.Combine(PathSchemas, $"pedRegEvento_v{dfeVersion}.xsd"),
             _ => throw new ArgumentOutOfRangeException(nameof(schema), schema, null)
         };
     }

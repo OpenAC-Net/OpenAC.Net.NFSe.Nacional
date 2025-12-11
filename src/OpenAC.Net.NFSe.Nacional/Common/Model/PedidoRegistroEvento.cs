@@ -33,6 +33,7 @@ using OpenAC.Net.DFe.Core.Attributes;
 using OpenAC.Net.DFe.Core.Common;
 using OpenAC.Net.DFe.Core.Document;
 using OpenAC.Net.DFe.Core.Serializer;
+using OpenAC.Net.NFSe.Nacional.Common.Types;
 
 namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 
@@ -60,8 +61,8 @@ public sealed class PedidoRegistroEvento : DFeSignDocument<PedidoRegistroEvento>
     /// <summary>
     /// Versão do layout do pedido.
     /// </summary>
-    [DFeAttribute(TipoCampo.Str, "versao", Ocorrencia = Ocorrencia.Obrigatoria)]
-    public string Versao { get; set; } = string.Empty;
+    [DFeAttribute(TipoCampo.Enum, "versao", Ocorrencia = Ocorrencia.Obrigatoria)]
+    public VersaoNFSe Versao { get; set; } = VersaoNFSe.Ve100;
 
     /// <summary>
     /// Informações do pedido de registro de evento.

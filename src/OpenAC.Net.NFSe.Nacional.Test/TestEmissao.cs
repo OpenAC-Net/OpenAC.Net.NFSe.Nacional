@@ -566,11 +566,11 @@ public class TestEmissao
         var cancelamento = new EventoCancelamento
         {
             CodMotivo = MotivoCancelamento.ErroEmissao,
-            Motivo = "Dados inv√°lidos"
+            Motivo = "Dados inv·lidos"
         };
 
         var evento = new PedidoRegistroEvento();
-        evento.Versao = "1.00";
+        evento.Versao = openNFSeNacional.Configuracoes.Geral.Versao;
         evento.Informacoes = new()
         {
             Id = "PRE" + chaveNFse + TipoEventoCod.Cancelamento + SetupOpenNFSeNacional.NumEvento.PadLeft(3, '0'),
@@ -602,7 +602,7 @@ public class TestEmissao
         };
 
         var evento = new PedidoRegistroEvento();
-        evento.Versao = "1.00";
+        evento.Versao = openNFSeNacional.Configuracoes.Geral.Versao;
         evento.Informacoes = new()
         {
             Id = "PRE" + chaveNFse + TipoEventoCod.SolicitacaoCancelamento + SetupOpenNFSeNacional.NumEvento.PadLeft(3, '0'),
