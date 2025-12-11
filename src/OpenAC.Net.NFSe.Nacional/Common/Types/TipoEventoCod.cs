@@ -74,7 +74,7 @@ public struct TipoEventoCod
     /// <summary>
     /// Confirmação pelo intermediário.
     /// </summary>
-    public const string ConfirmacaoIntermediario = "203203";
+    public const string ConfirmacaoIntermediario = "204203";
 
     /// <summary>
     /// Confirmação tácita.
