@@ -74,7 +74,7 @@ public struct TipoEventoCod
     /// <summary>
     /// Confirmação pelo intermediário.
     /// </summary>
-    public const string ConfirmacaoIntermediario = "203203";
+    public const string ConfirmacaoIntermediario = "204203";
 
     /// <summary>
     /// Confirmação tácita.
@@ -94,7 +94,7 @@ public struct TipoEventoCod
     /// <summary>
     /// Rejeição pelo intermediário.
     /// </summary>
-    public const string RejeicaoIntermediario = "203207";
+    public const string RejeicaoIntermediario = "204207";
 
     /// <summary>
     /// Anulação da rejeição.
