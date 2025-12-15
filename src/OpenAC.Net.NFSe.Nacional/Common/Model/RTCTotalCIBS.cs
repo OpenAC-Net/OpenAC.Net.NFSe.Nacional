@@ -6,7 +6,7 @@
 // Last Modified By : lucasmoraes804
 // Last Modified On : 13-05-2025
 // ***********************************************************************
-// <copyright file="RTCIBSCBS.cs" company="OpenAC .Net">
+// <copyright file="RTCTotalCIBS.cs" company="OpenAC .Net">
 // The MIT License (MIT)
 // Copyright (c) 2014-2025 Grupo OpenAC.Net
 //
@@ -34,38 +34,14 @@ using OpenAC.Net.DFe.Core.Serializer;
 namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 
 /// <summary>
-/// Grupo de informacoes geradas pelo sistema referentes ao IBS e CBS.
+/// Totalizadores do IBS e CBS.
 /// </summary>
-public sealed class RTCIBSCBS
+public sealed class RTCTotalCIBS
 {
     /// <summary>
-    /// Codigo IBGE da localidade de incidencia do IBS/CBS.
+    /// Valor total da NF considerando IBS e CBS.
     /// </summary>
-    [DFeElement(TipoCampo.StrNumber, "cLocalidadeIncid", Min = 0, Max = 7, Ocorrencia = Ocorrencia.Obrigatoria)]
-    public string CodigoLocalidadeIncidencia { get; set; } = string.Empty;
-
-    /// <summary>
-    /// Nome da localidade de incidencia do IBS/CBS.
-    /// </summary>
-    [DFeElement(TipoCampo.Str, "xLocalidadeIncid", Min = 1, Max = 600, Ocorrencia = Ocorrencia.Obrigatoria)]
-    public string DescricaoLocalidadeIncidencia { get; set; } = string.Empty;
-
-    /// <summary>
-    /// Percentual de redutor aplicado em compra governamental.
-    /// </summary>
-    [DFeElement(TipoCampo.De2, "pRedutor", Min = 1, Max = 3, Ocorrencia = Ocorrencia.NaoObrigatoria)]
-    public decimal PercentualRedutor { get; set; }
-    
-    /// <summary>
-    /// Valores brutos referentes ao IBS/CBS.
-    /// </summary>
-    [DFeElement("valores", Ocorrencia = Ocorrencia.Obrigatoria)]
-    public RTCValoresIBSCBS Valores { get; set; } = new();
-    
-    /// <summary>
-    /// Grupo de totalizadores do IBS/CBS.
-    /// </summary>
-    [DFeElement("totCIBS", Ocorrencia = Ocorrencia.Obrigatoria)]
-    public RTCTotalCIBS Totais { get; set; } = new();
+    [DFeElement(TipoCampo.De2, "vTotNF", Min = 4, Max = 18, Ocorrencia = Ocorrencia.Obrigatoria)]
+    public decimal ValorTotalNF { get; set; }
 }
 
