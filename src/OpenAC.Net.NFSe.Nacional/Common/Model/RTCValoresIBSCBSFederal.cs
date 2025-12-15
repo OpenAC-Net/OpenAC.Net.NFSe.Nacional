@@ -6,7 +6,7 @@
 // Last Modified By : lucasmoraes804
 // Last Modified On : 13-05-2025
 // ***********************************************************************
-// <copyright file="RTCValoresIBSCBS.cs" company="OpenAC .Net">
+// <copyright file="RTCValoresIBSCBSFederal.cs" company="OpenAC .Net">
 // The MIT License (MIT)
 // Copyright (c) 2014-2025 Grupo OpenAC.Net
 //
@@ -34,38 +34,26 @@ using OpenAC.Net.DFe.Core.Serializer;
 namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 
 /// <summary>
-/// Valores brutos calculados para IBS/CBS.
+/// Valores da CBS.
 /// </summary>
-public sealed class RTCValoresIBSCBS
+public sealed class RTCValoresIBSCBSFederal
 {
     /// <summary>
-    /// Base de calculo do IBS/CBS antes das reducoes.
+    /// Aliquota da CBS parametrizada.
     /// </summary>
-    [DFeElement(TipoCampo.De2, "vBC", Min = 4, Max = 18, Ocorrencia = Ocorrencia.Obrigatoria)]
-    public decimal ValorBaseCalculo { get; set; }
+    [DFeElement(TipoCampo.De2, "pCBS", Min = 1, Max = 3, Ocorrencia = Ocorrencia.Obrigatoria)]
+    public decimal PercentualCBS { get; set; }
 
     /// <summary>
-    /// Valor monetario relativo a reembolso, repasse ou ressarcimento.
+    /// Percentual de reducao da aliquota da CBS.
     /// </summary>
-    [DFeElement(TipoCampo.De2, "vCalcReeRepRes", Min = 4, Max = 18, Ocorrencia = Ocorrencia.NaoObrigatoria)]
-    public decimal? ValorCalcReeRepRes { get; set; }
+    [DFeElement(TipoCampo.De2, "pRedAliqCBS", Min = 4, Max = 7, Ocorrencia = Ocorrencia.NaoObrigatoria)]
+    public decimal? PercentualReducaoAliquotaCBS { get; set; }
 
     /// <summary>
-    /// Detalhamento dos valores do IBS estadual.
+    /// Aliquota efetiva da CBS.
     /// </summary>
-    [DFeElement("uf", Ocorrencia = Ocorrencia.Obrigatoria)]
-    public RTCValoresIBSCBSUf Estado { get; set; } = new();
-
-    /// <summary>
-    /// Detalhamento dos valores do IBS municipal.
-    /// </summary>
-    [DFeElement("mun", Ocorrencia = Ocorrencia.Obrigatoria)]
-    public RTCValoresIBSCBSMunicipio Municipio { get; set; } = new();
-
-    /// <summary>
-    /// Detalhamento dos valores da CBS.
-    /// </summary>
-    [DFeElement("fed", Ocorrencia = Ocorrencia.Obrigatoria)]
-    public RTCValoresIBSCBSFederal Federal { get; set; } = new();
+    [DFeElement(TipoCampo.De2, "pAliqEfetCBS", Min = 1, Max = 3, Ocorrencia = Ocorrencia.Obrigatoria)]
+    public decimal PercentualAliquotaEfetivaCBS { get; set; }
 }
 
