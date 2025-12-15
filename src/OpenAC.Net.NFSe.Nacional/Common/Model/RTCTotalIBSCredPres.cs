@@ -6,7 +6,7 @@
 // Last Modified By : lucasmoraes804
 // Last Modified On : 13-05-2025
 // ***********************************************************************
-// <copyright file="RTCTotalIBS.cs" company="OpenAC .Net">
+// <copyright file="RTCTotalIBSCredPres.cs" company="OpenAC .Net">
 // The MIT License (MIT)
 // Copyright (c) 2014-2025 Grupo OpenAC.Net
 //
@@ -34,20 +34,20 @@ using OpenAC.Net.DFe.Core.Serializer;
 namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 
 /// <summary>
-/// Totalizadores do IBS.
+/// Totais de credito presumido para o IBS.
 /// </summary>
-public sealed class RTCTotalIBS
+public sealed class RTCTotalIBSCredPres
 {
     /// <summary>
-    /// Valor total do IBS.
+    /// Aliquota do credito presumido IBS.
     /// </summary>
-    [DFeElement(TipoCampo.De2, "vIBSTot", Min = 4, Max = 18, Ocorrencia = Ocorrencia.Obrigatoria)]
-    public decimal ValorTotalIBS { get; set; }
+    [DFeElement(TipoCampo.De2, "pCredPresIBS", Min = 1, Max = 3, Ocorrencia = Ocorrencia.Obrigatoria)]
+    public decimal PercentualCreditoPresumido { get; set; }
 
     /// <summary>
-    /// Valores de credito presumido do IBS.
+    /// Valor do credito presumido IBS.
     /// </summary>
-    [DFeElement("gIBSCredPres", Ocorrencia = Ocorrencia.NaoObrigatoria)]
-    public RTCTotalIBSCredPres? CreditoPresumido { get; set; }
+    [DFeElement(TipoCampo.De2, "vCredPresIBS", Min = 4, Max = 18, Ocorrencia = Ocorrencia.Obrigatoria)]
+    public decimal ValorCreditoPresumido { get; set; }
 }
 
