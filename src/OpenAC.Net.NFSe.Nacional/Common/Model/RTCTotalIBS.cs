@@ -6,7 +6,7 @@
 // Last Modified By : lucasmoraes804
 // Last Modified On : 13-05-2025
 // ***********************************************************************
-// <copyright file="RTCTotalCIBS.cs" company="OpenAC .Net">
+// <copyright file="RTCTotalIBS.cs" company="OpenAC .Net">
 // The MIT License (MIT)
 // Copyright (c) 2014-2025 Grupo OpenAC.Net
 //
@@ -34,20 +34,14 @@ using OpenAC.Net.DFe.Core.Serializer;
 namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 
 /// <summary>
-/// Totalizadores do IBS e CBS.
+/// Totalizadores do IBS.
 /// </summary>
-public sealed class RTCTotalCIBS
+public sealed class RTCTotalIBS
 {
     /// <summary>
-    /// Valor total da NF considerando IBS e CBS.
+    /// Valor total do IBS.
     /// </summary>
-    [DFeElement(TipoCampo.De2, "vTotNF", Min = 4, Max = 18, Ocorrencia = Ocorrencia.Obrigatoria)]
-    public decimal ValorTotalNF { get; set; }
-
-    /// <summary>
-    /// Grupo de valores referentes ao IBS.
-    /// </summary>
-    [DFeElement("gIBS", Ocorrencia = Ocorrencia.Obrigatoria)]
-    public RTCTotalIBS TotalIBS { get; set; } = new();
+    [DFeElement(TipoCampo.De2, "vIBSTot", Min = 4, Max = 18, Ocorrencia = Ocorrencia.Obrigatoria)]
+    public decimal ValorTotalIBS { get; set; }
 }
 
