@@ -6,7 +6,7 @@
 // Last Modified By : lucasmoraes804
 // Last Modified On : 13-05-2025
 // ***********************************************************************
-// <copyright file="RTCTotalCIBS.cs" company="OpenAC .Net">
+// <copyright file="RTCTotalTribRegular.cs" company="OpenAC .Net">
 // The MIT License (MIT)
 // Copyright (c) 2014-2025 Grupo OpenAC.Net
 //
@@ -34,32 +34,44 @@ using OpenAC.Net.DFe.Core.Serializer;
 namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 
 /// <summary>
-/// Totalizadores do IBS e CBS.
+/// Tributacao regular para IBS e CBS.
 /// </summary>
-public sealed class RTCTotalCIBS
+public sealed class RTCTotalTribRegular
 {
     /// <summary>
-    /// Valor total da NF considerando IBS e CBS.
+    /// Aliquota efetiva de tributacao regular do IBS estadual.
     /// </summary>
-    [DFeElement(TipoCampo.De2, "vTotNF", Min = 4, Max = 18, Ocorrencia = Ocorrencia.Obrigatoria)]
-    public decimal ValorTotalNF { get; set; }
+    [DFeElement(TipoCampo.De2, "pAliqEfeRegIBSUF", Min = 1, Max = 3, Ocorrencia = Ocorrencia.Obrigatoria)]
+    public decimal PercentualAliquotaEfetivaIBSUF { get; set; }
 
     /// <summary>
-    /// Grupo de valores referentes ao IBS.
+    /// Valor da tributacao regular do IBS estadual.
     /// </summary>
-    [DFeElement("gIBS", Ocorrencia = Ocorrencia.Obrigatoria)]
-    public RTCTotalIBS TotalIBS { get; set; } = new();
-    
+    [DFeElement(TipoCampo.De2, "vTribRegIBSUF", Min = 4, Max = 18, Ocorrencia = Ocorrencia.Obrigatoria)]
+    public decimal ValorTributacaoRegularIBSUF { get; set; }
+
     /// <summary>
-    /// Grupo de valores referentes a CBS.
+    /// Aliquota efetiva de tributacao regular do IBS municipal.
     /// </summary>
-    [DFeElement("gCBS", Ocorrencia = Ocorrencia.Obrigatoria)]
-    public RTCTotalCBS TotalCBS { get; set; } = new();
-    
+    [DFeElement(TipoCampo.De2, "pAliqEfeRegIBSMun", Min = 1, Max = 3, Ocorrencia = Ocorrencia.Obrigatoria)]
+    public decimal PercentualAliquotaEfetivaIBSMunicipal { get; set; }
+
     /// <summary>
-    /// Informacoes de tributacao regular.
+    /// Valor da tributacao regular do IBS municipal.
     /// </summary>
-    [DFeElement("gTribRegular", Ocorrencia = Ocorrencia.NaoObrigatoria)]
-    public RTCTotalTribRegular? TributacaoRegular { get; set; }
+    [DFeElement(TipoCampo.De2, "vTribRegIBSMun", Min = 4, Max = 18, Ocorrencia = Ocorrencia.Obrigatoria)]
+    public decimal ValorTributacaoRegularIBSMunicipal { get; set; }
+
+    /// <summary>
+    /// Aliquota efetiva de tributacao regular da CBS.
+    /// </summary>
+    [DFeElement(TipoCampo.De2, "pAliqEfeRegCBS", Min = 1, Max = 3, Ocorrencia = Ocorrencia.Obrigatoria)]
+    public decimal PercentualAliquotaEfetivaCBS { get; set; }
+
+    /// <summary>
+    /// Valor da tributacao regular da CBS.
+    /// </summary>
+    [DFeElement(TipoCampo.De2, "vTribRegCBS", Min = 4, Max = 18, Ocorrencia = Ocorrencia.Obrigatoria)]
+    public decimal ValorTributacaoRegularCBS { get; set; }
 }
 
