@@ -6,7 +6,7 @@
 // Last Modified By : lucasmoraes804
 // Last Modified On : 13-05-2025
 // ***********************************************************************
-// <copyright file="RTCTotalIBS.cs" company="OpenAC .Net">
+// <copyright file="RTCTotalIBSMun.cs" company="OpenAC .Net">
 // The MIT License (MIT)
 // Copyright (c) 2014-2025 Grupo OpenAC.Net
 //
@@ -34,32 +34,20 @@ using OpenAC.Net.DFe.Core.Serializer;
 namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 
 /// <summary>
-/// Totalizadores do IBS.
+/// Totais do IBS municipal.
 /// </summary>
-public sealed class RTCTotalIBS
+public sealed class RTCTotalIBSMun
 {
     /// <summary>
-    /// Valor total do IBS.
+    /// Total do diferimento do IBS municipal.
     /// </summary>
-    [DFeElement(TipoCampo.De2, "vIBSTot", Min = 4, Max = 18, Ocorrencia = Ocorrencia.Obrigatoria)]
-    public decimal ValorTotalIBS { get; set; }
+    [DFeElement(TipoCampo.De2, "vDifMun", Min = 4, Max = 18, Ocorrencia = Ocorrencia.Obrigatoria)]
+    public decimal ValorDiferimentoMunicipal { get; set; }
 
     /// <summary>
-    /// Valores de credito presumido do IBS.
+    /// Total do IBS municipal.
     /// </summary>
-    [DFeElement("gIBSCredPres", Ocorrencia = Ocorrencia.NaoObrigatoria)]
-    public RTCTotalIBSCredPres? CreditoPresumido { get; set; }
-
-    /// <summary>
-    /// Valores do IBS estadual.
-    /// </summary>
-    [DFeElement("gIBSUFTot", Ocorrencia = Ocorrencia.Obrigatoria)]
-    public RTCTotalIBSUF TotalEstadual { get; set; } = new();
-
-    /// <summary>
-    /// Valores do IBS municipal.
-    /// </summary>
-    [DFeElement("gIBSMunTot", Ocorrencia = Ocorrencia.Obrigatoria)]
-    public RTCTotalIBSMun TotalMunicipal { get; set; } = new();
+    [DFeElement(TipoCampo.De2, "vIBSMun", Min = 4, Max = 18, Ocorrencia = Ocorrencia.Obrigatoria)]
+    public decimal ValorIBSMunicipal { get; set; }
 }
 
