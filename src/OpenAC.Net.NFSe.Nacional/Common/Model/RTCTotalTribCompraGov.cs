@@ -6,7 +6,7 @@
 // Last Modified By : lucasmoraes804
 // Last Modified On : 13-05-2025
 // ***********************************************************************
-// <copyright file="RTCTotalCIBS.cs" company="OpenAC .Net">
+// <copyright file="RTCTotalTribCompraGov.cs" company="OpenAC .Net">
 // The MIT License (MIT)
 // Copyright (c) 2014-2025 Grupo OpenAC.Net
 //
@@ -34,38 +34,44 @@ using OpenAC.Net.DFe.Core.Serializer;
 namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 
 /// <summary>
-/// Totalizadores do IBS e CBS.
+/// Composicao de IBS/CBS em compras governamentais.
 /// </summary>
-public sealed class RTCTotalCIBS
+public sealed class RTCTotalTribCompraGov
 {
     /// <summary>
-    /// Valor total da NF considerando IBS e CBS.
+    /// Aliquota do IBS de competencia da UF.
     /// </summary>
-    [DFeElement(TipoCampo.De2, "vTotNF", Min = 4, Max = 18, Ocorrencia = Ocorrencia.Obrigatoria)]
-    public decimal ValorTotalNF { get; set; }
+    [DFeElement(TipoCampo.De2, "pIBSUF", Min = 1, Max = 3, Ocorrencia = Ocorrencia.Obrigatoria)]
+    public decimal PercentualIBSUF { get; set; }
 
     /// <summary>
-    /// Grupo de valores referentes ao IBS.
+    /// Valor do IBS da UF calculado.
     /// </summary>
-    [DFeElement("gIBS", Ocorrencia = Ocorrencia.Obrigatoria)]
-    public RTCTotalIBS TotalIBS { get; set; } = new();
-    
+    [DFeElement(TipoCampo.De2, "vIBSUF", Min = 4, Max = 18, Ocorrencia = Ocorrencia.Obrigatoria)]
+    public decimal ValorIBSUF { get; set; }
+
     /// <summary>
-    /// Grupo de valores referentes a CBS.
+    /// Aliquota do IBS de competencia do municipio.
     /// </summary>
-    [DFeElement("gCBS", Ocorrencia = Ocorrencia.Obrigatoria)]
-    public RTCTotalCBS TotalCBS { get; set; } = new();
-    
+    [DFeElement(TipoCampo.De2, "pIBSMun", Min = 1, Max = 3, Ocorrencia = Ocorrencia.Obrigatoria)]
+    public decimal PercentualIBSMunicipal { get; set; }
+
     /// <summary>
-    /// Informacoes de tributacao regular.
+    /// Valor do IBS do municipio calculado.
     /// </summary>
-    [DFeElement("gTribRegular", Ocorrencia = Ocorrencia.NaoObrigatoria)]
-    public RTCTotalTribRegular? TributacaoRegular { get; set; }
-    
+    [DFeElement(TipoCampo.De2, "vIBSMun", Min = 4, Max = 18, Ocorrencia = Ocorrencia.Obrigatoria)]
+    public decimal ValorIBSMunicipal { get; set; }
+
     /// <summary>
-    /// Composicao do IBS/CBS em compras governamentais.
+    /// Aliquota da CBS.
     /// </summary>
-    [DFeElement("gTribCompraGov", Ocorrencia = Ocorrencia.NaoObrigatoria)]
-    public RTCTotalTribCompraGov? TributacaoCompraGovernamental { get; set; }
+    [DFeElement(TipoCampo.De2, "pCBS", Min = 1, Max = 3, Ocorrencia = Ocorrencia.Obrigatoria)]
+    public decimal PercentualCBS { get; set; }
+
+    /// <summary>
+    /// Valor da CBS calculado.
+    /// </summary>
+    [DFeElement(TipoCampo.De2, "vCBS", Min = 4, Max = 18, Ocorrencia = Ocorrencia.Obrigatoria)]
+    public decimal ValorCBS { get; set; }
 }
 
