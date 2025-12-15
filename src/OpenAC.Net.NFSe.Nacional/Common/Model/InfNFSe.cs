@@ -150,6 +150,12 @@ public sealed class InfNFSe
     /// </summary>
     [DFeElement("valores", Ocorrencia = Ocorrencia.Obrigatoria)]
     public ValoresNFSe Valores { get; set; } = new();
+
+    /// <summary>
+    /// Grupo calculado do IBS/CBS.
+    /// </summary>
+    [DFeElement("IBSCBS", Ocorrencia = Ocorrencia.NaoObrigatoria)]
+    public RTCIBSCBS? IBSCBS { get; set; }
     
     /// <summary>
     /// Dados do Documento de Prestação de Serviço (DPS).
