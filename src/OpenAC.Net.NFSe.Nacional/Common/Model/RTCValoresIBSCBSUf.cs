@@ -6,7 +6,7 @@
 // Last Modified By : lucasmoraes804
 // Last Modified On : 13-05-2025
 // ***********************************************************************
-// <copyright file="RTCValoresIBSCBS.cs" company="OpenAC .Net">
+// <copyright file="RTCValoresIBSCBSUf.cs" company="OpenAC .Net">
 // The MIT License (MIT)
 // Copyright (c) 2014-2025 Grupo OpenAC.Net
 //
@@ -34,26 +34,26 @@ using OpenAC.Net.DFe.Core.Serializer;
 namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 
 /// <summary>
-/// Valores brutos calculados para IBS/CBS.
+/// Valores do IBS estadual.
 /// </summary>
-public sealed class RTCValoresIBSCBS
+public sealed class RTCValoresIBSCBSUf
 {
     /// <summary>
-    /// Base de calculo do IBS/CBS antes das reducoes.
+    /// Aliquota da UF para IBS da localidade de incidencia.
     /// </summary>
-    [DFeElement(TipoCampo.De2, "vBC", Min = 4, Max = 18, Ocorrencia = Ocorrencia.Obrigatoria)]
-    public decimal ValorBaseCalculo { get; set; }
+    [DFeElement(TipoCampo.De2, "pIBSUF", Min = 1, Max = 3, Ocorrencia = Ocorrencia.Obrigatoria)]
+    public decimal PercentualIBSUf { get; set; }
 
     /// <summary>
-    /// Valor monetario relativo a reembolso, repasse ou ressarcimento.
+    /// Percentual de reducao da aliquota estadual.
     /// </summary>
-    [DFeElement(TipoCampo.De2, "vCalcReeRepRes", Min = 4, Max = 18, Ocorrencia = Ocorrencia.NaoObrigatoria)]
-    public decimal? ValorCalcReeRepRes { get; set; }
+    [DFeElement(TipoCampo.De2, "pRedAliqUF", Min = 4, Max = 7, Ocorrencia = Ocorrencia.NaoObrigatoria)]
+    public decimal? PercentualReducaoAliquotaUf { get; set; }
 
     /// <summary>
-    /// Detalhamento dos valores do IBS estadual.
+    /// Aliquota efetiva estadual do IBS.
     /// </summary>
-    [DFeElement("uf", Ocorrencia = Ocorrencia.Obrigatoria)]
-    public RTCValoresIBSCBSUf Estado { get; set; } = new();
+    [DFeElement(TipoCampo.De2, "pAliqEfetUF", Min = 1, Max = 3, Ocorrencia = Ocorrencia.Obrigatoria)]
+    public decimal PercentualAliquotaEfetivaUf { get; set; }
 }
 
