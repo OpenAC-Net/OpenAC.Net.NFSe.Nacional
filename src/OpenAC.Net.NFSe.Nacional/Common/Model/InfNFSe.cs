@@ -58,7 +58,7 @@ public sealed class InfNFSe
     /// <summary>
     /// Local de prestação do serviço.
     /// </summary>
-    [DFeElement(TipoCampo.Str, "xLocEmi", Min = 1, Max = 150, Ocorrencia = Ocorrencia.Obrigatoria)]
+    [DFeElement(TipoCampo.Str, "xLocPrestacao", Min = 1, Max = 150)]
     public string LocalPrestacao { get; set; } = string.Empty;
     
     /// <summary>
