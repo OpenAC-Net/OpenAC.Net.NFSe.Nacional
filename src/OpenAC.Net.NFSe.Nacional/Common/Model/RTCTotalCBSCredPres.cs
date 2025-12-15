@@ -6,7 +6,7 @@
 // Last Modified By : lucasmoraes804
 // Last Modified On : 13-05-2025
 // ***********************************************************************
-// <copyright file="RTCTotalCIBS.cs" company="OpenAC .Net">
+// <copyright file="RTCTotalCBSCredPres.cs" company="OpenAC .Net">
 // The MIT License (MIT)
 // Copyright (c) 2014-2025 Grupo OpenAC.Net
 //
@@ -34,26 +34,20 @@ using OpenAC.Net.DFe.Core.Serializer;
 namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 
 /// <summary>
-/// Totalizadores do IBS e CBS.
+/// Totais de credito presumido para a CBS.
 /// </summary>
-public sealed class RTCTotalCIBS
+public sealed class RTCTotalCBSCredPres
 {
     /// <summary>
-    /// Valor total da NF considerando IBS e CBS.
+    /// Aliquota do credito presumido da CBS.
     /// </summary>
-    [DFeElement(TipoCampo.De2, "vTotNF", Min = 4, Max = 18, Ocorrencia = Ocorrencia.Obrigatoria)]
-    public decimal ValorTotalNF { get; set; }
+    [DFeElement(TipoCampo.De2, "pCredPresCBS", Min = 1, Max = 3, Ocorrencia = Ocorrencia.Obrigatoria)]
+    public decimal PercentualCreditoPresumido { get; set; }
 
     /// <summary>
-    /// Grupo de valores referentes ao IBS.
+    /// Valor do credito presumido da CBS.
     /// </summary>
-    [DFeElement("gIBS", Ocorrencia = Ocorrencia.Obrigatoria)]
-    public RTCTotalIBS TotalIBS { get; set; } = new();
-    
-    /// <summary>
-    /// Grupo de valores referentes a CBS.
-    /// </summary>
-    [DFeElement("gCBS", Ocorrencia = Ocorrencia.Obrigatoria)]
-    public RTCTotalCBS TotalCBS { get; set; } = new();
+    [DFeElement(TipoCampo.De2, "vCredPresCBS", Min = 4, Max = 18, Ocorrencia = Ocorrencia.Obrigatoria)]
+    public decimal ValorCreditoPresumido { get; set; }
 }
 
