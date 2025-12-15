@@ -6,7 +6,7 @@
 // Last Modified By : lucasmoraes804
 // Last Modified On : 13-05-2025
 // ***********************************************************************
-// <copyright file="RTCIBSCBS.cs" company="OpenAC .Net">
+// <copyright file="RTCValoresIBSCBS.cs" company="OpenAC .Net">
 // The MIT License (MIT)
 // Copyright (c) 2014-2025 Grupo OpenAC.Net
 //
@@ -34,32 +34,20 @@ using OpenAC.Net.DFe.Core.Serializer;
 namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 
 /// <summary>
-/// Grupo de informacoes geradas pelo sistema referentes ao IBS e CBS.
+/// Valores brutos calculados para IBS/CBS.
 /// </summary>
-public sealed class RTCIBSCBS
+public sealed class RTCValoresIBSCBS
 {
     /// <summary>
-    /// Codigo IBGE da localidade de incidencia do IBS/CBS.
+    /// Base de calculo do IBS/CBS antes das reducoes.
     /// </summary>
-    [DFeElement(TipoCampo.StrNumber, "cLocalidadeIncid", Min = 0, Max = 7, Ocorrencia = Ocorrencia.Obrigatoria)]
-    public string CodigoLocalidadeIncidencia { get; set; } = string.Empty;
+    [DFeElement(TipoCampo.De2, "vBC", Min = 4, Max = 18, Ocorrencia = Ocorrencia.Obrigatoria)]
+    public decimal ValorBaseCalculo { get; set; }
 
     /// <summary>
-    /// Nome da localidade de incidencia do IBS/CBS.
+    /// Valor monetario relativo a reembolso, repasse ou ressarcimento.
     /// </summary>
-    [DFeElement(TipoCampo.Str, "xLocalidadeIncid", Min = 1, Max = 600, Ocorrencia = Ocorrencia.Obrigatoria)]
-    public string DescricaoLocalidadeIncidencia { get; set; } = string.Empty;
-
-    /// <summary>
-    /// Percentual de redutor aplicado em compra governamental.
-    /// </summary>
-    [DFeElement(TipoCampo.De2, "pRedutor", Min = 1, Max = 3, Ocorrencia = Ocorrencia.NaoObrigatoria)]
-    public decimal PercentualRedutor { get; set; }
-    
-    /// <summary>
-    /// Valores brutos referentes ao IBS/CBS.
-    /// </summary>
-    [DFeElement("valores", Ocorrencia = Ocorrencia.Obrigatoria)]
-    public RTCValoresIBSCBS Valores { get; set; } = new();
+    [DFeElement(TipoCampo.De2, "vCalcReeRepRes", Min = 4, Max = 18, Ocorrencia = Ocorrencia.NaoObrigatoria)]
+    public decimal? ValorCalcReeRepRes { get; set; }
 }
 
