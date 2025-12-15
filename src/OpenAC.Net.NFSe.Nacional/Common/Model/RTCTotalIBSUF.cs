@@ -6,7 +6,7 @@
 // Last Modified By : lucasmoraes804
 // Last Modified On : 13-05-2025
 // ***********************************************************************
-// <copyright file="RTCTotalIBS.cs" company="OpenAC .Net">
+// <copyright file="RTCTotalIBSUF.cs" company="OpenAC .Net">
 // The MIT License (MIT)
 // Copyright (c) 2014-2025 Grupo OpenAC.Net
 //
@@ -34,26 +34,20 @@ using OpenAC.Net.DFe.Core.Serializer;
 namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 
 /// <summary>
-/// Totalizadores do IBS.
+/// Totais do IBS estadual.
 /// </summary>
-public sealed class RTCTotalIBS
+public sealed class RTCTotalIBSUF
 {
     /// <summary>
-    /// Valor total do IBS.
+    /// Total do diferimento do IBS estadual.
     /// </summary>
-    [DFeElement(TipoCampo.De2, "vIBSTot", Min = 4, Max = 18, Ocorrencia = Ocorrencia.Obrigatoria)]
-    public decimal ValorTotalIBS { get; set; }
+    [DFeElement(TipoCampo.De2, "vDifUF", Min = 4, Max = 18, Ocorrencia = Ocorrencia.Obrigatoria)]
+    public decimal ValorDiferimentoUF { get; set; }
 
     /// <summary>
-    /// Valores de credito presumido do IBS.
+    /// Total do IBS estadual.
     /// </summary>
-    [DFeElement("gIBSCredPres", Ocorrencia = Ocorrencia.NaoObrigatoria)]
-    public RTCTotalIBSCredPres? CreditoPresumido { get; set; }
-
-    /// <summary>
-    /// Valores do IBS estadual.
-    /// </summary>
-    [DFeElement("gIBSUFTot", Ocorrencia = Ocorrencia.Obrigatoria)]
-    public RTCTotalIBSUF TotalEstadual { get; set; } = new();
+    [DFeElement(TipoCampo.De2, "vIBSUF", Min = 4, Max = 18, Ocorrencia = Ocorrencia.Obrigatoria)]
+    public decimal ValorIBSUF { get; set; }
 }
 
