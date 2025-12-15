@@ -58,7 +58,7 @@ public sealed class InfNFSe
     /// <summary>
     /// Local de prestação do serviço.
     /// </summary>
-    [DFeElement(TipoCampo.Str, "xLocEmi", Min = 1, Max = 150, Ocorrencia = Ocorrencia.Obrigatoria)]
+    [DFeElement(TipoCampo.Str, "xLocPrestacao", Min = 1, Max = 150)]
     public string LocalPrestacao { get; set; } = string.Empty;
     
     /// <summary>
@@ -150,6 +150,12 @@ public sealed class InfNFSe
     /// </summary>
     [DFeElement("valores", Ocorrencia = Ocorrencia.Obrigatoria)]
     public ValoresNFSe Valores { get; set; } = new();
+
+    /// <summary>
+    /// Grupo calculado do IBS/CBS.
+    /// </summary>
+    [DFeElement("IBSCBS", Ocorrencia = Ocorrencia.NaoObrigatoria)]
+    public RTCIBSCBS? IBSCBS { get; set; }
     
     /// <summary>
     /// Dados do Documento de Prestação de Serviço (DPS).

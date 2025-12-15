@@ -178,7 +178,7 @@ public class SetupOpenNFSeNacional
 
         // Schema path é inferido da versão
         var pathSchemas = Path.Combine(AppContext.BaseDirectory, "Schemas", versaoSchema.GetDFeValue());
-
+        openNFSeNacional.Configuracoes.Geral.Versao = versaoSchema;
         openNFSeNacional.Configuracoes.Certificados.CertificadoBytes =
             File.ReadAllBytes(certificadoPath);
         openNFSeNacional.Configuracoes.Certificados.Senha = certificadoSenha;
