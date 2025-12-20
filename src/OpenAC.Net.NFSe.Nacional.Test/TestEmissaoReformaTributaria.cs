@@ -43,7 +43,7 @@ public class TestEmissaoReformaTributaria
             {
                 CodNBS = "113011000",
                 CodTributacaoNacional = "171401",
-                CodTributacaoMunicipio = "001",
+                //CodTributacaoMunicipio = "001",
                 Descricao = "HHDIR - Honorários - HORA  DIRETOR - R$ 85000,00"
             }
         };
@@ -88,12 +88,7 @@ public class TestEmissaoReformaTributaria
                     {
 
                         CodigoSituacaoTributaria = "200",
-                        CodigoClassificacaoTributaria = "200052",
-                        GrupoTributacaoRegular = new RTCInfoTributosTribRegular
-                        {
-                            CodigoSituacaoTributariaRegular = "200",
-                            CodigoClassificacaoTributariaRegular = "200052"
-                        }
+                        CodigoClassificacaoTributaria = "200052"
                     }
                 }
             }
@@ -110,11 +105,11 @@ public class TestEmissaoReformaTributaria
                 SetupOpenNFSeNacional.SerieDPS.PadLeft(5, '0') +
                 SetupOpenNFSeNacional.NumDPS.PadLeft(15, '0'),
                 TipoAmbiente = DFe.Core.Common.DFeTipoAmbiente.Homologacao,
-                DhEmissao = new DateTimeOffset(2026, 1, 8, 3, 0, 0, TimeSpan.FromHours(-3)),
-                LocalidadeEmitente = "3304557", // Rio de Janeiro
+                DhEmissao = DateTime.Now,
+                LocalidadeEmitente = SetupOpenNFSeNacional.CodMunIBGE,
                 Serie = SetupOpenNFSeNacional.SerieDPS,
                 NumeroDps = SetupOpenNFSeNacional.NumDPS.ToInt32(),
-                Competencia = new DateTime(2026, 1, 8),
+                Competencia =  DateTime.Now,
                 TipoEmitente = EmitenteDps.Prestador,
                 Prestador = prest,
                 Tomador = toma,
@@ -155,7 +150,7 @@ public class TestEmissaoReformaTributaria
         {
             Localidade = new LocalidadeNFSe
             {
-                CodMunicipioPrestacao = "3304557"
+                CodMunicipioPrestacao = SetupOpenNFSeNacional.CodMunIBGE
             },
             Informacoes = new InformacoesServico
             {
@@ -197,12 +192,12 @@ public class TestEmissaoReformaTributaria
             {
                 Id = "DPS" + SetupOpenNFSeNacional.CodMunIBGE +
                SetupOpenNFSeNacional.TipoInscricaoFederal +
-            SetupOpenNFSeNacional.InscricaoFederal.PadLeft(14, '0') +
+                SetupOpenNFSeNacional.InscricaoFederal.PadLeft(14, '0') +
           SetupOpenNFSeNacional.SerieDPS.PadLeft(5, '0') +
                        SetupOpenNFSeNacional.NumDPS.PadLeft(15, '0'),
                 TipoAmbiente = DFe.Core.Common.DFeTipoAmbiente.Homologacao,
                 DhEmissao = DateTime.Now,
-                LocalidadeEmitente = "3304557",
+                LocalidadeEmitente = SetupOpenNFSeNacional.CodMunIBGE,
                 Serie = SetupOpenNFSeNacional.SerieDPS,
                 NumeroDps = SetupOpenNFSeNacional.NumDPS.ToInt32(),
                 Competencia = DateTime.Now,
@@ -308,7 +303,7 @@ public class TestEmissaoReformaTributaria
                 SetupOpenNFSeNacional.NumDPS.PadLeft(15, '0'),
                 TipoAmbiente = DFe.Core.Common.DFeTipoAmbiente.Homologacao,
                 DhEmissao = DateTime.Now,
-                LocalidadeEmitente = "3304557",
+                LocalidadeEmitente = SetupOpenNFSeNacional.CodMunIBGE,
                 Serie = SetupOpenNFSeNacional.SerieDPS,
                 NumeroDps = SetupOpenNFSeNacional.NumDPS.ToInt32(),
                 Competencia = DateTime.Now,
