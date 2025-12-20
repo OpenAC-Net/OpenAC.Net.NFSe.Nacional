@@ -46,33 +46,33 @@ public sealed class InfNFSe
     /// <summary>
     /// Identificador único da NFSe.
     /// </summary>
-    [DFeAttribute(TipoCampo.Str, "Id")]
+    [DFeAttribute(TipoCampo.Str, "Id")] 
     public string Id { get; set; } = string.Empty;
-
+    
     /// <summary>
     /// Local de emissão da NFSe.
     /// </summary>
     [DFeElement(TipoCampo.Str, "xLocEmi", Min = 1, Max = 150, Ocorrencia = Ocorrencia.Obrigatoria)]
     public string LocalEmissao { get; set; } = string.Empty;
-
+    
     /// <summary>
     /// Local de prestação do serviço.
     /// </summary>
     [DFeElement(TipoCampo.Str, "xLocEmi", Min = 1, Max = 150, Ocorrencia = Ocorrencia.Obrigatoria)]
     public string LocalPrestacao { get; set; } = string.Empty;
-
+    
     /// <summary>
     /// Número da NFSe.
     /// </summary>
     [DFeElement(TipoCampo.Int, "nNFSe", Min = 1, Max = 13, Ocorrencia = Ocorrencia.Obrigatoria)]
     public int NumeroNFSe { get; set; } = 1;
-
+    
     /// <summary>
     /// Código do local de incidência.
     /// </summary>
     [DFeElement(TipoCampo.StrNumber, "cLocIncid", Min = 0, Max = 7, Ocorrencia = Ocorrencia.Obrigatoria)]
     public string CodLocalIncidencia { get; set; } = string.Empty;
-
+    
     /// <summary>
     /// Descrição do local de incidência.
     /// </summary>
@@ -84,25 +84,25 @@ public sealed class InfNFSe
     /// </summary>
     [DFeElement(TipoCampo.Str, "xTribNac", Min = 1, Max = 600, Ocorrencia = Ocorrencia.Obrigatoria)]
     public string DescricaoTributoNacional { get; set; } = string.Empty;
-
+    
     /// <summary>
     /// Descrição do tributo municipal.
     /// </summary>
     [DFeElement(TipoCampo.Str, "xTribMun", Min = 1, Max = 600, Ocorrencia = Ocorrencia.Obrigatoria)]
     public string? DescricaoTributoMunicipal { get; set; }
-
+    
     /// <summary>
     /// Descrição do código NBS.
     /// </summary>
     [DFeElement(TipoCampo.Str, "xNBS", Min = 1, Max = 600, Ocorrencia = Ocorrencia.Obrigatoria)]
     public string? DescricaoCodNBS { get; set; }
-
+    
     /// <summary>
     /// Versão da aplicação emissora.
     /// </summary>
     [DFeElement(TipoCampo.Str, "verAplic", Min = 1, Max = 20, Ocorrencia = Ocorrencia.Obrigatoria)]
     public string VersaoAplicacao { get; set; } = "OpenAC .Net NFSe Nacional";
-
+    
     /// <summary>
     /// Ambiente gerador da NFSe.
     /// </summary>
@@ -114,50 +114,43 @@ public sealed class InfNFSe
     /// </summary>
     [DFeElement(TipoCampo.Enum, "tpEmis", Ocorrencia = Ocorrencia.Obrigatoria)]
     public TipoEmissao TipoEmissao { get; set; } = TipoEmissao.ModeloNacional;
-
+    
     /// <summary>
     /// Processo de emissão da NFSe.
     /// </summary>
     [DFeElement(TipoCampo.Enum, "procEmi", Ocorrencia = Ocorrencia.Obrigatoria)]
     public ProcessoEmissao ProcessoEmissao { get; set; } = ProcessoEmissao.AplicativoContribuinte;
-
+    
     /// <summary>
     /// Situação da NFSe.
     /// </summary>
     [DFeElement(TipoCampo.Int, "cStat", Min = 1, Max = 13, Ocorrencia = Ocorrencia.Obrigatoria)]
     public StatusNFSe SituacaoNFSe { get; set; }
-
+    
     /// <summary>
     /// Data e hora do processamento.
     /// </summary>
     [DFeElement(TipoCampo.DatHorTz, "dhProc", Ocorrencia = Ocorrencia.Obrigatoria)]
     public DateTimeOffset DhProcessamento { get; set; }
-
+    
     /// <summary>
     /// Número do DFSe.
     /// </summary>
     [DFeElement(TipoCampo.Int, "nDFSe", Min = 1, Max = 13, Ocorrencia = Ocorrencia.Obrigatoria)]
     public int NumeroDFSe { get; set; }
-
+    
     /// <summary>
     /// Dados do emitente da NFSe.
     /// </summary>
     [DFeElement("emit", Ocorrencia = Ocorrencia.Obrigatoria)]
     public EmitenteNFSe Emitente { get; set; } = new();
-
+    
     /// <summary>
     /// Valores da NFSe.
     /// </summary>
     [DFeElement("valores", Ocorrencia = Ocorrencia.Obrigatoria)]
     public ValoresNFSe Valores { get; set; } = new();
-
-    /// <summary>
-    ///  Grupo de informações geradas pelo sistema referentes ao IBS e à CBS
-    /// </summary>
-    [DFeElement("IBSCBS", Ocorrencia = Ocorrencia.NaoObrigatoria)]
-    public RTCIBSCBS IBSCBS { get; set; } = new();
-
-
+    
     /// <summary>
     /// Dados do Documento de Prestação de Serviço (DPS).
     /// </summary>

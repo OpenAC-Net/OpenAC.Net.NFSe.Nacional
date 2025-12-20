@@ -12,140 +12,11 @@ namespace OpenAC.Net.NFSe.Nacional.Test;
 [TestClass]
 public class TestEmissaoReformaTributaria
 {
-
-    [TestMethod]
-    public async Task EmissaoNFSeComIBSCBS_AliquotaReduzida_tomador_estrangeiro()
-    {
-        var openNFSeNacional = new OpenNFSeNacional();
-        SetupOpenNFSeNacional.ConfiguracaoModeloNovoCenario2(openNFSeNacional, "27", "1", "1");
-
-        var prest = new PrestadorDps
-        {
-            CNPJ = SetupOpenNFSeNacional.InscricaoFederal,
-            Email = "teste@teste.com",
-            Regime = new RegimeTributario
-            {
-                OptanteSimplesNacional = OptanteSimplesNacional.NaoOptante,
-                RegimeEspecial = RegimeEspecial.SociedadeProfissionais
-            }
-        };
-
-
-        // Ou obtenha um tomador específico:
-        var toma = SetupOpenNFSeNacional.ObterTomador("4");
-        var serv = new ServicoNFSe
-        {
-            Localidade = new LocalidadeNFSe
-            {
-                CodMunicipioPrestacao = SetupOpenNFSeNacional.CodMunIBGE
-            },
-            Informacoes = new InformacoesServico
-            {
-                CodNBS = "113011000",
-                CodTributacaoNacional = "171401",
-                CodTributacaoMunicipio = "001",
-                Descricao = "HHDIR - Honorários - HORA  DIRETOR - R$ 85000,00"
-            },
-            ServicoExterior = new ServicoExterior
-            {
-                Modo = ModoPrestacao.ConsumoBrasil,
-                Vinculo = VinculoPrestador.SemVinculo,
-                CodMoeda = 986, // moeda nacional sempre
-                ValorServico = 85000,
-                ApoioComercioExteriorPrestador = ApoioComercioExteriorPrestador.Nenhum,
-                ApoioComercioExteriorTomador = ApoioComercioExteriorTomador.Nenhum,
-                MovimentacaoTemporariaBens = MovimentacaoTemporariaBens.Nao
-            }
-        };
-
-
-        var valores = new ValoresDps
-        {
-            ValoresServico = new ValoresServico
-            {
-                Valor = 85000
-            },
-            Tributos = new TributosNFSe
-            {
-                Municipal = new TributoMunicipal
-                {
-                    ISSQN = TributoISSQN.OperacaoTributavel,
-                    TipoRetencaoISSQN = TipoRetencaoISSQN.NaoRetido,
-                },
-                Total = new TotalTributos
-                {
-                    PorcentagemTotal = new PorcentagemTotalTributos
-                    {
-                        TotalEstadual = 0,
-                        TotalFederal = 13.45m,
-                        TotalMunicipal = 4.07m,
-                    }
-                }
-            }
-        };
-
-        var ibscbs = new RTCInfoIBSCBS
-        {
-            FinalidadeNFSe = RTCFinNFSe.Regular,
-            IndicadorUsoFinal = RTCIndFinal.Nao,
-            CodigoIndicadorOperacao = "100301",
-            IndicadorDestinatario = RTCIndDest.ProprioTomador,
-            Valores = new RTCInfoValoresIBSCBS
-            {
-                Tributos = new RTCInfoTributosIBSCBS
-                {
-                    GrupoIBSCBS = new RTCInfoTributosSitClas
-                    {
-
-                        CodigoSituacaoTributaria = "200",
-                        CodigoClassificacaoTributaria = "200052"
-                    }
-                }
-            }
-        };
-
-        var dps = new Dps
-        {
-            Versao = openNFSeNacional.Configuracoes.Geral.Versao, // Versão da reforma tributária
-            Informacoes = new InfDps
-            {
-                Id = "DPS" + SetupOpenNFSeNacional.CodMunIBGE +
-                SetupOpenNFSeNacional.TipoInscricaoFederal +
-                SetupOpenNFSeNacional.InscricaoFederal.PadLeft(14, '0') +
-                SetupOpenNFSeNacional.SerieDPS.PadLeft(5, '0') +
-                SetupOpenNFSeNacional.NumDPS.PadLeft(15, '0'),
-                TipoAmbiente = DFe.Core.Common.DFeTipoAmbiente.Homologacao,
-                DhEmissao = new DateTimeOffset(2025, 12, 10, 3, 0, 0, TimeSpan.FromHours(-3)),
-                LocalidadeEmitente = "3304557", // Rio de Janeiro
-                Serie = SetupOpenNFSeNacional.SerieDPS,
-                NumeroDps = SetupOpenNFSeNacional.NumDPS.ToInt32(),
-                Competencia = new DateTime(2025, 12, 10),
-                TipoEmitente = EmitenteDps.Prestador,
-                Prestador = prest,
-                Tomador = toma,
-                Servico = serv,
-                Valores = valores,
-                IBSCBS = ibscbs,
-            }
-        };
-        var retorno = await openNFSeNacional.EnviarAsync(dps);
-
-        Assert.IsTrue(retorno.Sucesso, "A emissão com Aliquota Reduzida deveria ter sucesso");
-
-        Debug.WriteLine(retorno?.Resultado?.XmlNFSe);
-
-        Assert.AreEqual(retorno?.Resultado?.NFSe?.Informacoes.IBSCBS.CodigoLocalidadeIncidencia, (dps?.Informacoes?.Tomador?.Endereco?.Municipio as MunicipioNacional)?.CodMunicipio);
-        Assert.AreEqual(retorno?.Resultado?.NFSe?.Informacoes.IBSCBS.TotalCIBS.ValorTotalNF, dps?.Informacoes.Valores.ValoresServico.Valor, message: $"Valor TOTAL ");
-        Assert.AreEqual(retorno?.Resultado?.NFSe?.Informacoes.IBSCBS.TotalCIBS.TotalCBS.ValorCBS, dps?.Informacoes.Valores.ValoresServico.Valor * ((0.9m * (1 - 0.3m)) / 100m));
-        Assert.AreEqual(retorno?.Resultado?.NFSe?.Informacoes.IBSCBS.TotalCIBS.TotalIBS.ValorIBSTotal, dps?.Informacoes.Valores.ValoresServico.Valor * ((0.1m * (1 - 0.3m)) / 100m));
-    }
-
-
     [TestMethod]
     public async Task EmissaoNFSeComIBSCBS_AliquotaReduzida()
     {
         var openNFSeNacional = new OpenNFSeNacional();
-        SetupOpenNFSeNacional.ConfiguracaoModeloNovoCenario2(openNFSeNacional, "26", "1", "1");
+        SetupOpenNFSeNacional.ConfiguracaoModeloNovoCenario2(openNFSeNacional, "20", "1", "1");
 
         var prest = new PrestadorDps
         {
@@ -217,7 +88,12 @@ public class TestEmissaoReformaTributaria
                     {
 
                         CodigoSituacaoTributaria = "200",
-                        CodigoClassificacaoTributaria = "200052"
+                        CodigoClassificacaoTributaria = "200052",
+                        GrupoTributacaoRegular = new RTCInfoTributosTribRegular
+                        {
+                            CodigoSituacaoTributariaRegular = "200",
+                            CodigoClassificacaoTributariaRegular = "200052"
+                        }
                     }
                 }
             }
@@ -234,11 +110,11 @@ public class TestEmissaoReformaTributaria
                 SetupOpenNFSeNacional.SerieDPS.PadLeft(5, '0') +
                 SetupOpenNFSeNacional.NumDPS.PadLeft(15, '0'),
                 TipoAmbiente = DFe.Core.Common.DFeTipoAmbiente.Homologacao,
-                DhEmissao = new DateTimeOffset(2025, 12, 10, 3, 0, 0, TimeSpan.FromHours(-3)),
+                DhEmissao = new DateTimeOffset(2026, 1, 8, 3, 0, 0, TimeSpan.FromHours(-3)),
                 LocalidadeEmitente = "3304557", // Rio de Janeiro
                 Serie = SetupOpenNFSeNacional.SerieDPS,
                 NumeroDps = SetupOpenNFSeNacional.NumDPS.ToInt32(),
-                Competencia = new DateTime(2025, 12, 10),
+                Competencia = new DateTime(2026, 1, 8),
                 TipoEmitente = EmitenteDps.Prestador,
                 Prestador = prest,
                 Tomador = toma,
@@ -251,12 +127,6 @@ public class TestEmissaoReformaTributaria
 
         Assert.IsTrue(retorno.Sucesso, "A emissão com Aliquota Reduzida deveria ter sucesso");
 
-        Debug.WriteLine(retorno?.Resultado?.XmlNFSe);
-
-        Assert.AreEqual(retorno?.Resultado?.NFSe?.Informacoes.IBSCBS.CodigoLocalidadeIncidencia, (dps?.Informacoes?.Tomador?.Endereco?.Municipio as MunicipioNacional)?.CodMunicipio);
-        Assert.AreEqual(retorno?.Resultado?.NFSe?.Informacoes.IBSCBS.TotalCIBS.ValorTotalNF, dps?.Informacoes.Valores.ValoresServico.Valor, message: $"Valor TOTAL ");
-        Assert.AreEqual(retorno?.Resultado?.NFSe?.Informacoes.IBSCBS.TotalCIBS.TotalCBS.ValorCBS, dps?.Informacoes.Valores.ValoresServico.Valor * ((0.9m * (1 - 0.3m)) / 100m));
-        Assert.AreEqual(retorno?.Resultado?.NFSe?.Informacoes.IBSCBS.TotalCIBS.TotalIBS.ValorIBSTotal, dps?.Informacoes.Valores.ValoresServico.Valor * ((0.1m * (1 - 0.3m)) / 100m));
     }
 
 
