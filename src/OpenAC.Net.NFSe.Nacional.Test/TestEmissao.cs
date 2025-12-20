@@ -208,7 +208,7 @@ public class TestEmissao
     public async Task EmissaoNFSeSemTomador()
     {
         var openNFSeNacional = new OpenNFSeNacional();
-        SetupOpenNFSeNacional.ConfiguracaoModeloAtual(openNFSeNacional, "30", "1", "1");
+        SetupOpenNFSeNacional.ConfiguracaoModeloAtual(openNFSeNacional, "39", "1", "1");
 
         var prest = new PrestadorDps
         {

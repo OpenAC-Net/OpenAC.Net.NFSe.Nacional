@@ -185,8 +185,12 @@ public class SetupOpenNFSeNacional
         openNFSeNacional.Configuracoes.Geral.Salvar = true;
         openNFSeNacional.Configuracoes.Geral.RetirarAcentos = true;
         openNFSeNacional.Configuracoes.Geral.RetirarEspacos = true;
+
+        openNFSeNacional.Configuracoes.Geral.Versao = versaoSchema;
         openNFSeNacional.Configuracoes.Arquivos.PathSalvar = pathSalvar;
         openNFSeNacional.Configuracoes.Arquivos.PathSchemas = pathSchemas;
+
+        openNFSeNacional.Configuracoes.WebServices.Ambiente = DFe.Core.Common.DFeTipoAmbiente.Homologacao;
     }
 
     private static string GetEnvOrThrow(string key)
