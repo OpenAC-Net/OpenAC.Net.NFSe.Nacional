@@ -51,7 +51,7 @@ public sealed class RTCInfoIBSCBS
     /// Indica operação de uso ou consumo pessoal (art.57) (indFinal).
     /// TSRTCIndFinal.
     /// </summary>
-    [DFeElement(TipoCampo.Enum, "indFinal", Ocorrencia = Ocorrencia.Obrigatoria)]
+    [DFeElement(TipoCampo.Enum, "indFinal", Ocorrencia = Ocorrencia.NaoObrigatoria)]
     public RTCIndFinal IndicadorUsoFinal { get; set; }
 
     /// <summary>
