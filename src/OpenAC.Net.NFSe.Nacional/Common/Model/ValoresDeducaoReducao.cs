@@ -43,14 +43,14 @@ public sealed class ValoresDeducaoReducao
     /// <summary>
     /// Porcentagem de dedução ou redução.
     /// </summary>
-    [DFeElement(TipoCampo.De2, "pDR", Min = 4, Max = 6, Ocorrencia = Ocorrencia.Obrigatoria)]
-    public decimal Porcentagem { get; set; }
+    [DFeElement(TipoCampo.De2, "pDR", Min = 4, Max = 6, Ocorrencia = Ocorrencia.NaoObrigatoria)]
+    public decimal? Porcentagem { get; set; }
 
     /// <summary>
     /// Valor de dedução ou redução.
     /// </summary>
-    [DFeElement(TipoCampo.De2, "vDR", Min = 4, Max = 18, Ocorrencia = Ocorrencia.Obrigatoria)]
-    public decimal Valor { get; set; }
+    [DFeElement(TipoCampo.De2, "vDR", Min = 4, Max = 18, Ocorrencia = Ocorrencia.NaoObrigatoria)]
+    public decimal? Valor { get; set; }
 
     /// <summary>
     /// Lista de documentos de dedução ou redução.
