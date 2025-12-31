@@ -57,7 +57,7 @@ public class InfoPessoaNFSe
     /// <summary>
     /// NIF (Número de Identificação Fiscal) da pessoa.
     /// </summary>
-    [DFeElement(TipoCampo.StrNumber, "NIF", Min = 1, Max = 40, Ocorrencia = Ocorrencia.NaoObrigatoria, Ordem = 1)]
+    [DFeElement(TipoCampo.Str, "NIF", Min = 1, Max = 40, Ocorrencia = Ocorrencia.NaoObrigatoria, Ordem = 1)]
     public string? Nif { get; set; }
 
     /// <summary>
