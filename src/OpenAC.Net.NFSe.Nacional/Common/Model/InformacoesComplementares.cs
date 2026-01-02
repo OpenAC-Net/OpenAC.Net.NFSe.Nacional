@@ -42,18 +42,18 @@ public sealed class InformacoesComplementares
     /// <summary>
     /// Identificador do documento técnico.
     /// </summary>
-    [DFeElement(TipoCampo.Str, "idDocTec", Min = 1, Max = 40, Ocorrencia = Ocorrencia.Obrigatoria)]
-    public string IdDocTec { get; set; } = string.Empty;
+    [DFeElement(TipoCampo.Str, "idDocTec", Min = 1, Max = 40, Ocorrencia = Ocorrencia.NaoObrigatoria)]
+    public string IdDocTec { get; set; }
     
     /// <summary>
     /// Documento de referência.
     /// </summary>
-    [DFeElement(TipoCampo.Str, "docRef", Min = 1, Max = 255, Ocorrencia = Ocorrencia.Obrigatoria)]
-    public string DocRef { get; set; } = string.Empty;
+    [DFeElement(TipoCampo.Str, "docRef", Min = 1, Max = 255, Ocorrencia = Ocorrencia.NaoObrigatoria)]
+    public string DocRef { get; set; }
     
     /// <summary>
     /// Informações complementares.
     /// </summary>
-    [DFeElement(TipoCampo.Str, "xInfComp", Min = 1, Max = 2000, Ocorrencia = Ocorrencia.Obrigatoria)]
-    public string Informacoes { get; set; } = string.Empty;
+    [DFeElement(TipoCampo.Str, "xInfComp", Min = 1, Max = 2000, Ocorrencia = Ocorrencia.NaoObrigatoria)]
+    public string Informacoes { get; set; }
 }
