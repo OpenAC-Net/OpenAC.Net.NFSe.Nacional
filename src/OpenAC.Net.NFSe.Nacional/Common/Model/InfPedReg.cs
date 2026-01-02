@@ -89,7 +89,7 @@ public sealed class InfPedReg
     /// <summary>
     /// Número do pedido de registro do evento.
     /// </summary>
-    [DFeElement(TipoCampo.Int, "nPedRegEvento", Min = 1, Max = 3, Ocorrencia = Ocorrencia.Obrigatoria)]
+    [DFeElement(TipoCampo.Int, "nPedRegEvento", Min = 1, Max = 3, Ocorrencia = Ocorrencia.NaoObrigatoria)]
     public int NumeroPedido { get; set; }
 
     /// <summary>
