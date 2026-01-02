@@ -1444,25 +1444,25 @@
     <xs:annotation>
       <xs:documentation>
         O identificador do pedido de registro do evento é formado conforme a concatenação dos seguintes campos:
-        "PRE" + Chave de Acesso NFS-e + Tipo do evento + Número do Pedido de Registro do Evento (nPedRegEvento)
+        "PRE" + Chave de Acesso NFS-e + Tipo do evento
       </xs:documentation>
     </xs:annotation>
     <xs:restriction base="xs:string">
       <xs:whiteSpace value="preserve"/>
-      <xs:maxLength value="62"/>
-      <xs:pattern value="PRE[0-9]{59}"/>
+      <xs:maxLength value="59"/>
+      <xs:pattern value="PRE[0-9]{56}"/>
     </xs:restriction>
   </xs:simpleType>
   <xs:simpleType name="TSIdEvento">
     <xs:annotation>
       <xs:documentation>
-		  Identificador do evento: "EVT" + Chave de acesso(50) Tipo do evento (6) + Pedido de Registro do Evento(3) (nPedRegEvento)
+		  Identificador do evento: "EVT" + Chave de acesso(50) Tipo do evento (6)
       </xs:documentation>
     </xs:annotation>
     <xs:restriction base="xs:string">
       <xs:whiteSpace value="preserve"/>
-      <xs:maxLength value="62"/>
-      <xs:pattern value="EVT[0-9]{59}"/>
+      <xs:maxLength value="59"/>
+      <xs:pattern value="EVT[0-9]{56}"/>
     </xs:restriction>
   </xs:simpleType>
   <xs:simpleType name="TSCodigoEventoNFSe">
