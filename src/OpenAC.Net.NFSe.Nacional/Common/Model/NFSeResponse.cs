@@ -50,7 +50,7 @@ public sealed class NFSeResponse<T> : IOpenLog where T : class, new()
     /// <param name="envio">Dados de envio em formato JSON.</param>
     /// <param name="resposta">Resposta recebida em formato JSON.</param>
     /// <param name="sucesso">Indica se a operação foi bem-sucedida.</param>
-    internal NFSeResponse(string xmlEnvio, string envio, string resposta, bool sucesso)
+    private NFSeResponse(string xmlEnvio, string envio, string resposta, bool sucesso)
     {
         XmlEnvio = xmlEnvio;
         JsonEnvio = envio;
@@ -97,4 +97,22 @@ public sealed class NFSeResponse<T> : IOpenLog where T : class, new()
     public T? Resultado { get; }
 
     #endregion Properties
+
+    #region Methods
+
+    /// <summary>
+    /// Cria uma instância de <see cref="NFSeResponse{T}"/> contendo os dados de envio e retorno.
+    /// </summary>
+    /// <param name="xmlEnvio">XML enviado na requisição.</param>
+    /// <param name="envio">Dados de envio em formato JSON.</param>
+    /// <param name="resposta">Resposta recebida em formato JSON.</param>
+    /// <param name="sucesso">Indica se a operação foi bem-sucedida.</param>
+    /// <returns>Instância de <see cref="NFSeResponse{T}"/> com o resultado desserializado (ou <c>null</c> em caso de erro de desserialização).</returns>
+
+    public static NFSeResponse<T> Create(string xmlEnvio, string envio, string resposta, bool sucesso)
+    {
+        return new NFSeResponse<T>(xmlEnvio, envio, resposta, sucesso);
+    }
+
+    #endregion Methods
 }

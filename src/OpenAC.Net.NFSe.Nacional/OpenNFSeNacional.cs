@@ -30,37 +30,21 @@
 // ***********************************************************************
 
 using System;
+using System.Net;
 using System.Threading.Tasks;
+using OpenAC.Net.Core.Logging;
 using OpenAC.Net.NFSe.Nacional.Common;
 using OpenAC.Net.NFSe.Nacional.Common.Model;
 using OpenAC.Net.NFSe.Nacional.Webservice;
-using OpenAC.Net.NFSe.Nacional.Webservice.Nacional;
 
 namespace OpenAC.Net.NFSe.Nacional;
 
 /// <summary>
 /// Classe principal para integração com a NFS-e Nacional.
 /// </summary>
-public sealed class OpenNFSeNacional
+public sealed class OpenNFSeNacional : IOpenLog
 {
-    #region Constructors
-
-    /// <summary>
-    /// Inicializa uma nova instância de <see cref="OpenNFSeNacional"/>.
-    /// </summary>
-    public OpenNFSeNacional()
-    {
-        Webservice = new NacionalWebservice(Configuracoes);
-    }
-
-    #endregion Constructors
-
     #region Properties
-
-    /// <summary>
-    /// Instância do webservice utilizada para operações. Pode ser nula até que as configurações sejam definidas.
-    /// </summary>
-    public NFSeWebserviceBase? Webservice { get; set; }
 
     /// <summary>
     /// Configurações do Componente.
@@ -78,10 +62,23 @@ public sealed class OpenNFSeNacional
     /// <returns>Resposta do envio contendo informações da NFS-e gerada.</returns>
     public Task<NFSeResponse<RespostaEnvioDps>> EnviarAsync(Dps dps)
     {
-        if(Webservice is null) 
-            throw new InvalidOperationException("Webservice não foi inicializado. Verifique as configurações.");
-
-        return Webservice.EnviarAsync(dps);
+        var provider = NFSeServiceManager.Instance.GetProvider(Configuracoes);
+        var oldProtocol = ServicePointManager.SecurityProtocol;
+        
+        try
+        {
+            ServicePointManager.SecurityProtocol = Configuracoes.WebServices.Protocolos;
+            return provider.EnviarAsync(dps);
+        }
+        catch (Exception exception)
+        {
+            this.Log().Error("[Enviar]", exception);
+            throw;
+        }
+        finally
+        {
+            ServicePointManager.SecurityProtocol = oldProtocol;
+        }
     }
 
     /// <summary>
@@ -91,10 +88,23 @@ public sealed class OpenNFSeNacional
     /// <returns>Resposta do envio do evento.</returns>
     public Task<NFSeResponse<RespostaEnvioEvento>> EnviarEventoAsync(PedidoRegistroEvento evento)
     {
-        if(Webservice is null) 
-            throw new InvalidOperationException("Webservice não foi inicializado. Verifique as configurações.");
+        var provider = NFSeServiceManager.Instance.GetProvider(Configuracoes);
+        var oldProtocol = ServicePointManager.SecurityProtocol;
         
-        return Webservice.EnviarEventoAsync(evento);
+        try
+        {
+            ServicePointManager.SecurityProtocol = Configuracoes.WebServices.Protocolos;
+            return provider.EnviarEventoAsync(evento);
+        }
+        catch (Exception exception)
+        {
+            this.Log().Error("[EnviarEvento]", exception);
+            throw;
+        }
+        finally
+        {
+            ServicePointManager.SecurityProtocol = oldProtocol;
+        }
     }
 
     /// <summary>
@@ -104,10 +114,23 @@ public sealed class OpenNFSeNacional
     /// <returns>Dados da consulta dos DF-e.</returns>
     public Task<NFSeResponse<RespostaConsultaDFe>> ConsultaNsuAsync(int nsu)
     {
-        if(Webservice is null) 
-            throw new InvalidOperationException("Webservice não foi inicializado. Verifique as configurações.");
+        var provider = NFSeServiceManager.Instance.GetProvider(Configuracoes);
+        var oldProtocol = ServicePointManager.SecurityProtocol;
         
-        return Webservice.ConsultaNsuAsync(nsu);
+        try
+        {
+            ServicePointManager.SecurityProtocol = Configuracoes.WebServices.Protocolos;
+            return provider.ConsultaNsuAsync(nsu);
+        }
+        catch (Exception exception)
+        {
+            this.Log().Error("[ConsultaNsu]", exception);
+            throw;
+        }
+        finally
+        {
+            ServicePointManager.SecurityProtocol = oldProtocol;
+        }
     }
 
     /// <summary>
@@ -117,10 +140,23 @@ public sealed class OpenNFSeNacional
     /// <returns>Dados da consulta dos DF-e.</returns>
     public Task<NFSeResponse<RespostaConsultaDFe>> ConsultaChaveAsync(string chave)
     {
-        if(Webservice is null) 
-            throw new InvalidOperationException("Webservice não foi inicializado. Verifique as configurações.");
+        var provider = NFSeServiceManager.Instance.GetProvider(Configuracoes);
+        var oldProtocol = ServicePointManager.SecurityProtocol;
         
-        return Webservice.ConsultaChaveAsync(chave);
+        try
+        {
+            ServicePointManager.SecurityProtocol = Configuracoes.WebServices.Protocolos;
+            return provider.ConsultaChaveAsync(chave);
+        }
+        catch (Exception exception)
+        {
+            this.Log().Error("[ConsultaChave]", exception);
+            throw;
+        }
+        finally
+        {
+            ServicePointManager.SecurityProtocol = oldProtocol;
+        }
     }
 
     /// <summary>
@@ -130,10 +166,23 @@ public sealed class OpenNFSeNacional
     /// <returns>Array de bytes contendo o DANFSe.</returns>
     public Task<byte[]> DownloadDANFSeAsync(string chave)
     {
-        if(Webservice is null) 
-            throw new InvalidOperationException("Webservice não foi inicializado. Verifique as configurações.");
+        var provider = NFSeServiceManager.Instance.GetProvider(Configuracoes);
+        var oldProtocol = ServicePointManager.SecurityProtocol;
         
-        return Webservice.DownloadDANFSeAsync(chave);
+        try
+        {
+            ServicePointManager.SecurityProtocol = Configuracoes.WebServices.Protocolos;
+            return provider.DownloadDANFSeAsync(chave);
+        }
+        catch (Exception exception)
+        {
+            this.Log().Error("[DownloadDANFSe]", exception);
+            throw;
+        }
+        finally
+        {
+            ServicePointManager.SecurityProtocol = oldProtocol;
+        }
     }
 
     /// <summary>
@@ -143,10 +192,23 @@ public sealed class OpenNFSeNacional
     /// <returns>Dados da consulta da chave de acesso.</returns>
     public Task<NFSeResponse<RespostaConsultaChaveDps>> ConsultaChaveDpsAsync(string id)
     {
-        if(Webservice is null) 
-            throw new InvalidOperationException("Webservice não foi inicializado. Verifique as configurações.");
+        var provider = NFSeServiceManager.Instance.GetProvider(Configuracoes);
+        var oldProtocol = ServicePointManager.SecurityProtocol;
         
-        return Webservice.ConsultaChaveDpsAsync(id);
+        try
+        {
+            ServicePointManager.SecurityProtocol = Configuracoes.WebServices.Protocolos;
+            return provider.ConsultaChaveDpsAsync(id);
+        }
+        catch (Exception exception)
+        {
+            this.Log().Error("[ConsultaChaveDps]", exception);
+            throw;
+        }
+        finally
+        {
+            ServicePointManager.SecurityProtocol = oldProtocol;
+        }
     }
 
     /// <summary>
@@ -156,11 +218,24 @@ public sealed class OpenNFSeNacional
     /// <returns>True se a NFS-e existe, caso contrário, false.</returns>
     public Task<bool> ConsultaExisteDpsAsync(string id)
     {
-        if(Webservice is null) 
-            throw new InvalidOperationException("Webservice não foi inicializado. Verifique as configurações.");
+        var provider = NFSeServiceManager.Instance.GetProvider(Configuracoes);
+        var oldProtocol = ServicePointManager.SecurityProtocol;
         
-        return Webservice.ConsultaExisteDpsAsync(id);
+        try
+        {
+            ServicePointManager.SecurityProtocol = Configuracoes.WebServices.Protocolos;
+            return provider.ConsultaExisteDpsAsync(id);
+        }
+        catch (Exception exception)
+        {
+            this.Log().Error("[ConsultaExisteDps]", exception);
+            throw;
+        }
+        finally
+        {
+            ServicePointManager.SecurityProtocol = oldProtocol;
+        }
     }
 
-    #endregion
+    #endregion Methods
 }
