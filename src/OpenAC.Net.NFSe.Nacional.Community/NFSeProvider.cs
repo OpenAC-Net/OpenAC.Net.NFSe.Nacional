@@ -204,7 +204,7 @@ public enum NFSeProvider : sbyte
     /// <summary>
     /// Nenhum provedor selecionado.
     /// </summary>
-    Nenhum = -1,
+    Nacional = -1,
 
     /// <summary>
     /// Provedor Pronim.
