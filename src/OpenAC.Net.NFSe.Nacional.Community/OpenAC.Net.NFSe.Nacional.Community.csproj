@@ -47,5 +47,22 @@
         <PackageReference Include="OpenAC.Net.Core" Version="1.6.0" />
         <PackageReference Include="OpenAC.Net.DFe.Core" Version="1.6.0.2" />
     </ItemGroup>
+
+    <!-- Itens do pacote nuget -->
+    <ItemGroup>
+        <None Include="..\..\LICENSE">
+            <Pack>True</Pack>
+            <PackagePath>/</PackagePath>
+        </None>
+        <None Include="..\..\nuget.png">
+            <Pack>True</Pack>
+            <PackagePath />
+            <Link>nuget.png</Link>
+        </None>
+        <None Include="..\..\README.md">
+            <Pack>True</Pack>
+            <PackagePath>/</PackagePath>
+        </None>
+    </ItemGroup>
     
 </Project>
