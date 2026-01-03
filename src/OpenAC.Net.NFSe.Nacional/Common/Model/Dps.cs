@@ -29,6 +29,7 @@
 // <summary></summary>
 // ***********************************************************************
 
+using OpenAC.Net.Core.Extensions;
 using OpenAC.Net.DFe.Core.Attributes;
 using OpenAC.Net.DFe.Core.Common;
 using OpenAC.Net.DFe.Core.Document;
@@ -80,6 +81,17 @@ public sealed class Dps : DFeSignDocument<Dps>
     /// <param name="configuracao">Configuração da NFSe.</param>
     public void Assinar(ConfiguracaoNFSe configuracao)
     {
+        if (Informacoes.Id.IsEmpty())
+        {
+            var tipo = Informacoes.Prestador.CNPJ.IsEmpty() ? "1" : "2";
+            var documneto = Informacoes.Prestador.CPF.IsEmpty()
+                ? Informacoes.Prestador.CNPJ
+                : $"000{Informacoes.Prestador.CPF}";
+
+            Informacoes.Id =
+                $"DPS{Informacoes.LocalidadeEmitente:D7}{tipo}{documneto}{Informacoes.Serie:D5}{Informacoes.NumeroDps:D15}";
+        }
+
         var options = DFeSaveOptions.DisableFormatting;
         if (configuracao.Geral.RetirarAcentos)
             options |= DFeSaveOptions.RemoveAccents;
