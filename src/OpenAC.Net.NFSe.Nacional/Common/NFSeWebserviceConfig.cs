@@ -31,14 +31,47 @@
 // </summary>
 // ***********************************************************************
 
+using System;
+using OpenAC.Net.Core;
 using OpenAC.Net.DFe.Core.Common;
+using OpenAC.Net.NFSe.Nacional.Webservice;
 
-namespace OpenAC.Net.NFSe.Nacional.Common
+namespace OpenAC.Net.NFSe.Nacional.Common;
+
+/// <summary>
+/// Representa as configurações para os webservices da NFSe.
+/// </summary>
+public sealed class NFSeWebserviceConfig : DFeWebserviceConfigBase
 {
     /// <summary>
-    /// Representa as configurações para os webservices da NFSe.
+    /// Uf do webservice em uso
     /// </summary>
-    public sealed class NFSeWebserviceConfig : DFeWebserviceConfigBase
+    /// <value>The uf.</value>
+    public string? Municipio { get; private set; }
+
+    /// <summary>
+    /// Provedor do webservice NFSe em uso.
+    /// </summary>
+    /// <value>Provedor atual. Padrão: NFSeProvider.Nacional.</value>
+    public NFSeProvider Provider { get; private set; } = NFSeProvider.Nacional;
+
+    /// <summary>
+    /// Codigo do municipio do Webservices em uso
+    /// </summary>
+    /// <value>The uf codigo.</value>
+    public int CodigoMunicipio
     {
+        get;
+        set
+        {
+            if (field == value) return;
+
+            var municipio = NFSeServiceManager.Instance.Services[value];
+            Guard.Against<ArgumentException>(municipio == null, "Município não cadastrado.");
+
+            field = value;
+            Municipio = municipio?.Nome ?? string.Empty;
+            Provider = municipio?.Provedor ?? NFSeProvider.Nacional;
+        }
     }
 }

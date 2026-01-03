@@ -1,6 +1,6 @@
 using System.ComponentModel;
 
-namespace OpenAC.Net.NFSe.Nacional.Community;
+namespace OpenAC.Net.NFSe.Nacional.Webservice;
 
 /// <summary>
 /// Enumeração dos provedores de NFSe suportados.

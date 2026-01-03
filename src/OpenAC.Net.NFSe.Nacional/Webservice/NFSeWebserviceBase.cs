@@ -51,9 +51,11 @@ public abstract class NFSeWebserviceBase : IOpenLog
     /// Inicializa uma nova instância da classe <see cref="NFSeWebserviceBase"/>.
     /// </summary>
     /// <param name="configuracaoNFSe">Configuração da NFSe.</param>
-    protected NFSeWebserviceBase(ConfiguracaoNFSe configuracaoNFSe)
+    /// <param name="serviceInfo"></param>
+    protected NFSeWebserviceBase(ConfiguracaoNFSe configuracaoNFSe, NFSeServiceInfo serviceInfo)
     {
         Configuracao = configuracaoNFSe;
+        ServiceInfo = serviceInfo;
     }
 
     #endregion Constructors
@@ -64,6 +66,11 @@ public abstract class NFSeWebserviceBase : IOpenLog
     /// Configuração da NFSe utilizada pelo webservice.
     /// </summary>
     protected ConfiguracaoNFSe Configuracao { get; }
+
+    /// <summary>
+    /// Informações do serviço (endpoints, timeout e metadados) utilizadas pelo webservice.
+    /// </summary>
+    public NFSeServiceInfo ServiceInfo { get; }
 
     #endregion Properties
     
