@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using OpenAC.Net.DFe.Core.Collection;
 using OpenAC.Net.DFe.Core.Common;
 using OpenAC.Net.DFe.Core.Service;
 using OpenAC.Net.NFSe.Nacional.Common.Types;
@@ -31,29 +30,30 @@ public sealed class NFSeServiceManager : DFeServices<TipoServico>
         {
             Tipo = DFeTipoServico.NFSe,
             TipoEmissao = DFeTipoEmissao.Normal,
-            Ambientes = new DFeCollection<DFeServiceEnvironment<TipoServico>>
-            {
-                new()
+            Ambientes =
+            [
+                new DFeServiceEnvironment<TipoServico>
                 {
                     Ambiente = DFeTipoAmbiente.Homologacao,
                     UF = DFeSiglaUF.AN,
                     Enderecos = new Dictionary<TipoServico, string>
                     {
-                        {TipoServico.Adn, "https://adn.producaorestrita.nfse.gov.br/contribuintes"},
-                        {TipoServico.Sefin, "https://sefin.producaorestrita.nfse.gov.br/SefinNacional"}
+                        { TipoServico.Adn, "https://adn.producaorestrita.nfse.gov.br/contribuintes" },
+                        { TipoServico.Sefin, "https://sefin.producaorestrita.nfse.gov.br/SefinNacional" }
                     }
                 },
-                new()
+
+                new DFeServiceEnvironment<TipoServico>
                 {
                     Ambiente = DFeTipoAmbiente.Producao,
                     UF = DFeSiglaUF.AN,
                     Enderecos = new Dictionary<TipoServico, string>
                     {
-                        {TipoServico.Adn, "https://adn.nfse.gov.br/contribuintes"},
-                        {TipoServico.Sefin, "https://sefin.nfse.gov.br/sefinnacional"}
+                        { TipoServico.Adn, "https://adn.nfse.gov.br/contribuintes" },
+                        { TipoServico.Sefin, "https://sefin.nfse.gov.br/sefinnacional" }
                     }
                 }
-            }
+            ]
         });
     }
 
