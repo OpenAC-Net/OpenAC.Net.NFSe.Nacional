@@ -1,4 +1,4 @@
-namespace OpenAC.Net.NFSe.Nacional.Webservice;
+namespace OpenAC.Net.NFSe.Nacional.Common.Types;
 
 /// <summary>
 /// Tipos de URL utilizadas pelos webservices da NFSe Nacional.
