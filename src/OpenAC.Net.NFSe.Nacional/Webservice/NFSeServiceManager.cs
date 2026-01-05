@@ -42,9 +42,16 @@ public sealed class NFSeServiceManager
                     { VersaoNFSe.Ve100, typeof(NacionalWebservice) },
                     { VersaoNFSe.Ve101, typeof(NacionalWebservice) }
                 }
+            },
+            {
+                NFSeProvider.SimplISS, new Dictionary<VersaoNFSe, Type>
+                {
+                    { VersaoNFSe.Ve100, typeof(SimplISS.SimplISSWebservice) },
+                    { VersaoNFSe.Ve101, typeof(SimplISS.SimplISSWebservice) }
+                }
             }
         };
-        
+
         Load();
     }
 
@@ -110,7 +117,7 @@ public sealed class NFSeServiceManager
                     m[DFeTipoAmbiente.Producao].Enderecos.Add(value, string.Empty);
             }
         }
-        
+
         Services.Save(stream, DFeSaveOptions.None);
     }
 
@@ -164,7 +171,7 @@ public sealed class NFSeServiceManager
     {
         var serviceInfo = Services[config.WebServices.CodigoMunicipio];
         if (serviceInfo == null) throw new OpenException("Município não cadastrado no OpenNFSe!");
-        
+
         // ReSharper disable once PossibleNullReferenceException
         var providerType = Providers[serviceInfo.Provider][config.Geral.Versao];
         if (providerType == null) throw new OpenException("Provedor não encontrado!");

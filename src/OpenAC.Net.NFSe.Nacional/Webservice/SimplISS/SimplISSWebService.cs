@@ -56,13 +56,6 @@ public class SimplISSWebservice : NacionalWebservice
     {
     }
 
-    private string GetBaseUrl()
-    {
-        return Configuracao.WebServices.Ambiente == DFeTipoAmbiente.Producao
-            ? "https://nfsedoiscorregos.simplissweb.com.br"
-            : "https://producaorestrita.simplissweb.com.br";
-    }
-
     public override async Task<NFSeResponse<RespostaEnvioDps>> EnviarAsync(Dps dps)
     {
         dps.Assinar(Configuracao);
@@ -82,7 +75,7 @@ public class SimplISSWebservice : NacionalWebservice
 
         GravarArquivoEmDisco(strEnvio, $"Enviar-{dps.Informacoes.NumeroDps:000000}-env.json", documento);
 
-        string url = GetBaseUrl();
+        string url = ServiceInfo[Configuracao.WebServices.Ambiente][TipoUrl.Enviar] ?? throw new InvalidOperationException("URL de envio não encontrada na configuração do serviço.");
         HttpResponseMessage httpResponse = await SendAsync(content, HttpMethod.Post, $"{url}/nfse");
 
         string strResponse = await httpResponse.Content.ReadAsStringAsync();
@@ -116,7 +109,7 @@ public class SimplISSWebservice : NacionalWebservice
 
         GravarArquivoEmDisco(strEnvio, $"Evento-{evento.Informacoes.ChNFSe}{evento.Informacoes.Evento}-env.json", documento);
 
-        string url = GetBaseUrl();
+        string url = ServiceInfo[Configuracao.WebServices.Ambiente][TipoUrl.EnviarEvento] ?? throw new InvalidOperationException("URL de envio não encontrada na configuração do serviço.");
         HttpResponseMessage httpResponse = await SendAsync(content, HttpMethod.Post, $"{url}/nfse/{evento.Informacoes.ChNFSe}/eventos");
 
         string strResponse = await httpResponse.Content.ReadAsStringAsync();
@@ -135,7 +128,7 @@ public class SimplISSWebservice : NacionalWebservice
     {
         this.Log().Debug($"SimplISS: [ConsultaChaveDps][Envio] - {id}");
 
-        string url = GetBaseUrl();
+        string url = ServiceInfo[Configuracao.WebServices.Ambiente][TipoUrl.ConsultarChave] ?? throw new InvalidOperationException("URL de envio não encontrada na configuração do serviço.");
         HttpResponseMessage httpResponse = await SendAsync(null, HttpMethod.Get, $"{url}/nfse/{id}");
 
         string strResponse = await httpResponse.Content.ReadAsStringAsync();
