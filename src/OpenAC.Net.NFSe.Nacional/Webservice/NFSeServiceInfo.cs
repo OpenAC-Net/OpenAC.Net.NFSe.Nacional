@@ -1,9 +1,9 @@
-using System;
-using System.Linq;
 using OpenAC.Net.DFe.Core.Attributes;
 using OpenAC.Net.DFe.Core.Collection;
 using OpenAC.Net.DFe.Core.Common;
 using OpenAC.Net.DFe.Core.Serializer;
+using System;
+using System.Linq;
 
 namespace OpenAC.Net.NFSe.Nacional.Webservice;
 
@@ -52,5 +52,6 @@ public class NFSeServiceInfo
     public DFeSiglaUF UF { get; set; }
     
     [DFeCollection("Ambiente")]
+    [DFeItem(typeof(NFSeEnvironment), "ambiente")]
     public DFeCollection<NFSeEnvironment> Ambientes { get; set; } = new();
 }

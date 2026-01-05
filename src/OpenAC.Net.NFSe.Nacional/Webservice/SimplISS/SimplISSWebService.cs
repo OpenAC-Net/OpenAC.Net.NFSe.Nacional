@@ -30,7 +30,6 @@
 // ***********************************************************************
 
 using OpenAC.Net.Core.Logging;
-using OpenAC.Net.DFe.Core.Common;
 using OpenAC.Net.NFSe.Nacional.Common;
 using OpenAC.Net.NFSe.Nacional.Common.Model;
 using OpenAC.Net.NFSe.Nacional.Common.Types;
@@ -124,22 +123,4 @@ public class SimplISSWebservice : NacionalWebservice
         return NFSeResponse<RespostaEnvioEvento>.Create(evento.Xml, strEnvio, jsonNormalizado, httpResponse.IsSuccessStatusCode);
     }
 
-    public override async Task<NFSeResponse<RespostaConsultaChaveDps>> ConsultaChaveDpsAsync(string id)
-    {
-        this.Log().Debug($"SimplISS: [ConsultaChaveDps][Envio] - {id}");
-
-        string url = ServiceInfo[Configuracao.WebServices.Ambiente][TipoUrl.ConsultarChave] ?? throw new InvalidOperationException("URL de envio não encontrada na configuração do serviço.");
-        HttpResponseMessage httpResponse = await SendAsync(null, HttpMethod.Get, $"{url}/nfse/{id}");
-
-        string strResponse = await httpResponse.Content.ReadAsStringAsync();
-
-        this.Log().Debug($"SimplISS: [ConsultaChaveDps][Resposta] - {strResponse}");
-
-        GravarArquivoEmDisco(strResponse, $"ConsultaChaveDps-{id}-resp.json", "");
-
-        object? obj = JsonSerializer.Deserialize<object>(strResponse, JsonOptions);
-        string jsonNormalizado = JsonSerializer.Serialize(obj);
-
-        return NFSeResponse<RespostaConsultaChaveDps>.Create("", "", jsonNormalizado, httpResponse.IsSuccessStatusCode);
-    }
 }
