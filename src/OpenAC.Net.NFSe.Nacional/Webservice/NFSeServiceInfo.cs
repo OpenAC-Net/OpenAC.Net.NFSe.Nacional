@@ -50,13 +50,6 @@ public class NFSeServiceInfo
     /// <value>The uf.</value>
     [DFeElement(TipoCampo.Enum, "UF")]
     public DFeSiglaUF UF { get; set; }
-
-    /// <summary>
-    /// Define ou retorna o provedor de NFSe.
-    /// </summary>
-    /// <value>The provedor.</value>
-    [DFeElement(TipoCampo.Enum, "Provedor")]
-    public NFSeProvider Provedor { get; set; }
     
     [DFeCollection("Ambiente")]
     public DFeCollection<NFSeEnvironment> Ambientes { get; set; } = new();
