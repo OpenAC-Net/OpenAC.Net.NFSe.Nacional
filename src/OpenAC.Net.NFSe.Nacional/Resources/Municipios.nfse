@@ -1,0 +1,63 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<NFSeServices xmlns="https://www.openac.net.br/">
+  <Services>
+    <serviceInfo Id="-1">
+      <Tipo>Nacional</Tipo>
+      <Nome>NFSe Nacional</Nome>
+      <UF>EX</UF>
+      <Ambiente>
+        <ambiente Tipo="2">
+          <Enderecos>
+            <Endereco Tipo="Enviar">https://sefin.producaorestrita.nfse.gov.br/SefinNacional</Endereco>
+            <Endereco Tipo="EnviarEvento">https://sefin.producaorestrita.nfse.gov.br/SefinNacional</Endereco>
+            <Endereco Tipo="ConsultarNsu">https://adn.producaorestrita.nfse.gov.br/contribuintes</Endereco>
+            <Endereco Tipo="ConsultarChave">https://adn.producaorestrita.nfse.gov.br/contribuintes</Endereco>
+            <Endereco Tipo="DownloadDanfse">https://sefin.producaorestrita.nfse.gov.br/SefinNacional</Endereco>
+            <Endereco Tipo="ConsultarChaveDps">https://sefin.producaorestrita.nfse.gov.br/SefinNacional</Endereco>
+            <Endereco Tipo="ConsultaExisteDps">https://sefin.producaorestrita.nfse.gov.br/SefinNacional</Endereco>
+          </Enderecos>
+        </ambiente>
+        <ambiente Tipo="1">
+          <Enderecos>
+            <Endereco Tipo="Enviar">https://sefin.nfse.gov.br/sefinnacional</Endereco>
+            <Endereco Tipo="EnviarEvento">https://sefin.nfse.gov.br/sefinnacional</Endereco>
+            <Endereco Tipo="ConsultarNsu">https://adn.nfse.gov.br/contribuintes</Endereco>
+            <Endereco Tipo="ConsultarChave">https://adn.nfse.gov.br/contribuintes</Endereco>
+            <Endereco Tipo="DownloadDanfse">https://sefin.nfse.gov.br/sefinnacional</Endereco>
+            <Endereco Tipo="ConsultarChaveDps">https://sefin.nfse.gov.br/sefinnacional</Endereco>
+            <Endereco Tipo="ConsultaExisteDps">https://sefin.nfse.gov.br/sefinnacional</Endereco>
+          </Enderecos>
+        </ambiente>
+      </Ambiente>
+    </serviceInfo>
+    <serviceInfo Id="3514106">
+      <Tipo>SimplISS</Tipo>
+      <Nome>DOIS CÓRREGOS</Nome>
+      <UF>SP</UF>
+      <Ambiente>
+        <ambiente Tipo="2">
+          <Enderecos>
+            <Endereco Tipo="Enviar">https://producaorestrita.simplissweb.com.br</Endereco>
+            <Endereco Tipo="EnviarEvento">https://producaorestrita.simplissweb.com.br</Endereco>
+            <Endereco Tipo="ConsultarNsu">https://adn.producaorestrita.nfse.gov.br/contribuintes</Endereco>
+            <Endereco Tipo="ConsultarChave">https://adn.producaorestrita.nfse.gov.br/contribuintes</Endereco>
+            <Endereco Tipo="DownloadDanfse">https://sefin.producaorestrita.nfse.gov.br/SefinNacional</Endereco>
+            <Endereco Tipo="ConsultarChaveDps">https://sefin.producaorestrita.nfse.gov.br/SefinNacional</Endereco>
+            <Endereco Tipo="ConsultaExisteDps">https://sefin.producaorestrita.nfse.gov.br/SefinNacional</Endereco>
+          </Enderecos>
+        </ambiente>
+        <ambiente Tipo="1">
+          <Enderecos>
+            <Endereco Tipo="Enviar">https://nfsedoiscorregos.simplissweb.com.br</Endereco>
+            <Endereco Tipo="EnviarEvento">https://nfsedoiscorregos.simplissweb.com.br</Endereco>
+            <Endereco Tipo="ConsultarNsu">https://adn.nfse.gov.br/contribuintes</Endereco>
+            <Endereco Tipo="ConsultarChave">https://adn.nfse.gov.br/contribuintes</Endereco>
+            <Endereco Tipo="DownloadDanfse">https://sefin.nfse.gov.br/sefinnacional</Endereco>
+            <Endereco Tipo="ConsultarChaveDps">https://sefin.nfse.gov.br/sefinnacional</Endereco>
+            <Endereco Tipo="ConsultaExisteDps">https://sefin.nfse.gov.br/sefinnacional</Endereco>
+          </Enderecos>
+        </ambiente>
+      </Ambiente>
+    </serviceInfo>
+  </Services>
+</NFSeServices>
