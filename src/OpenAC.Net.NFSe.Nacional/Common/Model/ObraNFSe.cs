@@ -48,14 +48,14 @@ public sealed class ObraNFSe
     /// <summary>
     /// Código da obra.
     /// </summary>
-    [DFeElement(TipoCampo.Str, "cObra", Min = 1, Max = 30, Ocorrencia = Ocorrencia.Obrigatoria)]
-    public string CodObra { get; set; } = string.Empty;
+    [DFeElement(TipoCampo.Str, "cObra", Min = 1, Max = 30, Ocorrencia = Ocorrencia.NaoObrigatoria)]
+    public string? CodObra { get; set; } = string.Empty;
     
     /// <summary>
     /// C�digo CIB (Código do Imóvel na Prefeitura).
     /// </summary>
-    [DFeElement(TipoCampo.Str, "cCIB",  Min = 8, Max = 8, Ocorrencia = Ocorrencia.Obrigatoria)]
-    public string CodigoCIB { get; set; }
+    [DFeElement(TipoCampo.Str, "cCIB",  Min = 8, Max = 8, Ocorrencia = Ocorrencia.NaoObrigatoria)]
+    public string? CodigoCIB { get; set; }
 
     /// <summary>
     /// Endereço da obra.
