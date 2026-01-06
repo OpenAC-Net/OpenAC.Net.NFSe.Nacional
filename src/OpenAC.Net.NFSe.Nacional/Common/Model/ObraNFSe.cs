@@ -60,6 +60,6 @@ public sealed class ObraNFSe
     /// <summary>
     /// Endereço da obra.
     /// </summary>
-    [DFeElement("end", Ocorrencia = Ocorrencia.Obrigatoria)]
-    public EnderecoSimplesNFSe Endereco { get; set; } = new();
+    [DFeElement("end", Ocorrencia = Ocorrencia.NaoObrigatoria)]
+    public EnderecoSimplesNFSe? Endereco { get; set; }
 }
