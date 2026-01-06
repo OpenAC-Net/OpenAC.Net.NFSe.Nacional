@@ -66,7 +66,6 @@
         </PackageReference>
         <PackageReference Include="OpenAC.Net.Core" Version="1.6.0" />
         <PackageReference Include="OpenAC.Net.DFe.Core" Version="1.6.0.2" />
-        <PackageReference Include="System.Formats.Asn1" Version="8.0.2" />
         <PackageReference Include="System.Net.Http.Json" Version="10.0.1" />
     </ItemGroup>    
 
