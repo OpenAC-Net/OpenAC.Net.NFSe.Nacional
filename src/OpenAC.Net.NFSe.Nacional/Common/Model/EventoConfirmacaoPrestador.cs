@@ -43,5 +43,5 @@ public sealed class EventoConfirmacaoPrestador : IEventoNFSe
     /// Descrição do evento. Valor fixo: "Confirmação do Prestador".
     /// </summary>
     [DFeElement(TipoCampo.Str, "xDesc", Ocorrencia = Ocorrencia.Obrigatoria)]
-    public string Descricao { get; set; } = "Confirmação do Prestador";
+    public string Descricao { get; set; } = "Manifestação de NFS-e - Confirmação do Prestador";
 }
