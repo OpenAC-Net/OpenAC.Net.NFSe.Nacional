@@ -37,17 +37,12 @@ namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 /// <summary>
 /// Representa o evento de rejeição do prestador no contexto da NFSe.
 /// </summary>
-public sealed class EventoRejeicaoPrestador : IEventoNFSe
+public sealed class EventoRejeicaoPrestador : InfoRejeicao, IEventoNFSe
 {
     /// <summary>
     /// Descrição do evento.
     /// </summary>
     [DFeElement(TipoCampo.Str, "xDesc", Ocorrencia = Ocorrencia.Obrigatoria)]
     public string Descricao { get; set; } = "Manifestação de NFS-e - Rejeição do Prestador";
-
-    /// <summary>
-    /// Informações detalhadas da rejeição.
-    /// </summary>
-    [DFeElement("infRej", Ocorrencia = Ocorrencia.Obrigatoria)]
-    public InfoRejeicao Informacoes { get; set; } = new();
+    
 }

@@ -38,7 +38,7 @@ namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 /// <summary>
 /// Representa informações de rejeição de um processo.
 /// </summary>
-public sealed class InfoRejeicao
+public class InfoRejeicao
 {
     /// <summary>
     /// Código do motivo da rejeição.
