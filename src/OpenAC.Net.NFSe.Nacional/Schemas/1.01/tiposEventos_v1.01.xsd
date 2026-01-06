@@ -100,7 +100,7 @@
       </xs:choice>
       <xs:element name="chNFSe" type="TSChaveNFSe">
         <xs:annotation>
-          <xs:documentation>Identificador da NFS-e à qual o evento será vinculado</xs:documentation>
+          <xs:documentation>Chave de Acesso da NFS-e vinculada ao Evento</xs:documentation>
         </xs:annotation>
       </xs:element>
       <xs:choice>

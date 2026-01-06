@@ -29,7 +29,10 @@
 // <summary></summary>
 // ***********************************************************************
 
+using System;
+using System.Net;
 using System.Threading.Tasks;
+using OpenAC.Net.Core.Logging;
 using OpenAC.Net.NFSe.Nacional.Common;
 using OpenAC.Net.NFSe.Nacional.Common.Model;
 using OpenAC.Net.NFSe.Nacional.Webservice;
@@ -39,26 +42,8 @@ namespace OpenAC.Net.NFSe.Nacional;
 /// <summary>
 /// Classe principal para integração com a NFS-e Nacional.
 /// </summary>
-public sealed class OpenNFSeNacional
+public sealed class OpenNFSeNacional : IOpenLog
 {
-    #region Fields
-
-    private readonly NFSeWebservice webservice;
-
-    #endregion Fields
-
-    #region Constructors
-
-    /// <summary>
-    /// Inicializa uma nova instância de <see cref="OpenNFSeNacional"/>.
-    /// </summary>
-    public OpenNFSeNacional()
-    {
-        webservice = new NFSeWebservice(Configuracoes);
-    }
-
-    #endregion Constructors
-
     #region Properties
 
     /// <summary>
@@ -75,49 +60,182 @@ public sealed class OpenNFSeNacional
     /// </summary>
     /// <param name="dps">Objeto <see cref="Dps"/> a ser enviado.</param>
     /// <returns>Resposta do envio contendo informações da NFS-e gerada.</returns>
-    public Task<NFSeResponse<RespostaEnvioDps>> EnviarAsync(Dps dps) => webservice.EnviarAsync(dps);
+    public Task<NFSeResponse<RespostaEnvioDps>> EnviarAsync(Dps dps)
+    {
+        var provider = NFSeServiceManager.Instance.GetProvider(Configuracoes);
+        var oldProtocol = ServicePointManager.SecurityProtocol;
+        
+        try
+        {
+            ServicePointManager.SecurityProtocol = Configuracoes.WebServices.Protocolos;
+            return provider.EnviarAsync(dps);
+        }
+        catch (Exception exception)
+        {
+            this.Log().Error("[Enviar]", exception);
+            throw;
+        }
+        finally
+        {
+            ServicePointManager.SecurityProtocol = oldProtocol;
+        }
+    }
 
     /// <summary>
     /// Recepciona o Pedido de Registro de Evento e gera eventos de NFS-e, crédito, débito e apuração.
     /// </summary>
     /// <param name="evento">Objeto <see cref="PedidoRegistroEvento"/> representando o evento.</param>
     /// <returns>Resposta do envio do evento.</returns>
-    public Task<NFSeResponse<RespostaEnvioEvento>> EnviarEventoAsync(PedidoRegistroEvento evento) => webservice.EnviarEventoAsync(evento);
+    public Task<NFSeResponse<RespostaEnvioEvento>> EnviarEventoAsync(PedidoRegistroEvento evento)
+    {
+        var provider = NFSeServiceManager.Instance.GetProvider(Configuracoes);
+        var oldProtocol = ServicePointManager.SecurityProtocol;
+        
+        try
+        {
+            ServicePointManager.SecurityProtocol = Configuracoes.WebServices.Protocolos;
+            return provider.EnviarEventoAsync(evento);
+        }
+        catch (Exception exception)
+        {
+            this.Log().Error("[EnviarEvento]", exception);
+            throw;
+        }
+        finally
+        {
+            ServicePointManager.SecurityProtocol = oldProtocol;
+        }
+    }
 
     /// <summary>
     /// Distribui os DF-e para contribuintes relacionados à NFS-e.
     /// </summary>
     /// <param name="nsu">Número do NSU.</param>
     /// <returns>Dados da consulta dos DF-e.</returns>
-    public Task<NFSeResponse<RespostaConsultaDFe>> ConsultaNsuAsync(int nsu) => webservice.ConsultaNsuAsync(nsu);
+    public Task<NFSeResponse<RespostaConsultaDFe>> ConsultaNsuAsync(int nsu)
+    {
+        var provider = NFSeServiceManager.Instance.GetProvider(Configuracoes);
+        var oldProtocol = ServicePointManager.SecurityProtocol;
+        
+        try
+        {
+            ServicePointManager.SecurityProtocol = Configuracoes.WebServices.Protocolos;
+            return provider.ConsultaNsuAsync(nsu);
+        }
+        catch (Exception exception)
+        {
+            this.Log().Error("[ConsultaNsu]", exception);
+            throw;
+        }
+        finally
+        {
+            ServicePointManager.SecurityProtocol = oldProtocol;
+        }
+    }
 
     /// <summary>
     /// Distribui os DF-e vinculados à chave de acesso informada.
     /// </summary>
     /// <param name="chave">Chave de acesso da NFS-e.</param>
     /// <returns>Dados da consulta dos DF-e.</returns>
-    public Task<NFSeResponse<RespostaConsultaDFe>> ConsultaChaveAsync(string chave) => webservice.ConsultaChaveAsync(chave);
+    public Task<NFSeResponse<RespostaConsultaDFe>> ConsultaChaveAsync(string chave)
+    {
+        var provider = NFSeServiceManager.Instance.GetProvider(Configuracoes);
+        var oldProtocol = ServicePointManager.SecurityProtocol;
+        
+        try
+        {
+            ServicePointManager.SecurityProtocol = Configuracoes.WebServices.Protocolos;
+            return provider.ConsultaChaveAsync(chave);
+        }
+        catch (Exception exception)
+        {
+            this.Log().Error("[ConsultaChave]", exception);
+            throw;
+        }
+        finally
+        {
+            ServicePointManager.SecurityProtocol = oldProtocol;
+        }
+    }
 
     /// <summary>
     /// Retorna o DANFSe de uma NFS-e a partir de sua chave de acesso.
     /// </summary>
     /// <param name="chave">Chave de acesso da NFS-e.</param>
     /// <returns>Array de bytes contendo o DANFSe.</returns>
-    public Task<byte[]> DownloadDANFSeAsync(string chave) => webservice.DownloadDANFSeAsync(chave);
+    public Task<byte[]> DownloadDANFSeAsync(string chave)
+    {
+        var provider = NFSeServiceManager.Instance.GetProvider(Configuracoes);
+        var oldProtocol = ServicePointManager.SecurityProtocol;
+        
+        try
+        {
+            ServicePointManager.SecurityProtocol = Configuracoes.WebServices.Protocolos;
+            return provider.DownloadDANFSeAsync(chave);
+        }
+        catch (Exception exception)
+        {
+            this.Log().Error("[DownloadDANFSe]", exception);
+            throw;
+        }
+        finally
+        {
+            ServicePointManager.SecurityProtocol = oldProtocol;
+        }
+    }
 
     /// <summary>
     /// Retorna a chave de acesso da NFS-e a partir do identificador do DPS.
     /// </summary>
     /// <param name="id">Identificação da DPS.</param>
     /// <returns>Dados da consulta da chave de acesso.</returns>
-    public Task<NFSeResponse<RespostaConsultaChaveDps>> ConsultaChaveDpsAsync(string id) => webservice.ConsultaChaveDpsAsync(id);
+    public Task<NFSeResponse<RespostaConsultaChaveDps>> ConsultaChaveDpsAsync(string id)
+    {
+        var provider = NFSeServiceManager.Instance.GetProvider(Configuracoes);
+        var oldProtocol = ServicePointManager.SecurityProtocol;
+        
+        try
+        {
+            ServicePointManager.SecurityProtocol = Configuracoes.WebServices.Protocolos;
+            return provider.ConsultaChaveDpsAsync(id);
+        }
+        catch (Exception exception)
+        {
+            this.Log().Error("[ConsultaChaveDps]", exception);
+            throw;
+        }
+        finally
+        {
+            ServicePointManager.SecurityProtocol = oldProtocol;
+        }
+    }
 
     /// <summary>
     /// Verifica se uma NFS-e foi emitida a partir do Id do DPS.
     /// </summary>
     /// <param name="id">Identificação da DPS.</param>
     /// <returns>True se a NFS-e existe, caso contrário, false.</returns>
-    public Task<bool> ConsultaExisteDpsAsync(string id) => webservice.ConsultaExisteDpsAsync(id);
+    public Task<bool> ConsultaExisteDpsAsync(string id)
+    {
+        var provider = NFSeServiceManager.Instance.GetProvider(Configuracoes);
+        var oldProtocol = ServicePointManager.SecurityProtocol;
+        
+        try
+        {
+            ServicePointManager.SecurityProtocol = Configuracoes.WebServices.Protocolos;
+            return provider.ConsultaExisteDpsAsync(id);
+        }
+        catch (Exception exception)
+        {
+            this.Log().Error("[ConsultaExisteDps]", exception);
+            throw;
+        }
+        finally
+        {
+            ServicePointManager.SecurityProtocol = oldProtocol;
+        }
+    }
 
-    #endregion
+    #endregion Methods
 }
