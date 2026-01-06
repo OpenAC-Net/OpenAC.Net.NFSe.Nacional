@@ -82,12 +82,8 @@ public class SimplISSWebservice : NacionalWebservice
         this.Log().Debug($"SimplISS: [Enviar][Resposta] - {strResponse}");
 
         GravarArquivoEmDisco(strResponse, $"Enviar-{dps.Informacoes.NumeroDps:000000}-resp.json", documento);
-
-        // Reserializar com case insensitive para normalizar o JSON
-        object? obj = JsonSerializer.Deserialize<object>(strResponse, JsonOptions);
-        string jsonNormalizado = JsonSerializer.Serialize(obj, JsonOptions);
-
-        return NFSeResponse<RespostaEnvioDps>.Create(dps.Xml, strEnvio, jsonNormalizado, httpResponse.IsSuccessStatusCode);
+  
+        return NFSeResponse<RespostaEnvioDps>.Create(dps.Xml, strEnvio, strResponse, httpResponse.IsSuccessStatusCode, JsonOptions);
     }
 
     public override async Task<NFSeResponse<RespostaEnvioEvento>> EnviarEventoAsync(PedidoRegistroEvento evento)
@@ -117,10 +113,7 @@ public class SimplISSWebservice : NacionalWebservice
 
         GravarArquivoEmDisco(strResponse, $"Evento-{evento.Informacoes.ChNFSe}{evento.Informacoes.Evento}-resp.json", documento);
 
-        object? obj = JsonSerializer.Deserialize<object>(strResponse, JsonOptions);
-        string jsonNormalizado = JsonSerializer.Serialize(obj);
-
-        return NFSeResponse<RespostaEnvioEvento>.Create(evento.Xml, strEnvio, jsonNormalizado, httpResponse.IsSuccessStatusCode);
+        return NFSeResponse<RespostaEnvioEvento>.Create(evento.Xml, strEnvio, strResponse, httpResponse.IsSuccessStatusCode, JsonOptions);
     }
 
 }
