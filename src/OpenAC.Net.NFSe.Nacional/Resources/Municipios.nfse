@@ -12,7 +12,7 @@
             <Endereco Tipo="EnviarEvento">https://sefin.producaorestrita.nfse.gov.br/SefinNacional</Endereco>
             <Endereco Tipo="ConsultarNsu">https://adn.producaorestrita.nfse.gov.br/contribuintes</Endereco>
             <Endereco Tipo="ConsultarChave">https://adn.producaorestrita.nfse.gov.br/contribuintes</Endereco>
-            <Endereco Tipo="DownloadDanfse">https://sefin.producaorestrita.nfse.gov.br/SefinNacional</Endereco>
+			<Endereco Tipo="DownloadDanfse">https://adn.producaorestrita.nfse.gov.br</Endereco>
             <Endereco Tipo="ConsultarChaveDps">https://sefin.producaorestrita.nfse.gov.br/SefinNacional</Endereco>
             <Endereco Tipo="ConsultaExisteDps">https://sefin.producaorestrita.nfse.gov.br/SefinNacional</Endereco>
           </Enderecos>
@@ -23,7 +23,7 @@
             <Endereco Tipo="EnviarEvento">https://sefin.nfse.gov.br/sefinnacional</Endereco>
             <Endereco Tipo="ConsultarNsu">https://adn.nfse.gov.br/contribuintes</Endereco>
             <Endereco Tipo="ConsultarChave">https://adn.nfse.gov.br/contribuintes</Endereco>
-            <Endereco Tipo="DownloadDanfse">https://sefin.nfse.gov.br/sefinnacional</Endereco>
+            <Endereco Tipo="DownloadDanfse">https://adn.nfse.gov.br</Endereco>
             <Endereco Tipo="ConsultarChaveDps">https://sefin.nfse.gov.br/sefinnacional</Endereco>
             <Endereco Tipo="ConsultaExisteDps">https://sefin.nfse.gov.br/sefinnacional</Endereco>
           </Enderecos>
@@ -41,7 +41,7 @@
             <Endereco Tipo="EnviarEvento">https://producaorestrita.simplissweb.com.br</Endereco>
             <Endereco Tipo="ConsultarNsu">https://adn.producaorestrita.nfse.gov.br/contribuintes</Endereco>
             <Endereco Tipo="ConsultarChave">https://adn.producaorestrita.nfse.gov.br/contribuintes</Endereco>
-            <Endereco Tipo="DownloadDanfse">https://sefin.producaorestrita.nfse.gov.br/SefinNacional</Endereco>
+			<Endereco Tipo="DownloadDanfse">https://adn.producaorestrita.nfse.gov.br</Endereco>
             <Endereco Tipo="ConsultarChaveDps">https://sefin.producaorestrita.nfse.gov.br/SefinNacional</Endereco>
             <Endereco Tipo="ConsultaExisteDps">https://sefin.producaorestrita.nfse.gov.br/SefinNacional</Endereco>
           </Enderecos>
@@ -52,7 +52,7 @@
             <Endereco Tipo="EnviarEvento">https://nfsedoiscorregos.simplissweb.com.br</Endereco>
             <Endereco Tipo="ConsultarNsu">https://adn.nfse.gov.br/contribuintes</Endereco>
             <Endereco Tipo="ConsultarChave">https://adn.nfse.gov.br/contribuintes</Endereco>
-            <Endereco Tipo="DownloadDanfse">https://sefin.nfse.gov.br/sefinnacional</Endereco>
+            <Endereco Tipo="DownloadDanfse">https://adn.nfse.gov.br</Endereco>
             <Endereco Tipo="ConsultarChaveDps">https://sefin.nfse.gov.br/sefinnacional</Endereco>
             <Endereco Tipo="ConsultaExisteDps">https://sefin.nfse.gov.br/sefinnacional</Endereco>
           </Enderecos>
