@@ -37,17 +37,11 @@ namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 /// <summary>
 /// Representa o evento de rejeição do intermediário no processo de NFSe.
 /// </summary>
-public sealed class EventoRejeicaoIntermediario : IEventoNFSe
+public sealed class EventoRejeicaoIntermediario : InfoRejeicao, IEventoNFSe
 {
     /// <summary>
     /// Descrição do evento.
     /// </summary>
     [DFeElement(TipoCampo.Str, "xDesc", Ocorrencia = Ocorrencia.Obrigatoria)]
-    public string Descricao { get; set; } = "Rejeição do Intermediário";
-
-    /// <summary>
-    /// Informações detalhadas da rejeição.
-    /// </summary>
-    [DFeElement("infRej", Ocorrencia = Ocorrencia.Obrigatoria)]
-    public InfoRejeicao Informacoes { get; set; } = new();
+    public string Descricao { get; set; } = "Manifestação de NFS-e - Rejeição do Intermediário";
 }

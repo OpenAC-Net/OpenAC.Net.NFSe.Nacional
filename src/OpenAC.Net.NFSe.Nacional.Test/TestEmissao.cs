@@ -547,11 +547,6 @@ public class TestEmissao
 
             Debug.WriteLine(E.Message);
         }
-
-
-
-
-
     }
 
 
@@ -573,7 +568,7 @@ public class TestEmissao
         evento.Versao = openNFSeNacional.Configuracoes.Geral.Versao;
         evento.Informacoes = new()
         {
-            Id = "PRE" + chaveNFse + TipoEventoCod.Cancelamento + SetupOpenNFSeNacional.NumEvento.PadLeft(3, '0'),
+            Id = "PRE" + chaveNFse + TipoEventoCod.Cancelamento,
             ChNFSe = chaveNFse,
             CNPJAutor = SetupOpenNFSeNacional.InscricaoFederal,
             DhEvento = DateTime.Now,
@@ -597,14 +592,14 @@ public class TestEmissao
         var solicitacaoCancelamento = new EventoSolicitacaoCancelamento
         {
             CodMotivo = JustificativaAnalise.Outros,
-            Motivo = "Dados Inv√°lidos",
+            Motivo = "Dados Inv·lidos",
         };
 
         var evento = new PedidoRegistroEvento();
         evento.Versao = openNFSeNacional.Configuracoes.Geral.Versao;
         evento.Informacoes = new()
         {
-            Id = "PRE" + chaveNFse + TipoEventoCod.SolicitacaoCancelamento + SetupOpenNFSeNacional.NumEvento.PadLeft(3, '0'),
+            Id = "PRE" + chaveNFse + TipoEventoCod.SolicitacaoCancelamento,
             ChNFSe = chaveNFse,
             CNPJAutor = SetupOpenNFSeNacional.InscricaoFederal,
             DhEvento = DateTime.Now,
