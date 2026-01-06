@@ -43,12 +43,12 @@ public class InfoRejeicao
     /// <summary>
     /// Código do motivo da rejeição.
     /// </summary>
-    [DFeElement(TipoCampo.Enum, "cMotivo", Ocorrencia = Ocorrencia.Obrigatoria)]
+    [DFeElement(TipoCampo.Enum, "cMotivo", Ocorrencia = Ocorrencia.Obrigatoria, Ordem = 1)]
     public MotivoRejeicao CodMotivo { get; set; }
     
     /// <summary>
     /// Descrição detalhada do motivo da rejeição.
     /// </summary>
-    [DFeElement(TipoCampo.Str, "xMotivo", Min = 15, Max = 255, Ocorrencia = Ocorrencia.NaoObrigatoria)]
+    [DFeElement(TipoCampo.Str, "xMotivo", Min = 15, Max = 255, Ocorrencia = Ocorrencia.NaoObrigatoria, Ordem = 2)]
     public string Motivo { get; set; } = string.Empty;
 }
