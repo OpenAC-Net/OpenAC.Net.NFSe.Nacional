@@ -40,16 +40,22 @@ namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 public sealed class ObraNFSe
 {
     /// <summary>
+    /// Inscrição imobiliária fiscal da obra.
+    /// </summary>
+    [DFeElement(TipoCampo.Str, "inscImobFisc", Min = 1, Max = 30, Ocorrencia = Ocorrencia.NaoObrigatoria)]
+    public string? InscricaoImobiliaria { get; set; } = string.Empty;
+    
+    /// <summary>
     /// Código da obra.
     /// </summary>
     [DFeElement(TipoCampo.Str, "cObra", Min = 1, Max = 30, Ocorrencia = Ocorrencia.Obrigatoria)]
     public string CodObra { get; set; } = string.Empty;
     
     /// <summary>
-    /// Inscrição imobiliária fiscal da obra.
+    /// C�digo CIB (Código do Imóvel na Prefeitura).
     /// </summary>
-    [DFeElement(TipoCampo.Str, "inscImobFisc", Min = 1, Max = 30, Ocorrencia = Ocorrencia.Obrigatoria)]
-    public string InscricaoImobiliaria { get; set; } = string.Empty;
+    [DFeElement(TipoCampo.Str, "cCIB",  Min = 8, Max = 8, Ocorrencia = Ocorrencia.Obrigatoria)]
+    public string CodigoCIB { get; set; }
 
     /// <summary>
     /// Endereço da obra.
