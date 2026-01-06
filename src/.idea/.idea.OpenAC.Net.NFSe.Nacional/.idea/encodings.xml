@@ -3,6 +3,6 @@
   <component name="Encoding" addBOMForNewFiles="with BOM under Windows, with no BOM otherwise">
     <file url="file://$PROJECT_DIR$/OpenAC.Net.NFSe.Nacional.Test/TestEmissao.cs" charset="windows-1252" />
     <file url="file://$PROJECT_DIR$/OpenAC.Net.NFSe.Nacional.Test/TestEmissaoReformaTributaria.cs" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/OpenAC.Net.NFSe.Nacional/Webservice/NFSeWebservice.cs" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/OpenAC.Net.NFSe.Nacional/Webservice/Nacional/NacionalWebservice.cs" charset="UTF-8" />
   </component>
 </project>

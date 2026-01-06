@@ -578,7 +578,6 @@ public class TestEmissao
             CNPJAutor = SetupOpenNFSeNacional.InscricaoFederal,
             DhEvento = DateTime.Now,
             TipoAmbiente = DFe.Core.Common.DFeTipoAmbiente.Homologacao,
-            NumeroPedido = SetupOpenNFSeNacional.NumEvento.ToInt32(),
             Evento = cancelamento
         };
 
@@ -610,7 +609,6 @@ public class TestEmissao
             CNPJAutor = SetupOpenNFSeNacional.InscricaoFederal,
             DhEvento = DateTime.Now,
             TipoAmbiente = DFe.Core.Common.DFeTipoAmbiente.Homologacao,
-            NumeroPedido = SetupOpenNFSeNacional.NumEvento.ToInt32(),
             Evento = solicitacaoCancelamento
         };
 
