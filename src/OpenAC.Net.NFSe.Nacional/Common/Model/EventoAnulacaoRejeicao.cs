@@ -43,7 +43,7 @@ public sealed class EventoAnulacaoRejeicao : IEventoNFSe
     /// Descrição do evento.
     /// </summary>
     [DFeElement(TipoCampo.Str, "xDesc", Ocorrencia = Ocorrencia.Obrigatoria)]
-    public string Descricao { get; set; } = "Anulação da Rejeição";
+    public string Descricao { get; set; } = "Manifestação de NFS-e - Anulação da Rejeição";
     
     /// <summary>
     /// Informações detalhadas da anulação da rejeição.
