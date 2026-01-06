@@ -43,7 +43,7 @@ public sealed class EventoRejeicaoTomador : IEventoNFSe
     /// Descrição do evento.
     /// </summary>
     [DFeElement(TipoCampo.Str, "xDesc", Ocorrencia = Ocorrencia.Obrigatoria)]
-    public string Descricao { get; set; } = "Rejeição do Tomador";
+    public string Descricao { get; set; } = "Manifestação de NFS-e - Rejeição do Tomador";
 
     /// <summary>
     /// Informações detalhadas da rejeição.
