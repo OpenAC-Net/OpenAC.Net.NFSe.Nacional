@@ -52,6 +52,6 @@ public class NFSeServiceInfo
     public DFeSiglaUF UF { get; set; }
     
     [DFeCollection("Ambiente")]
-    [DFeItem(typeof(NFSeEnvironment), "ambiente")]
+    [DFeItem(typeof(NFSeEnvironment), "Ambiente")]
     public DFeCollection<NFSeEnvironment> Ambientes { get; set; } = new();
 }

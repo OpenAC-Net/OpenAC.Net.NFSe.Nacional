@@ -6,7 +6,7 @@
       <Nome>NFSe Nacional</Nome>
       <UF>EX</UF>
       <Ambiente>
-        <ambiente Tipo="2">
+        <Ambiente Tipo="2">
           <Enderecos>
             <Endereco Tipo="Enviar">https://sefin.producaorestrita.nfse.gov.br/SefinNacional</Endereco>
             <Endereco Tipo="EnviarEvento">https://sefin.producaorestrita.nfse.gov.br/SefinNacional</Endereco>
@@ -16,8 +16,8 @@
             <Endereco Tipo="ConsultarChaveDps">https://sefin.producaorestrita.nfse.gov.br/SefinNacional</Endereco>
             <Endereco Tipo="ConsultaExisteDps">https://sefin.producaorestrita.nfse.gov.br/SefinNacional</Endereco>
           </Enderecos>
-        </ambiente>
-        <ambiente Tipo="1">
+        </Ambiente>
+        <Ambiente Tipo="1">
           <Enderecos>
             <Endereco Tipo="Enviar">https://sefin.nfse.gov.br/sefinnacional</Endereco>
             <Endereco Tipo="EnviarEvento">https://sefin.nfse.gov.br/sefinnacional</Endereco>
@@ -27,7 +27,7 @@
             <Endereco Tipo="ConsultarChaveDps">https://sefin.nfse.gov.br/sefinnacional</Endereco>
             <Endereco Tipo="ConsultaExisteDps">https://sefin.nfse.gov.br/sefinnacional</Endereco>
           </Enderecos>
-        </ambiente>
+        </Ambiente>
       </Ambiente>
     </serviceInfo>
     <serviceInfo Id="3514106">
@@ -35,7 +35,7 @@
       <Nome>DOIS CÓRREGOS</Nome>
       <UF>SP</UF>
       <Ambiente>
-        <ambiente Tipo="2">
+        <Ambiente Tipo="2">
           <Enderecos>
             <Endereco Tipo="Enviar">https://producaorestrita.simplissweb.com.br</Endereco>
             <Endereco Tipo="EnviarEvento">https://producaorestrita.simplissweb.com.br</Endereco>
@@ -45,8 +45,8 @@
             <Endereco Tipo="ConsultarChaveDps">https://sefin.producaorestrita.nfse.gov.br/SefinNacional</Endereco>
             <Endereco Tipo="ConsultaExisteDps">https://sefin.producaorestrita.nfse.gov.br/SefinNacional</Endereco>
           </Enderecos>
-        </ambiente>
-        <ambiente Tipo="1">
+        </Ambiente>
+        <Ambiente Tipo="1">
           <Enderecos>
             <Endereco Tipo="Enviar">https://nfsedoiscorregos.simplissweb.com.br</Endereco>
             <Endereco Tipo="EnviarEvento">https://nfsedoiscorregos.simplissweb.com.br</Endereco>
@@ -56,7 +56,7 @@
             <Endereco Tipo="ConsultarChaveDps">https://sefin.nfse.gov.br/sefinnacional</Endereco>
             <Endereco Tipo="ConsultaExisteDps">https://sefin.nfse.gov.br/sefinnacional</Endereco>
           </Enderecos>
-        </ambiente>
+        </Ambiente>
       </Ambiente>
     </serviceInfo>
   </Services>
