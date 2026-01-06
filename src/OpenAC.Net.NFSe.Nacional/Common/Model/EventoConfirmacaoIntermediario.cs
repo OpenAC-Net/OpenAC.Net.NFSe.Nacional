@@ -43,5 +43,5 @@ public sealed class EventoConfirmacaoIntermediario : IEventoNFSe
     /// Descrição do evento de confirmação do intermediário.
     /// </summary>
     [DFeElement(TipoCampo.Str, "xDesc", Ocorrencia = Ocorrencia.Obrigatoria)]
-    public string Descricao { get; set; } = "Confirmação do Intermediário";
+    public string Descricao { get; set; } = "Manifestação de NFS-e - Confirmação do Intermediário";
 }
