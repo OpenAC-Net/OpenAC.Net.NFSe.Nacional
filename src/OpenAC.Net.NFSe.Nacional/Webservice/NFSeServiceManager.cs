@@ -169,8 +169,7 @@ public sealed class NFSeServiceManager
     /// <exception cref="InvalidOperationException">Se a instância do provedor não puder ser criada.</exception>
     public NFSeWebserviceBase GetProvider(ConfiguracaoNFSe config)
     {
-        var serviceInfo = Services[config.WebServices.CodigoMunicipio] ??
-                                Services[-1]; //marcosgerene: na minha concepção, se não encontrou o município, deve-se entender que é o Nacional
+        var serviceInfo = Services[config.WebServices.CodigoMunicipio]; //Services[-1]; //marcosgerene: na minha concepção, se não encontrou o município, deve-se entender que é o Nacional
 
         if (serviceInfo == null) throw new OpenException("Município não cadastrado no OpenNFSe!");
 
