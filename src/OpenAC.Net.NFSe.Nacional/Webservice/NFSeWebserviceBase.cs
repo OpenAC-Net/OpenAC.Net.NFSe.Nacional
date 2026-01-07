@@ -44,7 +44,7 @@ public abstract class NFSeWebserviceBase : IOpenLog
     }
 
     #endregion Internal Types
-    
+
     #region Constructors
 
     /// <summary>
@@ -73,7 +73,7 @@ public abstract class NFSeWebserviceBase : IOpenLog
     public NFSeServiceInfo ServiceInfo { get; }
 
     #endregion Properties
-    
+
     #region Methods
 
     /// <summary>
@@ -163,6 +163,9 @@ public abstract class NFSeWebserviceBase : IOpenLog
     /// <exception cref="XmlSchemaValidationException">Lançada se houver erros de validação.</exception>
     protected virtual void ValidarSchema(SchemaNFSe schema, string xml, VersaoNFSe versao = VersaoNFSe.Ve100)
     {
+        if (!Configuracao.WebServices.ValidarSchemas)
+            return;
+
         Configuracao.Arquivos.VersaoSchema = versao;
         var schemaFile = Configuracao.Arquivos.GetSchema(schema);
         if (!File.Exists(schemaFile))
@@ -223,7 +226,7 @@ public abstract class NFSeWebserviceBase : IOpenLog
     /// <param name="nomeArquivo">Nome do arquivo.</param>
     /// <param name="documento">Documento do prestador.</param>
     /// <param name="data">Data de emissão (opcional).</param>
-    protected virtual  void GravarArquivoEmDisco(TipoArquivo tipo, string conteudoArquivo, string nomeArquivo, string? documento, DateTime? data = null)
+    protected virtual void GravarArquivoEmDisco(TipoArquivo tipo, string conteudoArquivo, string nomeArquivo, string? documento, DateTime? data = null)
     {
         nomeArquivo = tipo switch
         {
