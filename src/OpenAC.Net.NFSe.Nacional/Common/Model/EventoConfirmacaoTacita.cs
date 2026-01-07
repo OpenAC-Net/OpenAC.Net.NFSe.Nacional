@@ -43,5 +43,5 @@ public sealed class EventoConfirmacaoTacita : IEventoNFSe
     /// Descrição do evento.
     /// </summary>
     [DFeElement(TipoCampo.Str, "xDesc", Ocorrencia = Ocorrencia.Obrigatoria)]
-    public string Descricao { get; set; } = "Confirmação Tácita";
+    public string Descricao { get; set; } = "Manifestação de NFS-e - Confirmação Tácita";
 }

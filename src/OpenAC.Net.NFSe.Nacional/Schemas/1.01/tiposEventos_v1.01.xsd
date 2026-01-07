@@ -376,13 +376,13 @@
       <xs:element name="xDesc">
         <xs:annotation>
           <xs:documentation>
-            Descrição do evento: "Confirmação do Prestador".
+            Descrição do evento: "Manifestação de NFS-e - Confirmação do Prestador".
           </xs:documentation>
         </xs:annotation>
         <xs:simpleType>
           <xs:restriction base="xs:string">
             <xs:whiteSpace value="preserve"/>
-            <xs:enumeration value="Confirmação do Prestador"/>
+            <xs:enumeration value="Manifestação de NFS-e - Confirmação do Prestador"/>
           </xs:restriction>
         </xs:simpleType>
       </xs:element>
@@ -394,13 +394,13 @@
       <xs:element name="xDesc">
         <xs:annotation>
           <xs:documentation>
-            Descrição do evento: "Confirmação do Tomador".
+            Descrição do evento: "Manifestação de NFS-e - Confirmação do Tomador".
           </xs:documentation>
         </xs:annotation>
         <xs:simpleType>
           <xs:restriction base="xs:string">
             <xs:whiteSpace value="preserve"/>
-            <xs:enumeration value="Confirmação do Tomador"/>
+            <xs:enumeration value="Manifestação de NFS-e - Confirmação do Tomador"/>
           </xs:restriction>
         </xs:simpleType>
       </xs:element>
@@ -412,13 +412,13 @@
       <xs:element name="xDesc">
         <xs:annotation>
           <xs:documentation>
-            Descrição do evento: "Confirmação do Intermediário".
+            Descrição do evento: "Manifestação de NFS-e - Confirmação do Intermediário".
           </xs:documentation>
         </xs:annotation>
         <xs:simpleType>
           <xs:restriction base="xs:string">
             <xs:whiteSpace value="preserve"/>
-            <xs:enumeration value="Confirmação do Intermediário"/>
+            <xs:enumeration value="Manifestação de NFS-e - Confirmação do Intermediário"/>
           </xs:restriction>
         </xs:simpleType>
       </xs:element>
@@ -430,13 +430,13 @@
       <xs:element name="xDesc">
         <xs:annotation>
           <xs:documentation>
-            Descrição do evento: "Confirmação Tácita".
+            Descrição do evento: "Manifestação de NFS-e - Confirmação Tácita".
           </xs:documentation>
         </xs:annotation>
         <xs:simpleType>
           <xs:restriction base="xs:string">
             <xs:whiteSpace value="preserve"/>
-            <xs:enumeration value="Confirmação Tácita"/>
+            <xs:enumeration value="Manifestação de NFS-e - Confirmação Tácita"/>
           </xs:restriction>
         </xs:simpleType>
       </xs:element>
@@ -448,19 +448,33 @@
       <xs:element name="xDesc">
         <xs:annotation>
           <xs:documentation>
-            Descrição do evento: "Rejeição do Prestador".
+            Descrição do evento: "Manifestação de NFS-e - Rejeição do Prestador".
           </xs:documentation>
         </xs:annotation>
         <xs:simpleType>
           <xs:restriction base="xs:string">
             <xs:whiteSpace value="preserve"/>
-            <xs:enumeration value="Rejeição do Prestador"/>
+            <xs:enumeration value="Manifestação de NFS-e - Rejeição do Prestador"/>
           </xs:restriction>
         </xs:simpleType>
       </xs:element>
-      <xs:element name="infRej" type="TCInfoEventoRejeicao">
+      <xs:element name="cMotivo" type="TSCodMotivoRejeicao">
         <xs:annotation>
           <xs:documentation>
+            Motivo da Rejeição da NFS-e:
+            1 - NFS-e em duplicidade;
+            2 - NFS-e já emitida pelo tomador;
+            3 - Não ocorrência do fato gerador;
+            4 - Erro quanto a responsabilidade tributária;
+            5 - Erro quanto ao valor do serviço, valor das deduções ou serviço prestado ou data do fato gerador;
+            9 - Outros;
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="xMotivo" type="TSMotivo" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>
+            Descrição para explicitar o motivo indicado neste evento
           </xs:documentation>
         </xs:annotation>
       </xs:element>
@@ -472,19 +486,33 @@
       <xs:element name="xDesc">
         <xs:annotation>
           <xs:documentation>
-            Descrição do evento: "Rejeição do Tomador".
+            Descrição do evento: "Manifestação de NFS-e - Rejeição do Tomador".
           </xs:documentation>
         </xs:annotation>
         <xs:simpleType>
           <xs:restriction base="xs:string">
             <xs:whiteSpace value="preserve"/>
-            <xs:enumeration value="Rejeição do Tomador"/>
+            <xs:enumeration value="Manifestação de NFS-e - Rejeição do Tomador"/>
           </xs:restriction>
         </xs:simpleType>
       </xs:element>
-      <xs:element name="infRej" type="TCInfoEventoRejeicao">
+      <xs:element name="cMotivo" type="TSCodMotivoRejeicao">
         <xs:annotation>
           <xs:documentation>
+            Motivo da Rejeição da NFS-e:
+            1 - NFS-e em duplicidade;
+            2 - NFS-e já emitida pelo tomador;
+            3 - Não ocorrência do fato gerador;
+            4 - Erro quanto a responsabilidade tributária;
+            5 - Erro quanto ao valor do serviço, valor das deduções ou serviço prestado ou data do fato gerador;
+            9 - Outros;
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="xMotivo" type="TSMotivo" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>
+            Descrição para explicitar o motivo indicado neste evento
           </xs:documentation>
         </xs:annotation>
       </xs:element>
@@ -496,19 +524,33 @@
       <xs:element name="xDesc">
         <xs:annotation>
           <xs:documentation>
-            Descrição do evento: "Rejeição do Intermediário".
+            Descrição do evento: "Manifestação de NFS-e - Rejeição do Intermediário".
           </xs:documentation>
         </xs:annotation>
         <xs:simpleType>
           <xs:restriction base="xs:string">
             <xs:whiteSpace value="preserve"/>
-            <xs:enumeration value="Rejeição do Intermediário"/>
+            <xs:enumeration value="Manifestação de NFS-e - Rejeição do Intermediário"/>
           </xs:restriction>
         </xs:simpleType>
       </xs:element>
-      <xs:element name="infRej" type="TCInfoEventoRejeicao">
+      <xs:element name="cMotivo" type="TSCodMotivoRejeicao">
         <xs:annotation>
           <xs:documentation>
+            Motivo da Rejeição da NFS-e:
+            1 - NFS-e em duplicidade;
+            2 - NFS-e já emitida pelo tomador;
+            3 - Não ocorrência do fato gerador;
+            4 - Erro quanto a responsabilidade tributária;
+            5 - Erro quanto ao valor do serviço, valor das deduções ou serviço prestado ou data do fato gerador;
+            9 - Outros;
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="xMotivo" type="TSMotivo" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>
+            Descrição para explicitar o motivo indicado neste evento
           </xs:documentation>
         </xs:annotation>
       </xs:element>
@@ -520,24 +562,40 @@
       <xs:element name="xDesc">
         <xs:annotation>
           <xs:documentation>
-            Descrição do evento: "Anulação da Rejeição".
+            Descrição do evento: "Manifestação de NFS-e - Anulação da Rejeição".
           </xs:documentation>
         </xs:annotation>
         <xs:simpleType>
           <xs:restriction base="xs:string">
             <xs:whiteSpace value="preserve"/>
-            <xs:enumeration value="Anulação da Rejeição"/>
+            <xs:enumeration value="Manifestação de NFS-e - Anulação da Rejeição"/>
           </xs:restriction>
         </xs:simpleType>
       </xs:element>
-      <xs:element name="infAnRej" type="TCInfoEventoAnulacaoRejeicao">
+      <xs:element name="CPFAgTrib" type="TSCPF">
         <xs:annotation>
           <xs:documentation>
+            CPF do agente da administração tributária municipal que efetuou o anulação da manifestação de rejeição da NFS-e
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="idEvManifRej" type="TSIdNumEvento">
+        <xs:annotation>
+          <xs:documentation>
+            Referência ao "id" do Evento de Manifestação de NFS-e - Rejeição, que originou o presente evento de anulação
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="xMotivo" type="TSMotivo">
+        <xs:annotation>
+          <xs:documentation>
+            Descrição para explicitar o motivo indicado neste evento
           </xs:documentation>
         </xs:annotation>
       </xs:element>
     </xs:sequence>
   </xs:complexType>
+
   <!--TIPO COMPLEXO PARA O EVENTO DE CANCELAMENTO POR OFÍCIO DA NFS-E--> 
   <xs:complexType name="TE305101">
     <xs:sequence>

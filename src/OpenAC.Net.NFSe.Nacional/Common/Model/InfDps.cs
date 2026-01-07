@@ -47,9 +47,9 @@ public sealed class InfDps
     /// <summary>
     /// Identificador único da DPS.
     /// </summary>
-    [DFeAttribute(TipoCampo.Str, "Id")] 
+    [DFeAttribute(TipoCampo.Str, "Id")]
     public string Id { get; set; } = string.Empty;
-    
+
     /// <summary>
     /// Tipo de ambiente (Produção ou Homologação).
     /// </summary>
@@ -77,8 +77,8 @@ public sealed class InfDps
     /// <summary>
     /// Número da DPS.
     /// </summary>
-    [DFeElement(TipoCampo.Int, "nDPS", Min = 1, Max = 13, Ocorrencia = Ocorrencia.Obrigatoria)]
-    public int NumeroDps { get; set; } = 1;
+    [DFeElement(TipoCampo.StrNumber, "nDPS", Min = 1, Max = 15, Ocorrencia = Ocorrencia.Obrigatoria)]
+    public string NumeroDps { get; set; } = "1";
 
     /// <summary>
     /// Data de competência.
@@ -109,25 +109,25 @@ public sealed class InfDps
     /// </summary>
     [DFeElement("prest", Ocorrencia = Ocorrencia.Obrigatoria)]
     public PrestadorDps Prestador { get; set; } = new();
-    
+
     /// <summary>
     /// Informações do tomador de serviço, se houver.
     /// </summary>
     [DFeElement("toma", Ocorrencia = Ocorrencia.NaoObrigatoria)]
     public InfoPessoaNFSe? Tomador { get; set; }
-    
+
     /// <summary>
     /// Informações do intermediário, se houver.
     /// </summary>
     [DFeElement("interm", Ocorrencia = Ocorrencia.NaoObrigatoria)]
     public InfoPessoaNFSe? Intermediario { get; set; }
-    
+
     /// <summary>
     /// Informações do serviço prestado.
     /// </summary>
     [DFeElement("serv", Ocorrencia = Ocorrencia.Obrigatoria)]
     public ServicoNFSe Servico { get; set; } = new();
-    
+
     /// <summary>
     /// Valores da DPS.
     /// </summary>
