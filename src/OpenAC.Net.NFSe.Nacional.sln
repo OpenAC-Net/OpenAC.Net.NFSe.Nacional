@@ -1,11 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.9.34616.47
+# Visual Studio Version 18
+VisualStudioVersion = 18.1.11312.151 d18.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OpenAC.Net.NFSe.Nacional", "OpenAC.Net.NFSe.Nacional\OpenAC.Net.NFSe.Nacional.csproj", "{3F38E32E-7B07-4E31-B0E1-37F36D28EC5B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenAC.Net.NFSe.Nacional.Test", "OpenAC.Net.NFSe.Nacional.Test\OpenAC.Net.NFSe.Nacional.Test.csproj", "{3A45F59F-7B96-4D16-80AB-30F63BD132EF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenAC.Net.NFSe.Nacional.Console", "OpenAC.Net.NFSe.Nacional.Console\OpenAC.Net.NFSe.Nacional.Console.csproj", "{57EF774F-6A0B-4AAB-A2FF-40F9ADCD7435}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{3A45F59F-7B96-4D16-80AB-30F63BD132EF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3A45F59F-7B96-4D16-80AB-30F63BD132EF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3A45F59F-7B96-4D16-80AB-30F63BD132EF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{57EF774F-6A0B-4AAB-A2FF-40F9ADCD7435}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{57EF774F-6A0B-4AAB-A2FF-40F9ADCD7435}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{57EF774F-6A0B-4AAB-A2FF-40F9ADCD7435}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{57EF774F-6A0B-4AAB-A2FF-40F9ADCD7435}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

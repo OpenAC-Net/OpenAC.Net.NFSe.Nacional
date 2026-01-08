@@ -103,4 +103,8 @@
         </None>
     </ItemGroup>
 
+    <ItemGroup>
+      <EmbeddedResource Include="Resources\Municipios.nfse" />
+    </ItemGroup>
+
 </Project>
