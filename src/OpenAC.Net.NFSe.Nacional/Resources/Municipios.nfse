@@ -5,7 +5,7 @@
       <Tipo>Nacional</Tipo>
       <Nome>NFSe Nacional</Nome>
       <UF>EX</UF>
-      <Ambiente>
+      <Ambientes>
         <Ambiente Tipo="2">
           <Enderecos>
             <Endereco Tipo="Enviar">https://sefin.producaorestrita.nfse.gov.br/SefinNacional</Endereco>
@@ -28,13 +28,13 @@
             <Endereco Tipo="ConsultaExisteDps">https://sefin.nfse.gov.br/sefinnacional</Endereco>
           </Enderecos>
         </Ambiente>
-      </Ambiente>
+      </Ambientes>
     </serviceInfo>
     <serviceInfo Id="3514106">
       <Tipo>SimplISS</Tipo>
       <Nome>DOIS CÓRREGOS</Nome>
       <UF>SP</UF>
-      <Ambiente>
+      <Ambientes>
         <Ambiente Tipo="2">
           <Enderecos>
             <Endereco Tipo="Enviar">https://producaorestrita.simplissweb.com.br</Endereco>
@@ -57,7 +57,7 @@
             <Endereco Tipo="ConsultaExisteDps">https://sefin.nfse.gov.br/sefinnacional</Endereco>
           </Enderecos>
         </Ambiente>
-      </Ambiente>
+      </Ambientes>
     </serviceInfo>
   </Services>
 </NFSeServices>
