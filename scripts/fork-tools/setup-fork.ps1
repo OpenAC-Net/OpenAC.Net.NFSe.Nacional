@@ -68,6 +68,7 @@ Write-Host "   3. Para validar antes de abrir PR:"
 Write-Host "      .\check-pr.ps1"
 Write-Host ""
 Write-Host "   4. (Opcional) Instalar aliases Git:"
-Write-Host "      .\install-aliases.sh"
+Write-Host "      bash scripts\fork-tools\install-aliases.sh"
+Write-Host "      # Nota: Requer Git Bash no Windows"
 Write-Host ""
 Write-Host "═══════════════════════════════════════════════════════════" -ForegroundColor Cyan

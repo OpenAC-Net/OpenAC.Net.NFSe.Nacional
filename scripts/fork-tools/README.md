@@ -44,7 +44,8 @@ cd scripts\fork-tools
 .\setup-fork.ps1
 
 # 2. (Opcional) Instalar aliases Git
-.\install-aliases.sh
+bash scripts\fork-tools\install-aliases.sh
+# Nota: Requer Git Bash no Windows
 
 # 3. Criar uma feature para contribuir ao upstream
 .\new-feature.ps1 minha-feature
@@ -277,9 +278,15 @@ Estes arquivos NÃO devem ser incluídos no PR para upstream!
 
 **Uso:**
 ```bash
-# Linux/Mac/Windows (usa Bash em todos)
+# Linux/Mac
 ./install-aliases.sh
+
+# Windows (requer Git Bash)
+bash install-aliases.sh
+# Ou use Git Bash: ./install-aliases.sh
 ```
+
+**Nota:** No Windows, este script requer Git Bash (instalado com Git for Windows).
 
 **Aliases instalados:**
 - `git fork-setup` → executa `setup-fork.sh` ou `setup-fork.ps1`
