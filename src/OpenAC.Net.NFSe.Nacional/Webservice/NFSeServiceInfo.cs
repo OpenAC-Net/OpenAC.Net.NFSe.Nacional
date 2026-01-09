@@ -51,7 +51,7 @@ public class NFSeServiceInfo
     [DFeElement(TipoCampo.Enum, "UF")]
     public DFeSiglaUF UF { get; set; }
     
-    [DFeCollection("Ambiente")]
+    [DFeCollection("Ambientes")]
     [DFeItem(typeof(NFSeEnvironment), "Ambiente")]
     public DFeCollection<NFSeEnvironment> Ambientes { get; set; } = new();
 }
