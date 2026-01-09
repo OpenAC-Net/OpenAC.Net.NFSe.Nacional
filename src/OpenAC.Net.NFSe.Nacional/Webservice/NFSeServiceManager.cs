@@ -42,9 +42,16 @@ public sealed class NFSeServiceManager
                     { VersaoNFSe.Ve100, typeof(NacionalWebservice) },
                     { VersaoNFSe.Ve101, typeof(NacionalWebservice) }
                 }
+            },
+            {
+                NFSeProvider.SimplISS, new Dictionary<VersaoNFSe, Type>
+                {
+                    { VersaoNFSe.Ve100, typeof(SimplISS.SimplISSWebservice) },
+                    { VersaoNFSe.Ve101, typeof(SimplISS.SimplISSWebservice) }
+                }
             }
         };
-        
+
         Load();
     }
 
@@ -110,7 +117,7 @@ public sealed class NFSeServiceManager
                     m[DFeTipoAmbiente.Producao].Enderecos.Add(value, string.Empty);
             }
         }
-        
+
         Services.Save(stream, DFeSaveOptions.None);
     }
 
@@ -162,9 +169,10 @@ public sealed class NFSeServiceManager
     /// <exception cref="InvalidOperationException">Se a instância do provedor não puder ser criada.</exception>
     public NFSeWebserviceBase GetProvider(ConfiguracaoNFSe config)
     {
-        var serviceInfo = Services[config.WebServices.CodigoMunicipio];
+        var serviceInfo = Services[config.WebServices.CodigoMunicipio]; //Services[-1]; //marcosgerene: na minha concepção, se não encontrou o município, deve-se entender que é o Nacional
+
         if (serviceInfo == null) throw new OpenException("Município não cadastrado no OpenNFSe!");
-        
+
         // ReSharper disable once PossibleNullReferenceException
         var providerType = Providers[serviceInfo.Provider][config.Geral.Versao];
         if (providerType == null) throw new OpenException("Provedor não encontrado!");
@@ -172,7 +180,7 @@ public sealed class NFSeServiceManager
 
         // ReSharper disable once AssignNullToNotNullAttribute
         return (NFSeWebserviceBase?)Activator.CreateInstance(providerType, config, serviceInfo) ??
-               throw new InvalidOperationException();
+                throw new InvalidOperationException();
     }
 
     private static bool CheckBaseType(Type providerType)

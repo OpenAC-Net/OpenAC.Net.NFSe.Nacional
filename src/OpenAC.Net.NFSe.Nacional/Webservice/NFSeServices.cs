@@ -1,8 +1,8 @@
-using System;
-using System.Linq;
 using OpenAC.Net.DFe.Core.Attributes;
 using OpenAC.Net.DFe.Core.Collection;
 using OpenAC.Net.DFe.Core.Document;
+using System;
+using System.Linq;
 
 namespace OpenAC.Net.NFSe.Nacional.Webservice;
 
@@ -33,7 +33,8 @@ public class NFSeServices : DFeDocument<NFSeServices>
     /// </summary>
     /// <value>Retorna uma coleção de <see cref="NFSeServiceInfo"/>.</value>
     [DFeCollection("Services")]
-    public DFeCollection<NFSeServiceInfo> Webservices { get; } = new();
+    [DFeItem(typeof(NFSeServiceInfo), "serviceInfo")]
+    public DFeCollection<NFSeServiceInfo> Webservices { get; set; } = new();
 
     #endregion Properties
 }
