@@ -28,6 +28,9 @@ jobs:
     name: 🔨 Build and Package
     runs-on: ubuntu-latest
     
+    permissions:
+      contents: read
+    
     steps:
       # 📥 Checkout code with full history
       - name: 📥 Checkout code
