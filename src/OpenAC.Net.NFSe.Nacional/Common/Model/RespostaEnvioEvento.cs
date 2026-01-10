@@ -29,8 +29,9 @@
 // <summary></summary>
 // ***********************************************************************
 
-using System.Text.Json.Serialization;
 using OpenAC.Net.NFSe.Nacional.Common.Converter;
+using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 
@@ -45,4 +46,19 @@ public sealed class RespostaEnvioEvento : RespostaBase
     [JsonPropertyName("eventoXmlGZipB64")]
     [JsonConverter(typeof(XmlGzipJsonConverter))]
     public string XmlEvento { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Propriedade alternativa para capturar "erro" do JSON quando a API retorna "erro" ao invés de "erros".
+    /// Não deve ser usada diretamente. Use a propriedade <see cref="RespostaBase.Erros"/> para acessar os erros.
+    /// </summary>
+    [JsonPropertyName("erro")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+    public List<MensagemProcessamento>? ErroAlternativo
+    {
+        set
+        {
+            if (value != null)
+                Erros = value;
+        }
+    }
 }
