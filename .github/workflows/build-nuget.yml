@@ -1,27 +1,63 @@
-# yaml-language-server: $schema=https://json.schemastore.org/github-workflow. json
-#
-# GitHub Actions Workflow para Build e Publicação de Pacotes NuGet
-#
-# Este workflow constrói o pacote NuGet personalizado CMSol. Fiscal.OpenAC. Net. NFSe.Nacional
-# sem modificar os arquivos . csproj do projeto original.
-#
-# Triggers: 
-# - Manual (workflow_dispatch): Build com sufixo customizável e opção de publicar no NuGet. org
-# - Push to main: Build automático com sufixo 'fork' (sem publicação)
-# - Tags v*: Build com versão da tag + GitHub Release + Publicação automática no NuGet.org
-#
-# Publicação no NuGet.org:
-# - Manual: Apenas se checkbox "Publicar no NuGet.org?" estiver marcada
-# - Tags v*: Publicação automática
-# - Usa Trusted Publishing (OIDC) - sem API keys de longa duração
-# - Requer configuração prévia no NuGet.org com: 
-#   - Organization: CMSol.Fiscal
-#   - Repository Owner: renatoguarilha
-#   - Repository: OpenAC.Net.NFSe.Nacional
-#   - Workflow:  build-nuget.yml
-#
-name: 📦 Build Custom NuGet Package
+name: Build Custom NuGet Package
 
-on:
-  # 🎯 Manual execution with custom
+on: 
+  workflow_dispatch:
+    inputs: 
+      version_suffix:
+        description: 'Version suffix (e.g., fork, custom, test)'
+        required: false
+        default: 'fork'
+        type: string
+      publish_to_nuget:
+        description:  'Publicar no NuGet. org? '
+        required: false
+        default: false
+        type: boolean
+  push:
+    branches: 
+      - main
+    tags:
+      - 'v*'
+
+env:
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: 1
+  DOTNET_NOLOGO: true
+  BASE_VERSION: '1.4.1'
+
+jobs:
+  build:
+    name: Build and Package
+    runs-on: ubuntu-latest
+    
+    permissions:
+      contents: read
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v5. 0.0
+        with:
+          dotnet-version: |
+            8.0.x
+            9.0.x
+            10.0.x
+      
+      - name:  Restore dependencies
+        run: dotnet restore src/OpenAC.Net.NFSe.Nacional.sln
+      
+      - name: Build project
+        run: dotnet build src/OpenAC.Net.NFSe.Nacional/OpenAC.Net.NFSe.Nacional.csproj -c Release --no-restore
+      
+      - name: Determine version
+        id: version
+        run: |
+          if [[ "${{ github.ref }}" == refs/tags/v* ]]; then
+            VERSION="${GITHUB_REF#refs/tags/v}"
+            echo "version=$VERSION" >> $GITHUB_OUTPUT
+            echo "Version from tag: $VERSION"
+          elif [[ "${{ github.event_](#)
 
