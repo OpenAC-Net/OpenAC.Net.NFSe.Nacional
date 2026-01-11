@@ -1,4 +1,25 @@
 # yaml-language-server: $schema=https://json.schemastore.org/github-workflow.json
+#
+# GitHub Actions Workflow para Build e Publicação de Pacotes NuGet
+#
+# Este workflow constrói o pacote NuGet personalizado CMSol.Fiscal.OpenAC.Net.NFSe.Nacional
+# sem modificar os arquivos .csproj do projeto original.
+#
+# Triggers:
+# - Manual (workflow_dispatch): Build com sufixo customizável e opção de publicar no NuGet.org
+# - Push to main: Build automático com sufixo 'fork' (sem publicação)
+# - Tags v*: Build com versão da tag + GitHub Release + Publicação automática no NuGet.org
+#
+# Publicação no NuGet.org:
+# - Manual: Apenas se checkbox "Publicar no NuGet.org?" estiver marcada
+# - Tags v*: Publicação automática
+# - Usa Trusted Publishing (OIDC) - sem API keys necessárias
+# - Requer configuração prévia no NuGet.org com:
+#   - Organization: CMSol.Fiscal
+#   - Repository Owner: renatoguarilha
+#   - Repository: OpenAC.Net.NFSe.Nacional
+#   - Workflow: build-nuget.yml
+#
 name: 📦 Build Custom NuGet Package
 
 on:
@@ -10,6 +31,11 @@ on:
         required: false
         default: 'fork'
         type: string
+      publish_to_nuget:
+        description: 'Publicar no NuGet.org?'
+        required: false
+        default: false
+        type: boolean
   
   # 🚀 Automatic on push to main and version tags
   push:
@@ -51,9 +77,9 @@ jobs:
       - name: 📦 Restore dependencies
         run: dotnet restore src/OpenAC.Net.NFSe.Nacional.sln
       
-      # 🔨 Build solution
-      - name: 🔨 Build solution
-        run: dotnet build src/OpenAC.Net.NFSe.Nacional.sln -c Release --no-restore
+      # 🔨 Build apenas projeto principal
+      - name: 🔨 Build project
+        run: dotnet build src/OpenAC.Net.NFSe.Nacional/OpenAC.Net.NFSe.Nacional.csproj -c Release --no-restore
       
       # 🎯 Determine version
       - name: 🎯 Determine version
@@ -83,13 +109,13 @@ jobs:
             -c Release \
             --no-build \
             -o ./artifacts \
-            /p:PackageId=RenatoGuarilha.OpenAC.Net.NFSe.Nacional \
+            /p:PackageId=CMSol.Fiscal.OpenAC.Net.NFSe.Nacional \
             /p:Version=${{ steps.version.outputs.version }} \
             /p:Authors="Renato Guarilha" \
-            /p:Company="Renato Guarilha" \
+            /p:Company="CMSol.Fiscal" \
             /p:RepositoryUrl=https://github.com/${{ github.repository }} \
             /p:PackageProjectUrl=https://github.com/${{ github.repository }} \
-            /p:PackageTags="OpenAC.Net NFSe Nacional OpenNFSe Fork"
+            /p:PackageTags="OpenAC.Net NFSe Nacional OpenNFSe CMSol Fiscal"
       
       # 📤 Upload .nupkg artifacts
       - name: 📤 Upload NuGet package
@@ -116,7 +142,20 @@ jobs:
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "✅ **Build Status:** Success" >> $GITHUB_STEP_SUMMARY
           echo "📌 **Version:** \`${{ steps.version.outputs.version }}\`" >> $GITHUB_STEP_SUMMARY
-          echo "📦 **Package ID:** \`RenatoGuarilha.OpenAC.Net.NFSe.Nacional\`" >> $GITHUB_STEP_SUMMARY
+          echo "📦 **Package ID:** \`CMSol.Fiscal.OpenAC.Net.NFSe.Nacional\`" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 📤 Publishing" >> $GITHUB_STEP_SUMMARY
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            if [ "${{ inputs.publish_to_nuget }}" = "true" ]; then
+              echo "✅ Will publish to NuGet.org after build" >> $GITHUB_STEP_SUMMARY
+            else
+              echo "ℹ️ Not publishing to NuGet.org (checkbox not selected)" >> $GITHUB_STEP_SUMMARY
+            fi
+          elif [[ "${{ github.ref }}" == refs/tags/v* ]]; then
+            echo "✅ Will publish to NuGet.org automatically (tag build)" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "ℹ️ Publishing only available via manual workflow dispatch or tags" >> $GITHUB_STEP_SUMMARY
+          fi
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "### 📥 Installation" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
@@ -124,7 +163,7 @@ jobs:
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "\`\`\`bash" >> $GITHUB_STEP_SUMMARY
           echo "# Install from local .nupkg file" >> $GITHUB_STEP_SUMMARY
-          echo "dotnet add package RenatoGuarilha.OpenAC.Net.NFSe.Nacional --source /path/to/nupkg/folder" >> $GITHUB_STEP_SUMMARY
+          echo "dotnet add package CMSol.Fiscal.OpenAC.Net.NFSe.Nacional --source /path/to/nupkg/folder" >> $GITHUB_STEP_SUMMARY
           echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "Or configure a local NuGet source:" >> $GITHUB_STEP_SUMMARY
@@ -134,18 +173,63 @@ jobs:
           echo "dotnet nuget add source /path/to/nupkg/folder --name LocalFork" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "# Install package" >> $GITHUB_STEP_SUMMARY
-          echo "dotnet add package RenatoGuarilha.OpenAC.Net.NFSe.Nacional --version ${{ steps.version.outputs.version }}" >> $GITHUB_STEP_SUMMARY
+          echo "dotnet add package CMSol.Fiscal.OpenAC.Net.NFSe.Nacional --version ${{ steps.version.outputs.version }}" >> $GITHUB_STEP_SUMMARY
           echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "### 📋 Package Contents" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "- 📦 Main package: \`RenatoGuarilha.OpenAC.Net.NFSe.Nacional.${{ steps.version.outputs.version }}.nupkg\`" >> $GITHUB_STEP_SUMMARY
-          echo "- 🔍 Symbols: \`RenatoGuarilha.OpenAC.Net.NFSe.Nacional.${{ steps.version.outputs.version }}.snupkg\`" >> $GITHUB_STEP_SUMMARY
+          echo "- 📦 Main package: \`CMSol.Fiscal.OpenAC.Net.NFSe.Nacional.${{ steps.version.outputs.version }}.nupkg\`" >> $GITHUB_STEP_SUMMARY
+          echo "- 🔍 Symbols: \`CMSol.Fiscal.OpenAC.Net.NFSe.Nacional.${{ steps.version.outputs.version }}.snupkg\`" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "### ℹ️ About this Package" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "This is a custom fork of OpenAC.Net.NFSe.Nacional with personalized metadata." >> $GITHUB_STEP_SUMMARY
           echo "The original project can be found at: https://github.com/OpenAC-Net/OpenAC.Net.NFSe.Nacional" >> $GITHUB_STEP_SUMMARY
+
+  publish-nuget:
+    name: 📤 Publish to NuGet.org
+    needs: build
+    runs-on: ubuntu-latest
+    
+    # Roda em workflow_dispatch COM checkbox OU em tags v*
+    if: |
+      (github.event_name == 'workflow_dispatch' && inputs.publish_to_nuget == true) ||
+      startsWith(github.ref, 'refs/tags/v')
+    
+    permissions:
+      id-token: write  # Necessário para OIDC Trusted Publishing
+      contents: read
+    
+    steps:
+      - name: 🔽 Download NuGet package
+        uses: actions/download-artifact@v4
+        with:
+          name: nuget-package
+          path: ./artifacts
+      
+      - name: 📦 List artifacts
+        run: ls -la ./artifacts
+      
+      - name: 🔐 Setup .NET (for push command)
+        uses: actions/setup-dotnet@v5.0.0
+        with:
+          dotnet-version: '8.0.x'
+      
+      - name: 📤 Publish to NuGet.org
+        run: |
+          dotnet nuget push ./artifacts/*.nupkg \
+            --source https://api.nuget.org/v3/index.json \
+            --skip-duplicate
+        env:
+          DOTNET_CLI_TELEMETRY_OPTOUT: 1
+      
+      - name: ✅ Publication summary
+        run: |
+          echo "## 📤 Package Published to NuGet.org" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "✅ Package **CMSol.Fiscal.OpenAC.Net.NFSe.Nacional** published successfully!" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "🔗 View on NuGet.org: https://www.nuget.org/packages/CMSol.Fiscal.OpenAC.Net.NFSe.Nacional" >> $GITHUB_STEP_SUMMARY
 
   release:
     name: 🚀 Create GitHub Release
