@@ -1,63 +1,140 @@
 name: Build Custom NuGet Package
 
-on: 
+on:
   workflow_dispatch:
-    inputs: 
+    inputs:
       version_suffix:
-        description: 'Version suffix (e.g., fork, custom, test)'
+        description: Version suffix
         required: false
-        default: 'fork'
+        default: fork
         type: string
       publish_to_nuget:
-        description:  'Publicar no NuGet. org? '
+        description: Publish to NuGet.org
         required: false
         default: false
         type: boolean
   push:
-    branches: 
+    branches:
       - main
     tags:
-      - 'v*'
+      - v*
 
 env:
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: 1
   DOTNET_NOLOGO: true
-  BASE_VERSION: '1.4.1'
+  BASE_VERSION: 1.4.1
 
 jobs:
   build:
     name: Build and Package
     runs-on: ubuntu-latest
-    
     permissions:
       contents: read
-    
     steps:
-      - name: Checkout code
+      - name: Checkout
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      
+
       - name: Setup .NET
-        uses: actions/setup-dotnet@v5. 0.0
+        uses: actions/setup-dotnet@v5.0.0
         with:
           dotnet-version: |
             8.0.x
             9.0.x
             10.0.x
-      
-      - name:  Restore dependencies
+
+      - name: Restore
         run: dotnet restore src/OpenAC.Net.NFSe.Nacional.sln
-      
-      - name: Build project
+
+      - name: Build
         run: dotnet build src/OpenAC.Net.NFSe.Nacional/OpenAC.Net.NFSe.Nacional.csproj -c Release --no-restore
-      
+
       - name: Determine version
         id: version
+        shell: bash
         run: |
           if [[ "${{ github.ref }}" == refs/tags/v* ]]; then
             VERSION="${GITHUB_REF#refs/tags/v}"
-            echo "version=$VERSION" >> $GITHUB_OUTPUT
-            echo "Version from tag: $VERSION"
-          elif [[ "${{ github.event_](#)
-
+          elif [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            VERSION="${{ env.BASE_VERSION }}-${{ inputs.version_suffix }}.${{ github.run_number }}"
+          else
+            VERSION="${{ env.BASE_VERSION }}-fork.${{ github.run_number }}"
+          fi
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "Version: $VERSION"
+
+      - name: Pack
+        run: |
+          dotnet pack src/OpenAC.Net.NFSe.Nacional/OpenAC.Net.NFSe.Nacional.csproj -c Release --no-build -o ./artifacts /p:PackageId=CMSol.Fiscal.OpenAC.Net.NFSe.Nacional /p:Version=${{ steps.version.outputs.version }} /p:Authors="Renato Guarilha" /p:Company="CMSol.Fiscal" /p:RepositoryUrl=https://github.com/${{ github.repository }} /p:PackageProjectUrl=https://github.com/${{ github.repository }} /p:PackageTags="OpenAC.Net NFSe Nacional OpenNFSe CMSol Fiscal"
+
+      - name: Upload package
+        uses: actions/upload-artifact@v4
+        with:
+          name: nuget-package
+          path: ./artifacts/*.nupkg
+          retention-days: 90
+
+      - name: Upload symbols
+        uses: actions/upload-artifact@v4
+        with:
+          name: nuget-symbols
+          path: ./artifacts/*.snupkg
+          retention-days: 90
+        continue-on-error: true
+
+  publish-nuget:
+    name: Publish to NuGet
+    needs: build
+    runs-on: ubuntu-latest
+    if: (github.event_name == 'workflow_dispatch' && inputs.publish_to_nuget == true) || startsWith(github.ref, 'refs/tags/v')
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - name: Download package
+        uses: actions/download-artifact@v4
+        with:
+          name: nuget-package
+          path: ./artifacts
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v5.0.0
+        with:
+          dotnet-version: 8.0.x
+
+      - name: NuGet Login
+        uses: NuGet/login@v1
+        id: nuget_login
+        with:
+          user: ${{ secrets.NUGET_USER }}
+
+      - name: Publish
+        run: dotnet nuget push ./artifacts/*.nupkg --api-key ${{ steps.nuget_login.outputs.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate
+
+  release:
+    name: Create Release
+    needs: build
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/v')
+    permissions:
+      contents: write
+    steps:
+      - name: Download package
+        uses: actions/download-artifact@v4
+        with:
+          name: nuget-package
+          path: ./artifacts
+
+      - name: Download symbols
+        uses: actions/download-artifact@v4
+        with:
+          name: nuget-symbols
+          path: ./artifacts
+        continue-on-error: true
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: ./artifacts/*
+          generate_release_notes: true
