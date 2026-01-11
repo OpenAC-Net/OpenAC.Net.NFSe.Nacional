@@ -1,267 +1,27 @@
-# yaml-language-server: $schema=https://json.schemastore.org/github-workflow.json
+# yaml-language-server: $schema=https://json.schemastore.org/github-workflow. json
 #
 # GitHub Actions Workflow para Build e Publicação de Pacotes NuGet
 #
-# Este workflow constrói o pacote NuGet personalizado CMSol.Fiscal.OpenAC.Net.NFSe.Nacional
-# sem modificar os arquivos .csproj do projeto original.
+# Este workflow constrói o pacote NuGet personalizado CMSol. Fiscal.OpenAC. Net. NFSe.Nacional
+# sem modificar os arquivos . csproj do projeto original.
 #
-# Triggers:
-# - Manual (workflow_dispatch): Build com sufixo customizável e opção de publicar no NuGet.org
+# Triggers: 
+# - Manual (workflow_dispatch): Build com sufixo customizável e opção de publicar no NuGet. org
 # - Push to main: Build automático com sufixo 'fork' (sem publicação)
 # - Tags v*: Build com versão da tag + GitHub Release + Publicação automática no NuGet.org
 #
 # Publicação no NuGet.org:
 # - Manual: Apenas se checkbox "Publicar no NuGet.org?" estiver marcada
 # - Tags v*: Publicação automática
-# - Usa Trusted Publishing (OIDC) - sem API keys necessárias
-# - Requer configuração prévia no NuGet.org com:
+# - Usa Trusted Publishing (OIDC) - sem API keys de longa duração
+# - Requer configuração prévia no NuGet.org com: 
 #   - Organization: CMSol.Fiscal
 #   - Repository Owner: renatoguarilha
 #   - Repository: OpenAC.Net.NFSe.Nacional
-#   - Workflow: build-nuget.yml
+#   - Workflow:  build-nuget.yml
 #
 name: 📦 Build Custom NuGet Package
 
 on:
-  # 🎯 Manual execution with custom version suffix
-  workflow_dispatch:
-    inputs:
-      version_suffix:
-        description: 'Version suffix (e.g., fork, custom, test)'
-        required: false
-        default: 'fork'
-        type: string
-      publish_to_nuget:
-        description: 'Publicar no NuGet.org?'
-        required: false
-        default: false
-        type: boolean
-  
-  # 🚀 Automatic on push to main and version tags
-  push:
-    branches:
-      - main
-    tags:
-      - 'v*'
-
-env:
-  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: 1
-  DOTNET_NOLOGO: true
-  BASE_VERSION: '1.4.1'
-
-jobs:
-  build:
-    name: 🔨 Build and Package
-    runs-on: ubuntu-latest
-    
-    permissions:
-      contents: read
-    
-    steps:
-      # 📥 Checkout code with full history
-      - name: 📥 Checkout code
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      
-      # ⚙️ Setup .NET SDK (multiple versions)
-      - name: ⚙️ Setup .NET
-        uses: actions/setup-dotnet@v5.0.0
-        with:
-          dotnet-version: |
-            8.0.x
-            9.0.x
-            10.0.x
-      
-      # 📦 Restore dependencies
-      - name: 📦 Restore dependencies
-        run: dotnet restore src/OpenAC.Net.NFSe.Nacional.sln
-      
-      # 🔨 Build apenas projeto principal
-      - name: 🔨 Build project
-        run: dotnet build src/OpenAC.Net.NFSe.Nacional/OpenAC.Net.NFSe.Nacional.csproj -c Release --no-restore
-      
-      # 🎯 Determine version
-      - name: 🎯 Determine version
-        id: version
-        run: |
-          if [[ "${{ github.ref }}" == refs/tags/v* ]]; then
-            # Tag version: v1.5.0 -> 1.5.0
-            VERSION="${GITHUB_REF#refs/tags/v}"
-            echo "version=$VERSION" >> $GITHUB_OUTPUT
-            echo "📌 Version from tag: $VERSION"
-          elif [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
-            # Manual execution: 1.4.1-{suffix}.{run_number}
-            VERSION="${{ env.BASE_VERSION }}-${{ inputs.version_suffix }}.${{ github.run_number }}"
-            echo "version=$VERSION" >> $GITHUB_OUTPUT
-            echo "📌 Version from manual input: $VERSION"
-          else
-            # Push to main: 1.4.1-fork.{run_number}
-            VERSION="${{ env.BASE_VERSION }}-fork.${{ github.run_number }}"
-            echo "version=$VERSION" >> $GITHUB_OUTPUT
-            echo "📌 Version from push: $VERSION"
-          fi
-      
-      # 📦 Pack NuGet with custom properties
-      - name: 📦 Pack NuGet package
-        run: |
-          dotnet pack src/OpenAC.Net.NFSe.Nacional/OpenAC.Net.NFSe.Nacional.csproj \
-            -c Release \
-            --no-build \
-            -o ./artifacts \
-            /p:PackageId=CMSol.Fiscal.OpenAC.Net.NFSe.Nacional \
-            /p:Version=${{ steps.version.outputs.version }} \
-            /p:Authors="Renato Guarilha" \
-            /p:Company="CMSol.Fiscal" \
-            /p:RepositoryUrl=https://github.com/${{ github.repository }} \
-            /p:PackageProjectUrl=https://github.com/${{ github.repository }} \
-            /p:PackageTags="OpenAC.Net NFSe Nacional OpenNFSe CMSol Fiscal"
-      
-      # 📤 Upload .nupkg artifacts
-      - name: 📤 Upload NuGet package
-        uses: actions/upload-artifact@v4
-        with:
-          name: nuget-package
-          path: ./artifacts/*.nupkg
-          retention-days: 90
-          if-no-files-found: error
-      
-      # 📤 Upload .snupkg artifacts (symbols)
-      - name: 📤 Upload symbols package
-        uses: actions/upload-artifact@v4
-        with:
-          name: nuget-symbols
-          path: ./artifacts/*.snupkg
-          retention-days: 90
-          if-no-files-found: warn
-      
-      # 📊 Create summary
-      - name: 📊 Create summary
-        run: |
-          echo "## 📦 NuGet Package Build Summary" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "✅ **Build Status:** Success" >> $GITHUB_STEP_SUMMARY
-          echo "📌 **Version:** \`${{ steps.version.outputs.version }}\`" >> $GITHUB_STEP_SUMMARY
-          echo "📦 **Package ID:** \`CMSol.Fiscal.OpenAC.Net.NFSe.Nacional\`" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "### 📤 Publishing" >> $GITHUB_STEP_SUMMARY
-          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-            if [ "${{ inputs.publish_to_nuget }}" = "true" ]; then
-              echo "✅ Will publish to NuGet.org after build" >> $GITHUB_STEP_SUMMARY
-            else
-              echo "ℹ️ Not publishing to NuGet.org (checkbox not selected)" >> $GITHUB_STEP_SUMMARY
-            fi
-          elif [[ "${{ github.ref }}" == refs/tags/v* ]]; then
-            echo "✅ Will publish to NuGet.org automatically (tag build)" >> $GITHUB_STEP_SUMMARY
-          else
-            echo "ℹ️ Publishing only available via manual workflow dispatch or tags" >> $GITHUB_STEP_SUMMARY
-          fi
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "### 📥 Installation" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "Download the artifact from this workflow run and install locally:" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "\`\`\`bash" >> $GITHUB_STEP_SUMMARY
-          echo "# Install from local .nupkg file" >> $GITHUB_STEP_SUMMARY
-          echo "dotnet add package CMSol.Fiscal.OpenAC.Net.NFSe.Nacional --source /path/to/nupkg/folder" >> $GITHUB_STEP_SUMMARY
-          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "Or configure a local NuGet source:" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "\`\`\`bash" >> $GITHUB_STEP_SUMMARY
-          echo "# Add local source" >> $GITHUB_STEP_SUMMARY
-          echo "dotnet nuget add source /path/to/nupkg/folder --name LocalFork" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "# Install package" >> $GITHUB_STEP_SUMMARY
-          echo "dotnet add package CMSol.Fiscal.OpenAC.Net.NFSe.Nacional --version ${{ steps.version.outputs.version }}" >> $GITHUB_STEP_SUMMARY
-          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "### 📋 Package Contents" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "- 📦 Main package: \`CMSol.Fiscal.OpenAC.Net.NFSe.Nacional.${{ steps.version.outputs.version }}.nupkg\`" >> $GITHUB_STEP_SUMMARY
-          echo "- 🔍 Symbols: \`CMSol.Fiscal.OpenAC.Net.NFSe.Nacional.${{ steps.version.outputs.version }}.snupkg\`" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "### ℹ️ About this Package" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "This is a custom fork of OpenAC.Net.NFSe.Nacional with personalized metadata." >> $GITHUB_STEP_SUMMARY
-          echo "The original project can be found at: https://github.com/OpenAC-Net/OpenAC.Net.NFSe.Nacional" >> $GITHUB_STEP_SUMMARY
-
-  publish-nuget:
-    name: 📤 Publish to NuGet.org
-    needs: build
-    runs-on: ubuntu-latest
-    
-    # Roda em workflow_dispatch COM checkbox OU em tags v*
-    if: |
-      (github.event_name == 'workflow_dispatch' && inputs.publish_to_nuget == true) ||
-      startsWith(github.ref, 'refs/tags/v')
-    
-    permissions:
-      id-token: write  # Necessário para OIDC Trusted Publishing
-      contents: read
-    
-    steps:
-      - name: 🔽 Download NuGet package
-        uses: actions/download-artifact@v4
-        with:
-          name: nuget-package
-          path: ./artifacts
-      
-      - name: 📦 List artifacts
-        run: ls -la ./artifacts
-      
-      - name: 🔐 Setup .NET (for push command)
-        uses: actions/setup-dotnet@v5.0.0
-        with:
-          dotnet-version: '8.0.x'
-      
-      - name: 📤 Publish to NuGet.org
-        run: |
-          dotnet nuget push ./artifacts/*.nupkg \
-            --source https://api.nuget.org/v3/index.json \
-            --skip-duplicate
-        env:
-          DOTNET_CLI_TELEMETRY_OPTOUT: 1
-      
-      - name: ✅ Publication summary
-        run: |
-          echo "## 📤 Package Published to NuGet.org" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "✅ Package **CMSol.Fiscal.OpenAC.Net.NFSe.Nacional** published successfully!" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "🔗 View on NuGet.org: https://www.nuget.org/packages/CMSol.Fiscal.OpenAC.Net.NFSe.Nacional" >> $GITHUB_STEP_SUMMARY
-
-  release:
-    name: 🚀 Create GitHub Release
-    runs-on: ubuntu-latest
-    needs: build
-    # Only run on tags
-    if: startsWith(github.ref, 'refs/tags/v')
-    
-    permissions:
-      contents: write
-    
-    steps:
-      # 📥 Download NuGet package artifact
-      - name: 📥 Download NuGet package
-        uses: actions/download-artifact@v4
-        with:
-          name: nuget-package
-          path: ./artifacts
-      
-      # 📥 Download symbols artifact
-      - name: 📥 Download symbols package
-        uses: actions/download-artifact@v4
-        with:
-          name: nuget-symbols
-          path: ./artifacts
-        continue-on-error: true
-      
-      # 🚀 Create GitHub Release
-      - name: 🚀 Create GitHub Release
-        uses: softprops/action-gh-release@v1
-        with:
-          files: ./artifacts/*
-          generate_release_notes: true
-          draft: false
-          prerelease: false
+  # 🎯 Manual execution with custom
+
