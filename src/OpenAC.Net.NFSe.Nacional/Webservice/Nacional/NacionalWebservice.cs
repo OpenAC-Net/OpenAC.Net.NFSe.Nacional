@@ -32,6 +32,7 @@
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Json;
+using System.Text.Json;
 using System.Threading.Tasks;
 using OpenAC.Net.Core.Logging;
 using OpenAC.Net.DFe.Core.Common;
@@ -217,8 +218,13 @@ public class NacionalWebservice : NFSeWebserviceBase
         GravarArquivoEmDisco(strResponse, $"Evento-{evento.Informacoes.ChNFSe}{evento.Informacoes.Evento}-resp.json",
             documento);
 
+        var jsonOptions = new JsonSerializerOptions
+        {
+            PropertyNameCaseInsensitive = true,
+        };
+
         return NFSeResponse<RespostaEnvioEvento>.Create(evento.Xml, strEnvio, strResponse,
-            httpResponse.IsSuccessStatusCode);
+            httpResponse.IsSuccessStatusCode, jsonOptions);
     }
 
     #endregion Eventos
