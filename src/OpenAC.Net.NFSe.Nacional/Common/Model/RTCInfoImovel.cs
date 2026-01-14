@@ -38,7 +38,7 @@ public sealed class RTCInfoImovel
     /// Endereço do imóvel.
     /// </summary>
     [DFeElement("end", Ocorrencia = Ocorrencia.NaoObrigatoria)]
-    public EnderecoNFSe? Endereco { get; set; }
+    public EnderecoSimplesNFSe? Endereco { get; set; }
 
     #endregion
 }
