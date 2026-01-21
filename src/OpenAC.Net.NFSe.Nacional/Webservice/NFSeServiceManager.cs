@@ -49,6 +49,13 @@ public sealed class NFSeServiceManager
                     { VersaoNFSe.Ve100, typeof(SimplISS.SimplISSWebservice) },
                     { VersaoNFSe.Ve101, typeof(SimplISS.SimplISSWebservice) }
                 }
+            },
+            {
+                NFSeProvider.Tiplan, new Dictionary<VersaoNFSe, Type>
+                {
+                    { VersaoNFSe.Ve100, typeof(Tiplan.TiplanWebService) },
+                    { VersaoNFSe.Ve101, typeof(Tiplan.TiplanWebService) }
+                }
             }
         };
 
