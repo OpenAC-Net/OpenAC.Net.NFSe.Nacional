@@ -122,7 +122,7 @@ public class TiplanWebService : NacionalWebservice
         GravarArquivoEmDisco(strEnvio, $"Evento-{evento.Informacoes.ChNFSe}{evento.Informacoes.Evento}-env.json", documento);
 
         string url = ServiceInfo[Configuracao.WebServices.Ambiente][TipoUrl.EnviarEvento] ?? throw new InvalidOperationException("URL de envio não encontrada na configuração do serviço.");
-        HttpResponseMessage httpResponse = await SendAsync(content, HttpMethod.Post, $"{url}/adn/dps/evento/{evento.Informacoes.ChNFSe}");
+        HttpResponseMessage httpResponse = await SendAsync(content, HttpMethod.Post, $"{url}/adn/dps/evento");
 
         string strResponse = await httpResponse.Content.ReadAsStringAsync();
 
