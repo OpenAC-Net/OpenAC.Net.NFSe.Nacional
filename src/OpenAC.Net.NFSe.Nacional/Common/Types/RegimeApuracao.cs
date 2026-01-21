@@ -49,7 +49,7 @@ public enum RegimeApuracao
     /// Regime de apuração dos tributos federais pelo Simples Nacional e ISSQN por fora do Simples Nacional conforme legislação municipal.
     /// </summary>
     [DFeEnum("2")]
-    TributosFederaisSNISSQPorForaSN,
+    TributosFederaisSNISSQNPorForaSN,
 
     /// <summary>
     /// Regime de apuração dos tributos federais e municipal por fora do Simples Nacional conforme legislações federal e municipal.
