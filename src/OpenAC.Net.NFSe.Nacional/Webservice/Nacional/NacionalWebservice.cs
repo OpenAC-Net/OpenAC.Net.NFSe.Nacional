@@ -270,7 +270,8 @@ public class NacionalWebservice : NFSeWebserviceBase
 
         var retorno = NFSeResponse<RespostaEnvioDps>.Create(dps.Xml, strEnvio, strResponse, httpResponse.IsSuccessStatusCode);
 
-        GravarNFSeEmDisco(retorno.Resultado.XmlNFSe, $"{dps.Informacoes.NumeroDps:000000}_nfse.xml", documento,  dps.Informacoes.DhEmissao.DateTime);
+        if (retorno.Sucesso)
+            GravarNFSeEmDisco(retorno.Resultado.XmlNFSe, $"{dps.Informacoes.NumeroDps:000000}_nfse.xml", documento,  dps.Informacoes.DhEmissao.DateTime);
 
         return retorno;
     }
