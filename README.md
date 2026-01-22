@@ -8,5 +8,3 @@ Se *OpenNFSeNacional* for um componente vital em sua aplicação comercial ou de
 # OpenAC.Net.NFSe.Nacional
 
 Biblioteca para emissão e transmissão de NFSe (Nota Fiscal de Serviço Eletrônica) Padrão Nacional.
-
-# Essa biblioteca pode conter ajustes que ainda não foram levados ao projeto original.
