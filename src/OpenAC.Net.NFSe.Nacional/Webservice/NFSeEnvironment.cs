@@ -42,7 +42,7 @@ public class NFSeEnvironment
     [DFeDictionary("Enderecos")]
     [DFeDictionaryKey(TipoCampo.Enum, "Tipo", AsAttribute = true)]
     [DFeDictionaryValue(TipoCampo.Str, "Endereco")]
-    public Dictionary<TipoUrl, string> Enderecos { get; } = new();
+    public Dictionary<TipoUrl, string> Enderecos { get; set; } = new();
 
     #endregion Properties
 }

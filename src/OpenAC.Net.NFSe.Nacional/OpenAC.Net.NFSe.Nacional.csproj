@@ -20,9 +20,9 @@
         <PackageLicenseFile>LICENSE</PackageLicenseFile>
         <PackageReadmeFile>README.md</PackageReadmeFile>
         <NeutralLanguage>pt-BR</NeutralLanguage>
-        <AssemblyVersion>1.4.1.0</AssemblyVersion>
-        <FileVersion>1.4.1.0</FileVersion>
-        <Version>1.4.1</Version>
+        <AssemblyVersion>1.4.3.0</AssemblyVersion>
+        <FileVersion>1.4.3.0</FileVersion>
+        <Version>1.4.3</Version>
         <PublishRepositoryUrl>true</PublishRepositoryUrl>
         <EmbedUntrackedSources>true</EmbedUntrackedSources>
         <DebugType>embedded</DebugType>
@@ -101,6 +101,10 @@
             <Pack>True</Pack>
             <PackagePath>content\Schemas\1.01</PackagePath>
         </None>
+    </ItemGroup>
+
+    <ItemGroup>
+      <EmbeddedResource Include="Resources\Municipios.nfse" />
     </ItemGroup>
 
 </Project>

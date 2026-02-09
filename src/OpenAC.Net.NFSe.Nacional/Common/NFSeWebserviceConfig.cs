@@ -53,7 +53,7 @@ public sealed class NFSeWebserviceConfig : DFeWebserviceConfigBase
     /// Provedor do webservice NFSe em uso.
     /// </summary>
     /// <value>Provedor atual. Padrão: NFSeProvider.Nacional.</value>
-    public NFSeProvider Provider { get; private set; } = NFSeProvider.Nacional;
+    public NFSeProvider Provedor { get; private set; } = NFSeProvider.Nacional;
 
     /// <summary>
     /// Codigo do municipio do Webservices em uso
@@ -71,7 +71,12 @@ public sealed class NFSeWebserviceConfig : DFeWebserviceConfigBase
 
             field = value;
             Municipio = municipio?.Nome ?? string.Empty;
-            Provider = municipio?.Provedor ?? NFSeProvider.Nacional;
+            Provedor = municipio?.Provider ?? NFSeProvider.Nacional;
         }
     }
+
+    /// <summary>
+    /// Define se a aplicação deve validar o XML contra os schemas XSD antes do envio.
+    /// </summary>
+    public bool ValidarSchemas { get; set; }  = true;
 }
