@@ -34,19 +34,66 @@ using OpenAC.Net.DFe.Core.Attributes;
 namespace OpenAC.Net.NFSe.Nacional.Common.Types;
 
 /// <summary>
-/// Tipo de retenção do PIS/COFINS.
+/// Tipo de retenção do PIS/COFINS/CSLL.
 /// </summary>
-public enum TipoRetencaoPisCofins
+public enum TipoRetencaoPisCofinsCsll
 {
     /// <summary>
-    /// 1 - Retido
+    /// 0 - PIS/COFINS/CSLL Não Retidos
+    /// </summary>
+    [DFeEnum("0")]
+    PisCofinsCsllNaoRetidos,
+    /// <summary>
+    /// 1 - PIS/COFINS Retidos
     /// </summary>
     [DFeEnum("1")]
-    Retido,
+    PisCofinsRetidos,
 
     /// <summary>
-    /// 2 - Não Retido
+    /// 2 - PIS/COFINS Não Retidos
     /// </summary>
     [DFeEnum("2")]
-    NaoRetido
+    PisCofinsNaoRetidos,
+    
+    /// <summary>
+    /// 3 - PIS/COFINS/CSLL Retidos
+    /// </summary>
+    [DFeEnum("3")]
+    PisCofinsCsllRetidos,
+    
+    /// <summary>
+    /// 4 - PIS/COFINS Retidos, CSLL Não Retido
+    /// </summary>
+    [DFeEnum("4")]
+    PisCofinsRetidosCsllNaoRetido,
+    
+    /// <summary>
+    /// 5 - PIS Retido, COFINS/CSLL Não Retidos;
+    /// </summary>
+    [DFeEnum("5")]
+    PisRetidoCofinsCsllNaoRetidos,
+    
+    /// <summary>
+    /// 6 - COFINS Retido, PIS/CSLL Não Retidos
+    /// </summary>
+    [DFeEnum("6")]
+    CofinsRetidoPisCSllNaoRetidos,
+    
+    /// <summary>
+    /// 7 - PIS Não Retido, COFINS/CSLL Retidos
+    /// </summary>
+    [DFeEnum("7")]
+    PisNaoRetidoCofinsCsllRetidos,
+    
+    /// <summary>
+    /// 8 - PIS/COFINS Não Retidos, CSLL Retido
+    /// </summary>
+    [DFeEnum("8")]
+    PisCofinsNaoRetidosCsllRetido,
+    
+    /// <summary>
+    /// 9 - COFINS Não Retido, PIS/CSLL Retidos
+    /// </summary>
+    [DFeEnum("9")]
+    CofinsNaoRetidoPisCSllRetidos,
 }
