@@ -65,7 +65,7 @@ public sealed class InfNFSe
     /// Número da NFSe.
     /// </summary>
     [DFeElement(TipoCampo.Long, "nNFSe", Min = 1, Max = 13, Ocorrencia = Ocorrencia.Obrigatoria)]
-    public int NumeroNFSe { get; set; } = 1;
+    public long NumeroNFSe { get; set; } = 1;
     
     /// <summary>
     /// Código do local de incidência.
