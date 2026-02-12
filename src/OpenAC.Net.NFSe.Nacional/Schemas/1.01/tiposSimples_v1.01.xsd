@@ -1182,14 +1182,30 @@
     <xs:annotation>
       <xs:documentation>
         Tipo de retencao do Pis/Cofins:
-        1 - Retido;
-        2 - Não Retido;
+        0 - PIS/COFINS/CSLL Não Retidos
+        1 - PIS/COFINS Retidos
+        2 - PIS/COFINS Não Retidos
+        3 - PIS/COFINS/CSLL Retidos
+        4 - PIS/COFINS Retidos, CSLL Não Retido
+        5 - PIS Retido, COFINS/CSLL Não Retidos
+        6 - COFINS Retido, PIS/CSLL Não Retidos
+        7 - PIS Não Retido, COFINS/CSLL Retidos
+        8 - PIS/COFINS Não Retidos, CSLL Retido
+        9 - COFINS Não Retido, PIS/CSLL Retidos
       </xs:documentation>
     </xs:annotation>
     <xs:restriction base="xs:string">
       <xs:whiteSpace value="preserve"/>
+      <xs:enumeration value="0"/>
       <xs:enumeration value="1"/>
       <xs:enumeration value="2"/>
+      <xs:enumeration value="3"/>
+      <xs:enumeration value="4"/>
+      <xs:enumeration value="5"/>
+      <xs:enumeration value="6"/>
+      <xs:enumeration value="7"/>
+      <xs:enumeration value="8"/>
+      <xs:enumeration value="9"/>
     </xs:restriction>
   </xs:simpleType>
   <xs:simpleType name="TSTipoIndTotTrib">
