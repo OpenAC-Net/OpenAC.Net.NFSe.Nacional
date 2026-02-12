@@ -147,7 +147,7 @@ public class TestEmissao
                 {
                     PisCofins = new PisCofins()
                     {
-                        TipoRetencao = TipoRetencaoPisCofins.NaoRetido,
+                        TipoRetencao = TipoRetencaoPisCofinsCsll.PisCofinsCsllNaoRetidos,
                         Cst = TipoCST.AliquotaBasica,
                         ValorBcCofins = 85000,
                         AliquotaCofins = 7.6m,

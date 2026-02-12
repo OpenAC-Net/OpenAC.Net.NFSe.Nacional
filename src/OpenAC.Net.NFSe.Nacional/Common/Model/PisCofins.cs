@@ -80,5 +80,5 @@ public sealed class PisCofins
     /// Tipo de retenção do PIS/COFINS.
     /// </summary>
     [DFeElement(TipoCampo.Enum, "tpRetPisCofins", Min = 1, Max = 1, Ocorrencia = Ocorrencia.NaoObrigatoria)]
-    public TipoRetencaoPisCofins? TipoRetencao { get; set; }
+    public TipoRetencaoPisCofinsCsll? TipoRetencao { get; set; }
 }
