@@ -64,7 +64,7 @@ public sealed class InfNFSe
     /// <summary>
     /// Número da NFSe.
     /// </summary>
-    [DFeElement(TipoCampo.Int, "nNFSe", Min = 1, Max = 13, Ocorrencia = Ocorrencia.Obrigatoria)]
+    [DFeElement(TipoCampo.Long, "nNFSe", Min = 1, Max = 13, Ocorrencia = Ocorrencia.Obrigatoria)]
     public int NumeroNFSe { get; set; } = 1;
     
     /// <summary>
