@@ -241,3 +241,5 @@ _Pvt_Extensions
 /src/*.DotSettings
 /src/OpenAC.Net.NFSe.Nacional.Test/.env
 /src/OpenAC.Net.NFSe.Nacional/codeagent/INSTRUCTIONS.md
+/SUMMARY_XSD_UPDATE.txt
+/XSD_COMPARISON_REPORT.md
