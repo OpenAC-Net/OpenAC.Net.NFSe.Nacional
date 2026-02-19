@@ -1,8 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFrameworks>net462;net48;netstandard2.0;net8.0;net9.0</TargetFrameworks>
-        <LangVersion>preview</LangVersion>
+        <TargetFrameworks>net462;net48;netstandard2.0;net8.0;net9.0;net10.0</TargetFrameworks>
+        <LangVersion>latest</LangVersion>
         <AssemblyName>OpenAC.Net.NFSe.Nacional</AssemblyName>
         <RootNamespace>OpenAC.Net.NFSe.Nacional</RootNamespace>
         <SignAssembly>true</SignAssembly>
@@ -20,9 +20,9 @@
         <PackageLicenseFile>LICENSE</PackageLicenseFile>
         <PackageReadmeFile>README.md</PackageReadmeFile>
         <NeutralLanguage>pt-BR</NeutralLanguage>
-        <AssemblyVersion>1.4.2.0</AssemblyVersion>
-        <FileVersion>1.4.2.0</FileVersion>
-        <Version>1.4.2</Version>
+        <AssemblyVersion>1.4.3.0</AssemblyVersion>
+        <FileVersion>1.4.3.0</FileVersion>
+        <Version>1.4.3</Version>
         <PublishRepositoryUrl>true</PublishRepositoryUrl>
         <EmbedUntrackedSources>true</EmbedUntrackedSources>
         <DebugType>embedded</DebugType>
