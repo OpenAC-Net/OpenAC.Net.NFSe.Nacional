@@ -223,8 +223,13 @@ public class NacionalWebservice : NFSeWebserviceBase
             PropertyNameCaseInsensitive = true,
         };
 
-        return NFSeResponse<RespostaEnvioEvento>.Create(evento.Xml, strEnvio, strResponse,
+        var retorno = NFSeResponse<RespostaEnvioEvento>.Create(evento.Xml, strEnvio, strResponse,
             httpResponse.IsSuccessStatusCode, jsonOptions);
+
+        if (retorno.Sucesso)
+            GravarNFSeEmDisco(retorno.Resultado.XmlEvento, $"{evento.Informacoes.ChNFSe}_evento.xml", documento, evento.Informacoes.DhEvento.DateTime);
+
+        return retorno;
     }
 
     #endregion Eventos
