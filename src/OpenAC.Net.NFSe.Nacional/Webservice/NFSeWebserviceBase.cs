@@ -184,11 +184,11 @@ public abstract class NFSeWebserviceBase : IOpenLog
     /// <param name="nomeArquivo">Nome do arquivo.</param>
     /// <param name="documento">Documento do prestador.</param>
     /// <param name="data">Data de emissão.</param>
-    protected virtual void GravarDpsEmDisco(string conteudoArquivo, string nomeArquivo, string? documento, DateTime data)
+    protected virtual void GravarDpsEmDisco(string conteudoArquivo, string nomeArquivo, string? documento, DateTime data, bool incrementarNome = false)
     {
         if (Configuracao.Arquivos.Salvar == false) return;
 
-        GravarArquivoEmDisco(TipoArquivo.Rps, conteudoArquivo, nomeArquivo, documento, data);
+        GravarArquivoEmDisco(TipoArquivo.Rps, conteudoArquivo, nomeArquivo, documento, data, incrementarNome);
     }
 
     /// <summary>
@@ -198,11 +198,11 @@ public abstract class NFSeWebserviceBase : IOpenLog
     /// <param name="nomeArquivo">Nome do arquivo.</param>
     /// <param name="documento">Documento do prestador.</param>
     /// <param name="data">Data de emissão.</param>
-    protected virtual void GravarNFSeEmDisco(string conteudoArquivo, string nomeArquivo, string? documento, DateTime data)
+    protected virtual void GravarNFSeEmDisco(string conteudoArquivo, string nomeArquivo, string? documento, DateTime data, bool incrementarNome = false)
     {
         if (Configuracao.Arquivos.Salvar == false) return;
 
-        GravarArquivoEmDisco(TipoArquivo.NFSe, conteudoArquivo, nomeArquivo, documento, data);
+        GravarArquivoEmDisco(TipoArquivo.NFSe, conteudoArquivo, nomeArquivo, documento, data, incrementarNome);
     }
 
     /// <summary>
@@ -226,17 +226,49 @@ public abstract class NFSeWebserviceBase : IOpenLog
     /// <param name="nomeArquivo">Nome do arquivo.</param>
     /// <param name="documento">Documento do prestador.</param>
     /// <param name="data">Data de emissão (opcional).</param>
-    protected virtual void GravarArquivoEmDisco(TipoArquivo tipo, string conteudoArquivo, string nomeArquivo, string? documento, DateTime? data = null)
+    /// <param name="incrementarNome">
+    /// Indica se o nome do arquivo deve ser incrementado caso já exista,
+    /// adicionando um sufixo numérico (_1, _2, etc.) para evitar sobrescrita.
+    /// </param>
+    protected virtual void GravarArquivoEmDisco(TipoArquivo tipo, string conteudoArquivo, string nomeArquivo, string? documento, DateTime? data = null, bool incrementarNome = false)
     {
-        nomeArquivo = tipo switch
+        var diretorio = tipo switch
         {
-            TipoArquivo.Webservice => Path.Combine(Configuracao.Arquivos.GetPathEnvio(data ?? DateTime.Today, documento ?? string.Empty), nomeArquivo),
-            TipoArquivo.Rps => Path.Combine(Configuracao.Arquivos.GetPathDps(data ?? DateTime.Today, documento ?? string.Empty), nomeArquivo),
-            TipoArquivo.NFSe => Path.Combine(Configuracao.Arquivos.GetPathNFSe(data ?? DateTime.Today, documento ?? string.Empty), nomeArquivo),
+            TipoArquivo.Webservice => Path.Combine(Configuracao.Arquivos.GetPathEnvio(data ?? DateTime.Today, documento ?? string.Empty)),
+            TipoArquivo.Rps => Path.Combine(Configuracao.Arquivos.GetPathDps(data ?? DateTime.Today, documento ?? string.Empty)),
+            TipoArquivo.NFSe => Path.Combine(Configuracao.Arquivos.GetPathNFSe(data ?? DateTime.Today, documento ?? string.Empty)),
             _ => throw new ArgumentOutOfRangeException(nameof(tipo), tipo, null)
         };
 
-        File.WriteAllText(nomeArquivo, conteudoArquivo, Encoding.UTF8);
+        var caminhoFinal = !incrementarNome ? GerarPathUnico(diretorio, nomeArquivo) : Path.Combine(diretorio, nomeArquivo);
+
+        File.WriteAllText(caminhoFinal, conteudoArquivo, Encoding.UTF8);
+    }
+
+    /// <summary>
+    /// Verifica se o arquivo já existe antes de escrever, e incrementa um sufixo numérico caso exista.
+    /// </summary>
+    /// <param name="diretorio">Diretório onde o arquivo será salvo.</param>
+    /// <param name="nomeArquivo">Nome do arquivo.</param>
+    private static string GerarPathUnico(string diretorio, string nomeArquivo)
+    {
+        var caminho = Path.Combine(diretorio, nomeArquivo);
+
+        if (!File.Exists(caminho))
+            return caminho;
+
+        var semExtensao = Path.GetFileNameWithoutExtension(nomeArquivo);
+        var extensao = Path.GetExtension(nomeArquivo);
+        var contador = 1;
+
+        do
+        {
+            var novoNome = $"{semExtensao}_{contador++}{extensao}";
+            caminho = Path.Combine(diretorio, novoNome);
+        }
+        while (File.Exists(caminho));
+
+        return caminho;
     }
 
     #endregion Methods
