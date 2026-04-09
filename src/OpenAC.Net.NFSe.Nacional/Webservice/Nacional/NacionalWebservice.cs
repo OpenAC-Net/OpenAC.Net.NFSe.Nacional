@@ -36,6 +36,7 @@ using System.Net.Http.Json;
 using System.Text.Json;
 using System.Threading.Tasks;
 using System.Xml.Linq;
+using OpenAC.Net.Core.Extensions;
 using OpenAC.Net.Core.Logging;
 using OpenAC.Net.DFe.Core.Extensions;
 using OpenAC.Net.NFSe.Nacional.Common;
@@ -291,7 +292,7 @@ public class NacionalWebservice : NFSeWebserviceBase
 
         var prefixoNomeArquivoDps = Configuracao.Arquivos.PadronizarNomes
             ? dps.Informacoes.Id
-            : dps.Informacoes.NumeroDps.FillZeros();
+            : dps.Informacoes.NumeroDps.ZeroFill(6);
 
         GravarDpsEmDisco(dps.Xml, $"{prefixoNomeArquivoDps}_dps.xml",
             documento, dps.Informacoes.DhEmissao.DateTime);
@@ -323,7 +324,7 @@ public class NacionalWebservice : NFSeWebserviceBase
         {
             var prefixoNomeArquivoNfse = Configuracao.Arquivos.PadronizarNomes
             ? retorno?.Resultado?.ChaveAcesso
-            : dps.Informacoes.NumeroDps.FillZeros();
+            : dps.Informacoes.NumeroDps.ZeroFill(6);
 
             GravarNFSeEmDisco(retorno.Resultado.XmlNFSe, $"{prefixoNomeArquivoNfse}_nfse.xml", documento, dps.Informacoes.DhEmissao.DateTime);
         }

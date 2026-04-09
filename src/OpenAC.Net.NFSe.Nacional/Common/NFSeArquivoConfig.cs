@@ -92,7 +92,14 @@ public sealed class NFSeArquivoConfig : DFeArquivosConfigBase<SchemaNFSe>
     /// </summary>
     /// <value>A versão </value>
     public VersaoNFSe VersaoSchema { get; set; } = VersaoNFSe.Ve100;
-
+    
+    /// <summary>
+    /// Define se os nomes dos arquivos devem ser padronizados,
+    /// utilizando a chave da NFSe, Id do DPS ou NSU, conforme o tipo de operação.
+    /// Quando <c>false</c>, utiliza o comportamento padrão da biblioteca,
+    /// cujo formato pode variar e não segue um padrão fixo.
+    /// </summary>
+    public bool PadronizarNomes { get; set; }
 
     #endregion Properties
 
