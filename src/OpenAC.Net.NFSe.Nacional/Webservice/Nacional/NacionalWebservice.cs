@@ -29,17 +29,19 @@
 // <summary></summary>
 // ***********************************************************************
 
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Text.Json;
 using System.Threading.Tasks;
+using System.Xml.Linq;
+using OpenAC.Net.Core.Extensions;
 using OpenAC.Net.Core.Logging;
-using OpenAC.Net.DFe.Core.Common;
+using OpenAC.Net.DFe.Core.Extensions;
 using OpenAC.Net.NFSe.Nacional.Common;
 using OpenAC.Net.NFSe.Nacional.Common.Model;
 using OpenAC.Net.NFSe.Nacional.Common.Types;
-
 namespace OpenAC.Net.NFSe.Nacional.Webservice.Nacional;
 
 /// <summary>
@@ -54,7 +56,7 @@ public class NacionalWebservice : NFSeWebserviceBase
     /// </summary>
     /// <param name="configuracaoNFSe">Configuração da NFSe.</param>
     /// <param name="serviceInfo">Informações do serviço</param>
-    public NacionalWebservice(ConfiguracaoNFSe configuracaoNFSe, NFSeServiceInfo serviceInfo) : 
+    public NacionalWebservice(ConfiguracaoNFSe configuracaoNFSe, NFSeServiceInfo serviceInfo) :
         base(configuracaoNFSe, serviceInfo)
     {
     }
@@ -192,8 +194,37 @@ public class NacionalWebservice : NFSeWebserviceBase
 
         var documento = evento.Informacoes.CPFAutor ?? evento.Informacoes.CNPJAutor;
 
-        GravarDpsEmDisco(evento.Xml, $"{evento.Informacoes.ChNFSe}{evento.Informacoes.Evento}_evento.xml",
-            documento, evento.Informacoes.DhEvento.DateTime);
+        //var prefixoNomeArquivo = evento.Informacoes.ChNFSe;
+
+        //if (!Configuracao.Arquivos.PadronizarNomes)
+        //{
+        //    try
+        //    {
+        //        var consulta = await ConsultaChaveAsync(evento.Informacoes.ChNFSe);
+        //        var nfse = consulta.Resultado.Lote.FirstOrDefault(x => x.TipoDocumento == TipoDocumento.NFSE);
+
+        //        if (!string.IsNullOrWhiteSpace(nfse?.ArquivoXml))
+        //        {
+        //            var numeroDoc = XDocument.Parse(nfse?.ArquivoXml)
+        //                .Descendants()
+        //                .FirstOrDefault(x => x.Name.LocalName == "nDPS")
+        //                ?.Value.FillZeros();
+
+        //            prefixoNomeArquivo = $"{numeroDoc}{evento.Informacoes.Evento}";
+        //        }
+        //    }
+        //    catch (System.Exception)
+        //    {
+
+        //    }
+        //}
+
+        var prefixoNomeArquivoDps = Configuracao.Arquivos.PadronizarNomes
+            ? evento.Informacoes.Id
+            : $"{evento.Informacoes.ChNFSe}{evento.Informacoes.Evento}";
+
+        GravarDpsEmDisco(evento.Xml, $"{prefixoNomeArquivoDps}_evento.xml",
+                documento, evento.Informacoes.DhEvento.DateTime, true);
 
         var envio = new EventoEnvio
         {
@@ -205,7 +236,7 @@ public class NacionalWebservice : NFSeWebserviceBase
 
         this.Log().Debug($"Webservice: [Evento][Envio] - {strEnvio}");
 
-        GravarArquivoEmDisco(strEnvio, $"Evento-{evento.Informacoes.ChNFSe}{evento.Informacoes.Evento}-env.json",
+        GravarArquivoEmDisco(strEnvio, $"Evento-{prefixoNomeArquivoDps}-env.json",
             documento);
 
         var url = ServiceInfo[Configuracao.WebServices.Ambiente][TipoUrl.EnviarEvento];
@@ -215,7 +246,7 @@ public class NacionalWebservice : NFSeWebserviceBase
 
         this.Log().Debug($"Webservice: [Evento][Resposta] - {strResponse}");
 
-        GravarArquivoEmDisco(strResponse, $"Evento-{evento.Informacoes.ChNFSe}{evento.Informacoes.Evento}-resp.json",
+        GravarArquivoEmDisco(strResponse, $"Evento-{prefixoNomeArquivoDps}-resp.json",
             documento);
 
         var jsonOptions = new JsonSerializerOptions
@@ -223,8 +254,23 @@ public class NacionalWebservice : NFSeWebserviceBase
             PropertyNameCaseInsensitive = true,
         };
 
-        return NFSeResponse<RespostaEnvioEvento>.Create(evento.Xml, strEnvio, strResponse,
+        var retorno = NFSeResponse<RespostaEnvioEvento>.Create(evento.Xml, strEnvio, strResponse,
             httpResponse.IsSuccessStatusCode, jsonOptions);
+
+        if (retorno.Sucesso)
+        {
+            var prefixoNomeArquivoEventoNfse = Configuracao.Arquivos.PadronizarNomes
+                ? evento.Informacoes.ChNFSe
+                : $"{evento.Informacoes.ChNFSe}{evento.Informacoes.Evento}";
+
+            var nSeqEvento = XDocument.Parse(retorno.Resultado.XmlEvento)
+                .Descendants()
+                .FirstOrDefault(x => x.Name.LocalName == "nSeqEvento")?.Value ?? "00";
+
+            GravarNFSeEmDisco(retorno.Resultado.XmlEvento, $"{prefixoNomeArquivoEventoNfse}_evento_{nSeqEvento}.xml", documento, evento.Informacoes.DhEvento.DateTime, true);
+        }
+
+        return retorno;
     }
 
     #endregion Eventos
@@ -244,7 +290,11 @@ public class NacionalWebservice : NFSeWebserviceBase
 
         var documento = dps.Informacoes.Prestador.CPF ?? dps.Informacoes.Prestador.CNPJ;
 
-        GravarDpsEmDisco(dps.Xml, $"{dps.Informacoes.NumeroDps:000000}_dps.xml",
+        var prefixoNomeArquivoDps = Configuracao.Arquivos.PadronizarNomes
+            ? dps.Informacoes.Id
+            : dps.Informacoes.NumeroDps.ZeroFill(6);
+
+        GravarDpsEmDisco(dps.Xml, $"{prefixoNomeArquivoDps}_dps.xml",
             documento, dps.Informacoes.DhEmissao.DateTime);
 
         var envio = new DpsEnvio
@@ -257,7 +307,7 @@ public class NacionalWebservice : NFSeWebserviceBase
 
         this.Log().Debug($"Webservice: [Enviar][Envio] - {strEnvio}");
 
-        GravarArquivoEmDisco(strEnvio, $"Enviar-{dps.Informacoes.NumeroDps:000000}-env.json", documento);
+        GravarArquivoEmDisco(strEnvio, $"Enviar-{prefixoNomeArquivoDps}-env.json", documento);
 
         var url = ServiceInfo[Configuracao.WebServices.Ambiente][TipoUrl.Enviar];
         var httpResponse = await SendAsync(content, HttpMethod.Post, $"{url}/nfse");
@@ -266,12 +316,18 @@ public class NacionalWebservice : NFSeWebserviceBase
 
         this.Log().Debug($"Webservice: [Enviar][Resposta] - {strResponse}");
 
-        GravarArquivoEmDisco(strResponse, $"Enviar-{dps.Informacoes.NumeroDps:000000}-resp.json", documento);
+        GravarArquivoEmDisco(strResponse, $"Enviar-{prefixoNomeArquivoDps}-resp.json", documento);
 
         var retorno = NFSeResponse<RespostaEnvioDps>.Create(dps.Xml, strEnvio, strResponse, httpResponse.IsSuccessStatusCode);
 
         if (retorno.Sucesso)
-            GravarNFSeEmDisco(retorno.Resultado.XmlNFSe, $"{dps.Informacoes.NumeroDps:000000}_nfse.xml", documento,  dps.Informacoes.DhEmissao.DateTime);
+        {
+            var prefixoNomeArquivoNfse = Configuracao.Arquivos.PadronizarNomes
+            ? retorno?.Resultado?.ChaveAcesso
+            : dps.Informacoes.NumeroDps.ZeroFill(6);
+
+            GravarNFSeEmDisco(retorno.Resultado.XmlNFSe, $"{prefixoNomeArquivoNfse}_nfse.xml", documento, dps.Informacoes.DhEmissao.DateTime);
+        }
 
         return retorno;
     }

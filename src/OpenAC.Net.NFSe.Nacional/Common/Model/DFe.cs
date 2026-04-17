@@ -34,7 +34,7 @@ public class DFe
     /// </summary>
     [JsonPropertyName("TipoEvento")]
     [JsonConverter(typeof(JsonStringEnumConverter<TipoEvento>))]
-    public TipoEvento TipoEvento { get; set; }
+    public TipoEvento? TipoEvento { get; set; }
     
     /// <summary>
     /// Conteúdo do arquivo XML, possivelmente compactado.
