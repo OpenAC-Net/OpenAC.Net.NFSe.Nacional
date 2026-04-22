@@ -24,10 +24,11 @@ namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 public sealed class RTCInfoDest
 {
     #region Choice
-    
+
     /// <summary>
     /// Número do CNPJ do Destinatário do serviço.
     /// </summary>
+    [DFeElement(TipoCampo.Str, "CNPJ", Ocorrencia = Ocorrencia.NaoObrigatoria)]
     public string? CNPJ { get; set; }
     /// <summary>
     ///  CPF (Cadastro de Pessoas Físicas).
