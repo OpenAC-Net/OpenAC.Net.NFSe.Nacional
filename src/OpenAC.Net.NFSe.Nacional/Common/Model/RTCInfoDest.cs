@@ -23,7 +23,7 @@ namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 /// </summary>
 public sealed class RTCInfoDest
 {
-    #region Choice
+    #region Choice 
 
     /// <summary>
     /// Número do CNPJ do Destinatário do serviço.
