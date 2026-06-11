@@ -19,55 +19,55 @@ using OpenAC.Net.NFSe.Nacional.Common.Types;
 namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 
 /// <summary>
-/// Grupo de informações relativas ao Destinatário.
+/// Grupo de informaÃ§Ãµes relativas ao DestinatÃ¡rio.
 /// </summary>
 public sealed class RTCInfoDest
 {
     #region Choice
 
     /// <summary>
-    /// Número do CNPJ do Destinatário do serviço.
+    /// NÃºmero do CNPJ do DestinatÃ¡rio do serviÃ§o.
     /// </summary>
     [DFeElement(TipoCampo.Str, "CNPJ", Ocorrencia = Ocorrencia.NaoObrigatoria)]
     public string? CNPJ { get; set; }
     /// <summary>
-    ///  CPF (Cadastro de Pessoas Físicas).
+    ///  CPF (Cadastro de Pessoas FÃ­sicas).
     /// </summary>
     [DFeElement(TipoCampo.Str, "CPF", Ocorrencia = Ocorrencia.NaoObrigatoria)]
     public string? CPF { get; set; }
     /// <summary>
-    /// NIF (Número de Identificação Fiscal).
+    /// NIF (NÃºmero de IdentificaÃ§Ã£o Fiscal).
     /// </summary>
     [DFeElement(TipoCampo.Str, "NIF", Ocorrencia = Ocorrencia.NaoObrigatoria)]
     public string? NIF { get; set; }
     /// <summary>
-    ///  Motivo para não informação do NIF.
+    ///  Motivo para nÃ£o informaÃ§Ã£o do NIF.
     /// </summary>
     [DFeElement(TipoCampo.Enum, "cNaoNIF", Ocorrencia = Ocorrencia.NaoObrigatoria)]
     public CodNaoNIF? CodigoNaoNIF { get; set; }
-    
+
     #endregion
-    
+
     /// <summary>
-    /// Nome / Nome Empresarial do do Destinatário do serviço.
+    /// Nome / Nome Empresarial do do DestinatÃ¡rio do serviÃ§o.
     /// </summary>
     [DFeElement(TipoCampo.Str, "xNome", Min = 1, Max = 150, Ocorrencia = Ocorrencia.Obrigatoria)]
     public string Nome { get; set; } = string.Empty;
 
     /// <summary>
-    /// Grupo de informações do endereço do Destinatário do serviço.
+    /// Grupo de informaÃ§Ãµes do endereÃ§o do DestinatÃ¡rio do serviÃ§o.
     /// </summary>
     [DFeElement("end", Ocorrencia = Ocorrencia.NaoObrigatoria)]
     public EnderecoNFSe? Endereco { get; set; }
 
     /// <summary>
-    /// Número do telefone do Destinatário do serviço.
+    /// NÃºmero do telefone do DestinatÃ¡rio do serviÃ§o.
     /// </summary>
     [DFeElement(TipoCampo.Str, "fone", Ocorrencia = Ocorrencia.NaoObrigatoria)]
     public string? Telefone { get; set; }
 
     /// <summary>
-    /// E-mail do Destinatário do serviço.
+    /// E-mail do DestinatÃ¡rio do serviÃ§o.
     /// </summary>
     [DFeElement(TipoCampo.Str, "email", Ocorrencia = Ocorrencia.NaoObrigatoria)]
     public string? Email { get; set; }
