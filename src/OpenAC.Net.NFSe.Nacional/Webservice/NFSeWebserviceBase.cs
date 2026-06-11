@@ -136,7 +136,8 @@ public abstract class NFSeWebserviceBase : IOpenLog
     {
         var handler = new HttpClientHandler();
 
-        handler.SslProtocols = (SslProtocols)Configuracao.WebServices.Protocolos;
+        //handler.SslProtocols = (SslProtocols)Configuracao.WebServices.Protocolos;
+
         handler.ClientCertificates.Add(Configuracao.Certificados.ObterCertificado());
         var client = new HttpClient(handler);
 
