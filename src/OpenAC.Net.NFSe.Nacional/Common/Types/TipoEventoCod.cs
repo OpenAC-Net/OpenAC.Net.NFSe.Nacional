@@ -84,7 +84,7 @@ public struct TipoEventoCod
     /// <summary>
     /// Rejeição pelo prestador.
     /// </summary>
-    public const string RejeicaoPrestador = "203205";
+    public const string RejeicaoPrestador = "202205";
 
     /// <summary>
     /// Rejeição pelo tomador.
