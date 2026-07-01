@@ -95,7 +95,7 @@ public class TiplanWebService : NacionalWebservice
 
         GravarArquivoEmDisco(strResponse, $"Enviar-{dps.Informacoes.NumeroDps:000000}-resp.json", documento);
 
-        return NFSeResponse<RespostaEnvioDps>.Create(dps.Xml, strEnvio, strResponse, httpResponse.IsSuccessStatusCode, JsonOptions);
+        return NFSeResponse<RespostaEnvioDps>.CreateByJson(dps.Xml, strEnvio, strResponse, httpResponse.IsSuccessStatusCode, JsonOptions);
     }
     /// <summary>
     /// Envio de evento assincrono.
@@ -130,7 +130,7 @@ public class TiplanWebService : NacionalWebservice
 
         GravarArquivoEmDisco(strResponse, $"Evento-{evento.Informacoes.ChNFSe}{evento.Informacoes.Evento}-resp.json", documento);
 
-        return NFSeResponse<RespostaEnvioEvento>.Create(evento.Xml, strEnvio, strResponse, httpResponse.IsSuccessStatusCode, JsonOptions);
+        return NFSeResponse<RespostaEnvioEvento>.CreateByJson(evento.Xml, strEnvio, strResponse, httpResponse.IsSuccessStatusCode, JsonOptions);
     }
 
 }

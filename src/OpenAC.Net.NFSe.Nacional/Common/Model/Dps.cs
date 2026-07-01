@@ -81,6 +81,19 @@ public sealed class Dps : DFeSignDocument<Dps>
     /// <param name="configuracao">Configuração da NFSe.</param>
     public void Assinar(ConfiguracaoNFSe configuracao)
     {
+        var options = DFeSaveOptions.DisableFormatting;
+        if (configuracao.Geral.RetirarAcentos)
+            options |= DFeSaveOptions.RemoveAccents;
+
+        Assinar(configuracao, options);
+    }
+
+    /// <summary>
+    /// Assina o documento DPS utilizando as configurações fornecidas e as opções de salvamento especificadas.
+    /// </summary>
+    /// <param name="configuracao">Configuração da NFSe.</param>
+    public void Assinar(ConfiguracaoNFSe configuracao, DFeSaveOptions options)
+    {
         if (Informacoes.Id.IsEmpty())
         {
             var tipo = Informacoes.Prestador.CNPJ.IsEmpty() ? "1" : "2";
@@ -91,10 +104,6 @@ public sealed class Dps : DFeSignDocument<Dps>
             Informacoes.Id =
                 $"DPS{Informacoes.LocalidadeEmitente:D7}{tipo}{documneto}{Informacoes.Serie:D5}{Informacoes.NumeroDps:D15}";
         }
-
-        var options = DFeSaveOptions.DisableFormatting;
-        if (configuracao.Geral.RetirarAcentos)
-            options |= DFeSaveOptions.RemoveAccents;
 
         AssinarDocumento(configuracao.Certificados.ObterCertificado(), options, false);
     }

@@ -59,15 +59,15 @@
 				</Ambiente>
 			</Ambientes>
 		</serviceInfo>
-		<serviceInfo Id="3543402">
+		<serviceInfo Id="5002704">
 			<Tipo>ISSNet</Tipo>
 			<Nome>RIBEIRÃO PRETO</Nome>
 			<UF>SP</UF>
 			<Ambientes>
 				<Ambiente Tipo="2">
 					<Enderecos>
-						<Endereco Tipo="Enviar">https://nfse.issnetonline.com.br/wsnfsenacional/homologacao/nfse.asmx</Endereco>
-						<Endereco Tipo="EnviarEvento">https://nfse.issnetonline.com.br/wsnfsenacional/homologacao/nfse.asmx</Endereco>
+						<Endereco Tipo="Enviar">https://nfse.issnetonline.com.br/wsnfsenacional/homologacao</Endereco>
+						<Endereco Tipo="EnviarEvento">https://nfse.issnetonline.com.br/wsnfsenacional/homologacao</Endereco>
 						<Endereco Tipo="ConsultarNsu">https://adn.producaorestrita.nfse.gov.br/contribuintes</Endereco>
 						<Endereco Tipo="ConsultarChave">https://adn.producaorestrita.nfse.gov.br/contribuintes</Endereco>
 						<Endereco Tipo="DownloadDanfse">https://adn.producaorestrita.nfse.gov.br</Endereco>
@@ -77,13 +77,13 @@
 				</Ambiente>
 				<Ambiente Tipo="1">
 					<Enderecos>
-						<Endereco Tipo="Enviar">https://nfseribairaopretao.simplissweb.com.br</Endereco>
+						<!--<Endereco Tipo="Enviar">https://nfseribairaopretao.simplissweb.com.br</Endereco>
 						<Endereco Tipo="EnviarEvento">https://nfseribairaopretao.simplissweb.com.br</Endereco>
 						<Endereco Tipo="ConsultarNsu">https://adn.nfse.gov.br/contribuintes</Endereco>
 						<Endereco Tipo="ConsultarChave">https://adn.nfse.gov.br/contribuintes</Endereco>
 						<Endereco Tipo="DownloadDanfse">https://adn.nfse.gov.br</Endereco>
 						<Endereco Tipo="ConsultarChaveDps">https://sefin.nfse.gov.br/sefinnacional</Endereco>
-						<Endereco Tipo="ConsultaExisteDps">https://sefin.nfse.gov.br/sefinnacional</Endereco>
+						<Endereco Tipo="ConsultaExisteDps">https://sefin.nfse.gov.br/sefinnacional</Endereco>-->
 					</Enderecos>
 				</Ambiente>
 			</Ambientes>
