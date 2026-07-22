@@ -36,11 +36,13 @@ using OpenAC.Net.NFSe.Nacional.Common.Types;
 using OpenAC.Net.NFSe.Nacional.Webservice.Nacional;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
 using System.Xml.Linq;
+using System.Xml.Serialization;
 using OpenAC.Net.DFe.Core.Common;
 
 namespace OpenAC.Net.NFSe.Nacional.Webservice.ISSNet;
@@ -100,12 +102,7 @@ public class ISSNetWebService : NacionalWebservice
 
         GravarArquivoEmDisco(strResponse, $"Enviar-{dps.Informacoes.NumeroDps:000000}-resp.xml", documento);
 
-        var retErros = await VerificaErros<RespostaEnvioDps>(strResponse);
-
-        if (retErros.contemErros)
-            return NFSeResponse<RespostaEnvioDps>.CreateByError(dps.Xml, strResponse, (RespostaEnvioDps)retErros.resultado);
-
-        return NFSeResponse<RespostaEnvioDps>.CreateByXML(dps.Xml, strResponse, httpResponse.IsSuccessStatusCode, "NFse");
+        return NFSeResponse<RespostaEnvioDps>.Create(dps.Xml, strResponse, httpResponse.IsSuccessStatusCode, await TrataRetorno<RespostaEnvioDps>(strResponse, "NFse"));
     }
 
     public override async Task<NFSeResponse<RespostaEnvioEvento>> EnviarEventoAsync(PedidoRegistroEvento evento)
@@ -135,15 +132,12 @@ public class ISSNetWebService : NacionalWebservice
 
         GravarArquivoEmDisco(strResponse, $"Evento-{evento.Informacoes.ChNFSe}{evento.Informacoes.Evento}-resp.json", documento);
 
-        return NFSeResponse<RespostaEnvioEvento>.CreateByXML(evento.Xml, strResponse, httpResponse.IsSuccessStatusCode, "NFse");
+        return NFSeResponse<RespostaEnvioEvento>.Create(evento.Xml, strResponse, httpResponse.IsSuccessStatusCode, await TrataRetorno<RespostaEnvioEvento>(strResponse, "NFse"));
     }
 
-    public async Task<(bool contemErros, RespostaBase resultado)> VerificaErros<T>(string? xmlResposta) where T : RespostaBase, new()
+    private async Task<T> TrataRetorno<T>(string xmlResposta, string xmlRootTag) where T : RespostaBase, new()
     {
-        var ret = false;
-        RespostaBase resultado = null;
-
-        var listaMensagens = new List<MensagemProcessamento>();
+        var resultado = new T();
 
         try
         {
@@ -153,34 +147,46 @@ public class ISSNetWebService : NacionalWebservice
 
             var elementosMensagem = doc.Descendants(nsSped + "MensagemRetorno");
 
-            foreach (var elemento in elementosMensagem)
-            {
-                var msgProc = new MensagemProcessamento
-                {
-                    Codigo = elemento.Element(nsSped + "Codigo")?.Value ?? string.Empty,
-                    Descricao = elemento.Element(nsSped + "Mensagem")?.Value ?? string.Empty,
-                    Mensagem = elemento.Element(nsSped + "Correcao")?.Value ?? string.Empty,
-                    Complemento = string.Empty,
-                    Parametros = new List<string>()
-                };
+            var listaMensagensErros = elementosMensagem
+                .Select(elemento =>
+                    new MensagemProcessamento
+                    {
+                        Codigo = elemento.Element(nsSped + "Codigo")?.Value ?? string.Empty,
+                        Descricao = elemento.Element(nsSped + "Mensagem")?.Value ?? string.Empty,
+                        Mensagem = elemento.Element(nsSped + "Correcao")?.Value ?? string.Empty,
+                        Complemento = string.Empty,
+                        Parametros = new List<string>()
+                    })
+                .ToList();
 
-                listaMensagens.Add(msgProc);
+            if (listaMensagensErros.Any())
+                resultado.Erros = listaMensagensErros;
+            else
+            {
+                if (typeof(T) is RespostaEnvioDps)
+                {
+                    var elementNfse = doc.Descendants().FirstOrDefault(x => x.Name.LocalName == xmlRootTag);
+                    (resultado as RespostaEnvioDps).XmlNFSe = elementNfse.ToString();
+                }
+                else
+                {
+
+                }
+                
+                //var serializer = new XmlSerializer(typeof(NotaFiscalServico));
+
+                //using var reader = new StringReader(xmlNfseApenas);
+
+                //resultado = (T)serializer.Deserialize(reader);
             }
         }
         catch (Exception ex)
         {
-            // Trate o erro de leitura do XML como achar melhor no seu sistema
-            Console.WriteLine($"Erro ao processar XML: {ex.Message}");
+            this.Log().Error(ex);
+
+            resultado = null;
         }
 
-        if (listaMensagens.Any())
-        {
-            resultado = new T();
-            resultado.Erros = listaMensagens;
-
-            return (true, resultado);
-        }
-
-        return (false, null);
+        return resultado;
     }
 }

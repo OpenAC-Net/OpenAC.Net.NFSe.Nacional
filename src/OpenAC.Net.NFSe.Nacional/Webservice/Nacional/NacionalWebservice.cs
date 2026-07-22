@@ -107,7 +107,7 @@ public class NacionalWebservice : NFSeWebserviceBase
 
         GravarArquivoEmDisco(strResponse, $"ConsultaNsu-{nsu:000000}-resp.json", "");
 
-        return NFSeResponse<RespostaConsultaDFe>.CreateByJson("", "", strResponse, httpResponse.IsSuccessStatusCode);
+        return NFSeResponse<RespostaConsultaDFe>.Create("", "", strResponse, httpResponse.IsSuccessStatusCode);
     }
 
     /// <summary>
@@ -128,7 +128,7 @@ public class NacionalWebservice : NFSeWebserviceBase
 
         GravarArquivoEmDisco(strResponse, $"ConsultaChave-{chave}-resp.json", "");
 
-        return NFSeResponse<RespostaConsultaDFe>.CreateByJson("", "", strResponse, httpResponse.IsSuccessStatusCode);
+        return NFSeResponse<RespostaConsultaDFe>.Create("", "", strResponse, httpResponse.IsSuccessStatusCode);
     }
 
     #endregion DFe
@@ -153,7 +153,7 @@ public class NacionalWebservice : NFSeWebserviceBase
 
         GravarArquivoEmDisco(strResponse, $"ConsultaChaveDps-{id}-resp.json", "");
 
-        return NFSeResponse<RespostaConsultaChaveDps>.CreateByJson("", "", strResponse, httpResponse.IsSuccessStatusCode);
+        return NFSeResponse<RespostaConsultaChaveDps>.Create("", "", strResponse, httpResponse.IsSuccessStatusCode);
     }
 
     /// <summary>
@@ -254,7 +254,7 @@ public class NacionalWebservice : NFSeWebserviceBase
             PropertyNameCaseInsensitive = true,
         };
 
-        var retorno = NFSeResponse<RespostaEnvioEvento>.CreateByJson(evento.Xml, strEnvio, strResponse, httpResponse.IsSuccessStatusCode, jsonOptions);
+        var retorno = NFSeResponse<RespostaEnvioEvento>.Create(evento.Xml, strEnvio, strResponse, httpResponse.IsSuccessStatusCode, jsonOptions);
 
         if (retorno.Sucesso)
         {
@@ -317,7 +317,7 @@ public class NacionalWebservice : NFSeWebserviceBase
 
         GravarArquivoEmDisco(strResponse, $"Enviar-{prefixoNomeArquivoDps}-resp.json", documento);
 
-        var retorno = NFSeResponse<RespostaEnvioDps>.CreateByJson(dps.Xml, strEnvio, strResponse, httpResponse.IsSuccessStatusCode);
+        var retorno = NFSeResponse<RespostaEnvioDps>.Create(dps.Xml, strEnvio, strResponse, httpResponse.IsSuccessStatusCode);
 
         if (retorno.Sucesso)
         {

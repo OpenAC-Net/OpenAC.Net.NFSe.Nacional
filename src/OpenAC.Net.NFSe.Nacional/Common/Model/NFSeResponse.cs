@@ -74,34 +74,10 @@ public sealed class NFSeResponse<T> : IOpenLog where T : class, new()
         }
     }
 
-    private NFSeResponse(string xmlEnvio, string resposta, bool sucesso, string xmlRootTag)
+    private NFSeResponse(string xmlEnvio, string Xmlresposta, bool sucesso, T resultado)
     {
         XmlEnvio = xmlEnvio;
-        XmlRetorno = resposta;
-        Sucesso = sucesso;
-
-        try
-        {
-            var doc = XDocument.Parse(resposta);
-            var elementNfse = doc.Descendants().FirstOrDefault(x => x.Name.LocalName == xmlRootTag);
-            var xmlNfseApenas = elementNfse.ToString();
-            var serializer = new XmlSerializer(typeof(NotaFiscalServico));
-
-            using var reader = new StringReader(xmlNfseApenas);
-            
-            Resultado = (T)serializer.Deserialize(reader);
-        }
-        catch (Exception e)
-        {
-            this.Log().Error(e);
-            Resultado = null;
-        }
-    }
-
-    private NFSeResponse(string xmlEnvio, string resposta, bool sucesso, T resultado)
-    {
-        XmlEnvio = xmlEnvio;
-        XmlRetorno = resposta;
+        XmlRetorno = Xmlresposta;
         Sucesso = sucesso;
         Resultado = resultado;
     }
@@ -158,37 +134,24 @@ public sealed class NFSeResponse<T> : IOpenLog where T : class, new()
     /// <param name="sucesso">Indica se a operação foi bem-sucedida.</param>
     /// <returns>Instância de <see cref="NFSeResponse{T}"/> com o resultado desserializado (ou <c>null</c> em caso de erro de desserialização).</returns>
 
-    public static NFSeResponse<T> CreateByJson(string xmlEnvio, string envio, string resposta, bool sucesso, JsonSerializerOptions? jsonOptions = null)
+    public static NFSeResponse<T> Create(string xmlEnvio, string envio, string resposta, bool sucesso, JsonSerializerOptions? jsonOptions = null)
     {
         return new NFSeResponse<T>(xmlEnvio, envio, resposta, sucesso, jsonOptions);
     }
 
     /// <summary>
-    /// Cria uma instância de <see cref="NFSeResponse{T}"/> contendo os dados de envio e retorno em XML.
+    /// Cria uma instância de <see cref="NFSeResponse{T}"/> contendo os dados de envio e retorno, com resultado previamente montado manualmente.
     /// </summary>
     /// <param name="xmlEnvio">XML enviado na requisição.</param>
-    /// <param name="resposta">Resposta recebida em formato XML.</param>
-    /// <param name="sucesso">Indica se a operação foi bem-sucedida.</param>
-    /// <param name="xmlRootTag">Indica qual tag deverá ser lida como retorno.</param>
-    /// <returns>Instância de <see cref="NFSeResponse{T}"/> com o resultado desserializado (ou <c>null</c> em caso de erro de desserialização).</returns>
-
-    public static NFSeResponse<T> CreateByXML(string xmlEnvio, string xmlResposta, bool sucesso, string xmlRootTag)
-    {
-        return new NFSeResponse<T>(xmlEnvio, xmlResposta, sucesso, xmlRootTag);
-    }
-
-    /// <summary>
-    /// Cria uma instância de <see cref="NFSeResponse{T}"/> contendo os dados de envio e retorno com erro.
-    /// </summary>
-    /// <param name="xmlEnvio">XML enviado na requisição.</param>
-    /// <param name="envio">Dados de envio em formato JSON.</param>
-    /// <param name="resposta">Resposta recebida em formato XML.</param>
+    /// <param name="XmlResposta">Resposta recebida em formato XML.</param>
     /// <param name="resultado">Indica o resultado já preenchido com os erros.</param>
-    /// <returns>Instância de <see cref="NFSeResponse{T}"/> com o resultado desserializado (ou <c>null</c> em caso de erro de desserialização).</returns>
+    /// <param name="sucesso">Indica se a operação foi bem-sucedida.</param>
+    /// <param name="resultado">Instância de <see cref="T"/>, o resultado previamente montado e tratado.</param>
+    /// <returns>Instância de <see cref="NFSeResponse{T}"/> com o resultado recebido como parâmetro.</returns>
 
-    public static NFSeResponse<T> CreateByError(string xmlEnvio, string xmlResposta, T resultado)
+    public static NFSeResponse<T> Create(string xmlEnvio, string xmlResposta, bool sucesso, T resultado)
     {
-        return new NFSeResponse<T>(xmlEnvio, xmlResposta, false, resultado);
+        return new NFSeResponse<T>(xmlEnvio, xmlResposta, sucesso, resultado);
     }
 
     #endregion Methods
