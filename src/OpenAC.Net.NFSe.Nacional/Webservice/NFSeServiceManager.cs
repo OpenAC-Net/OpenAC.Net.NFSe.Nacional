@@ -56,6 +56,13 @@ public sealed class NFSeServiceManager
                     { VersaoNFSe.Ve100, typeof(Tiplan.TiplanWebService) },
                     { VersaoNFSe.Ve101, typeof(Tiplan.TiplanWebService) }
                 }
+            },
+            {
+                NFSeProvider.Fiorilli, new Dictionary<VersaoNFSe, Type>
+                {
+                    { VersaoNFSe.Ve100, typeof(Fiorilli.FiorilliWebService) },
+                    { VersaoNFSe.Ve101, typeof(Fiorilli.FiorilliWebService) }
+                }
             }
         };
 
