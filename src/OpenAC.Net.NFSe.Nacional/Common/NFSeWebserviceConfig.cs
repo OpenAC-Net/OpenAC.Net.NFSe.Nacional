@@ -76,6 +76,12 @@ public sealed class NFSeWebserviceConfig : DFeWebserviceConfigBase
     }
 
     /// <summary>
+    /// Inscrição municipal do prestador. Exigida por provedores que a incluem no envelope de comunicação
+    /// (ex.: Fiorilli, na operação de cancelamento). Ignorada pelo provedor Nacional.
+    /// </summary>
+    public string? InscricaoMunicipal { get; set; }
+
+    /// <summary>
     /// Define se a aplicação deve validar o XML contra os schemas XSD antes do envio.
     /// </summary>
     public bool ValidarSchemas { get; set; }  = true;
