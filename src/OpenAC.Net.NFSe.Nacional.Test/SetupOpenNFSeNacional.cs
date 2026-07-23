@@ -1,7 +1,11 @@
-﻿using DotNetEnv;
+﻿using System.Net;
+using DotNetEnv;
+using OpenAC.Net.DFe.Core.Collection;
+using OpenAC.Net.DFe.Core.Common;
 using OpenAC.Net.DFe.Core.Extensions;
 using OpenAC.Net.NFSe.Nacional.Common.Model;
 using OpenAC.Net.NFSe.Nacional.Common.Types;
+using OpenAC.Net.NFSe.Nacional.Webservice;
 
 namespace OpenAC.Net.NFSe.Nacional.Test;
 
@@ -187,6 +191,80 @@ public class SetupOpenNFSeNacional
         openNFSeNacional.Configuracoes.Geral.RetirarEspacos = true;
         openNFSeNacional.Configuracoes.Arquivos.PathSalvar = pathSalvar;
         openNFSeNacional.Configuracoes.Arquivos.PathSchemas = pathSchemas;
+    }
+
+    /// <summary>
+    /// Configuração para o provedor Fiorilli (SOAP), versão 1.00.
+    /// Lê as variáveis com prefixo "Fiorilli" do arquivo .env e registra o município
+    /// no <see cref="NFSeServiceManager"/> em tempo de execução (o recurso embarcado não traz Fiorilli).
+    /// </summary>
+    public static void ConfigurarFiorilli(
+        OpenNFSeNacional openNFSeNacional,
+        string numDps = "1",
+        string serieDps = "1",
+        string numEvento = "1")
+    {
+        NumDPS = numDps;
+        SerieDPS = serieDps;
+        NumEvento = numEvento;
+
+        CodMunIBGE = GetEnvOrThrow("Fiorilli.CodMunIbge");
+        TipoInscricaoFederal = int.Parse(GetEnvOrThrow("Fiorilli.TipoInscricaoFederal"));
+        InscricaoFederal = GetEnvOrThrow("Fiorilli.InscricaoFederal");
+        InscricaoMunicipal = GetEnvOrThrow("Fiorilli.InscricaoMunicipal");
+
+        var endpoint = Env.GetString("Fiorilli.Endpoint");
+        if (string.IsNullOrWhiteSpace(endpoint))
+            endpoint = "http://fi1.fiorilli.com.br:5663/IssWeb-ejb/IssWebWSNacional/IssWebWSNacionalPortType";
+
+        var certificadoPath = GetEnvOrThrow("Fiorilli.CertificadoPath");
+        var certificadoSenha = GetEnvOrThrow("Fiorilli.CertificadoSenha");
+        var pathSalvar = GetEnvOrThrow("Geral.PathSalvar");
+
+        RegistrarMunicipioFiorilli(int.Parse(CodMunIBGE), endpoint);
+
+        var pathSchemas = Path.Combine(AppContext.BaseDirectory, "Schemas", VersaoNFSe.Ve101.GetDFeValue());
+        openNFSeNacional.Configuracoes.Geral.Versao = VersaoNFSe.Ve101;
+        openNFSeNacional.Configuracoes.Certificados.CertificadoBytes = File.ReadAllBytes(certificadoPath);
+        openNFSeNacional.Configuracoes.Certificados.Senha = certificadoSenha;
+        openNFSeNacional.Configuracoes.Geral.Salvar = true;
+        openNFSeNacional.Configuracoes.Geral.RetirarAcentos = true;
+        openNFSeNacional.Configuracoes.Geral.RetirarEspacos = true;
+        openNFSeNacional.Configuracoes.Arquivos.PathSalvar = pathSalvar;
+        openNFSeNacional.Configuracoes.Arquivos.PathSchemas = pathSchemas;
+        openNFSeNacional.Configuracoes.WebServices.Ambiente = DFeTipoAmbiente.Homologacao;
+        openNFSeNacional.Configuracoes.WebServices.CodigoMunicipio = int.Parse(CodMunIBGE);
+        openNFSeNacional.Configuracoes.WebServices.InscricaoMunicipal = InscricaoMunicipal;
+        openNFSeNacional.Configuracoes.WebServices.Protocolos = SecurityProtocolType.Tls12;
+    }
+
+    /// <summary>
+    /// Registra (uma única vez) o município Fiorilli no <see cref="NFSeServiceManager"/>,
+    /// apontando o endpoint SOAP em <see cref="TipoUrl.Enviar"/> para o ambiente de homologação.
+    /// </summary>
+    private static void RegistrarMunicipioFiorilli(int codigoMunicipio, string endpoint)
+    {
+        var services = NFSeServiceManager.Instance.Services;
+        if (services.Webservices.Any(x => x.Codigo == codigoMunicipio)) return;
+
+        services.Webservices.Add(new NFSeServiceInfo
+        {
+            Codigo = codigoMunicipio,
+            Provider = NFSeProvider.Fiorilli,
+            Nome = "Fiorilli (Teste)",
+            UF = DFeSiglaUF.SP,
+            Ambientes = new DFeCollection<NFSeEnvironment>
+            {
+                new NFSeEnvironment
+                {
+                    Ambiente = DFeTipoAmbiente.Homologacao,
+                    Enderecos = new Dictionary<TipoUrl, string>
+                    {
+                        { TipoUrl.Enviar, endpoint }
+                    }
+                }
+            }
+        });
     }
 
     private static string GetEnvOrThrow(string key)
