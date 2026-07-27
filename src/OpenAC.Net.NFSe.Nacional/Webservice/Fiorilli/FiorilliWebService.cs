@@ -99,8 +99,7 @@ public class FiorilliWebService : NFSeWebserviceBase
         {
             XmlNFSe = notaXml
         };
-        var mensagens = FiorilliSoap.Mensagens(raiz);
-        resultado.Erros.AddRange(mensagens);
+        FiorilliSoap.DistribuirMensagens(resultado, FiorilliSoap.Mensagens(raiz));
 
         if (!notaXml.IsEmpty())
         {
@@ -110,7 +109,7 @@ public class FiorilliWebService : NFSeWebserviceBase
                 documento, dps.Informacoes.DhEmissao.DateTime);
         }
 
-        var sucesso = sucessoHttp && !notaXml.IsEmpty();
+        var sucesso = sucessoHttp && !notaXml.IsEmpty() && resultado.Erros.Count == 0;
         return NFSeResponse<RespostaEnvioDps>.CreateComResultado(dps.Xml, envelope, resposta, sucesso, resultado);
     }
 
@@ -138,7 +137,7 @@ public class FiorilliWebService : NFSeWebserviceBase
         };
         PreencherLote(resultado, raiz);
 
-        var sucesso = sucessoHttp && !resultado.Protocolo.IsEmpty();
+        var sucesso = sucessoHttp && !resultado.Protocolo.IsEmpty() && !FiorilliSoap.TemErro(resultado.Mensagens);
         return NFSeResponse<RespostaRecepcaoLote>.CreateComResultado(string.Empty, envelope, resposta, sucesso, resultado);
     }
 
@@ -163,7 +162,8 @@ public class FiorilliWebService : NFSeWebserviceBase
         };
         PreencherLote(resultado, raiz);
 
-        var sucesso = sucessoHttp && (resultado.NotasFiscais.Count > 0 || !resultado.Protocolo.IsEmpty());
+        var sucesso = sucessoHttp && (resultado.NotasFiscais.Count > 0 || !resultado.Protocolo.IsEmpty()) &&
+                      !FiorilliSoap.TemErro(resultado.Mensagens);
         return NFSeResponse<RespostaRecepcaoLoteSincrono>.CreateComResultado(string.Empty, envelope, resposta, sucesso, resultado);
     }
 
@@ -194,7 +194,8 @@ public class FiorilliWebService : NFSeWebserviceBase
             Mensagens = FiorilliSoap.Mensagens(raiz)
         };
 
-        return NFSeResponse<RespostaConsultaLote>.CreateComResultado(string.Empty, envelope, resposta, sucessoHttp, resultado);
+        var sucesso = sucessoHttp && !FiorilliSoap.TemErro(resultado.Mensagens);
+        return NFSeResponse<RespostaConsultaLote>.CreateComResultado(string.Empty, envelope, resposta, sucesso, resultado);
     }
 
     #endregion Lote
@@ -231,7 +232,8 @@ public class FiorilliWebService : NFSeWebserviceBase
             Mensagens = FiorilliSoap.Mensagens(raiz)
         };
 
-        return NFSeResponse<RespostaConsultaNFSe>.CreateComResultado(string.Empty, envelope, resposta, sucessoHttp, resultado);
+        var sucesso = sucessoHttp && !FiorilliSoap.TemErro(resultado.Mensagens);
+        return NFSeResponse<RespostaConsultaNFSe>.CreateComResultado(string.Empty, envelope, resposta, sucesso, resultado);
     }
 
     /// <summary>
@@ -250,7 +252,7 @@ public class FiorilliWebService : NFSeWebserviceBase
             IdDps = id,
             Chave = FiorilliSoap.ChaveDaNota(notaXml)
         };
-        if (consulta.Resultado != null) resultado.Erros.AddRange(consulta.Resultado.Mensagens);
+        if (consulta.Resultado != null) FiorilliSoap.DistribuirMensagens(resultado, consulta.Resultado.Mensagens);
 
         var sucesso = consulta.Sucesso && !resultado.Chave.IsEmpty();
         return NFSeResponse<RespostaConsultaChaveDps>.CreateComResultado(string.Empty, consulta.JsonEnvio,
@@ -290,16 +292,18 @@ public class FiorilliWebService : NFSeWebserviceBase
                 "Informe a inscrição municipal em Configuracoes.WebServices.InscricaoMunicipal para registrar eventos no provedor Fiorilli.");
 
         evento.Assinar(Configuracao);
-        ValidarSchema(SchemaNFSe.Evento, evento.Xml, evento.Versao);
-
         var documento = evento.Informacoes.CPFAutor ?? evento.Informacoes.CNPJAutor;
+        var eventoAssinado = FiorilliSoap.ReassinarEvento(
+            evento.Xml,
+            Configuracao.Certificados.ObterCertificado());
+        ValidarSchema(SchemaNFSe.Evento, eventoAssinado, evento.Versao);
 
-        GravarDpsEmDisco(evento.Xml, $"{evento.Informacoes.ChNFSe}{evento.Informacoes.Evento}_evento.xml",
+        GravarDpsEmDisco(eventoAssinado, $"{evento.Informacoes.ChNFSe}{evento.Informacoes.Evento}_evento.xml",
             documento, evento.Informacoes.DhEvento.DateTime, true);
 
         var corpo = $"<CancelarNFSeEnvio xmlns=\"{FiorilliSoap.NsFiorilli}\">" +
                     FiorilliSoap.Elemento("IM", inscricaoMunicipal) +
-                    FiorilliSoap.RemoverProlog(evento.Xml) +
+                    eventoAssinado +
                     "</CancelarNFSeEnvio>";
         var envelope = FiorilliSoap.Envelope(corpo);
 
@@ -311,13 +315,14 @@ public class FiorilliWebService : NFSeWebserviceBase
         {
             DataHoraProcessamento = ParseData(FiorilliSoap.Valor(raiz, "DataRecebimento"))
         };
-        resultado.Erros.AddRange(FiorilliSoap.Mensagens(raiz));
+        FiorilliSoap.DistribuirMensagens(resultado, FiorilliSoap.Mensagens(raiz));
 
         var status = FiorilliSoap.Valor(raiz, "status");
         if (!string.IsNullOrEmpty(status))
             this.Log().Debug($"Fiorilli: [cancelarNFSe][Status] - {status}");
 
-        return NFSeResponse<RespostaEnvioEvento>.CreateComResultado(evento.Xml, envelope, resposta, sucessoHttp, resultado);
+        var sucesso = sucessoHttp && resultado.Erros.Count == 0;
+        return NFSeResponse<RespostaEnvioEvento>.CreateComResultado(eventoAssinado, envelope, resposta, sucesso, resultado);
     }
 
     #endregion Eventos

@@ -10,7 +10,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
+using System.Security.Cryptography.Xml;
 using System.Text;
+using System.Xml;
 using System.Xml.Linq;
 using OpenAC.Net.Core.Extensions;
 using OpenAC.Net.NFSe.Nacional.Common.Model;
@@ -28,8 +31,10 @@ namespace OpenAC.Net.NFSe.Nacional.Webservice.Fiorilli;
 /// <para/>
 /// NOTA sobre namespaces: os elementos "invólucro" (RecepcionarDpsEnvio, LoteDps, IM, Protocolo, etc.)
 /// ficam no namespace do provedor (<see cref="NsFiorilli"/>), enquanto os documentos DPS/pedRegEvento/NFS-e
-/// carregam o próprio namespace nacional (<see cref="NsSped"/>). Caso a Fiorilli rejeite o documento por
-/// namespace/schema em homologação, este é o primeiro ponto a ajustar.
+/// carregam o próprio namespace nacional (<see cref="NsSped"/>). Documentos assinados com canonicalização
+/// inclusiva, como a DPS, são protegidos de namespaces ancestrais pelo formato de <see cref="Envelope"/>.
+/// O pedido de cancelamento possui ainda um perfil específico da Fiorilli, aplicado em
+/// <see cref="ReassinarEvento"/>.
 /// </remarks>
 internal static class FiorilliSoap
 {
@@ -53,11 +58,18 @@ internal static class FiorilliSoap
     /// </summary>
     /// <param name="corpo">Conteúdo já serializado do corpo (Body) da requisição.</param>
     /// <returns>Envelope SOAP completo.</returns>
+    /// <remarks>
+    /// O namespace do SOAP é declarado como PADRÃO (sem prefixo) de propósito. Os documentos assinados
+    /// como a DPS usam assinatura com canonicalização inclusiva; um prefixo declarado em ancestral
+    /// (ex.: <c>soapenv</c>) entraria no escopo do elemento assinado e seria incorporado à sua forma
+    /// canônica. Como o namespace padrão é sempre redeclarado/sombreado nos níveis abaixo (Fiorilli,
+    /// depois SPED), nada vaza para o conteúdo assinado. Não troque para um prefixo aqui.
+    /// </remarks>
     public static string Envelope(string corpo) =>
-        $"<soapenv:Envelope xmlns:soapenv=\"{NsSoapEnv}\">" +
-        "<soapenv:Header/>" +
-        $"<soapenv:Body>{corpo}</soapenv:Body>" +
-        "</soapenv:Envelope>";
+        $"<Envelope xmlns=\"{NsSoapEnv}\">" +
+        "<Header/>" +
+        $"<Body>{corpo}</Body>" +
+        "</Envelope>";
 
     /// <summary>
     /// Remove a declaração XML (<c>&lt;?xml ... ?&gt;</c>) e a BOM de um documento, permitindo
@@ -70,10 +82,100 @@ internal static class FiorilliSoap
         if (xml.IsEmpty()) return string.Empty;
 
         var conteudo = xml.TrimStart('﻿', ' ', '\r', '\n', '\t');
-        if (!conteudo.StartsWith("<?xml", StringComparison.OrdinalIgnoreCase)) return conteudo;
+        if (!conteudo.StartsWith("<?xml", StringComparison.OrdinalIgnoreCase)) return conteudo.TrimEnd();
 
         var fim = conteudo.IndexOf("?>", StringComparison.Ordinal);
-        return fim < 0 ? conteudo : conteudo.Substring(fim + 2).TrimStart();
+        return (fim < 0 ? conteudo : conteudo.Substring(fim + 2).TrimStart()).TrimEnd();
+    }
+
+    /// <summary>
+    /// Garante que o namespace do padrão nacional esteja declarado diretamente no elemento assinado.
+    /// </summary>
+    /// <param name="xml">Documento nacional já assinado.</param>
+    /// <param name="elementoAssinado">Nome local do elemento referenciado pela assinatura.</param>
+    /// <returns>Documento sem prólogo e com o namespace explícito no elemento assinado.</returns>
+    /// <remarks>
+    /// O namespace já é herdado normalmente do elemento raiz, mas o validador da Fiorilli exige a
+    /// declaração também na própria tag assinada. A inserção é textual para não reserializar o XML.
+    /// Como a ligação de namespace efetiva não muda, o digest calculado antes da inserção permanece válido.
+    /// </remarks>
+    public static string GarantirNamespaceExplicito(string xml, string elementoAssinado)
+    {
+        var conteudo = RemoverProlog(xml);
+        if (conteudo.IsEmpty() || elementoAssinado.IsEmpty()) return conteudo;
+
+        var inicioTag = conteudo.IndexOf($"<{elementoAssinado}", StringComparison.Ordinal);
+        if (inicioTag < 0) return conteudo;
+
+        var fimNome = inicioTag + elementoAssinado.Length + 1;
+        if (fimNome >= conteudo.Length || conteudo[fimNome] is not (' ' or '\t' or '\r' or '\n' or '>'))
+            return conteudo;
+
+        var fimTag = conteudo.IndexOf('>', fimNome);
+        if (fimTag < 0) return conteudo;
+
+        var tagInicial = conteudo.Substring(inicioTag, fimTag - inicioTag);
+        if (tagInicial.IndexOf("xmlns=", StringComparison.Ordinal) >= 0 ||
+            tagInicial.IndexOf("xmlns:", StringComparison.Ordinal) >= 0)
+            return conteudo;
+
+        return conteudo.Insert(fimNome, $" xmlns=\"{NsSped}\"");
+    }
+
+    /// <summary>
+    /// Reassina o pedido de evento com o perfil exigido pelo cancelamento da Fiorilli.
+    /// </summary>
+    /// <param name="xml">Pedido de evento já serializado.</param>
+    /// <param name="certificado">Certificado com chave privada.</param>
+    /// <returns>Pedido de evento assinado em uma única linha.</returns>
+    /// <remarks>
+    /// Apesar de a API 1.01 usar C14N inclusiva nos demais documentos, o método
+    /// <c>cancelarNFSe</c> da Fiorilli 3.10.2 retornou E172 com C14N inclusiva e aceitou
+    /// C14N exclusiva, RSA-SHA1 e SHA1 em uma chamada real ao provedor.
+    /// </remarks>
+    public static string ReassinarEvento(string xml, X509Certificate2 certificado)
+    {
+        var conteudo = GarantirNamespaceExplicito(xml, "infPedReg");
+        var documento = new XmlDocument { PreserveWhitespace = true };
+        documento.LoadXml(conteudo);
+
+        var assinaturaAnterior = documento
+            .GetElementsByTagName("Signature", SignedXml.XmlDsigNamespaceUrl)
+            .OfType<XmlElement>()
+            .SingleOrDefault();
+        assinaturaAnterior?.ParentNode?.RemoveChild(assinaturaAnterior);
+
+        var informacoes = documento
+            .GetElementsByTagName("infPedReg", NsSped)
+            .OfType<XmlElement>()
+            .Single();
+        var id = informacoes.GetAttribute("Id");
+        if (id.IsEmpty()) throw new InvalidOperationException("O elemento infPedReg não possui o atributo Id.");
+
+        using var chavePrivada = certificado.GetRSAPrivateKey()
+            ?? throw new InvalidOperationException("O certificado não possui uma chave privada RSA.");
+        var signedXml = new SignedXml(documento)
+        {
+            SigningKey = chavePrivada,
+            KeyInfo = new KeyInfo()
+        };
+        signedXml.KeyInfo.AddClause(new KeyInfoX509Data(certificado));
+        signedXml.SignedInfo!.CanonicalizationMethod = SignedXml.XmlDsigExcC14NTransformUrl;
+        signedXml.SignedInfo.SignatureMethod = SignedXml.XmlDsigRSASHA1Url;
+
+        var referencia = new Reference
+        {
+            Uri = $"#{id}",
+            DigestMethod = SignedXml.XmlDsigSHA1Url
+        };
+        referencia.AddTransform(new XmlDsigEnvelopedSignatureTransform());
+        referencia.AddTransform(new XmlDsigExcC14NTransform());
+        signedXml.AddReference(referencia);
+        signedXml.ComputeSignature();
+
+        documento.DocumentElement!.AppendChild(
+            documento.ImportNode(signedXml.GetXml(), true));
+        return documento.OuterXml.TrimEnd();
     }
 
     /// <summary>
@@ -171,6 +273,37 @@ internal static class FiorilliSoap
         }
 
         return resultado;
+    }
+
+    /// <summary>
+    /// Indica se a mensagem representa um erro. Segue a convenção da Fiorilli/padrão nacional,
+    /// em que códigos iniciados por "E" são erros (ex.: E172) e por "A" são alertas.
+    /// </summary>
+    /// <param name="mensagem">Mensagem de processamento.</param>
+    /// <returns><c>true</c> quando a mensagem é um erro.</returns>
+    public static bool EhErro(MensagemProcessamento mensagem) =>
+        mensagem.Codigo.StartsWith("E", StringComparison.OrdinalIgnoreCase);
+
+    /// <summary>
+    /// Indica se a coleção contém ao menos uma mensagem de erro.
+    /// </summary>
+    /// <param name="mensagens">Mensagens de processamento.</param>
+    /// <returns><c>true</c> quando há pelo menos um erro.</returns>
+    public static bool TemErro(IEnumerable<MensagemProcessamento> mensagens) => mensagens.Any(EhErro);
+
+    /// <summary>
+    /// Distribui as mensagens entre <see cref="RespostaBase.Erros"/> e <see cref="RespostaBase.Alertas"/>
+    /// de acordo com o prefixo do código.
+    /// </summary>
+    /// <param name="resposta">Resposta a ser preenchida.</param>
+    /// <param name="mensagens">Mensagens de processamento.</param>
+    public static void DistribuirMensagens(RespostaBase resposta, IEnumerable<MensagemProcessamento> mensagens)
+    {
+        foreach (var mensagem in mensagens)
+        {
+            if (EhErro(mensagem)) resposta.Erros.Add(mensagem);
+            else resposta.Alertas.Add(mensagem);
+        }
     }
 
     /// <summary>
