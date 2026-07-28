@@ -10,10 +10,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove=".env" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="coverlet.collector" Version="10.0.1">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -31,6 +27,17 @@
 
   <ItemGroup>
     <Using Include="Microsoft.VisualStudio.TestTools.UnitTesting" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Copia o .env (quando existir) para o diretório de saída, pois o setup dos testes
+         o carrega de AppContext.BaseDirectory (bin\Debug\<tfm>\). Sem isso, o arquivo criado
+         na raiz do projeto não é encontrado em tempo de execução.
+         O Remove evita item duplicado caso o glob padrão do SDK já inclua o .env. -->
+    <None Remove=".env" />
+    <None Include=".env" Condition="Exists('.env')">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>
