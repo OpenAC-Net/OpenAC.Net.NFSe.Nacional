@@ -82,6 +82,18 @@ public sealed class NFSeWebserviceConfig : DFeWebserviceConfigBase
     public string? InscricaoMunicipal { get; set; }
 
     /// <summary>
+    /// CPF ou CNPJ do prestador. Utilizado por provedores que exigem o documento
+    /// como filtro em consultas por número de DPS (ex.: Fiorilli).
+    /// </summary>
+    public string? InscricaoFederal { get; set; }
+
+    /// <summary>
+    /// Série utilizada nas consultas por número de DPS. A Fiorilli exige que
+    /// <c>NumeroDPS</c> e <c>SerieDPS</c> sejam informados em conjunto.
+    /// </summary>
+    public string SerieDPS { get; set; } = "1";
+
+    /// <summary>
     /// Define se a aplicação deve validar o XML contra os schemas XSD antes do envio.
     /// </summary>
     public bool ValidarSchemas { get; set; }  = true;

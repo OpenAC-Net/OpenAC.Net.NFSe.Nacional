@@ -238,18 +238,26 @@ public class FiorilliWebService : NFSeWebserviceBase
 
     /// <summary>
     /// Retorna a chave de acesso da NFS-e a partir do identificador do DPS.
-    /// Implementado via <c>consultarNfse</c> (filtro por <c>IdDPS</c>).
+    /// Implementado via <c>consultarNfse</c>.
     /// </summary>
-    /// <param name="id">Identificação do DPS.</param>
+    /// <param name="id">
+    /// Id completo do DPS (<c>DPS</c> + 42 dígitos) ou número do DPS (até 15 dígitos).
+    /// Quando for informado apenas o número, será utilizada a série configurada em
+    /// <see cref="NFSeWebserviceConfig.SerieDPS"/>.
+    /// </param>
     /// <returns>Resposta da consulta contendo a chave de acesso.</returns>
     public override async Task<NFSeResponse<RespostaConsultaChaveDps>> ConsultaChaveDpsAsync(string id)
     {
-        var consulta = await ConsultarNFSeAsync(new ConsultaNFSeFiltro { IdDPS = id });
-        var notaXml = consulta.Resultado?.NotasFiscais.FirstOrDefault()?.Xml ?? string.Empty;
+        var filtro = CriarFiltroConsultaDps(id);
+        var consulta = await ConsultarNFSeAsync(filtro);
+        var nota = consulta.Resultado?.NotasFiscais.FirstOrDefault();
+        var notaXml = nota?.Xml ?? string.Empty;
+        var idDps = nota?.Informacoes.Dps.Informacoes.Id ?? string.Empty;
+        if (idDps.IsEmpty()) idDps = filtro.IdDPS ?? string.Empty;
 
         var resultado = new RespostaConsultaChaveDps
         {
-            IdDps = id,
+            IdDps = idDps,
             Chave = FiorilliSoap.ChaveDaNota(notaXml)
         };
         if (consulta.Resultado != null) FiorilliSoap.DistribuirMensagens(resultado, consulta.Resultado.Mensagens);
@@ -266,7 +274,7 @@ public class FiorilliWebService : NFSeWebserviceBase
     /// <returns>True se existir, caso contrário false.</returns>
     public override async Task<bool> ConsultaExisteDpsAsync(string id)
     {
-        var consulta = await ConsultarNFSeAsync(new ConsultaNFSeFiltro { IdDPS = id });
+        var consulta = await ConsultarNFSeAsync(CriarFiltroConsultaDps(id));
         return consulta.Sucesso && (consulta.Resultado?.NotasFiscais.Count ?? 0) > 0;
     }
 
@@ -343,6 +351,7 @@ public class FiorilliWebService : NFSeWebserviceBase
 
     /// <summary>
     /// Não suportado pela Fiorilli (não há consulta de eventos por chave no WSDL).
+    /// Para consultar a própria NFS-e pela chave, utilize <see cref="ConsultarNFSeAsync"/>.
     /// </summary>
     public override Task<NFSeResponse<RespostaConsultaDFe>> ConsultaChaveAsync(string chave) =>
         throw OperacaoNaoSuportada(nameof(ConsultaChaveAsync));
@@ -406,6 +415,73 @@ public class FiorilliWebService : NFSeWebserviceBase
         DateTimeOffset.TryParse(valor, CultureInfo.InvariantCulture, DateTimeStyles.None, out var data)
             ? data
             : default;
+
+    /// <summary>
+    /// Seleciona o filtro correto da Fiorilli sem enviar um número simples no campo
+    /// <c>IdDPS</c>, que exige o padrão <c>DPS[0-9]{42}</c>.
+    /// </summary>
+    private ConsultaNFSeFiltro CriarFiltroConsultaDps(string identificador)
+    {
+        if (string.IsNullOrWhiteSpace(identificador))
+            throw new ArgumentException("Informe o Id ou o número do DPS.", nameof(identificador));
+
+        var valor = identificador.Trim();
+        if (valor.Length == 45 &&
+            valor.StartsWith("DPS", StringComparison.OrdinalIgnoreCase) &&
+            valor.Skip(3).All(EhDigitoAscii))
+            return new ConsultaNFSeFiltro { IdDPS = $"DPS{valor.Substring(3)}" };
+
+        if (valor.Length <= 15 && valor.All(EhDigitoAscii))
+        {
+            var serie = Configuracao.WebServices.SerieDPS?.Trim();
+            if (serie == null || serie.Length == 0 || serie.Length > 5 || !serie.All(EhDigitoAscii))
+                throw new InvalidOperationException(
+                    "Configure WebServices.SerieDPS com uma série numérica de até 5 dígitos.");
+
+            var filtro = new ConsultaNFSeFiltro
+            {
+                IM = Configuracao.WebServices.InscricaoMunicipal,
+                NumeroDPS = valor,
+                SerieDPS = serie
+            };
+            PreencherDocumentoConfigurado(filtro);
+            return filtro;
+        }
+
+        throw new ArgumentException(
+            "Identificação inválida. Use o Id no formato DPS seguido de 42 dígitos, " +
+            "ou o número do DPS com até 15 dígitos.",
+            nameof(identificador));
+    }
+
+    /// <summary>
+    /// Preenche o CPF/CNPJ configurado para consultas por número e série.
+    /// </summary>
+    private void PreencherDocumentoConfigurado(ConsultaNFSeFiltro filtro)
+    {
+        var valor = Configuracao.WebServices.InscricaoFederal;
+        var documento = valor == null
+            ? string.Empty
+            : new string(valor.Where(EhDigitoAscii).ToArray());
+
+        switch (documento.Length)
+        {
+            case 11:
+                filtro.CPF = documento;
+                break;
+            case 14:
+                filtro.CNPJ = documento;
+                break;
+            default:
+                throw new InvalidOperationException(
+                    "Configure WebServices.InscricaoFederal com o CPF ou CNPJ do prestador.");
+        }
+    }
+
+    /// <summary>
+    /// Verifica o padrão numérico ASCII exigido pelos tipos XSD da Fiorilli.
+    /// </summary>
+    private static bool EhDigitoAscii(char valor) => valor >= '0' && valor <= '9';
 
     /// <summary>
     /// Envia o envelope SOAP, grava requisição/resposta em disco e retorna o status e o corpo da resposta.

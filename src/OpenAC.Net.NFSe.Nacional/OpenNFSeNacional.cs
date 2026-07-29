@@ -190,6 +190,11 @@ public sealed class OpenNFSeNacional : IOpenLog
     /// </summary>
     /// <param name="id">Identificação da DPS.</param>
     /// <returns>Dados da consulta da chave de acesso.</returns>
+    /// <remarks>
+    /// No provedor Fiorilli, também pode ser informado apenas o número da DPS.
+    /// Nesse caso, configure <see cref="NFSeWebserviceConfig.InscricaoFederal"/>
+    /// e <see cref="NFSeWebserviceConfig.SerieDPS"/>.
+    /// </remarks>
     public Task<NFSeResponse<RespostaConsultaChaveDps>> ConsultaChaveDpsAsync(string id)
     {
         var provider = NFSeServiceManager.Instance.GetProvider(Configuracoes);

@@ -196,7 +196,7 @@ public class SetupOpenNFSeNacional
     /// <summary>
     /// Configuração para o provedor Fiorilli (SOAP), versão 1.00.
     /// Lê as variáveis com prefixo "Fiorilli" do arquivo .env e registra o município
-    /// no <see cref="NFSeServiceManager"/> em tempo de execução (o recurso embarcado não traz Fiorilli).
+    /// no <see cref="NFSeServiceManager"/> em tempo de execução quando ele ainda não estiver cadastrado.
     /// </summary>
     public static void ConfigurarFiorilli(
         OpenNFSeNacional openNFSeNacional,
@@ -234,7 +234,9 @@ public class SetupOpenNFSeNacional
         openNFSeNacional.Configuracoes.Arquivos.PathSchemas = pathSchemas;
         openNFSeNacional.Configuracoes.WebServices.Ambiente = DFeTipoAmbiente.Homologacao;
         openNFSeNacional.Configuracoes.WebServices.CodigoMunicipio = int.Parse(CodMunIBGE);
+        openNFSeNacional.Configuracoes.WebServices.InscricaoFederal = InscricaoFederal;
         openNFSeNacional.Configuracoes.WebServices.InscricaoMunicipal = InscricaoMunicipal;
+        openNFSeNacional.Configuracoes.WebServices.SerieDPS = SerieDPS;
         openNFSeNacional.Configuracoes.WebServices.Protocolos = SecurityProtocolType.Tls12;
     }
 
