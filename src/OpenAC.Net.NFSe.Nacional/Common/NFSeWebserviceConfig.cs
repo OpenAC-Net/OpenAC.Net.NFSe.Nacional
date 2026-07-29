@@ -84,5 +84,5 @@ public sealed class NFSeWebserviceConfig : DFeWebserviceConfigBase
     /// <summary>
     /// Define se a aplicação deve validar o XML contra os schemas XSD antes do envio.
     /// </summary>
-    public bool ValidarSchemas { get; set; }  = true;
+    public bool ValidarSchemas { get; set; } = true;
 }
