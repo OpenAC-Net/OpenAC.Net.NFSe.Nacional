@@ -234,9 +234,7 @@ public class SetupOpenNFSeNacional
         openNFSeNacional.Configuracoes.Arquivos.PathSchemas = pathSchemas;
         openNFSeNacional.Configuracoes.WebServices.Ambiente = DFeTipoAmbiente.Homologacao;
         openNFSeNacional.Configuracoes.WebServices.CodigoMunicipio = int.Parse(CodMunIBGE);
-        openNFSeNacional.Configuracoes.WebServices.InscricaoFederal = InscricaoFederal;
         openNFSeNacional.Configuracoes.WebServices.InscricaoMunicipal = InscricaoMunicipal;
-        openNFSeNacional.Configuracoes.WebServices.SerieDPS = SerieDPS;
         openNFSeNacional.Configuracoes.WebServices.Protocolos = SecurityProtocolType.Tls12;
     }
 

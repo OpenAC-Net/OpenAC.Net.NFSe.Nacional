@@ -239,8 +239,14 @@ public class TestEmissaoFiorilli
     public async Task ConsultaChaveDpsFiorilli()
     {
         var openNFSeNacional = new OpenNFSeNacional();
-        SetupOpenNFSeNacional.ConfigurarFiorilli(openNFSeNacional);
-        var retorno = await openNFSeNacional.ConsultaChaveDpsAsync("10");
+        SetupOpenNFSeNacional.ConfigurarFiorilli(openNFSeNacional, "10", "1", "1");
+        var idDps = "DPS" + SetupOpenNFSeNacional.CodMunIBGE +
+                    SetupOpenNFSeNacional.TipoInscricaoFederal +
+                    SetupOpenNFSeNacional.InscricaoFederal.PadLeft(14, '0') +
+                    SetupOpenNFSeNacional.SerieDPS.PadLeft(5, '0') +
+                    SetupOpenNFSeNacional.NumDPS.PadLeft(15, '0');
+
+        var retorno = await openNFSeNacional.ConsultaChaveDpsAsync(idDps);
 
         Assert.IsTrue(retorno.Sucesso);
     }
