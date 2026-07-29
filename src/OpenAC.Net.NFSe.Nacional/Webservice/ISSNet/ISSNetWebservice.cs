@@ -198,11 +198,13 @@ public class ISSNetWebService : NacionalWebservice
 
             if (listaMensagensErros.Any())
                 resultado.Erros = listaMensagensErros;
-            else
+
+            if (resultado is RespostaEnvioDps respostaNFSe)
             {
-                if (resultado is RespostaEnvioDps respostaNFSe)
+                var elementNfse = doc.Descendants().FirstOrDefault(x => x.Name.LocalName == xmlRootTag);
+
+                if (elementNfse != null)
                 {
-                    var elementNfse = doc.Descendants().FirstOrDefault(x => x.Name.LocalName == xmlRootTag);
                     respostaNFSe.XmlNFSe = elementNfse.ToString();
 
                     var chaveAcesso = doc.Descendants()
@@ -212,10 +214,10 @@ public class ISSNetWebService : NacionalWebservice
                     respostaNFSe.IdDps = $"DPS{chaveAcesso}";
                     respostaNFSe.ChaveAcesso = chaveAcesso;
                 }
-                else if(resultado is RespostaEnvioEvento respostaEvento)
-                {
+            }
+            else if (resultado is RespostaEnvioEvento respostaEvento)
+            {
 
-                }
             }
         }
         catch (Exception ex)
