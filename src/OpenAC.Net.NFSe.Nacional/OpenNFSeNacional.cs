@@ -188,7 +188,11 @@ public sealed class OpenNFSeNacional : IOpenLog
     /// <summary>
     /// Retorna a chave de acesso da NFS-e a partir do identificador do DPS.
     /// </summary>
-    /// <param name="id">Identificação da DPS.</param>
+    /// <param name="id">
+    /// Identificação da DPS:
+    /// <c>DPS</c> + município (7) + tipo de inscrição (1) + CPF/CNPJ (14) +
+    /// série (5) + número da DPS (15).
+    /// </param>
     /// <returns>Dados da consulta da chave de acesso.</returns>
     public Task<NFSeResponse<RespostaConsultaChaveDps>> ConsultaChaveDpsAsync(string id)
     {

@@ -30,8 +30,14 @@ public sealed class ConsultaNFSeFiltro
     public string? ChaveNFSe { get; set; }
 
     /// <summary>
-    /// Identificador do DPS que gerou a NFS-e.
+    /// Identificador completo do DPS que gerou a NFS-e.
     /// </summary>
+    /// <remarks>
+    /// Informe o mesmo valor usado em <see cref="InfDps.Id"/>, no formato
+    /// <c>DPS</c> + 42 dígitos. Este campo não recebe apenas o número da DPS;
+    /// para uma consulta explícita por número e série, use
+    /// <see cref="NumeroDPS"/> e <see cref="SerieDPS"/>.
+    /// </remarks>
     public string? IdDPS { get; set; }
 
     /// <summary>

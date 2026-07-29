@@ -234,4 +234,37 @@ public class TestEmissaoFiorilli
 
         Assert.IsTrue(retorno.Sucesso);
     }
+    
+    [TestMethod]
+    public async Task ConsultaChaveDpsFiorilli()
+    {
+        var openNFSeNacional = new OpenNFSeNacional();
+        SetupOpenNFSeNacional.ConfigurarFiorilli(openNFSeNacional, "10", "1", "1");
+        var idDps = "DPS" + SetupOpenNFSeNacional.CodMunIBGE +
+                    SetupOpenNFSeNacional.TipoInscricaoFederal +
+                    SetupOpenNFSeNacional.InscricaoFederal.PadLeft(14, '0') +
+                    SetupOpenNFSeNacional.SerieDPS.PadLeft(5, '0') +
+                    SetupOpenNFSeNacional.NumDPS.PadLeft(15, '0');
+
+        var retorno = await openNFSeNacional.ConsultaChaveDpsAsync(idDps);
+
+        Assert.IsTrue(retorno.Sucesso);
+    }
+    
+    [TestMethod]
+    public async Task ConsultarNFSeFiorilli()
+    {
+        var openNFSeNacional = new OpenNFSeNacional();
+        SetupOpenNFSeNacional.ConfigurarFiorilli(openNFSeNacional);
+        var filtro = new ConsultaNFSeFiltro()
+        {
+            CNPJ = "06345083000137",
+            IM = "15564",
+            NumeroDPS = "10",
+            SerieDPS = "1"
+        };
+        var retorno = await openNFSeNacional.ConsultarNFSeAsync(filtro);
+
+        Assert.IsTrue(retorno.Sucesso);
+    }
 }
