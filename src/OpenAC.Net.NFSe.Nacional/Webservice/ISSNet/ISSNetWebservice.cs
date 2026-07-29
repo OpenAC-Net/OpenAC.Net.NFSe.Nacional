@@ -65,6 +65,8 @@ public class ISSNetWebService : NacionalWebservice
 
         ValidarSchema(SchemaNFSe.DPS, dps.Xml, dps.Versao);
 
+        //ValidarSchema(Path.Combine(Configuracao.Arquivos.PathSchemas, "ISSNet", $"schema_v101.xsd"), dps.Xml, dps.Versao);
+
         var documento = dps.Informacoes.Prestador.CPF ?? dps.Informacoes.Prestador.CNPJ ?? throw new InvalidOperationException("CPF ou CNPJ do prestador deve ser informado.");
 
         GravarDpsEmDisco(dps.Xml, $"{dps.Informacoes.NumeroDps:000000}_dps.xml",
@@ -72,7 +74,7 @@ public class ISSNetWebService : NacionalWebservice
 
         GravarArquivoEmDisco(dps.Xml, $"Enviar-{dps.Informacoes.NumeroDps:000000}-env.xml", documento);
 
-        var xmlEnvio = $@"<GerarNfseEnvio xmlns=""http://www.sped.fazenda.gov.br/nfse"" xmlns:ns2=""http://www.w3.org/2000/09/xmldsig#"">{dps.Xml}</GerarNfseEnvio>";
+        var xmlEnvio = $@"<nfse:GerarNfseEnvio>{dps.Xml}</nfse:GerarNfseEnvio>";
 
         this.Log().Debug($"ISSNet: [Enviar][Envio] - {xmlEnvio}");
 
@@ -102,7 +104,14 @@ public class ISSNetWebService : NacionalWebservice
 
         GravarArquivoEmDisco(strResponse, $"Enviar-{dps.Informacoes.NumeroDps:000000}-resp.xml", documento);
 
-        return NFSeResponse<RespostaEnvioDps>.Create(dps.Xml, strResponse, httpResponse.IsSuccessStatusCode, await TrataRetorno<RespostaEnvioDps>(strResponse, "NFse"));
+        var success = httpResponse.IsSuccessStatusCode;
+
+        var ret = await TrataRetorno<RespostaEnvioDps>(strResponse, "NFse");
+
+        if (ret.Erros.Any())
+            success = false;
+
+        return NFSeResponse<RespostaEnvioDps>.Create(dps.Xml, strResponse, success, ret);
     }
 
     public override async Task<NFSeResponse<RespostaEnvioEvento>> EnviarEventoAsync(PedidoRegistroEvento evento)
