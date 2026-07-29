@@ -29,6 +29,7 @@
 // <summary></summary>
 // ***********************************************************************
 
+using OpenAC.Net.Core.Extensions;
 using OpenAC.Net.DFe.Core.Attributes;
 using OpenAC.Net.DFe.Core.Common;
 using OpenAC.Net.DFe.Core.Document;
@@ -84,6 +85,15 @@ public sealed class PedidoRegistroEvento : DFeSignDocument<PedidoRegistroEvento>
         if (configuracao.Geral.RetirarAcentos)
             options |= DFeSaveOptions.RemoveAccents;
         
+        AssinarDocumento(configuracao.Certificados.ObterCertificado(), options, false);
+    }
+
+    /// <summary>
+    /// Realiza a assinatura digital do pedido utilizando as configurações fornecidas e as opções de salvamento especificadas.
+    /// </summary>
+    /// <param name="configuracao">Configuração da NFSe.</param>
+    public void Assinar(ConfiguracaoNFSe configuracao, DFeSaveOptions options)
+    {
         AssinarDocumento(configuracao.Certificados.ObterCertificado(), options, false);
     }
 
