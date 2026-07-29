@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -126,13 +127,59 @@ public abstract class NFSeWebserviceBase : IOpenLog
     public abstract Task<NFSeResponse<RespostaEnvioDps>> EnviarAsync(Dps dps);
 
     /// <summary>
+    /// Recepciona um lote de DPS de forma assíncrona, retornando o protocolo para acompanhamento.
+    /// </summary>
+    /// <param name="lote">Lote de DPS a ser enviado.</param>
+    /// <returns>Resposta contendo o protocolo do lote.</returns>
+    /// <remarks>Suportado apenas por provedores que expõem envio em lote (ex.: Fiorilli).</remarks>
+    public virtual Task<NFSeResponse<RespostaRecepcaoLote>> EnviarLoteAsync(LoteDps lote) =>
+        throw OperacaoNaoSuportada(nameof(EnviarLoteAsync));
+
+    /// <summary>
+    /// Recepciona um lote de DPS de forma síncrona, retornando as NFS-e geradas.
+    /// </summary>
+    /// <param name="lote">Lote de DPS a ser enviado.</param>
+    /// <returns>Resposta contendo o protocolo e as NFS-e geradas.</returns>
+    /// <remarks>Suportado apenas por provedores que expõem envio em lote síncrono (ex.: Fiorilli).</remarks>
+    public virtual Task<NFSeResponse<RespostaRecepcaoLoteSincrono>> EnviarLoteSincronoAsync(LoteDps lote) =>
+        throw OperacaoNaoSuportada(nameof(EnviarLoteSincronoAsync));
+
+    /// <summary>
+    /// Consulta o resultado do processamento de um lote de DPS a partir do protocolo.
+    /// </summary>
+    /// <param name="filtro">Filtro contendo o protocolo e a identificação do transmissor.</param>
+    /// <returns>Resposta contendo a situação e as NFS-e do lote.</returns>
+    /// <remarks>Suportado apenas por provedores que expõem consulta de lote (ex.: Fiorilli).</remarks>
+    public virtual Task<NFSeResponse<RespostaConsultaLote>> ConsultarLoteAsync(ConsultaLoteFiltro filtro) =>
+        throw OperacaoNaoSuportada(nameof(ConsultarLoteAsync));
+
+    /// <summary>
+    /// Consulta NFS-e por chave, Id do DPS ou número/série do DPS.
+    /// </summary>
+    /// <param name="filtro">Filtro da consulta.</param>
+    /// <returns>Resposta contendo as NFS-e encontradas.</returns>
+    /// <remarks>Suportado apenas por provedores que expõem consulta de NFS-e (ex.: Fiorilli).</remarks>
+    public virtual Task<NFSeResponse<RespostaConsultaNFSe>> ConsultarNFSeAsync(ConsultaNFSeFiltro filtro) =>
+        throw OperacaoNaoSuportada(nameof(ConsultarNFSeAsync));
+
+    /// <summary>
+    /// Cria a exceção padrão para operações não suportadas pelo provedor atual.
+    /// </summary>
+    /// <param name="operacao">Nome da operação não suportada.</param>
+    /// <returns>Instância de <see cref="NotSupportedException"/>.</returns>
+    protected NotSupportedException OperacaoNaoSuportada(string operacao) =>
+        new($"A operação '{operacao}' não é suportada pelo provedor '{ServiceInfo.Provider}'.");
+
+    /// <summary>
     /// Envia uma requisição HTTP para o webservice.
     /// </summary>
     /// <param name="content">Conteúdo da requisição.</param>
     /// <param name="method">Método HTTP.</param>
     /// <param name="url">URL do serviço.</param>
+    /// <param name="headers">Cabeçalhos adicionais a serem incluídos na requisição (ex.: SOAPAction).</param>
     /// <returns>Resposta HTTP.</returns>
-    protected virtual async Task<HttpResponseMessage> SendAsync(HttpContent? content, HttpMethod method, string url)
+    protected virtual async Task<HttpResponseMessage> SendAsync(HttpContent? content, HttpMethod method, string url,
+        IEnumerable<KeyValuePair<string, string>>? headers = null)
     {
         var handler = new HttpClientHandler();
 
@@ -149,6 +196,11 @@ public abstract class NFSeWebserviceBase : IOpenLog
 
         request.Headers.UserAgent.Add(productValue);
         request.Headers.UserAgent.Add(commentValue);
+
+        if (headers != null)
+            foreach (var header in headers)
+                request.Headers.TryAddWithoutValidation(header.Key, header.Value);
+
         request.Content = content;
 
         return await client.SendAsync(request);

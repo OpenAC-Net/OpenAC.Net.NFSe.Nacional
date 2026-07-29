@@ -1,5 +1,3 @@
-using Newtonsoft.Json;
-using OpenAC.Net.Core.Extensions;
 using OpenAC.Net.NFSe.Nacional.Common.Model;
 using OpenAC.Net.NFSe.Nacional.Common.Types;
 using System.Diagnostics;
@@ -219,19 +217,15 @@ public class TestEmissao
                 OptanteSimplesNacional = OptanteSimplesNacional.NaoOptante,
                 RegimeEspecial = RegimeEspecial.Nenhum
             }
-
         };
-
 
 
         var serv = new ServicoNFSe
         {
-
             Localidade = new LocalidadeNFSe
             {
                 // Usa o município do tomador
                 CodMunicipioPrestacao = SetupOpenNFSeNacional.CodMunIBGE
-
             },
             Informacoes = new InformacoesServico
             {
@@ -239,7 +233,6 @@ public class TestEmissao
                 CodTributacaoMunicipio = "001",
                 Descricao = "SERVIÇO SEM TOMADOR - R$ 85000,00"
             }
-
         };
 
         var valores = new ValoresDps
@@ -250,7 +243,6 @@ public class TestEmissao
             },
             Tributos = new TributosNFSe
             {
-
                 Municipal = new TributoMunicipal
                 {
                     ISSQN = TributoISSQN.OperacaoTributavel,
@@ -296,21 +288,12 @@ public class TestEmissao
         try
         {
             var retorno = await openNFSeNacional.EnviarAsync(dps);
-            if (!retorno.Sucesso)
-                Debug.WriteLine(JsonConvert.SerializeObject(retorno, new JsonSerializerSettings
-                {
-                    NullValueHandling = NullValueHandling.Ignore,
-                    ReferenceLoopHandling = ReferenceLoopHandling.Ignore
-                }));
-            else
-                Assert.IsTrue(retorno.Sucesso);
+            Assert.IsTrue(retorno.Sucesso);
         }
-        catch (Exception E)
+        catch (Exception e)
         {
-
-            Debug.WriteLine(E.Message);
+            Debug.WriteLine(e.Message);
         }
-
     }
 
     [TestMethod]
@@ -328,7 +311,6 @@ public class TestEmissao
                 OptanteSimplesNacional = OptanteSimplesNacional.NaoOptante,
                 RegimeEspecial = RegimeEspecial.Nenhum
             }
-
         };
 
         var toma = SetupOpenNFSeNacional.ObterTomador("4");
@@ -344,7 +326,6 @@ public class TestEmissao
                 CodTributacaoNacional = "090101",
                 CodTributacaoMunicipio = "001",
                 Descricao = "Hospedagem R$ 1000,00"
-
             },
             ServicoExterior = new ServicoExterior
             {
@@ -356,7 +337,6 @@ public class TestEmissao
                 ApoioComercioExteriorTomador = ApoioComercioExteriorTomador.Nenhum,
                 MovimentacaoTemporariaBens = MovimentacaoTemporariaBens.Nao
             }
-
         };
 
         var valores = new ValoresDps
@@ -412,25 +392,12 @@ public class TestEmissao
         try
         {
             var retorno = await openNFSeNacional.EnviarAsync(dps);
-            if (!retorno.Sucesso)
-                Debug.WriteLine(JsonConvert.SerializeObject(retorno, new JsonSerializerSettings
-                {
-                    NullValueHandling = NullValueHandling.Ignore,
-                    ReferenceLoopHandling = ReferenceLoopHandling.Ignore
-                }));
-            else
-                Assert.IsTrue(retorno.Sucesso);
+            Assert.IsTrue(retorno.Sucesso);
         }
-        catch (Exception E)
+        catch (Exception e)
         {
-
-            Debug.WriteLine(E.Message);
+            Debug.WriteLine(e.Message);
         }
-
-
-
-
-
     }
 
     [TestMethod]
@@ -448,7 +415,6 @@ public class TestEmissao
                 OptanteSimplesNacional = OptanteSimplesNacional.NaoOptante,
                 RegimeEspecial = RegimeEspecial.SociedadeProfissionais
             }
-
         };
 
         var toma = SetupOpenNFSeNacional.ObterTomador("4");
@@ -458,7 +424,6 @@ public class TestEmissao
             Localidade = new LocalidadeNFSe
             {
                 CodMunicipioPrestacao = SetupOpenNFSeNacional.CodMunIBGE
-
             },
             Informacoes = new InformacoesServico
             {
@@ -476,7 +441,6 @@ public class TestEmissao
                 ApoioComercioExteriorTomador = ApoioComercioExteriorTomador.Nenhum,
                 MovimentacaoTemporariaBens = MovimentacaoTemporariaBens.Nao
             }
-
         };
 
         var valores = new ValoresDps
@@ -487,7 +451,6 @@ public class TestEmissao
             },
             Tributos = new TributosNFSe
             {
-
                 Municipal = new TributoMunicipal
                 {
                     ISSQN = TributoISSQN.OperacaoTributavel,
@@ -533,19 +496,11 @@ public class TestEmissao
         try
         {
             var retorno = await openNFSeNacional.EnviarAsync(dps);
-            if (!retorno.Sucesso)
-                Debug.WriteLine(JsonConvert.SerializeObject(retorno, new JsonSerializerSettings
-                {
-                    NullValueHandling = NullValueHandling.Ignore,
-                    ReferenceLoopHandling = ReferenceLoopHandling.Ignore
-                }));
-            else
-                Assert.IsTrue(retorno.Sucesso);
+            Assert.IsTrue(retorno.Sucesso);
         }
-        catch (Exception E)
+        catch (Exception e)
         {
-
-            Debug.WriteLine(E.Message);
+            Debug.WriteLine(e.Message);
         }
     }
 

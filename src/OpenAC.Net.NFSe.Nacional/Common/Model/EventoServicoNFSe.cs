@@ -46,7 +46,7 @@ public sealed class EventoServicoNFSe
     /// <summary>
     /// Descrição do evento.
     /// </summary>
-    [DFeElement(TipoCampo.Str, "desc", Min = 1, Max = 255, Ocorrencia = Ocorrencia.Obrigatoria)]
+    [DFeElement(TipoCampo.Str, "xNome", Min = 1, Max = 255, Ocorrencia = Ocorrencia.Obrigatoria)]
     public string Descricao { get; set; } = string.Empty;
     
     /// <summary>
@@ -64,7 +64,7 @@ public sealed class EventoServicoNFSe
     /// <summary>
     /// Identificador do evento.
     /// </summary>
-    [DFeElement(TipoCampo.Str, "id", Min = 1, Max = 30, Ocorrencia = Ocorrencia.NaoObrigatoria)]
+    [DFeElement(TipoCampo.Str, "idAtvEvt", Min = 1, Max = 30, Ocorrencia = Ocorrencia.NaoObrigatoria)]
     public string IdEvento { get; set; } = string.Empty;
 
     /// <summary>

@@ -237,5 +237,113 @@ public sealed class OpenNFSeNacional : IOpenLog
         }
     }
 
+    /// <summary>
+    /// Recepciona um lote de DPS de forma assíncrona, retornando o protocolo para acompanhamento.
+    /// </summary>
+    /// <param name="lote">Lote de DPS a ser enviado.</param>
+    /// <returns>Resposta contendo o protocolo do lote.</returns>
+    /// <remarks>Suportado apenas por provedores que expõem envio em lote (ex.: Fiorilli).</remarks>
+    public Task<NFSeResponse<RespostaRecepcaoLote>> EnviarLoteAsync(LoteDps lote)
+    {
+        var provider = NFSeServiceManager.Instance.GetProvider(Configuracoes);
+        var oldProtocol = ServicePointManager.SecurityProtocol;
+
+        try
+        {
+            ServicePointManager.SecurityProtocol = Configuracoes.WebServices.Protocolos;
+            return provider.EnviarLoteAsync(lote);
+        }
+        catch (Exception exception)
+        {
+            this.Log().Error("[EnviarLote]", exception);
+            throw;
+        }
+        finally
+        {
+            ServicePointManager.SecurityProtocol = oldProtocol;
+        }
+    }
+
+    /// <summary>
+    /// Recepciona um lote de DPS de forma síncrona, retornando as NFS-e geradas.
+    /// </summary>
+    /// <param name="lote">Lote de DPS a ser enviado.</param>
+    /// <returns>Resposta contendo o protocolo e as NFS-e geradas.</returns>
+    /// <remarks>Suportado apenas por provedores que expõem envio em lote síncrono (ex.: Fiorilli).</remarks>
+    public Task<NFSeResponse<RespostaRecepcaoLoteSincrono>> EnviarLoteSincronoAsync(LoteDps lote)
+    {
+        var provider = NFSeServiceManager.Instance.GetProvider(Configuracoes);
+        var oldProtocol = ServicePointManager.SecurityProtocol;
+
+        try
+        {
+            ServicePointManager.SecurityProtocol = Configuracoes.WebServices.Protocolos;
+            return provider.EnviarLoteSincronoAsync(lote);
+        }
+        catch (Exception exception)
+        {
+            this.Log().Error("[EnviarLoteSincrono]", exception);
+            throw;
+        }
+        finally
+        {
+            ServicePointManager.SecurityProtocol = oldProtocol;
+        }
+    }
+
+    /// <summary>
+    /// Consulta o processamento de um lote de DPS a partir do protocolo.
+    /// </summary>
+    /// <param name="filtro">Filtro com o protocolo e a identificação do transmissor.</param>
+    /// <returns>Resposta contendo a situação e as NFS-e do lote.</returns>
+    /// <remarks>Suportado apenas por provedores que expõem consulta de lote (ex.: Fiorilli).</remarks>
+    public Task<NFSeResponse<RespostaConsultaLote>> ConsultarLoteAsync(ConsultaLoteFiltro filtro)
+    {
+        var provider = NFSeServiceManager.Instance.GetProvider(Configuracoes);
+        var oldProtocol = ServicePointManager.SecurityProtocol;
+
+        try
+        {
+            ServicePointManager.SecurityProtocol = Configuracoes.WebServices.Protocolos;
+            return provider.ConsultarLoteAsync(filtro);
+        }
+        catch (Exception exception)
+        {
+            this.Log().Error("[ConsultarLote]", exception);
+            throw;
+        }
+        finally
+        {
+            ServicePointManager.SecurityProtocol = oldProtocol;
+        }
+    }
+
+    /// <summary>
+    /// Consulta NFS-e por chave, Id do DPS ou número/série do DPS.
+    /// </summary>
+    /// <param name="filtro">Filtro da consulta.</param>
+    /// <returns>Resposta contendo as NFS-e encontradas.</returns>
+    /// <remarks>Suportado apenas por provedores que expõem consulta de NFS-e (ex.: Fiorilli).</remarks>
+    public Task<NFSeResponse<RespostaConsultaNFSe>> ConsultarNFSeAsync(ConsultaNFSeFiltro filtro)
+    {
+        var provider = NFSeServiceManager.Instance.GetProvider(Configuracoes);
+        var oldProtocol = ServicePointManager.SecurityProtocol;
+
+        try
+        {
+            ServicePointManager.SecurityProtocol = Configuracoes.WebServices.Protocolos;
+            return provider.ConsultarNFSeAsync(filtro);
+        }
+        catch (Exception exception)
+        {
+            this.Log().Error("[ConsultarNFSe]", exception);
+            throw;
+        }
+        finally
+        {
+            ServicePointManager.SecurityProtocol = oldProtocol;
+        }
+    }
+
     #endregion Methods
 }

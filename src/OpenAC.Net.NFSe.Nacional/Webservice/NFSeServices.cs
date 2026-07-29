@@ -14,7 +14,7 @@ namespace OpenAC.Net.NFSe.Nacional.Webservice;
 /// Herdada de <see cref="DFeDocument{T}"/> para suportar serialização/ligação com o formato DFe.
 /// </remarks>
 [DFeRoot("NFSeServices", Namespace = "https://www.openac.net.br/")]
-public class NFSeServices : DFeDocument<NFSeServices>
+public sealed class NFSeServices : DFeDocument<NFSeServices>
 {
     #region Properties
 

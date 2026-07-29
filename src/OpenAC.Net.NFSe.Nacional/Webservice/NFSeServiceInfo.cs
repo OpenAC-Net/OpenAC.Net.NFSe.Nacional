@@ -11,7 +11,7 @@ namespace OpenAC.Net.NFSe.Nacional.Webservice;
 /// Representa informações do serviço de NFSe de um município:
 /// código IBGE, provedor(es), nome e UF.
 /// </summary>
-public class NFSeServiceInfo
+public sealed class NFSeServiceInfo
 {
     /// <summary>
     /// Retorna o ambiente de NFSe correspondente ao <see cref="DFeTipoAmbiente"/> informado.
