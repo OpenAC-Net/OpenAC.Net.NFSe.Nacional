@@ -42,16 +42,26 @@ namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 public sealed class DocumentoDeducaoReducao
 {
     /// <summary>
-    /// Chave da NFSe utilizada para dedução/redução (50 dígitos).
+    /// Chave da NFSe utilizada para dedução/redução (50 caracteres). Embute a inscrição federal,
+    /// que pode ser alfanumérica.
     /// </summary>
-    [DFeElement(TipoCampo.StrNumber, "chNFSe", Min = 50, Max = 50, Ocorrencia = Ocorrencia.NaoObrigatoria)]
-    public string? ChaveNFSe { get; set; }
-    
+    [DFeElement(TipoCampo.Str, "chNFSe", Min = 50, Max = 50, Ocorrencia = Ocorrencia.NaoObrigatoria)]
+    public string? ChaveNFSe
+    {
+        get;
+        set => field = value.SomenteAlfanumerico();
+    }
+
     /// <summary>
-    /// Chave da NFe utilizada para dedução/redução (44 dígitos).
+    /// Chave da NFe utilizada para dedução/redução (44 caracteres). Embute a inscrição federal,
+    /// que pode ser alfanumérica.
     /// </summary>
-    [DFeElement(TipoCampo.StrNumber, "chNFSe", Min = 44, Max = 44, Ocorrencia = Ocorrencia.NaoObrigatoria)]
-    public string? ChaveNFe { get; set; }
+    [DFeElement(TipoCampo.Str, "chNFe", Min = 44, Max = 44, Ocorrencia = Ocorrencia.NaoObrigatoria)]
+    public string? ChaveNFe
+    {
+        get;
+        set => field = value.SomenteAlfanumerico();
+    }
     
     /// <summary>
     /// Chave da NFSe do município.
@@ -68,25 +78,25 @@ public sealed class DocumentoDeducaoReducao
     /// <summary>
     /// Número do documento fiscal.
     /// </summary>
-    [DFeElement(TipoCampo.StrNumber, "nDocFisc", Min = 1, Max = 255, Ocorrencia = Ocorrencia.NaoObrigatoria)]
+    [DFeElement(TipoCampo.Str, "nDocFisc", Min = 1, Max = 255, Ocorrencia = Ocorrencia.NaoObrigatoria)]
     public string? NumeroDocumentoFiscal { get; set; }
-    
+
     /// <summary>
     /// Número do documento.
     /// </summary>
-    [DFeElement(TipoCampo.StrNumber, "nDoc", Min = 1, Max = 255, Ocorrencia = Ocorrencia.NaoObrigatoria)]
+    [DFeElement(TipoCampo.Str, "nDoc", Min = 1, Max = 255, Ocorrencia = Ocorrencia.NaoObrigatoria)]
     public string? NumeroDocumento { get; set; }
     
     /// <summary>
     /// Tipo de dedução ou redução.
     /// </summary>
-    [DFeElement(TipoCampo.Enum, "nDoc", Ocorrencia = Ocorrencia.Obrigatoria)]
+    [DFeElement(TipoCampo.Enum, "tpDedRed", Ocorrencia = Ocorrencia.Obrigatoria)]
     public TipoDeducaoReducao TipoDeducaoReducao { get; set; }
     
     /// <summary>
     /// Descrição da dedução ou redução.
     /// </summary>
-    [DFeElement(TipoCampo.StrNumber, "xDescOutDed", Min = 1, Max = 255, Ocorrencia = Ocorrencia.NaoObrigatoria)]
+    [DFeElement(TipoCampo.Str, "xDescOutDed", Min = 1, Max = 255, Ocorrencia = Ocorrencia.NaoObrigatoria)]
     public string? DescricaoReducaoDeducao { get; set; }
     
     /// <summary>
