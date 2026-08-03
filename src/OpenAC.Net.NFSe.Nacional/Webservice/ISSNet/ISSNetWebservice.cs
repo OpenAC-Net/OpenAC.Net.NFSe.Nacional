@@ -164,7 +164,7 @@ public class ISSNetWebService : NacionalWebservice
 
         var success = httpResponse.IsSuccessStatusCode;
 
-        var ret = await TrataRetorno<RespostaEnvioEvento>(strResponse, "NFSe");
+        var ret = await TrataRetorno<RespostaEnvioEvento>(strResponse, "evento");
 
         if (ret.Erros.Any())
             success = false;
@@ -199,11 +199,11 @@ public class ISSNetWebService : NacionalWebservice
             if (listaMensagensErros.Any())
                 resultado.Erros = listaMensagensErros;
 
-            if (resultado is RespostaEnvioDps respostaNFSe)
-            {
-                var elementNfse = doc.Descendants().FirstOrDefault(x => x.Name.LocalName == xmlRootTag);
+            var elementNfse = doc.Descendants().FirstOrDefault(x => x.Name.LocalName == xmlRootTag);
 
-                if (elementNfse != null)
+            if (elementNfse != null)
+            {
+                if (resultado is RespostaEnvioDps respostaNFSe)
                 {
                     respostaNFSe.XmlNFSe = elementNfse.ToString();
 
@@ -214,10 +214,10 @@ public class ISSNetWebService : NacionalWebservice
                     respostaNFSe.IdDps = $"DPS{chaveAcesso}";
                     respostaNFSe.ChaveAcesso = chaveAcesso;
                 }
-            }
-            else if (resultado is RespostaEnvioEvento respostaEvento)
-            {
-
+                else if (resultado is RespostaEnvioEvento respostaEvento)
+                {
+                    respostaEvento.XmlEvento = elementNfse.ToString();
+                }
             }
         }
         catch (Exception ex)
