@@ -81,12 +81,20 @@ public sealed class Dps : DFeSignDocument<Dps>
     /// <param name="configuracao">Configuração da NFSe.</param>
     public void Assinar(ConfiguracaoNFSe configuracao)
     {
-        GerarId();
-
         var options = DFeSaveOptions.DisableFormatting;
         if (configuracao.Geral.RetirarAcentos)
             options |= DFeSaveOptions.RemoveAccents;
 
+        Assinar(configuracao, options);
+    }
+
+    /// <summary>
+    /// Assina o documento DPS utilizando as configurações fornecidas e as opções de salvamento especificadas.
+    /// </summary>
+    /// <param name="configuracao">Configuração da NFSe.</param>
+    public void Assinar(ConfiguracaoNFSe configuracao, DFeSaveOptions options)
+    {        
+        GerarId();
         AssinarDocumento(configuracao.Certificados.ObterCertificado(), options, false);
     }
 

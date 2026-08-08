@@ -231,6 +231,30 @@ public abstract class NFSeWebserviceBase : IOpenLog
     }
 
     /// <summary>
+    /// Valida o XML de acordo com o schema.
+    /// </summary>
+    /// <param name="schemaFile">Arquivo do schema.</param>
+    /// <param name="xml">Conteúdo XML a ser validado.</param>
+    /// <param name="versao">Versão do Schema a ser carregado</param>
+    /// <exception cref="XmlSchemaException">Lançada se o arquivo de schema não for encontrado.</exception>
+    /// <exception cref="XmlSchemaValidationException">Lançada se houver erros de validação.</exception>
+    protected virtual void ValidarSchema(string schemaFile, string xml, VersaoNFSe versao = VersaoNFSe.Ve100)
+    {
+        if (!Configuracao.WebServices.ValidarSchemas)
+            return;
+
+        Configuracao.Arquivos.VersaoSchema = versao;
+
+        if (!File.Exists(schemaFile))
+            throw new XmlSchemaException("Nao encontrou o arquivo schema do xml => " + schemaFile);
+
+        if (XmlSchemaValidation.ValidarXml(xml, schemaFile, out var errosSchema, out _)) return;
+
+        throw new XmlSchemaValidationException("Erros gerado ao validar o schema do xml" + Environment.NewLine +
+                                               string.Join(Environment.NewLine, errosSchema));
+    }
+
+    /// <summary>
     /// Grava o xml da Dps no disco.
     /// </summary>
     /// <param name="conteudoArquivo">Conteúdo do arquivo.</param>

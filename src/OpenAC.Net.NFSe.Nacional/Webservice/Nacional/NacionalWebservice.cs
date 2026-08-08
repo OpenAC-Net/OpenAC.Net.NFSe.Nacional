@@ -254,8 +254,7 @@ public class NacionalWebservice : NFSeWebserviceBase
             PropertyNameCaseInsensitive = true,
         };
 
-        var retorno = NFSeResponse<RespostaEnvioEvento>.Create(evento.Xml, strEnvio, strResponse,
-            httpResponse.IsSuccessStatusCode, jsonOptions);
+        var retorno = NFSeResponse<RespostaEnvioEvento>.Create(evento.Xml, strEnvio, strResponse, httpResponse.IsSuccessStatusCode, jsonOptions);
 
         if (retorno.Sucesso)
         {

@@ -46,8 +46,8 @@ public sealed class NFSeServiceManager
             {
                 NFSeProvider.SimplISS, new Dictionary<VersaoNFSe, Type>
                 {
-                    { VersaoNFSe.Ve100, typeof(SimplISS.SimplISSWebservice) },
-                    { VersaoNFSe.Ve101, typeof(SimplISS.SimplISSWebservice) }
+                    { VersaoNFSe.Ve100, typeof(SimplISS.SimplISSWebService) },
+                    { VersaoNFSe.Ve101, typeof(SimplISS.SimplISSWebService) }
                 }
             },
             {
@@ -62,6 +62,13 @@ public sealed class NFSeServiceManager
                 {
                     { VersaoNFSe.Ve100, typeof(Fiorilli.FiorilliWebService) },
                     { VersaoNFSe.Ve101, typeof(Fiorilli.FiorilliWebService) }
+                }
+            },
+            {
+                NFSeProvider.ISSNet, new Dictionary<VersaoNFSe, Type>
+                {
+                    { VersaoNFSe.Ve100, typeof(ISSNet.ISSNetWebService) },
+                    { VersaoNFSe.Ve101, typeof(ISSNet.ISSNetWebService) }
                 }
             }
         };
