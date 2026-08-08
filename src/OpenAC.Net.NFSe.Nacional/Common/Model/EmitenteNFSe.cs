@@ -42,10 +42,14 @@ public sealed class EmitenteNFSe
     #region Properties
 
     /// <summary>
-    /// CNPJ do emitente.
+    /// CNPJ do emitente. Aceita CNPJ alfanumérico; a formatação informada é descartada.
     /// </summary>
-    [DFeElement(TipoCampo.StrNumber, "CNPJ", Min = 14, Max = 14, Ocorrencia = Ocorrencia.NaoObrigatoria)]
-    public string? CNPJ { get; set; }
+    [DFeElement(TipoCampo.Str, "CNPJ", Min = 14, Max = 14, Ocorrencia = Ocorrencia.NaoObrigatoria)]
+    public string? CNPJ
+    {
+        get;
+        set => field = value.SomenteAlfanumerico();
+    }
     
     /// <summary>
     /// CPF do emitente.

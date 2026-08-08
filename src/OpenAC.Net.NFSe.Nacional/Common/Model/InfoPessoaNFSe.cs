@@ -43,10 +43,14 @@ public class InfoPessoaNFSe
     #region Properties
 
     /// <summary>
-    /// CNPJ da pessoa.
+    /// CNPJ da pessoa. Aceita CNPJ alfanumérico; a formatação informada é descartada.
     /// </summary>
-    [DFeElement(TipoCampo.StrNumber, "CNPJ", Min = 14, Max = 14, Ocorrencia = Ocorrencia.NaoObrigatoria, Ordem = 0)]
-    public string? CNPJ { get; set; }
+    [DFeElement(TipoCampo.Str, "CNPJ", Min = 14, Max = 14, Ocorrencia = Ocorrencia.NaoObrigatoria, Ordem = 0)]
+    public string? CNPJ
+    {
+        get;
+        set => field = value.SomenteAlfanumerico();
+    }
 
     /// <summary>
     /// CPF da pessoa.

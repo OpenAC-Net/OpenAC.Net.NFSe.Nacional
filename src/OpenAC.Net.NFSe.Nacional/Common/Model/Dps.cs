@@ -93,19 +93,37 @@ public sealed class Dps : DFeSignDocument<Dps>
     /// </summary>
     /// <param name="configuracao">Configuração da NFSe.</param>
     public void Assinar(ConfiguracaoNFSe configuracao, DFeSaveOptions options)
-    {
-        if (Informacoes.Id.IsEmpty())
-        {
-            var tipo = Informacoes.Prestador.CNPJ.IsEmpty() ? "1" : "2";
-            var documneto = Informacoes.Prestador.CPF.IsEmpty()
-                ? Informacoes.Prestador.CNPJ
-                : $"000{Informacoes.Prestador.CPF}";
-
-            Informacoes.Id =
-                $"DPS{Informacoes.LocalidadeEmitente:D7}{tipo}{documneto}{Informacoes.Serie:D5}{Informacoes.NumeroDps:D15}";
-        }
-
+    {        
+        GerarId();
         AssinarDocumento(configuracao.Certificados.ObterCertificado(), options, false);
+    }
+
+    /// <summary>
+    /// Gera o identificador da DPS quando ainda não informado. Chamado automaticamente por
+    /// <see cref="Assinar"/>; um <see cref="InfDps.Id"/> já preenchido é preservado.
+    /// </summary>
+    /// <remarks>
+    /// Layout <c>TSIdDPS</c> (45 posições): <c>"DPS"</c> + Cód.Mun.(7) + Tipo Insc.(1) +
+    /// Insc.Federal(14) + Série(5) + Núm.DPS(15). O tipo 1 (CPF) exige 14 dígitos, com <c>000</c> à
+    /// esquerda; o tipo 2 (CNPJ) admite CNPJ alfanumérico. Como todos os campos são
+    /// <see cref="string"/>, o preenchimento é explícito - especificador de formato numérico
+    /// (<c>D7</c>, <c>D5</c>, <c>D15</c>) não se aplica a <see cref="string"/>.
+    /// </remarks>
+    public void GerarId()
+    {
+        if (!Informacoes.Id.IsEmpty()) return;
+
+        var tipo = Informacoes.Prestador.CNPJ.IsEmpty() ? "1" : "2";
+        var documento = Informacoes.Prestador.CPF.IsEmpty()
+            ? Informacoes.Prestador.CNPJ ?? string.Empty
+            : $"000{Informacoes.Prestador.CPF}";
+
+        Informacoes.Id = "DPS" +
+                         Informacoes.LocalidadeEmitente.PadLeft(7, '0') +
+                         tipo +
+                         documento.PadLeft(14, '0') +
+                         Informacoes.Serie.PadLeft(5, '0') +
+                         Informacoes.NumeroDps.PadLeft(15, '0');
     }
 
     #endregion Methods
