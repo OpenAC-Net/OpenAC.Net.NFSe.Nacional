@@ -69,10 +69,14 @@ public sealed class InfPedReg
     public DateTimeOffset DhEvento { get; set; }
     
     /// <summary>
-    /// CNPJ do autor do evento.
+    /// CNPJ do autor do evento. Aceita CNPJ alfanumérico; a formatação informada é descartada.
     /// </summary>
-    [DFeElement(TipoCampo.StrNumber, "CNPJAutor", Min = 14, Max = 14, Ocorrencia = Ocorrencia.NaoObrigatoria)]
-    public string? CNPJAutor { get; set; }
+    [DFeElement(TipoCampo.Str, "CNPJAutor", Min = 14, Max = 14, Ocorrencia = Ocorrencia.NaoObrigatoria)]
+    public string? CNPJAutor
+    {
+        get;
+        set => field = value.SomenteAlfanumerico();
+    }
     
     /// <summary>
     /// CPF do autor do evento.
