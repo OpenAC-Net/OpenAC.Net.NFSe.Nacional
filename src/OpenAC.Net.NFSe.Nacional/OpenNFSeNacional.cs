@@ -59,16 +59,17 @@ public sealed class OpenNFSeNacional : IOpenLog
     /// Recepciona a DPS e gera a NFS-e de forma assíncrona.
     /// </summary>
     /// <param name="dps">Objeto <see cref="Dps"/> a ser enviado.</param>
+    /// <param name="funcGetXml">Permite passar o xml diretamente para envio</param>
     /// <returns>Resposta do envio contendo informações da NFS-e gerada.</returns>
-    public Task<NFSeResponse<RespostaEnvioDps>> EnviarAsync(Dps dps)
+    public Task<NFSeResponse<RespostaEnvioDps>> EnviarAsync(Dps dps, Func<string>? funcGetXml = null)
     {
         var provider = NFSeServiceManager.Instance.GetProvider(Configuracoes);
         var oldProtocol = ServicePointManager.SecurityProtocol;
-        
+
         try
         {
             ServicePointManager.SecurityProtocol = Configuracoes.WebServices.Protocolos;
-            return provider.EnviarAsync(dps);
+            return provider.EnviarAsync(dps, funcGetXml);
         }
         catch (Exception exception)
         {
@@ -90,7 +91,7 @@ public sealed class OpenNFSeNacional : IOpenLog
     {
         var provider = NFSeServiceManager.Instance.GetProvider(Configuracoes);
         var oldProtocol = ServicePointManager.SecurityProtocol;
-        
+
         try
         {
             ServicePointManager.SecurityProtocol = Configuracoes.WebServices.Protocolos;
@@ -116,7 +117,7 @@ public sealed class OpenNFSeNacional : IOpenLog
     {
         var provider = NFSeServiceManager.Instance.GetProvider(Configuracoes);
         var oldProtocol = ServicePointManager.SecurityProtocol;
-        
+
         try
         {
             ServicePointManager.SecurityProtocol = Configuracoes.WebServices.Protocolos;
@@ -142,7 +143,7 @@ public sealed class OpenNFSeNacional : IOpenLog
     {
         var provider = NFSeServiceManager.Instance.GetProvider(Configuracoes);
         var oldProtocol = ServicePointManager.SecurityProtocol;
-        
+
         try
         {
             ServicePointManager.SecurityProtocol = Configuracoes.WebServices.Protocolos;
@@ -168,7 +169,7 @@ public sealed class OpenNFSeNacional : IOpenLog
     {
         var provider = NFSeServiceManager.Instance.GetProvider(Configuracoes);
         var oldProtocol = ServicePointManager.SecurityProtocol;
-        
+
         try
         {
             ServicePointManager.SecurityProtocol = Configuracoes.WebServices.Protocolos;
@@ -194,7 +195,7 @@ public sealed class OpenNFSeNacional : IOpenLog
     {
         var provider = NFSeServiceManager.Instance.GetProvider(Configuracoes);
         var oldProtocol = ServicePointManager.SecurityProtocol;
-        
+
         try
         {
             ServicePointManager.SecurityProtocol = Configuracoes.WebServices.Protocolos;
@@ -220,7 +221,7 @@ public sealed class OpenNFSeNacional : IOpenLog
     {
         var provider = NFSeServiceManager.Instance.GetProvider(Configuracoes);
         var oldProtocol = ServicePointManager.SecurityProtocol;
-        
+
         try
         {
             ServicePointManager.SecurityProtocol = Configuracoes.WebServices.Protocolos;

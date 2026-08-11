@@ -67,18 +67,19 @@ public class TiplanWebService : NacionalWebservice
     /// <param name="dps"></param>
     /// <returns></returns>
     /// <exception cref="InvalidOperationException"></exception>
-    public override async Task<NFSeResponse<RespostaEnvioDps>> EnviarAsync(Dps dps)
+    public override async Task<NFSeResponse<RespostaEnvioDps>> EnviarAsync(Dps dps, Func<string>? funcGetXml = null)
     {
         dps.Assinar(Configuracao);
 
-        ValidarSchema(SchemaNFSe.DPS, dps.Xml, dps.Versao);
+        var xmlDps = funcGetXml?.Invoke() ?? dps.Xml;
+        ValidarSchema(SchemaNFSe.DPS, xmlDps, dps.Versao);
 
         string documento = dps.Informacoes.Prestador.CPF ?? dps.Informacoes.Prestador.CNPJ ?? throw new InvalidOperationException("CPF ou CNPJ do prestador deve ser informado.");
 
-        GravarDpsEmDisco(dps.Xml, $"{dps.Informacoes.NumeroDps:000000}_dps.xml",
+        GravarDpsEmDisco(xmlDps, $"{dps.Informacoes.NumeroDps:000000}_dps.xml",
             documento, dps.Informacoes.DhEmissao.DateTime);
 
-        DpsEnvio envio = new DpsEnvio { XmlDps = dps.Xml };
+        DpsEnvio envio = new DpsEnvio { XmlDps = xmlDps };
         JsonContent content = JsonContent.Create(envio);
         string strEnvio = await content.ReadAsStringAsync();
 
@@ -95,7 +96,7 @@ public class TiplanWebService : NacionalWebservice
 
         GravarArquivoEmDisco(strResponse, $"Enviar-{dps.Informacoes.NumeroDps:000000}-resp.json", documento);
 
-        return NFSeResponse<RespostaEnvioDps>.Create(dps.Xml, strEnvio, strResponse, httpResponse.IsSuccessStatusCode, JsonOptions);
+        return NFSeResponse<RespostaEnvioDps>.Create(xmlDps, strEnvio, strResponse, httpResponse.IsSuccessStatusCode, JsonOptions);
     }
     /// <summary>
     /// Envio de evento assincrono.

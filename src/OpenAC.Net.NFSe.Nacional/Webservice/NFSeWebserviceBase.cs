@@ -123,8 +123,9 @@ public abstract class NFSeWebserviceBase : IOpenLog
     /// Recepciona a DPS e gera a NFS-e de forma síncrona.
     /// </summary>
     /// <param name="dps">DPS a ser enviada.</param>
+    /// <param name="funcGetXml">Permite passar o xml diretamente para envio</param>
     /// <returns>Resposta do envio da DPS.</returns>
-    public abstract Task<NFSeResponse<RespostaEnvioDps>> EnviarAsync(Dps dps);
+    public abstract Task<NFSeResponse<RespostaEnvioDps>> EnviarAsync(Dps dps, Func<string>? funcGetXml = null);
 
     /// <summary>
     /// Recepciona um lote de DPS de forma assíncrona, retornando o protocolo para acompanhamento.

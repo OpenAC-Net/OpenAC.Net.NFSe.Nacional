@@ -74,19 +74,21 @@ public class FiorilliWebService : NFSeWebserviceBase
     /// Recepciona a DPS e gera a NFS-e de forma síncrona (operação <c>recepcionarDps</c>).
     /// </summary>
     /// <param name="dps">DPS a ser enviada.</param>
+    /// <param name="funcGetXml">Permite passar o xml diretamente para envio</param>
     /// <returns>Resposta do envio da DPS.</returns>
-    public override async Task<NFSeResponse<RespostaEnvioDps>> EnviarAsync(Dps dps)
+    public override async Task<NFSeResponse<RespostaEnvioDps>> EnviarAsync(Dps dps, Func<string>? funcGetXml = null)
     {
         dps.Assinar(Configuracao);
-        ValidarSchema(SchemaNFSe.DPS, dps.Xml, dps.Versao);
+        var xmlDps = funcGetXml?.Invoke() ?? dps.Xml;
+        ValidarSchema(SchemaNFSe.DPS, xmlDps, dps.Versao);
 
         var documento = dps.Informacoes.Prestador.CPF ?? dps.Informacoes.Prestador.CNPJ;
         var prefixo = dps.Informacoes.NumeroDps.ZeroFill(6);
 
-        GravarDpsEmDisco(dps.Xml, $"{prefixo}_dps.xml", documento, dps.Informacoes.DhEmissao.DateTime);
+        GravarDpsEmDisco(xmlDps, $"{prefixo}_dps.xml", documento, dps.Informacoes.DhEmissao.DateTime);
 
         var corpo = $"<RecepcionarDpsEnvio xmlns=\"{FiorilliSoap.NsFiorilli}\">" +
-                    FiorilliSoap.RemoverProlog(dps.Xml) +
+                    FiorilliSoap.RemoverProlog(xmlDps) +
                     "</RecepcionarDpsEnvio>";
         var envelope = FiorilliSoap.Envelope(corpo);
 

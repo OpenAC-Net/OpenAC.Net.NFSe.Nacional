@@ -54,7 +54,7 @@ public class ISSNetWebService : NacionalWebservice
     {
     }
 
-    public override async Task<NFSeResponse<RespostaEnvioDps>> EnviarAsync(Dps dps)
+    public override async Task<NFSeResponse<RespostaEnvioDps>> EnviarAsync(Dps dps, Func<string>? funcGetXml = null)
     {
         var options = DFeSaveOptions.DisableFormatting;
         if (Configuracao.Geral.RetirarAcentos)
@@ -63,16 +63,17 @@ public class ISSNetWebService : NacionalWebservice
         options |= DFeSaveOptions.OmitDeclaration;
         dps.Assinar(Configuracao, options);
 
-        ValidarSchema(SchemaNFSe.DPS, dps.Xml, dps.Versao);
+        var xmlDps = funcGetXml?.Invoke() ?? dps.Xml;
+        ValidarSchema(SchemaNFSe.DPS, xmlDps, dps.Versao);
 
         var documento = dps.Informacoes.Prestador.CPF ?? dps.Informacoes.Prestador.CNPJ ?? throw new InvalidOperationException("CPF ou CNPJ do prestador deve ser informado.");
 
-        GravarDpsEmDisco(dps.Xml, $"{dps.Informacoes.NumeroDps:000000}_dps.xml",
+        GravarDpsEmDisco(xmlDps, $"{dps.Informacoes.NumeroDps:000000}_dps.xml",
             documento, dps.Informacoes.DhEmissao.DateTime);
 
-        GravarArquivoEmDisco(dps.Xml, $"Enviar-{dps.Informacoes.NumeroDps:000000}-env.xml", documento);
+        GravarArquivoEmDisco(xmlDps, $"Enviar-{dps.Informacoes.NumeroDps:000000}-env.xml", documento);
 
-        var xmlEnvio = $@"<nfse:GerarNfseEnvio>{dps.Xml}</nfse:GerarNfseEnvio>";
+        var xmlEnvio = $@"<nfse:GerarNfseEnvio>{xmlDps}</nfse:GerarNfseEnvio>";
 
         this.Log().Debug($"ISSNet: [Enviar][Envio] - {xmlEnvio}");
 
@@ -111,7 +112,7 @@ public class ISSNetWebService : NacionalWebservice
         if (ret.Erros.Any())
             success = false;
 
-        return NFSeResponse<RespostaEnvioDps>.Create(dps.Xml, strResponse, success, ret);
+        return NFSeResponse<RespostaEnvioDps>.Create(xmlDps, strResponse, success, ret);
     }
 
     public override async Task<NFSeResponse<RespostaEnvioEvento>> EnviarEventoAsync(PedidoRegistroEvento evento)

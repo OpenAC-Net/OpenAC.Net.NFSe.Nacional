@@ -29,6 +29,7 @@
 // <summary></summary>
 // ***********************************************************************
 
+using System;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -280,12 +281,14 @@ public class NacionalWebservice : NFSeWebserviceBase
     /// Recepciona a DPS e gera a NFS-e de forma síncrona.
     /// </summary>
     /// <param name="dps">DPS a ser enviada.</param>
+    /// <param name="funcGetXml">Permite passar o xml diretamente para envio</param>
     /// <returns>Resposta do envio da DPS.</returns>
-    public override async Task<NFSeResponse<RespostaEnvioDps>> EnviarAsync(Dps dps)
+    public override async Task<NFSeResponse<RespostaEnvioDps>> EnviarAsync(Dps dps, Func<string>? funcGetXml = null)
     {
         dps.Assinar(Configuracao);
 
-        ValidarSchema(SchemaNFSe.DPS, dps.Xml, dps.Versao);
+        var xmlDps = funcGetXml?.Invoke() ?? dps.Xml;
+        ValidarSchema(SchemaNFSe.DPS, xmlDps, dps.Versao);
 
         var documento = dps.Informacoes.Prestador.CPF ?? dps.Informacoes.Prestador.CNPJ;
 
@@ -293,12 +296,12 @@ public class NacionalWebservice : NFSeWebserviceBase
             ? dps.Informacoes.Id
             : dps.Informacoes.NumeroDps.ZeroFill(6);
 
-        GravarDpsEmDisco(dps.Xml, $"{prefixoNomeArquivoDps}_dps.xml",
+        GravarDpsEmDisco(xmlDps, $"{prefixoNomeArquivoDps}_dps.xml",
             documento, dps.Informacoes.DhEmissao.DateTime);
 
         var envio = new DpsEnvio
         {
-            XmlDps = dps.Xml
+            XmlDps = xmlDps
         };
 
         var content = JsonContent.Create(envio);
@@ -317,7 +320,7 @@ public class NacionalWebservice : NFSeWebserviceBase
 
         GravarArquivoEmDisco(strResponse, $"Enviar-{prefixoNomeArquivoDps}-resp.json", documento);
 
-        var retorno = NFSeResponse<RespostaEnvioDps>.Create(dps.Xml, strEnvio, strResponse, httpResponse.IsSuccessStatusCode);
+        var retorno = NFSeResponse<RespostaEnvioDps>.Create(xmlDps, strEnvio, strResponse, httpResponse.IsSuccessStatusCode);
 
         if (retorno.Sucesso)
         {
