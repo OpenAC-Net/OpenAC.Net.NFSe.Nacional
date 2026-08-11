@@ -74,12 +74,13 @@ public class FiorilliWebService : NFSeWebserviceBase
     /// Recepciona a DPS e gera a NFS-e de forma síncrona (operação <c>recepcionarDps</c>).
     /// </summary>
     /// <param name="dps">DPS a ser enviada.</param>
-    /// <param name="funcGetXml">Permite passar o xml diretamente para envio</param>
+    /// <param name="funcUpdateXml">Permite manipular o xml</param>
     /// <returns>Resposta do envio da DPS.</returns>
-    public override async Task<NFSeResponse<RespostaEnvioDps>> EnviarAsync(Dps dps, Func<string>? funcGetXml = null)
+    public override async Task<NFSeResponse<RespostaEnvioDps>> EnviarAsync(Dps dps, Func<string, string>? funcUpdateXml = null)
     {
         dps.Assinar(Configuracao);
-        var xmlDps = funcGetXml?.Invoke() ?? dps.Xml;
+        var xmlDps = dps.Xml;
+        xmlDps = funcUpdateXml?.Invoke(xmlDps) ?? xmlDps;
         ValidarSchema(SchemaNFSe.DPS, xmlDps, dps.Versao);
 
         var documento = dps.Informacoes.Prestador.CPF ?? dps.Informacoes.Prestador.CNPJ;

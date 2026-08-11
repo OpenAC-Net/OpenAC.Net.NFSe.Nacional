@@ -54,7 +54,7 @@ public class ISSNetWebService : NacionalWebservice
     {
     }
 
-    public override async Task<NFSeResponse<RespostaEnvioDps>> EnviarAsync(Dps dps, Func<string>? funcGetXml = null)
+    public override async Task<NFSeResponse<RespostaEnvioDps>> EnviarAsync(Dps dps, Func<string, string>? funcUpdateXml = null)
     {
         var options = DFeSaveOptions.DisableFormatting;
         if (Configuracao.Geral.RetirarAcentos)
@@ -63,7 +63,8 @@ public class ISSNetWebService : NacionalWebservice
         options |= DFeSaveOptions.OmitDeclaration;
         dps.Assinar(Configuracao, options);
 
-        var xmlDps = funcGetXml?.Invoke() ?? dps.Xml;
+        var xmlDps = dps.Xml;
+        xmlDps = funcUpdateXml?.Invoke(xmlDps) ?? xmlDps;
         ValidarSchema(SchemaNFSe.DPS, xmlDps, dps.Versao);
 
         var documento = dps.Informacoes.Prestador.CPF ?? dps.Informacoes.Prestador.CNPJ ?? throw new InvalidOperationException("CPF ou CNPJ do prestador deve ser informado.");

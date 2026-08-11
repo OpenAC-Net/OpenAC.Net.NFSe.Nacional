@@ -65,13 +65,15 @@ public class TiplanWebService : NacionalWebservice
     /// Envio da DPS para geração da NFS-e de forma assíncrona.
     /// </summary>
     /// <param name="dps"></param>
+    /// <param name="funcUpdateXml"></param>
     /// <returns></returns>
     /// <exception cref="InvalidOperationException"></exception>
-    public override async Task<NFSeResponse<RespostaEnvioDps>> EnviarAsync(Dps dps, Func<string>? funcGetXml = null)
+    public override async Task<NFSeResponse<RespostaEnvioDps>> EnviarAsync(Dps dps, Func<string, string>? funcUpdateXml = null)
     {
         dps.Assinar(Configuracao);
 
-        var xmlDps = funcGetXml?.Invoke() ?? dps.Xml;
+        var xmlDps = dps.Xml;
+        xmlDps = funcUpdateXml?.Invoke(xmlDps) ?? xmlDps;
         ValidarSchema(SchemaNFSe.DPS, xmlDps, dps.Versao);
 
         string documento = dps.Informacoes.Prestador.CPF ?? dps.Informacoes.Prestador.CNPJ ?? throw new InvalidOperationException("CPF ou CNPJ do prestador deve ser informado.");

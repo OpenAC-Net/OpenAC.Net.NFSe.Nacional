@@ -59,9 +59,9 @@ public sealed class OpenNFSeNacional : IOpenLog
     /// Recepciona a DPS e gera a NFS-e de forma assíncrona.
     /// </summary>
     /// <param name="dps">Objeto <see cref="Dps"/> a ser enviado.</param>
-    /// <param name="funcGetXml">Permite passar o xml diretamente para envio</param>
+    /// <param name="funcUpdateXml">Permite manipular o xml</param>
     /// <returns>Resposta do envio contendo informações da NFS-e gerada.</returns>
-    public Task<NFSeResponse<RespostaEnvioDps>> EnviarAsync(Dps dps, Func<string>? funcGetXml = null)
+    public Task<NFSeResponse<RespostaEnvioDps>> EnviarAsync(Dps dps, Func<string, string>? funcUpdateXml = null)
     {
         var provider = NFSeServiceManager.Instance.GetProvider(Configuracoes);
         var oldProtocol = ServicePointManager.SecurityProtocol;
@@ -69,7 +69,7 @@ public sealed class OpenNFSeNacional : IOpenLog
         try
         {
             ServicePointManager.SecurityProtocol = Configuracoes.WebServices.Protocolos;
-            return provider.EnviarAsync(dps, funcGetXml);
+            return provider.EnviarAsync(dps, funcUpdateXml);
         }
         catch (Exception exception)
         {
