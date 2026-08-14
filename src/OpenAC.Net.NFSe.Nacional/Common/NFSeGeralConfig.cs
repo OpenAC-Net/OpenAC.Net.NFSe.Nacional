@@ -47,5 +47,10 @@ public sealed class NFSeGeralConfig : DFeGeralConfigBase
     /// <value>A versão da NFSe.</value>
     public VersaoNFSe Versao { get; set; } = VersaoNFSe.Ve100;
 
+    /// <summary>
+    /// Define se deve assinar o xml ou se sera recebido assinado.
+    /// </summary>
+    public bool AssinarXml { get; set; } = true;
+
     #endregion Properties
 }
