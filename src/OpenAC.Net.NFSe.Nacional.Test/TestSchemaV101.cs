@@ -16,7 +16,6 @@ namespace OpenAC.Net.NFSe.Nacional.Test;
 /// valida contra <c>DPS_v1.01.xsd</c>. Isso permite cobrir a serialização sem depender de
 /// infraestrutura externa.
 /// </remarks>
-[TestClass]
 public class TestSchemaV101
 {
     /// <summary>CNPJ alfanumérico, formato admitido pelo TSCNPJ a partir do layout v1.01.</summary>
@@ -33,38 +32,35 @@ public class TestSchemaV101
     private static string CaminhoSchemaDps =>
         Path.Combine(AppContext.BaseDirectory, "Schemas", VersaoNFSe.Ve101.GetDFeValue(), "DPS_v1.01.xsd");
 
-    [TestMethod]
-    public void DpsComCnpjAlfanumerico_PreservaLetrasNoXml()
+    [Test]
+    public async Task DpsComCnpjAlfanumerico_PreservaLetrasNoXml()
     {
         var dps = MontarDps();
         dps.GerarId();
 
-        var xml = dps.GetXml(DFeSaveOptions.DisableFormatting);
+        var xml = dps.GetXml();
 
-        StringAssert.Contains(xml, $"<CNPJ>{CnpjAlfanumericoPrestador}</CNPJ>",
-            "O CNPJ do prestador perdeu as letras na serialização.");
-        StringAssert.Contains(xml, $"<CNPJ>{CnpjAlfanumericoTomador}</CNPJ>",
-            "O CNPJ do tomador perdeu as letras na serialização.");
+        await Assert.That(xml).Contains($"<CNPJ>{CnpjAlfanumericoPrestador}</CNPJ>");
+        await Assert.That(xml).Contains($"<CNPJ>{CnpjAlfanumericoTomador}</CNPJ>");
     }
 
-    [TestMethod]
-    public void DpsComCnpjAlfanumerico_ValidaContraSchemaV101()
+    [Test]
+    public async Task DpsComCnpjAlfanumerico_ValidaContraSchemaV101()
     {
         var dps = MontarDps();
         dps.GerarId();
 
-        var xml = dps.GetXml(DFeSaveOptions.DisableFormatting);
+        var xml = dps.GetXml();
 
-        Assert.IsTrue(File.Exists(CaminhoSchemaDps), $"Schema não encontrado em {CaminhoSchemaDps}.");
+        await Assert.That(File.Exists(CaminhoSchemaDps)).IsTrue();
 
         var valido = XmlSchemaValidation.ValidarXml(xml, CaminhoSchemaDps, out var erros, out _);
 
-        Assert.IsTrue(valido, "XML reprovado no schema v1.01:" + Environment.NewLine +
-                              string.Join(Environment.NewLine, erros));
+        await Assert.That(valido).IsTrue();
     }
 
-    [TestMethod]
-    public void DocDedRed_UsaNomesDeElementoDoTCDocDedRed()
+    [Test]
+    public async Task DocDedRed_UsaNomesDeElementoDoTCDocDedRed()
     {
         var dps = MontarDps();
         // TCInfoDedRed é um xs:choice: pDR, vDR ou documentos - preencher apenas um.
@@ -84,27 +80,26 @@ public class TestSchemaV101
         };
         dps.GerarId();
 
-        var xml = dps.GetXml(DFeSaveOptions.DisableFormatting);
+        var xml = dps.GetXml();
 
-        StringAssert.Contains(xml, "<chNFe>", "A chave da NF-e deve ser gravada em <chNFe>, não em <chNFSe>.");
-        StringAssert.Contains(xml, "<tpDedRed>", "O tipo de dedução/redução deve ser gravado em <tpDedRed>, não em <nDoc>.");
+        await Assert.That(xml).Contains("<chNFe>");
+        await Assert.That(xml).Contains("<tpDedRed>");
 
         var valido = XmlSchemaValidation.ValidarXml(xml, CaminhoSchemaDps, out var erros, out _);
 
-        Assert.IsTrue(valido, "XML de dedução/redução reprovado no schema v1.01:" + Environment.NewLine +
-                              string.Join(Environment.NewLine, erros));
+        await Assert.That(valido).IsTrue();
     }
 
-    [TestMethod]
-    public void CnpjComFormatacao_EhNormalizadoParaAlfanumerico()
+    [Test]
+    public async Task CnpjComFormatacao_EhNormalizadoParaAlfanumerico()
     {
         var pessoa = new InfoPessoaNFSe { CNPJ = "12.ABC.678/0001-99" };
 
-        Assert.AreEqual(CnpjAlfanumericoPrestador, pessoa.CNPJ);
+        await Assert.That(pessoa.CNPJ).IsEqualTo(CnpjAlfanumericoPrestador);
     }
 
-    [TestMethod]
-    public void GerarId_ComCnpj_MontaIdTipo2Com45Posicoes()
+    [Test]
+    public async Task GerarId_ComCnpj_MontaIdTipo2Com45Posicoes()
     {
         var dps = MontarDps();
         dps.Informacoes.Serie = "13";
@@ -114,18 +109,18 @@ public class TestSchemaV101
 
         var id = dps.Informacoes.Id;
 
-        Assert.AreEqual(45, id.Length, $"Id gerado com tamanho inválido: '{id}'.");
-        Assert.AreEqual("DPS", id.Substring(0, 3), "Literal inicial.");
-        Assert.AreEqual(CodMunicipio, id.Substring(3, 7), "Código do município.");
-        Assert.AreEqual("2", id.Substring(10, 1), "Tipo de inscrição federal (2 = CNPJ).");
-        Assert.AreEqual(CnpjAlfanumericoPrestador, id.Substring(11, 14), "Inscrição federal.");
-        Assert.AreEqual("00013", id.Substring(25, 5), "Série com 5 posições.");
-        Assert.AreEqual("000000000000007", id.Substring(30, 15), "Número da DPS com 15 posições.");
-        Assert.IsTrue(RegexIdDps.IsMatch(id), $"Id não casa com o padrão TSIdDPS: '{id}'.");
+        await Assert.That(id.Length).IsEqualTo(45);
+        await Assert.That(id.Substring(0, 3)).IsEqualTo("DPS");
+        await Assert.That(id.Substring(3, 7)).IsEqualTo(CodMunicipio);
+        await Assert.That(id.Substring(10, 1)).IsEqualTo("2");
+        await Assert.That(id.Substring(11, 14)).IsEqualTo(CnpjAlfanumericoPrestador);
+        await Assert.That(id.Substring(25, 5)).IsEqualTo("00013");
+        await Assert.That(id.Substring(30, 15)).IsEqualTo("000000000000007");
+        await Assert.That(RegexIdDps.IsMatch(id)).IsTrue();
     }
 
-    [TestMethod]
-    public void GerarId_ComCpf_MontaIdTipo1Com45Posicoes()
+    [Test]
+    public async Task GerarId_ComCpf_MontaIdTipo1Com45Posicoes()
     {
         var dps = MontarDps();
         dps.Informacoes.Prestador.CNPJ = null;
@@ -137,16 +132,16 @@ public class TestSchemaV101
 
         var id = dps.Informacoes.Id;
 
-        Assert.AreEqual(45, id.Length, $"Id gerado com tamanho inválido: '{id}'.");
-        Assert.AreEqual("1", id.Substring(10, 1), "Tipo de inscrição federal (1 = CPF).");
-        Assert.AreEqual("00012345678909", id.Substring(11, 14), "CPF com 000 à esquerda.");
-        Assert.AreEqual("00001", id.Substring(25, 5), "Série com 5 posições.");
-        Assert.AreEqual("000000000000001", id.Substring(30, 15), "Número da DPS com 15 posições.");
-        Assert.IsTrue(RegexIdDps.IsMatch(id), $"Id não casa com o padrão TSIdDPS: '{id}'.");
+        await Assert.That(id.Length).IsEqualTo(45);
+        await Assert.That(id.Substring(10, 1)).IsEqualTo("1");
+        await Assert.That(id.Substring(11, 14)).IsEqualTo("00012345678909");
+        await Assert.That(id.Substring(25, 5)).IsEqualTo("00001");
+        await Assert.That(id.Substring(30, 15)).IsEqualTo("000000000000001");
+        await Assert.That(RegexIdDps.IsMatch(id)).IsTrue();
     }
 
-    [TestMethod]
-    public void GerarId_ComIdJaInformado_NaoSobrescreve()
+    [Test]
+    public async Task GerarId_ComIdJaInformado_NaoSobrescreve()
     {
         var dps = MontarDps();
         dps.Informacoes.Id = "DPS35503082" + CnpjAlfanumericoPrestador + "0001300000000000007";
@@ -154,7 +149,7 @@ public class TestSchemaV101
         var original = dps.Informacoes.Id;
         dps.GerarId();
 
-        Assert.AreEqual(original, dps.Informacoes.Id);
+        await Assert.That(dps.Informacoes.Id).IsEqualTo(original);
     }
 
     /// <summary>

@@ -37,7 +37,7 @@ namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 /// <summary>
 /// Representa informações complementares do documento.
 /// </summary>
-public sealed class InformacoesComplementares
+public sealed partial class InformacoesComplementares
 {
     /// <summary>
     /// Identificador do documento técnico.

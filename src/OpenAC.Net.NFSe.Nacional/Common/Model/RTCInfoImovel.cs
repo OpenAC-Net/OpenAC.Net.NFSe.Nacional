@@ -18,24 +18,24 @@ using OpenAC.Net.DFe.Core.Serializer;
 namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 
 /// <summary>
-/// Grupo de informações de operações relacionadas a bens imóveis, exceto obras.
+/// Grupo de informaÃ§Ãµes de operaÃ§Ãµes relacionadas a bens imÃ³veis, exceto obras.
 /// </summary>
-public sealed class RTCInfoImovel
+public sealed partial class RTCInfoImovel
 {
     /// <summary>
-    /// Inscrição imobiliária fiscal.
+    /// InscriÃ§Ã£o imobiliÃ¡ria fiscal.
     /// </summary>
     [DFeElement(TipoCampo.Str, "inscImobFisc", Min = 1, Max = 30, Ocorrencia = Ocorrencia.NaoObrigatoria)]
     public string? InscricaoImobiliariaFiscal { get; set; }
 
     #region Choice
     /// <summary>
-    /// Código CIB (Código do Imóvel na Prefeitura).
+    /// CÃ³digo CIB (CÃ³digo do ImÃ³vel na Prefeitura).
     /// </summary>
     [DFeElement(TipoCampo.Str, "cCIB", Ocorrencia = Ocorrencia.NaoObrigatoria)]
     public string? CodigoCIB { get; set; }
     /// <summary>
-    /// Endereço do imóvel.
+    /// EndereÃ§o do imÃ³vel.
     /// </summary>
     [DFeElement("end", Ocorrencia = Ocorrencia.NaoObrigatoria)]
     public EnderecoSimplesNFSe? Endereco { get; set; }

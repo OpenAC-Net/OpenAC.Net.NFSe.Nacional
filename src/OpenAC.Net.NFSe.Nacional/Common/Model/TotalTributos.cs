@@ -38,7 +38,7 @@ namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 /// TIPO COMPLEXO PARA INFORMAÇÕES DE TRIBUTAÇÃO ESPECÍFICA PARA TOTAL DOS TRIBUTOS
 /// So pode usar 1 dos tipos abaixo.
 /// </summary>
-public sealed class TotalTributos
+public sealed partial class TotalTributos
 {
     /// <summary>
     /// Valor total aproximado dos tributos.

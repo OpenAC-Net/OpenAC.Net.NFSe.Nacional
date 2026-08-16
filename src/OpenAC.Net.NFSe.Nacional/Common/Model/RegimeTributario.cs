@@ -39,7 +39,7 @@ namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 /// <summary>
 /// Representa o regime tributário de um prestador de serviço.
 /// </summary>
-public sealed class RegimeTributario
+public sealed partial class RegimeTributario
 {
     #region Properties
 

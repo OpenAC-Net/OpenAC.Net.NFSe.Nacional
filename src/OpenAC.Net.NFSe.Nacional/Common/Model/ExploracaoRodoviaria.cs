@@ -38,7 +38,7 @@ namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 /// <summary>
 /// Representa os dados de exploração rodoviária.
 /// </summary>
-public sealed class ExploracaoRodoviaria
+public sealed partial class ExploracaoRodoviaria
 {
     /// <summary>
     /// Categoria do veículo.

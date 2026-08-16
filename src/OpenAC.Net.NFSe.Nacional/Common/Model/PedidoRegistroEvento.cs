@@ -43,7 +43,7 @@ namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 /// </summary>
 [DFeSignInfoElement("infPedReg")]
 [DFeRoot("pedRegEvento", Namespace = "http://www.sped.fazenda.gov.br/nfse")]
-public sealed class PedidoRegistroEvento : DFeSignDocument<PedidoRegistroEvento>
+public sealed partial class PedidoRegistroEvento : DFeSignDocument<PedidoRegistroEvento>
 {
     #region Constructors
 

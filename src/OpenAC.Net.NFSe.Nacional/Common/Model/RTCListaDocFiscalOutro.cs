@@ -18,24 +18,24 @@ using OpenAC.Net.DFe.Core.Serializer;
 namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 
 /// <summary>
-/// Grupo de informaÁıes de documento fiscais, eletrÙnicos ou n„o, que n„o se encontram no repositÛrio nacional.
+/// Grupo de informa√ß√µes de documento fiscais, eletr√¥nicos ou n√£o, que n√£o se encontram no reposit√≥rio nacional.
 /// </summary>
-public sealed class RTCListaDocFiscalOutro
+public sealed partial class RTCListaDocFiscalOutro
 {
     /// <summary>
-    /// CÛdigo do municÌpio emissor do documento fiscal que n„o se encontra no repositÛrio nacional.
+    /// C√≥digo do munic√≠pio emissor do documento fiscal que n√£o se encontra no reposit√≥rio nacional.
     /// </summary>
     [DFeElement(TipoCampo.Int, "cMunDocFiscal", Min = 7, Max = 7, Ocorrencia = Ocorrencia.Obrigatoria)]
     public int CodigoMunicipioDocumentoFiscal { get; set; }
 
     /// <summary>
-    /// N˙mero do documento fiscal que n„o se encontra no repositÛrio nacional.
+    /// N√∫mero do documento fiscal que n√£o se encontra no reposit√≥rio nacional.
     /// </summary>
     [DFeElement(TipoCampo.Str, "nDocFiscal", Min = 1, Max = 255, Ocorrencia = Ocorrencia.Obrigatoria)]
     public string NumeroDocumentoFiscal { get; set; } = string.Empty;
 
     /// <summary>
-    /// DescriÁ„o do documento fiscal.
+    /// Descri√ß√£o do documento fiscal.
     /// </summary>
     [DFeElement(TipoCampo.Str, "xDocFiscal", Min = 1, Max = 255, Ocorrencia = Ocorrencia.Obrigatoria)]
     public string DescricaoDocumentoFiscal { get; set; } = string.Empty;

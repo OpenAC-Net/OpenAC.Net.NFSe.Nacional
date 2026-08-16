@@ -37,7 +37,7 @@ namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 /// <summary>
 /// Representa uma obra vinculada à NFSe.
 /// </summary>
-public sealed class ObraNFSe
+public sealed partial class ObraNFSe
 {
     /// <summary>
     /// Inscrição imobiliária fiscal da obra.

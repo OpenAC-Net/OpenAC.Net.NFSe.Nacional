@@ -1,4 +1,4 @@
-﻿// ***********************************************************************
+// ***********************************************************************
 // Assembly         : OpenAC.Net.NFSe.Nacional
 // Author           : RFTD
 // Created          : 09-09-2023
@@ -40,7 +40,7 @@ namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 /// <summary>
 /// Representa as informações principais da DPS (Documento de Prestação de Serviço).
 /// </summary>
-public sealed class InfDps
+public sealed partial class InfDps
 {
     #region Properties
 

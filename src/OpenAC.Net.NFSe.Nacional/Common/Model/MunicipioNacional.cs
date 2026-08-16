@@ -37,7 +37,7 @@ namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 /// <summary>
 /// Representa um município no padrão nacional.
 /// </summary>
-public sealed class MunicipioNacional : IMunicipio
+public sealed partial class MunicipioNacional : IMunicipio
 {
     #region Properties
 

@@ -21,7 +21,7 @@ namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 /// <summary>
 /// Grupo de NFS-e referenciadas.
 /// </summary>
-public sealed class InfoRefNFSe
+public sealed partial class InfoRefNFSe
 {
     /// <summary>
     /// Chave da NFS-e referenciada.

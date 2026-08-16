@@ -42,7 +42,7 @@ namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 /// </summary>
 [DFeSignInfoElement("infNFSe")]
 [DFeRoot("NFSe", Namespace = "http://www.sped.fazenda.gov.br/nfse")]
-public class NotaFiscalServico : DFeSignDocument<NotaFiscalServico>
+public partial class NotaFiscalServico : DFeSignDocument<NotaFiscalServico>
 {
     #region Properties
 

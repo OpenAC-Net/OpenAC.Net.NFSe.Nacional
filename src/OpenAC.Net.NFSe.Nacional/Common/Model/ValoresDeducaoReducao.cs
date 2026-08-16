@@ -38,7 +38,7 @@ namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 /// <summary>
 /// Representa os valores de dedução ou redução, incluindo porcentagem, valor e documentos relacionados.
 /// </summary>
-public sealed class ValoresDeducaoReducao
+public sealed partial class ValoresDeducaoReducao
 {
     /// <summary>
     /// Porcentagem de dedução ou redução.

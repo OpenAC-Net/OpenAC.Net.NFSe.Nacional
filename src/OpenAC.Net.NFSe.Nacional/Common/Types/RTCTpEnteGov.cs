@@ -18,15 +18,15 @@ namespace OpenAC.Net.NFSe.Nacional.Common.Types;
 
 /// <summary>
 /// Tipo de ente governamental:
-///1 - Uni„o;
+///1 - Uni√£o;
 ///2 - Estado;
 ///3 - Distrito Federal;
-///4 - MunicÌpio.
+///4 - Munic√≠pio.
 /// </summary>
 public enum RTCTpEnteGov
 {
     /// <summary>
-    ///1 - Uni„o
+    ///1 - Uni√£o
     /// </summary>
     [DFeEnum("1")]
     Uniao,
@@ -44,7 +44,7 @@ public enum RTCTpEnteGov
     DistritoFederal,
 
     /// <summary>
-    ///4 - MunicÌpio
+    ///4 - Munic√≠pio
     /// </summary>
     [DFeEnum("4")]
     Municipio

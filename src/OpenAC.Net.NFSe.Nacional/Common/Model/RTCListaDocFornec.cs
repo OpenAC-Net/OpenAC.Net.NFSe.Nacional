@@ -19,28 +19,28 @@ using OpenAC.Net.NFSe.Nacional.Common.Types;
 namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 
 /// <summary>
-/// Grupo de informações do fornecedor do documento referenciado.
+/// Grupo de informaÃ§Ãµes do fornecedor do documento referenciado.
 /// </summary>
-public sealed class RTCListaDocFornec
+public sealed partial class RTCListaDocFornec
 {
     #region Choice
     /// <summary>
-    /// CNPJ do Fornecedor do serviço.
+    /// CNPJ do Fornecedor do serviÃ§o.
     /// </summary>
     [DFeElement(TipoCampo.Str, "CNPJ", Ocorrencia = Ocorrencia.NaoObrigatoria)]
     public string? CNPJ { get; set; }
     /// <summary>
-    /// CPF do Fornecedor do serviço.
+    /// CPF do Fornecedor do serviÃ§o.
     /// </summary>
     [DFeElement(TipoCampo.Str, "CPF", Ocorrencia = Ocorrencia.NaoObrigatoria)]
     public string? CPF { get; set; }
     /// <summary>
-    /// NIF do Fornecedor do serviço.
+    /// NIF do Fornecedor do serviÃ§o.
     /// </summary>
     [DFeElement(TipoCampo.Str, "NIF", Ocorrencia = Ocorrencia.NaoObrigatoria)]
     public string? NIF { get; set; }
     /// <summary>
-    /// Indicador de ausência de NIF do Fornecedor do serviço.
+    /// Indicador de ausÃªncia de NIF do Fornecedor do serviÃ§o.
     /// </summary>
     [DFeElement(TipoCampo.Enum, "cNaoNIF", Ocorrencia = Ocorrencia.NaoObrigatoria)]
     public CodNaoNIF? CodigoNaoNIF { get; set; }
@@ -48,7 +48,7 @@ public sealed class RTCListaDocFornec
     #endregion
 
     /// <summary>
-    /// Nome / Razão Social do Fornecedor do serviço.
+    /// Nome / RazÃ£o Social do Fornecedor do serviÃ§o.
     /// </summary>
     [DFeElement(TipoCampo.Str, "xNome", Min = 1, Max = 150, Ocorrencia = Ocorrencia.Obrigatoria)]
     public string Nome { get; set; } = string.Empty;

@@ -38,7 +38,7 @@ namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 /// <summary>
 /// Representa a exigibilidade suspensa de um serviço.
 /// </summary>
-public sealed class ExigibilidadeSuspensa
+public sealed partial class ExigibilidadeSuspensa
 {
     /// <summary>
     /// Tipo de suspensão da exigibilidade.

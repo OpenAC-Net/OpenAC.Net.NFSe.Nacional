@@ -38,7 +38,7 @@ namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 /// <summary>
 /// Representa um benefício municipal aplicado à nota fiscal.
 /// </summary>
-public sealed class BeneficioMunicipal
+public sealed partial class BeneficioMunicipal
 {
 
     /// <summary>

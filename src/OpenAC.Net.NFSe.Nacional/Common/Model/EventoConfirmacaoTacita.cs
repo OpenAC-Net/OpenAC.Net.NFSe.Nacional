@@ -37,7 +37,7 @@ namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 /// <summary>
 /// Representa o evento de confirmação tácita para NFSe.
 /// </summary>
-public sealed class EventoConfirmacaoTacita : IEventoNFSe
+public sealed partial class EventoConfirmacaoTacita : IEventoNFSe
 {
     /// <summary>
     /// Descrição do evento.

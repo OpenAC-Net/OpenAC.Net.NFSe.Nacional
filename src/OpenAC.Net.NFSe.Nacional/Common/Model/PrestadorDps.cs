@@ -36,7 +36,7 @@ namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 /// <summary>
 /// Representa o prestador de serviços na DPS.
 /// </summary>
-public sealed class PrestadorDps : InfoPessoaNFSe
+public sealed partial class PrestadorDps : InfoPessoaNFSe
 {
     #region Properties
 

@@ -15,7 +15,7 @@ namespace OpenAC.Net.NFSe.Nacional.Webservice;
 /// <summary>
 /// Gerenciador de serviços para NFSe.
 /// </summary>
-public sealed class NFSeServiceManager
+public sealed partial class NFSeServiceManager
 {
     #region Fields
 

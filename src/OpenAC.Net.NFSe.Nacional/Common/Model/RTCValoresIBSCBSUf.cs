@@ -36,7 +36,7 @@ namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 /// <summary>
 /// Valores do IBS estadual.
 /// </summary>
-public sealed class RTCValoresIBSCBSUf
+public sealed partial class RTCValoresIBSCBSUf
 {
     /// <summary>
     /// Aliquota da UF para IBS da localidade de incidencia.

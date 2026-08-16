@@ -37,7 +37,7 @@ namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 /// <summary>
 /// Representa a chave de identificação de uma NFSe no município.
 /// </summary>
-public sealed class ChaveNFSeMunicipio
+public sealed partial class ChaveNFSeMunicipio
 {
     /// <summary>
     /// Código do município (7 dígitos).

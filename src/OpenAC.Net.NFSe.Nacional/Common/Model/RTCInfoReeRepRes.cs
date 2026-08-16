@@ -19,14 +19,14 @@ using OpenAC.Net.DFe.Core.Serializer;
 namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 
 /// <summary>
-/// Grupo de informaÁıes relativas a valores incluÌdos neste documento e recebidos por motivo de estarem relacionadas
-/// a operaÁıes de terceiros, objeto de reembolso, repasse ou ressarcimento pelo recebedor, j· tributados e aqui referenciados.
+/// Grupo de informa√ß√µes relativas a valores inclu√≠dos neste documento e recebidos por motivo de estarem relacionadas
+/// a opera√ß√µes de terceiros, objeto de reembolso, repasse ou ressarcimento pelo recebedor, j√° tributados e aqui referenciados.
 /// </summary>
-public sealed class RTCInfoReeRepRes
+public sealed partial class RTCInfoReeRepRes
 {
     /// <summary>
-    /// Grupo relativo aos documentos referenciados nos casos de reembolso, repasse e ressarcimento que ser„o
-    /// considerados na base de c·lculo do ISSQN, do IBS e da CBS.
+    /// Grupo relativo aos documentos referenciados nos casos de reembolso, repasse e ressarcimento que ser√£o
+    /// considerados na base de c√°lculo do ISSQN, do IBS e da CBS.
     /// </summary>
     [DFeCollection("documentos", MinSize = 1, MaxSize = 1000)]
     [DFeItem(typeof(RTCListaDoc), "documentos")]

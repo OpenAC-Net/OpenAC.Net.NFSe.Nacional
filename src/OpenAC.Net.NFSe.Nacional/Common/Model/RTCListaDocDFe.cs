@@ -19,24 +19,24 @@ using OpenAC.Net.NFSe.Nacional.Common.Types;
 namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 
 /// <summary>
-/// Grupo de informa珲es de documentos fiscais eletr鬾icos que se encontram no reposit髍io nacional.
+/// Grupo de informa莽玫es de documentos fiscais eletr么nicos que se encontram no reposit贸rio nacional.
 /// </summary>
-public sealed class RTCListaDocDFe
+public sealed partial class RTCListaDocDFe
 {
     /// <summary>
-    /// Documento fiscal a que se refere a chaveDfe que seja um dos documentos do Reposit髍io Nacional.
+    /// Documento fiscal a que se refere a chaveDfe que seja um dos documentos do Reposit贸rio Nacional.
     /// </summary>
     [DFeElement(TipoCampo.Enum, "tipoChaveDFe", Ocorrencia = Ocorrencia.Obrigatoria)]
     public RTCTipoChaveDFe TipoChaveDFe { get; set; }
 
     /// <summary>
-    /// Descri玢o da DF-e a que se refere a chaveDfe. Preencher apenas quando "tipoChaveDFe = 9 (Outro)".
+    /// Descri莽茫o da DF-e a que se refere a chaveDfe. Preencher apenas quando "tipoChaveDFe = 9 (Outro)".
     /// </summary>
     [DFeElement(TipoCampo.Str, "xTipoChaveDFe", Min = 1, Max = 255, Ocorrencia = Ocorrencia.NaoObrigatoria)]
     public string? DescricaoTipoChaveDFe { get; set; }
 
     /// <summary>
-    /// Chave do Documento Fiscal eletr鬾ico do reposit髍io nacional referenciado.
+    /// Chave do Documento Fiscal eletr么nico do reposit贸rio nacional referenciado.
     /// </summary>
     [DFeElement(TipoCampo.Str, "chaveDFe", Min = 1, Max = 50, Ocorrencia = Ocorrencia.Obrigatoria)]
     public string ChaveDFe { get; set; } = string.Empty;

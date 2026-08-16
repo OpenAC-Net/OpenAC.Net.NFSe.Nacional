@@ -1,4 +1,4 @@
-﻿// ***********************************************************************
+// ***********************************************************************
 // Assembly         : OpenAC.Net.NFSe.Nacional
 // Author           : RFTD
 // Created          : 09-09-2023
@@ -43,7 +43,7 @@ namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 /// </summary>
 [DFeSignInfoElement("infDPS")]
 [DFeRoot("DPS", Namespace = "http://www.sped.fazenda.gov.br/nfse")]
-public sealed class Dps : DFeSignDocument<Dps>
+public sealed partial class Dps : DFeSignDocument<Dps>
 {
     #region Constructors
 

@@ -36,7 +36,7 @@ namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 /// <summary>
 /// Totais do IBS estadual.
 /// </summary>
-public sealed class RTCTotalIBSUF
+public sealed partial class RTCTotalIBSUF
 {
     /// <summary>
     /// Total do diferimento do IBS estadual.

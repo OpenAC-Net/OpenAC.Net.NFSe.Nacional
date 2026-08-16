@@ -18,19 +18,19 @@ using OpenAC.Net.DFe.Core.Serializer;
 namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 
 /// <summary>
-/// Grupo de informações relativas aos valores do serviço prestado para IBS e CBS.
+/// Grupo de informaÃ§Ãµes relativas aos valores do serviÃ§o prestado para IBS e CBS.
 /// </summary>
-public sealed class RTCInfoValoresIBSCBS
+public sealed partial class RTCInfoValoresIBSCBS
 {
     /// <summary>
-    /// Grupo de informações relativas a valores incluídos neste documento e recebidos por motivo de estarem relacionadas
-    /// a operações de terceiros, objeto de reembolso, repasse ou ressarcimento pelo recebedor, já tributados e aqui referenciados.
+    /// Grupo de informaÃ§Ãµes relativas a valores incluÃ­dos neste documento e recebidos por motivo de estarem relacionadas
+    /// a operaÃ§Ãµes de terceiros, objeto de reembolso, repasse ou ressarcimento pelo recebedor, jÃ¡ tributados e aqui referenciados.
     /// </summary>
     [DFeElement("gReeRepRes", Ocorrencia = Ocorrencia.NaoObrigatoria)]
     public RTCInfoReeRepRes? ReeRepRes { get; set; }
 
     /// <summary>
-    /// Grupo de informações relacionados aos tributos IBS e CBS.
+    /// Grupo de informaÃ§Ãµes relacionados aos tributos IBS e CBS.
     /// </summary>
     [DFeElement("trib", Ocorrencia = Ocorrencia.Obrigatoria)]
     public RTCInfoTributosIBSCBS Tributos { get; set; } = new();

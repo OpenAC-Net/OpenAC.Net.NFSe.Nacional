@@ -9,14 +9,13 @@ namespace OpenAC.Net.NFSe.Nacional.Test;
 /// <summary>
 /// Testes para a estrutura de impostos da Reforma Tributária (IBS/CBS) - v1.01
 /// </summary>
-[TestClass]
 public class TestEmissaoReformaTributaria
 {
-    [TestMethod]
+    [Test]
     public async Task EmissaoNFSeComIBSCBS_AliquotaReduzida()
     {
         var openNFSeNacional = new OpenNFSeNacional();
-        SetupOpenNFSeNacional.ConfiguracaoModeloNovoCenario2(openNFSeNacional, "20", "1", "1");
+        SetupOpenNFSeNacional.ConfiguracaoModeloNovoCenario2(openNFSeNacional, "20");
 
         var prest = new PrestadorDps
         {
@@ -120,13 +119,13 @@ public class TestEmissaoReformaTributaria
         };
         var retorno = await openNFSeNacional.EnviarAsync(dps);
 
-        Assert.IsTrue(retorno.Sucesso, "A emissão com Aliquota Reduzida deveria ter sucesso");
+        await Assert.That(retorno.Sucesso).IsTrue();
 
     }
 
 
 
-    [TestMethod]
+    [Test]
     public async Task EmissaoNFSeComIBSCBS_ComReembolso()
     {
         var openNFSeNacional = new OpenNFSeNacional();
@@ -229,10 +228,10 @@ public class TestEmissaoReformaTributaria
 
         var retorno = await openNFSeNacional.EnviarAsync(dps);
 
-        Assert.IsTrue(retorno.Sucesso, "A emissão com reembolso deveria ter sucesso");
+        await Assert.That(retorno.Sucesso).IsTrue();
     }
 
-    [TestMethod]
+    [Test]
     public async Task EmissaoNFSeComIBSCBS_ComDestinatarioDiferente()
     {
         var openNFSeNacional = new OpenNFSeNacional();
@@ -337,15 +336,16 @@ public class TestEmissaoReformaTributaria
 
         var retorno = await openNFSeNacional.EnviarAsync(dps);
 
-        Assert.IsTrue(retorno.Sucesso, "A emissão com destinatário diferente deveria ter sucesso");
+        await Assert.That(retorno.Sucesso).IsTrue();
     }
 
-    private void OnEnvioSucesso(dynamic retorno)
+    private async Task OnEnvioSucesso(dynamic retorno)
     {
         Debug.WriteLine("Envio realizado com sucesso!");
 
         // Validações esperadas baseadas no JSON de output
-        Assert.IsTrue(retorno.Sucesso, "A emissão deveria ter sucesso");
+        bool sucesso = retorno.Sucesso;
+        await Assert.That(sucesso).IsTrue();
 
         // TODO: Validar valores calculados pelo sistema:
         // - IBS UF: R$ 0,70 (base R$ 1000 * 0,10% * redução 30% = 0,07%)
