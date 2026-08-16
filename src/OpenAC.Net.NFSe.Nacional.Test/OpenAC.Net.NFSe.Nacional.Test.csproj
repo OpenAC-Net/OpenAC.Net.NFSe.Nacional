@@ -22,6 +22,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\OpenAC.Net.NFSe.Nacional\OpenAC.Net.NFSe.Nacional.csproj" />
+    <ProjectReference Include="..\OpenAC.Net.NFSe.Nacional.DANFSe.PDFSharp\OpenAC.Net.NFSe.Nacional.DANFSe.PDFSharp.csproj" />
   </ItemGroup>
 
   <ItemGroup>
