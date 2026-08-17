@@ -22,14 +22,14 @@ public sealed class NFSeServiceInfo
     [DFeIgnore]
     public NFSeEnvironment this[DFeTipoAmbiente ambiente] =>
         Ambientes?.SingleOrDefault(x => x.Ambiente == ambiente) ?? throw new InvalidOperationException();
-    
+
     /// <summary>
     /// Define ou retorna o codigo IBGE do municipio
     /// </summary>
     /// <value>The codigo.</value>
     [DFeAttribute(TipoCampo.Int, "Id")]
     public int Codigo { get; set; }
-    
+
     /// <summary>
     /// Define ou retorna o provedor de NFSe.
     /// </summary>
@@ -50,7 +50,11 @@ public sealed class NFSeServiceInfo
     /// <value>The uf.</value>
     [DFeElement(TipoCampo.Enum, "UF")]
     public DFeSiglaUF UF { get; set; }
-    
+
+    /// <summary>
+    /// Define ou retorna a coleção de ambientes disponíveis para o serviço.
+    /// </summary>
+    /// <value>A coleção de <see cref="NFSeEnvironment"/>.</value>
     [DFeCollection("Ambientes")]
     [DFeItem(typeof(NFSeEnvironment), "Ambiente")]
     public DFeCollection<NFSeEnvironment> Ambientes { get; set; } = new();
