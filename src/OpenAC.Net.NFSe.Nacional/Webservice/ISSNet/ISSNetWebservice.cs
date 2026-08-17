@@ -36,13 +36,10 @@ using OpenAC.Net.NFSe.Nacional.Common.Types;
 using OpenAC.Net.NFSe.Nacional.Webservice.Nacional;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Net.Http;
-using System.Net.Http.Json;
 using System.Threading.Tasks;
 using System.Xml.Linq;
-using System.Xml.Serialization;
 using OpenAC.Net.DFe.Core.Common;
 
 namespace OpenAC.Net.NFSe.Nacional.Webservice.ISSNet;

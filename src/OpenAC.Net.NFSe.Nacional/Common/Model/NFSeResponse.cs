@@ -31,12 +31,7 @@
 
 using OpenAC.Net.Core.Logging;
 using System;
-using System.Data.SqlTypes;
-using System.IO;
-using System.Linq;
 using System.Text.Json;
-using System.Xml.Linq;
-using System.Xml.Serialization;
 
 namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 

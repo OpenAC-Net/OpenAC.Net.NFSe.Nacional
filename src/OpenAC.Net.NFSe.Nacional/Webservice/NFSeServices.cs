@@ -1,7 +1,6 @@
 using OpenAC.Net.DFe.Core.Attributes;
 using OpenAC.Net.DFe.Core.Collection;
 using OpenAC.Net.DFe.Core.Document;
-using System;
 using System.Linq;
 
 namespace OpenAC.Net.NFSe.Nacional.Webservice;

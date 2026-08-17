@@ -52,7 +52,7 @@ public sealed class ObraNFSe
     public string? CodObra { get; set; } = string.Empty;
     
     /// <summary>
-    /// C�digo CIB (Código do Imóvel na Prefeitura).
+    /// Código CIB (Código do Imóvel na Prefeitura).
     /// </summary>
     [DFeElement(TipoCampo.Str, "cCIB",  Min = 8, Max = 8, Ocorrencia = Ocorrencia.NaoObrigatoria)]
     public string? CodigoCIB { get; set; }
