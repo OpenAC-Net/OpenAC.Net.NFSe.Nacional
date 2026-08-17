@@ -285,13 +285,13 @@ public class NacionalWebservice : NFSeWebserviceBase
     /// <returns>Resposta do envio da DPS.</returns>
     public override async Task<NFSeResponse<RespostaEnvioDps>> EnviarAsync(Dps dps)
     {
+        var logAssinatura = "Assinatura DPS: DISPENSADA";
         if (Configuracao.Geral.AssinarXml)
         {
-            Console.WriteLine("Assinando DPS");
+            logAssinatura = "Assinatura DPS: ASSINADO";
             dps.Assinar(Configuracao);
         }
-        else
-            Console.WriteLine("SKIP assinatura DPS");
+        this.Log().Debug($"Webservice: [Enviar][Assinatura] - {logAssinatura}");
 
         ValidarSchema(SchemaNFSe.DPS, dps.Xml, dps.Versao);
 
