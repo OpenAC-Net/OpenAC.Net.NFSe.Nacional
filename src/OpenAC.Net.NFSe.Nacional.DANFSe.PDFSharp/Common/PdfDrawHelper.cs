@@ -11,6 +11,7 @@
 // ***********************************************************************
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using PdfSharp.Drawing;
@@ -287,6 +288,132 @@ internal static class PdfDrawHelper
         }
     }
 
+    /// <summary>
+    /// Desenha texto com quebra automática de palavras (word wrap), centralização ou alinhamento configurável e ajuste progressivo do tamanho da fonte para que caiba no retângulo delimitador sem estourar.
+    /// </summary>
+    public static void DesenharTextoAjustado(
+        XGraphics gfx,
+        double xMm,
+        double yMm,
+        double wMm,
+        double hMm,
+        string texto,
+        double maxFontSizePt = 9.5,
+        double minFontSizePt = 5.5,
+        bool negrito = true,
+        XStringAlignment alinhamento = XStringAlignment.Center,
+        XBrush? brush = null)
+    {
+        if (string.IsNullOrWhiteSpace(texto)) return;
+
+        brush ??= BrushPreto;
+        var paddingMm = 0.8;
+        var maxWPt = MmToPt(Math.Max(0.1, wMm - (2 * paddingMm)));
+        var maxHPt = MmToPt(Math.Max(0.1, hMm - (2 * paddingMm)));
+
+        var rawParagraphs = texto.Replace("\r\n", "\n").Replace('\r', '\n').Split('\n');
+
+        var bestFontSize = minFontSizePt;
+        var bestLines = new List<string>();
+
+        for (var sizePt = maxFontSizePt; sizePt >= minFontSizePt; sizePt -= 0.5)
+        {
+            var fontTest = new XFont(DANFSeConstantes.FontePadrao, sizePt, negrito ? XFontStyleEx.Bold : XFontStyleEx.Regular);
+            var lineHeight = sizePt * 1.15;
+            var testLines = new List<string>();
+            var fits = true;
+
+            foreach (var para in rawParagraphs)
+            {
+                var trimmedPara = para.Trim();
+                if (string.IsNullOrEmpty(trimmedPara))
+                {
+                    testLines.Add("");
+                    continue;
+                }
+
+                var words = trimmedPara.Split(' ');
+                var currentLine = new StringBuilder();
+
+                foreach (var word in words)
+                {
+                    if (string.IsNullOrEmpty(word)) continue;
+
+                    var candidate = currentLine.Length == 0 ? word : $"{currentLine} {word}";
+                    var measure = gfx.MeasureString(candidate, fontTest);
+
+                    if (measure.Width <= maxWPt)
+                    {
+                        currentLine.Clear();
+                        currentLine.Append(candidate);
+                    }
+                    else
+                    {
+                        if (currentLine.Length > 0)
+                        {
+                            testLines.Add(currentLine.ToString());
+                            currentLine.Clear();
+                        }
+
+                        var wordMeasure = gfx.MeasureString(word, fontTest);
+                        if (wordMeasure.Width > maxWPt && sizePt > minFontSizePt)
+                        {
+                            fits = false;
+                            break;
+                        }
+                        currentLine.Append(word);
+                    }
+                }
+
+                if (!fits) break;
+
+                if (currentLine.Length > 0)
+                    testLines.Add(currentLine.ToString());
+            }
+
+            if (fits)
+            {
+                var totalHeight = testLines.Count * lineHeight;
+                if (totalHeight <= maxHPt || sizePt <= minFontSizePt)
+                {
+                    bestFontSize = sizePt;
+                    bestLines = testLines;
+                    break;
+                }
+            }
+        }
+
+        if (bestLines.Count == 0) return;
+
+        var finalFont = new XFont(DANFSeConstantes.FontePadrao, bestFontSize, negrito ? XFontStyleEx.Bold : XFontStyleEx.Regular);
+        var finalLineHeightPt = bestFontSize * 1.15;
+        var totalBlockHeightPt = bestLines.Count * finalLineHeightPt;
+
+        // Centralização vertical do bloco dentro de hMm
+        var startYPt = MmToPt(yMm) + (MmToPt(hMm) - totalBlockHeightPt) / 2.0;
+
+        var format = new XStringFormat
+        {
+            Alignment = alinhamento,
+            LineAlignment = XLineAlignment.Center
+        };
+
+        for (var i = 0; i < bestLines.Count; i++)
+        {
+            var line = bestLines[i];
+            if (string.IsNullOrEmpty(line)) continue;
+
+            var lineRect = new XRect(
+                MmToPt(xMm + paddingMm),
+                startYPt + (i * finalLineHeightPt),
+                maxWPt,
+                finalLineHeightPt
+            );
+
+            gfx.DrawString(line, finalFont, brush, lineRect, format);
+        }
+    }
+
     public static void DesenharMarcaDagua(XGraphics gfx, double larguraPaginaMm, double alturaPaginaMm, string texto)
     {
         if (string.IsNullOrWhiteSpace(texto)) return;
@@ -298,7 +425,39 @@ internal static class PdfDrawHelper
         gfx.TranslateTransform(centroX, centroY);
         gfx.RotateTransform(-35);
 
-        var font = new XFont(DANFSeConstantes.FontePadrao, DANFSeConstantes.FonteMarcaDaguaPt, XFontStyleEx.Bold);
+        var lines = texto.Replace("\r\n", "\n").Replace('\r', '\n')
+            .Split(new[] { '\n' }, StringSplitOptions.RemoveEmptyEntries);
+
+        if (lines.Length == 0)
+        {
+            gfx.Restore(state);
+            return;
+        }
+
+        // Limite máximo de largura ao longo da diagonal dentro da folha
+        var maxDiagonalWPt = MmToPt(160.0);
+
+        // Ajuste dinâmico de tamanho de fonte para caber na folha sem estourar
+        var bestFontSize = 18.0;
+        for (var sizePt = 32.0; sizePt >= 16.0; sizePt -= 1.0)
+        {
+            var testFont = new XFont(DANFSeConstantes.FontePadrao, sizePt, XFontStyleEx.Bold);
+            var maxLineW = 0.0;
+            foreach (var line in lines)
+            {
+                var measure = gfx.MeasureString(line, testFont);
+                if (measure.Width > maxLineW)
+                    maxLineW = measure.Width;
+            }
+
+            if (maxLineW <= maxDiagonalWPt || sizePt <= 16.0)
+            {
+                bestFontSize = sizePt;
+                break;
+            }
+        }
+
+        var font = new XFont(DANFSeConstantes.FontePadrao, bestFontSize, XFontStyleEx.Bold);
         var brush = new XSolidBrush(CorCinzaMarcaDagua);
         var format = new XStringFormat
         {
@@ -306,7 +465,19 @@ internal static class PdfDrawHelper
             LineAlignment = XLineAlignment.Center
         };
 
-        gfx.DrawString(texto, font, brush, 0, 0, format);
+        var lineHeightPt = bestFontSize * 1.35;
+        var totalHeightPt = lines.Length * lineHeightPt;
+        var startYPt = -(totalHeightPt / 2.0) + (lineHeightPt / 2.0);
+
+        for (var i = 0; i < lines.Length; i++)
+        {
+            var line = lines[i].Trim();
+            if (string.IsNullOrEmpty(line)) continue;
+
+            var yPt = startYPt + (i * lineHeightPt);
+            gfx.DrawString(line, font, brush, 0, yPt, format);
+        }
+
         gfx.Restore(state);
     }
 
