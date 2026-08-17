@@ -27,6 +27,9 @@ public sealed class DANFSeFontResolver : IFontResolver
 {
     #region Fields
 
+    /// <summary>
+    /// Instância singleton do resolvedor de fontes.
+    /// </summary>
     public static readonly DANFSeFontResolver Instance = new();
     private static readonly ConcurrentDictionary<string, byte[]> FontCache = new(StringComparer.OrdinalIgnoreCase);
     private static readonly Assembly ResourceAssembly = typeof(DANFSeFontResolver).Assembly;

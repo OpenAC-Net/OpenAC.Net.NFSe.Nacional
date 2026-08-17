@@ -40,7 +40,7 @@
 
     <ItemGroup>
         <PackageReference Include="PDFsharp" Version="6.2.4" />
-        <PackageReference Include="QRCoder" Version="1.6.0" />
+        <PackageReference Include="QRCoder" Version="1.8.0" />
         <PackageReference Include="Microsoft.SourceLink.GitHub" Version="10.0.400">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
