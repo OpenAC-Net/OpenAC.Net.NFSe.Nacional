@@ -92,6 +92,7 @@ public sealed partial class Dps : DFeSignDocument<Dps>
     /// Assina o documento DPS utilizando as configurações fornecidas e as opções de salvamento especificadas.
     /// </summary>
     /// <param name="configuracao">Configuração da NFSe.</param>
+    /// <param name="options">Opções de salvamento do documento.</param>
     public void Assinar(ConfiguracaoNFSe configuracao, DFeSaveOptions options)
     {        
         GerarId();
@@ -100,7 +101,7 @@ public sealed partial class Dps : DFeSignDocument<Dps>
 
     /// <summary>
     /// Gera o identificador da DPS quando ainda não informado. Chamado automaticamente por
-    /// <see cref="Assinar"/>; um <see cref="InfDps.Id"/> já preenchido é preservado.
+    /// <see cref="Assinar(OpenAC.Net.NFSe.Nacional.Common.ConfiguracaoNFSe)"/>; um <see cref="InfDps.Id"/> já preenchido é preservado.
     /// </summary>
     /// <remarks>
     /// Layout <c>TSIdDPS</c> (45 posições): <c>"DPS"</c> + Cód.Mun.(7) + Tipo Insc.(1) +
@@ -113,8 +114,8 @@ public sealed partial class Dps : DFeSignDocument<Dps>
     {
         if (!Informacoes.Id.IsEmpty()) return;
 
-        var tipo = Informacoes.Prestador.CNPJ.IsEmpty() ? "1" : "2";
-        var documento = Informacoes.Prestador.CPF.IsEmpty()
+        var tipo = string.IsNullOrEmpty(Informacoes.Prestador.CNPJ) ? "1" : "2";
+        var documento = string.IsNullOrEmpty(Informacoes.Prestador.CPF)
             ? Informacoes.Prestador.CNPJ ?? string.Empty
             : $"000{Informacoes.Prestador.CPF}";
 

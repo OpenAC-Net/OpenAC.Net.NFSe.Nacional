@@ -36,24 +36,24 @@ using OpenAC.Net.NFSe.Nacional.Common.Types;
 using OpenAC.Net.NFSe.Nacional.Webservice.Nacional;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Net.Http;
-using System.Net.Http.Json;
 using System.Threading.Tasks;
 using System.Xml.Linq;
-using System.Xml.Serialization;
 using OpenAC.Net.DFe.Core.Common;
 
 namespace OpenAC.Net.NFSe.Nacional.Webservice.ISSNet;
 
+/// <inheritdoc />
 public class ISSNetWebService : NacionalWebservice
 {
+    /// <inheritdoc />
     public ISSNetWebService(ConfiguracaoNFSe configuracaoNFSe, NFSeServiceInfo serviceInfo) :
         base(configuracaoNFSe, serviceInfo)
     {
     }
 
+    /// <inheritdoc />
     public override async Task<NFSeResponse<RespostaEnvioDps>> EnviarAsync(Dps dps)
     {
         var options = DFeSaveOptions.DisableFormatting;
@@ -114,6 +114,7 @@ public class ISSNetWebService : NacionalWebservice
         return NFSeResponse<RespostaEnvioDps>.Create(dps.Xml, strResponse, success, ret);
     }
 
+    /// <inheritdoc />
     public override async Task<NFSeResponse<RespostaEnvioEvento>> EnviarEventoAsync(PedidoRegistroEvento evento)
     {
         var options = DFeSaveOptions.DisableFormatting;
@@ -172,7 +173,7 @@ public class ISSNetWebService : NacionalWebservice
         return NFSeResponse<RespostaEnvioEvento>.Create(evento.Xml, strResponse, success, ret);
     }
 
-    private async Task<T> TrataRetorno<T>(string xmlResposta, string xmlRootTag) where T : RespostaBase, new()
+    private Task<T> TrataRetorno<T>(string xmlResposta, string xmlRootTag) where T : RespostaBase, new()
     {
         var resultado = new T();
 
@@ -209,7 +210,7 @@ public class ISSNetWebService : NacionalWebservice
 
                     var chaveAcesso = doc.Descendants()
                         .FirstOrDefault(x => x.Name.LocalName == "infNFSe")?
-                        .Attribute("Id")?.Value.Replace("NFS", "");
+                        .Attribute("Id")?.Value.Replace("NFS", "") ?? string.Empty;
 
                     respostaNFSe.IdDps = $"DPS{chaveAcesso}";
                     respostaNFSe.ChaveAcesso = chaveAcesso;
@@ -223,10 +224,8 @@ public class ISSNetWebService : NacionalWebservice
         catch (Exception ex)
         {
             this.Log().Error(ex);
-
-            resultado = null;
         }
 
-        return resultado;
+        return Task.FromResult(resultado);
     }
 }

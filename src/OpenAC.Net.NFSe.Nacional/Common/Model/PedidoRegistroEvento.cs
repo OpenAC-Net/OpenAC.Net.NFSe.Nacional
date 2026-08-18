@@ -1,4 +1,4 @@
-﻿// ***********************************************************************
+// ***********************************************************************
 // Assembly         : OpenAC.Net.NFSe.Nacional
 // Author           : RFTD
 // Created          : 09-09-2023
@@ -29,7 +29,6 @@
 // <summary></summary>
 // ***********************************************************************
 
-using OpenAC.Net.Core.Extensions;
 using OpenAC.Net.DFe.Core.Attributes;
 using OpenAC.Net.DFe.Core.Common;
 using OpenAC.Net.DFe.Core.Document;
@@ -92,6 +91,7 @@ public sealed partial class PedidoRegistroEvento : DFeSignDocument<PedidoRegistr
     /// Realiza a assinatura digital do pedido utilizando as configurações fornecidas e as opções de salvamento especificadas.
     /// </summary>
     /// <param name="configuracao">Configuração da NFSe.</param>
+    /// <param name="options">Opções de salvamento do documento.</param>
     public void Assinar(ConfiguracaoNFSe configuracao, DFeSaveOptions options)
     {
         AssinarDocumento(configuracao.Certificados.ObterCertificado(), options, false);

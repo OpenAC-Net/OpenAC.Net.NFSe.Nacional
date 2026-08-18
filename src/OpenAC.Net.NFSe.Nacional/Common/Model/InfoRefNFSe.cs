@@ -14,7 +14,6 @@
 
 using System.Collections.Generic;
 using OpenAC.Net.DFe.Core.Attributes;
-using OpenAC.Net.DFe.Core.Serializer;
 
 namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 

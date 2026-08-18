@@ -1,4 +1,4 @@
-﻿// ***********************************************************************
+// ***********************************************************************
 // Assembly         : OpenAC.Net.NFSe.Nacional
 // Author           : RFTD
 // Created          : 09-09-2023
@@ -43,17 +43,17 @@ public sealed partial class InformacoesComplementares
     /// Identificador do documento técnico.
     /// </summary>
     [DFeElement(TipoCampo.Str, "idDocTec", Min = 1, Max = 40, Ocorrencia = Ocorrencia.NaoObrigatoria)]
-    public string IdDocTec { get; set; }
+    public string? IdDocTec { get; set; }
     
     /// <summary>
     /// Documento de referência.
     /// </summary>
     [DFeElement(TipoCampo.Str, "docRef", Min = 1, Max = 255, Ocorrencia = Ocorrencia.NaoObrigatoria)]
-    public string DocRef { get; set; }
+    public string? DocRef { get; set; }
     
     /// <summary>
     /// Informações complementares.
     /// </summary>
     [DFeElement(TipoCampo.Str, "xInfComp", Min = 1, Max = 2000, Ocorrencia = Ocorrencia.NaoObrigatoria)]
-    public string Informacoes { get; set; }
+    public string? Informacoes { get; set; }
 }

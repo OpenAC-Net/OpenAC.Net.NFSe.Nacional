@@ -12,7 +12,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using System.Security.Cryptography.Xml;
-using System.Text;
 using System.Xml;
 using System.Xml.Linq;
 using OpenAC.Net.Core.Extensions;

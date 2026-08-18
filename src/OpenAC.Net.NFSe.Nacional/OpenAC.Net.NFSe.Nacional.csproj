@@ -31,6 +31,7 @@
         <SymbolPackageFormat>snupkg</SymbolPackageFormat>
         <PackageId>OpenAC.Net.NFSe.Nacional</PackageId>
         <Nullable>enable</Nullable>
+        <NoWarn>$(NoWarn);SYSLIB0014;CS0108</NoWarn>
         <Description>Biblioteca para emissão e trasmissão de NFSe (Nota Fiscal de Serviço Eletrônica) Padrão Nacional.</Description>
     </PropertyGroup>
 

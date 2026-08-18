@@ -1,7 +1,6 @@
 using OpenAC.Net.DFe.Core.Attributes;
 using OpenAC.Net.DFe.Core.Collection;
 using OpenAC.Net.DFe.Core.Document;
-using System;
 using System.Linq;
 
 namespace OpenAC.Net.NFSe.Nacional.Webservice;
@@ -22,9 +21,9 @@ public sealed partial class NFSeServices : DFeDocument<NFSeServices>
     /// Recupera a informação do serviço de NFSe para o código do município informado.
     /// </summary>
     /// <param name="codigo">Código do município.</param>
-    /// <returns>Instância de <see cref="NFSeServiceInfo"/> correspondente ao código. Quando não encontrado, instanciará o NFSeNacional</returns>
+    /// <returns>Instância de <see cref="NFSeServiceInfo"/> correspondente ao código, ou <c>null</c> se não encontrado.</returns>
     [DFeIgnore]
-    public NFSeServiceInfo this[int codigo] => Webservices.SingleOrDefault(x => x.Codigo == codigo) ?? Webservices.SingleOrDefault(x => x.Codigo == -1);
+    public NFSeServiceInfo? this[int codigo] => Webservices.SingleOrDefault(x => x.Codigo == codigo) ?? Webservices.SingleOrDefault(x => x.Codigo == -1);
 
     /// <summary>
     /// Conjunto de informações dos webservices de NFSe disponíveis.

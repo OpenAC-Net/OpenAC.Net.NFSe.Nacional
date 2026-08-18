@@ -16,7 +16,6 @@ using OpenAC.Net.NFSe.Nacional.Common.Model;
 using OpenAC.Net.NFSe.Nacional.DANFSe.PDFSharp.Common;
 using OpenAC.Net.NFSe.Nacional.DANFSe.PDFSharp.Configuracao;
 using OpenAC.Net.NFSe.Nacional.DANFSe.PDFSharp.Layout;
-using PdfSharp;
 using PdfSharp.Pdf;
 
 namespace OpenAC.Net.NFSe.Nacional.DANFSe.PDFSharp;
@@ -199,10 +198,10 @@ public class OpenDANFSeNacional
 
         var sec = doc.SecuritySettings;
         if (!string.IsNullOrEmpty(seguranca.SenhaUsuario))
-            sec.UserPassword = seguranca.SenhaUsuario;
+            sec.UserPassword = seguranca.SenhaUsuario!;
 
         if (!string.IsNullOrEmpty(seguranca.SenhaProprietario))
-            sec.OwnerPassword = seguranca.SenhaProprietario;
+            sec.OwnerPassword = seguranca.SenhaProprietario!;
 
         sec.PermitPrint = seguranca.PermitirImpressao;
         sec.PermitFullQualityPrint = seguranca.PermitirImpressaoAltaQualidade;

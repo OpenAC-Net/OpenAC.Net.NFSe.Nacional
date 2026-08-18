@@ -39,7 +39,6 @@ using System.Threading.Tasks;
 using System.Xml.Linq;
 using OpenAC.Net.Core.Extensions;
 using OpenAC.Net.Core.Logging;
-using OpenAC.Net.DFe.Core.Extensions;
 using OpenAC.Net.NFSe.Nacional.Common;
 using OpenAC.Net.NFSe.Nacional.Common.Model;
 using OpenAC.Net.NFSe.Nacional.Common.Types;
@@ -258,7 +257,7 @@ public class NacionalWebservice : NFSeWebserviceBase
 
         var retorno = NFSeResponse<RespostaEnvioEvento>.Create(evento.Xml, strEnvio, strResponse, httpResponse.IsSuccessStatusCode, jsonOptions);
 
-        if (retorno.Sucesso)
+        if (retorno.Sucesso && retorno.Resultado?.XmlEvento is not null)
         {
             var prefixoNomeArquivoEventoNfse = Configuracao.Arquivos.PadronizarNomes
                 ? evento.Informacoes.ChNFSe
@@ -327,11 +326,11 @@ public class NacionalWebservice : NFSeWebserviceBase
 
         var retorno = NFSeResponse<RespostaEnvioDps>.Create(dps.Xml, strEnvio, strResponse, httpResponse.IsSuccessStatusCode);
 
-        if (retorno.Sucesso)
+        if (retorno.Sucesso && retorno.Resultado?.XmlNFSe is not null)
         {
             var prefixoNomeArquivoNfse = Configuracao.Arquivos.PadronizarNomes
-            ? retorno?.Resultado?.ChaveAcesso
-            : dps.Informacoes.NumeroDps.ZeroFill(6);
+                ? retorno.Resultado.ChaveAcesso
+                : dps.Informacoes.NumeroDps.ZeroFill(6);
 
             GravarNFSeEmDisco(retorno.Resultado.XmlNFSe, $"{prefixoNomeArquivoNfse}_nfse.xml", documento, dps.Informacoes.DhEmissao.DateTime);
         }

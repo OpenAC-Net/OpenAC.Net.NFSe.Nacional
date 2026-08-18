@@ -1,7 +1,5 @@
 using System.Xml.Linq;
 using OpenAC.Net.DFe.Core.Common;
-using OpenAC.Net.DFe.Core.Extensions;
-using OpenAC.Net.DFe.Core.Serializer;
 using OpenAC.Net.NFSe.Nacional.Common.Model;
 using OpenAC.Net.NFSe.Nacional.Common.Types;
 using OpenAC.Net.NFSe.Nacional.Webservice;

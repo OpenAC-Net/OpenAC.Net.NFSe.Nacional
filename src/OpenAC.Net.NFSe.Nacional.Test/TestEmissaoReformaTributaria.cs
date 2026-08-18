@@ -1,4 +1,3 @@
-using OpenAC.Net.Core.Extensions;
 using OpenAC.Net.NFSe.Nacional.Common.Model;
 using OpenAC.Net.NFSe.Nacional.Common.Types;
 using OpenAC.Net.NFSe.Nacional.Test.Extensions;

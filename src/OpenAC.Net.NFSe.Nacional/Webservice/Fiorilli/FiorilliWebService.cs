@@ -255,7 +255,7 @@ public class FiorilliWebService : NFSeWebserviceBase
         if (consulta.Resultado != null) FiorilliSoap.DistribuirMensagens(resultado, consulta.Resultado.Mensagens);
 
         var sucesso = consulta.Sucesso && !resultado.Chave.IsEmpty();
-        return NFSeResponse<RespostaConsultaChaveDps>.Create(consulta.JsonEnvio, consulta.JsonRetorno, sucesso, resultado);
+        return NFSeResponse<RespostaConsultaChaveDps>.Create(consulta.XmlEnvio, consulta.XmlRetorno ?? string.Empty, sucesso, resultado);
     }
 
     /// <summary>

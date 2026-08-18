@@ -729,7 +729,7 @@ internal sealed class DANFSeNacionalReport
 
         var complServ = nota.Informacoes.Dps.Informacoes.Servico.InformacoesComplementares;
         if (!string.IsNullOrWhiteSpace(complServ?.Informacoes))
-            complementares.AppendLine(complServ.Informacoes);
+            complementares.AppendLine(complServ!.Informacoes);
 
         // Tributos aproximados (IBPT / Lei 12.741)
         var totTrib = nota.Informacoes.Dps.Informacoes.Valores.Tributos.Total;
@@ -805,7 +805,7 @@ internal sealed class DANFSeNacionalReport
                 yMmCont + 1.0,
                 largUtilMmCont - 2.0,
                 alturaDisponivelMm - 2.0,
-                servicoRestante,
+                servicoRestante!,
                 DANFSeConstantes.FonteConteudoPt,
                 5.2);
 
@@ -832,7 +832,7 @@ internal sealed class DANFSeNacionalReport
                 yMmCont + 1.0,
                 largUtilMmCont - 2.0,
                 alturaDisponivelMm - 2.0,
-                complementaresRestante,
+                complementaresRestante!,
                 DANFSeConstantes.FonteConteudoPt,
                 5.2);
 
@@ -890,7 +890,7 @@ internal sealed class DANFSeNacionalReport
 
         if (!string.IsNullOrWhiteSpace(texto))
         {
-            PdfDrawHelper.DesenharMarcaDagua(gfx, DANFSeConstantes.PaginaLarguraMm, DANFSeConstantes.PaginaAlturaMm, texto);
+            PdfDrawHelper.DesenharMarcaDagua(gfx, DANFSeConstantes.PaginaLarguraMm, DANFSeConstantes.PaginaAlturaMm, texto!);
         }
     }
 
@@ -924,14 +924,14 @@ internal sealed class DANFSeNacionalReport
         var num = Regex.Replace(doc, "[^0-9a-zA-Z]", "");
         if (num.Length == 11) return $"{num.Substring(0, 3)}.{num.Substring(3, 3)}.{num.Substring(6, 3)}-{num.Substring(9, 2)}";
         if (num.Length == 14) return $"{num.Substring(0, 2)}.{num.Substring(2, 3)}.{num.Substring(5, 3)}/{num.Substring(8, 4)}-{num.Substring(12, 2)}";
-        return doc;
+        return doc!;
     }
 
     private static string FormatarCep(string? cep)
     {
         if (string.IsNullOrWhiteSpace(cep)) return "-";
         var num = Regex.Replace(cep, "[^0-9]", "");
-        return num.Length == 8 ? $"{num.Substring(0, 5)}-{num.Substring(5)}" : cep;
+        return num.Length == 8 ? $"{num.Substring(0, 5)}-{num.Substring(5)}" : cep!;
     }
 
     private static string FormatarTelefone(string? fone)
@@ -940,7 +940,7 @@ internal sealed class DANFSeNacionalReport
         var num = Regex.Replace(fone, "[^0-9]", "");
         if (num.Length == 10) return $"({num.Substring(0, 2)}) {num.Substring(2, 4)}-{num.Substring(6, 4)}";
         if (num.Length == 11) return $"({num.Substring(0, 2)}) {num.Substring(2, 5)}-{num.Substring(7, 4)}";
-        return fone;
+        return fone!;
     }
 
     private static string FormatarMoeda(decimal? valor) => (valor ?? 0).ToString("N2", PtBr);

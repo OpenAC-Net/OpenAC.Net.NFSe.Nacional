@@ -1,7 +1,4 @@
-using System;
-using System.IO;
 using System.Text;
-using System.Threading.Tasks;
 using OpenAC.Net.NFSe.Nacional.Common.Model;
 using OpenAC.Net.NFSe.Nacional.Common.Types;
 using OpenAC.Net.NFSe.Nacional.DANFSe.PDFSharp;
