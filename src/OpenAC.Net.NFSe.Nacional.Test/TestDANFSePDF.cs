@@ -287,11 +287,71 @@ public class TestDANFSePDF
         var pathProtegida = Path.Combine(outputDir, "Exemplo_DANFSe_ProtegidaComSenha.pdf");
         OpenDANFSeNacional.GerarPDF(notaProtegida, pathProtegida, configProtegida);
 
+        // 6. Exemplo com Texto Longo (Folha de Continuação)
+        var notaLonga = CriarNotaExemplo();
+        var sbServico = new StringBuilder();
+        for (int i = 1; i <= 25; i++)
+        {
+            sbServico.AppendLine($"Item {i:D2}: Prestação de serviços especializados de consultoria técnica, arquitetura de software em nuvem, implantação de pipelines CI/CD e suporte contínuo sob demanda.");
+        }
+        notaLonga.Informacoes.Dps.Informacoes.Servico.Informacoes.Descricao = sbServico.ToString();
+
+        var sbCompl = new StringBuilder();
+        for (int i = 1; i <= 30; i++)
+        {
+            sbCompl.AppendLine($"Observação contratual {i:D2}: Documento emitido em conformidade com o Termo de Cooperação Técnica nº {i * 100}/2026. Pagamento via chave Pix bancária vinculada.");
+        }
+        notaLonga.Informacoes.Valores.OutrasInformacoes = sbCompl.ToString();
+
+        var pathLonga = Path.Combine(outputDir, "Exemplo_DANFSe_TextoLongo_Continuacao.pdf");
+        OpenDANFSeNacional.GerarPDF(notaLonga, pathLonga, configPadrao);
+
         await Assert.That(File.Exists(pathPadrao)).IsTrue();
         await Assert.That(File.Exists(pathRTC)).IsTrue();
         await Assert.That(File.Exists(pathHomologacao)).IsTrue();
         await Assert.That(File.Exists(pathCancelada)).IsTrue();
         await Assert.That(File.Exists(pathProtegida)).IsTrue();
+        await Assert.That(File.Exists(pathLonga)).IsTrue();
+    }
+
+    [Test]
+    public async Task GerarPDF_ComTextoLongoServico_GeraPaginaDeContinuacao()
+    {
+        var nota = CriarNotaExemplo();
+        var sb = new StringBuilder();
+        for (int i = 1; i <= 30; i++)
+        {
+            sb.AppendLine($"Linha {i}: Descrição detalhada do serviço prestado para o cliente com escopo estendido.");
+        }
+        nota.Informacoes.Dps.Informacoes.Servico.Informacoes.Descricao = sb.ToString();
+
+        using var ms = new MemoryStream();
+        OpenDANFSeNacional.GerarPDF(nota, ms);
+
+        using var readMs = new MemoryStream(ms.ToArray());
+        using var pdfDoc = PdfSharp.Pdf.IO.PdfReader.Open(readMs, PdfSharp.Pdf.IO.PdfDocumentOpenMode.Import);
+
+        await Assert.That(pdfDoc.PageCount).IsGreaterThan(1);
+    }
+
+    [Test]
+    public async Task GerarPDF_ComTextoLongoInformacoesComplementares_GeraPaginaDeContinuacao()
+    {
+        var nota = CriarNotaExemplo();
+        var sb = new StringBuilder();
+        for (int i = 1; i <= 80; i++)
+        {
+            sb.AppendLine($"Cláusula {i}: Observações adicionais do contrato, retenções municipais, federais e regras específicas do convênio firmado com detalhamento extenso.");
+        }
+        nota.Informacoes.Valores.OutrasInformacoes = sb.ToString();
+
+        using var ms = new MemoryStream();
+        OpenDANFSeNacional.GerarPDF(nota, ms);
+
+        using var readMs = new MemoryStream(ms.ToArray());
+        using var pdfDoc = PdfSharp.Pdf.IO.PdfReader.Open(readMs, PdfSharp.Pdf.IO.PdfDocumentOpenMode.Import);
+
+        await Assert.That(pdfDoc.PageCount).IsGreaterThan(1);
     }
 
     private static NotaFiscalServico CriarNotaExemplo()
