@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<NFSe xmlns="http://www.sped.fazenda.gov.br/nfse" versao="1.01">
+    <infNFSe Id="NFS11111111111111111111110000000000000101010101010101">
+        <xLocEmi>Cidade Ficticia</xLocEmi>
+        <xLocPrestacao>Cidade Ficticia</xLocPrestacao>
+        <nNFSe>1</nNFSe>
+        <cLocIncid>1111111</cLocIncid>
+        <xLocIncid>Cidade Ficticia</xLocIncid>
+        <xTribNac>Servicos de teste e exemplificacao para uso em ambiente de desenvolvimento.</xTribNac>
+        <xNBS>Servicos de teste de software</xNBS>
+        <verAplic>OpenAC.Test_1.0.0</verAplic>
+        <ambGer>2</ambGer>
+        <tpEmis>1</tpEmis>
+        <procEmi>1</procEmi>
+        <cStat>100</cStat>
+        <dhProc>2026-08-20T10:00:00-03:00</dhProc>
+        <nDFSe>123456</nDFSe>
+        <emit>
+            <CNPJ>11111111000101</CNPJ>
+            <IM>12345</IM>
+            <xNome>EMPRESA FICTICIA DE SERVICOS DE TESTE LTDA</xNome>
+            <enderNac>
+                <xLgr>RUA FICTICIA</xLgr>
+                <nro>100</nro>
+                <xBairro>CENTRO</xBairro>
+                <cMun>1111111</cMun>
+                <UF>SP</UF>
+                <CEP>01000000</CEP>
+            </enderNac>
+            <fone>1111111111</fone>
+            <email>prestador@exemplo.com.br</email>
+        </emit>
+        <valores>
+            <vBC>1000.00</vBC>
+            <pAliqAplic>2.00</pAliqAplic>
+            <vISSQN>20.00</vISSQN>
+            <vTotalRet>50.00</vTotalRet>
+            <vLiq>950.00</vLiq>
+        </valores>
+        <IBSCBS>
+            <cLocalidadeIncid>1111111</cLocalidadeIncid>
+            <xLocalidadeIncid>Cidade Ficticia</xLocalidadeIncid>
+            <valores>
+                <vBC>1000.00</vBC>
+                <vCalcReeRepRes>0.00</vCalcReeRepRes>
+                <uf>
+                    <pIBSUF>0.10</pIBSUF>
+                    <pAliqEfetUF>0.10</pAliqEfetUF>
+                </uf>
+                <mun>
+                    <pIBSMun>0.00</pIBSMun>
+                    <pAliqEfetMun>0.00</pAliqEfetMun>
+                </mun>
+                <fed>
+                    <pCBS>0.90</pCBS>
+                    <pAliqEfetCBS>0.90</pAliqEfetCBS>
+                </fed>
+            </valores>
+            <totCIBS>
+                <vTotNF>950.00</vTotNF>
+                <gIBS>
+                    <vIBSTot>1.00</vIBSTot>
+                    <gIBSUFTot>
+                        <vIBSUF>1.00</vIBSUF>
+                    </gIBSUFTot>
+                    <gIBSMunTot>
+                        <vIBSMun>0.00</vIBSMun>
+                    </gIBSMunTot>
+                </gIBS>
+                <gCBS>
+                    <vCBS>9.00</vCBS>
+                </gCBS>
+            </totCIBS>
+        </IBSCBS>
+        <DPS xmlns="http://www.sped.fazenda.gov.br/nfse" versao="1.01">
+            <infDPS Id="DPS111111111111111111111100001000000000000001">
+                <tpAmb>2</tpAmb>
+                <dhEmi>2026-08-20T00:00:00-03:00</dhEmi>
+                <verAplic>OpenAC.Test_1.0.0</verAplic>
+                <serie>1</serie>
+                <nDPS>1</nDPS>
+                <dCompet>2026-08-20</dCompet>
+                <tpEmit>1</tpEmit>
+                <cLocEmi>1111111</cLocEmi>
+                <prest>
+                    <CNPJ>11111111000101</CNPJ>
+                    <IM>12345</IM>
+                    <fone>1111111111</fone>
+                    <email>faturamento@exemplo.com.br</email>
+                    <regTrib>
+                        <opSimpNac>1</opSimpNac>
+                        <regEspTrib>0</regEspTrib>
+                    </regTrib>
+                </prest>
+                <toma>
+                    <CNPJ>22222222000105</CNPJ>
+                    <xNome>TOMADOR FICTICIO DE SERVICOS LTDA</xNome>
+                    <end>
+                        <endNac>
+                            <cMun>1111111</cMun>
+                            <CEP>02000000</CEP>
+                        </endNac>
+                        <xLgr>AVENIDA TOMADOR</xLgr>
+                        <nro>200</nro>
+                        <xBairro>BAIRRO TOMADOR</xBairro>
+                    </end>
+                    <email>tomador@exemplo.com.br</email>
+                </toma>
+                <serv>
+                    <locPrest>
+                        <cLocPrestacao>1111111</cLocPrestacao>
+                    </locPrest>
+                    <cServ>
+                        <cTribNac>071301</cTribNac>
+                        <xDescServ>SERVICO DE TESTE PARA GERACAO DE DANFSE NACIONAL</xDescServ>
+                        <cNBS>118032100</cNBS>
+                    </cServ>
+                    <infoCompl>
+                        <xInfComp>Informacoes complementares de teste para o DANFSe Nacional.</xInfComp>
+                    </infoCompl>
+                </serv>
+                <valores>
+                    <vServPrest>
+                        <vServ>1000.00</vServ>
+                    </vServPrest>
+                    <trib>
+                        <tribMun>
+                            <tribISSQN>1</tribISSQN>
+                            <tpRetISSQN>1</tpRetISSQN>
+                        </tribMun>
+                        <tribFed>
+                            <piscofins>
+                                <CST>09</CST>
+                            </piscofins>
+                            <vRetIRRF>10.00</vRetIRRF>
+                            <vRetCSLL>40.00</vRetCSLL>
+                        </tribFed>
+                        <totTrib>
+                            <vTotTrib>
+                                <vTotTribFed>0.00</vTotTribFed>
+                                <vTotTribEst>0.00</vTotTribEst>
+                                <vTotTribMun>0.00</vTotTribMun>
+                            </vTotTrib>
+                        </totTrib>
+                    </trib>
+                </valores>
+                <IBSCBS>
+                    <finNFSe>0</finNFSe>
+                    <indFinal>1</indFinal>
+                    <cIndOp>100301</cIndOp>
+                    <indDest>0</indDest>
+                    <valores>
+                        <trib>
+                            <gIBSCBS>
+                                <CST>000</CST>
+                                <cClassTrib>000001</cClassTrib>
+                            </gIBSCBS>
+                        </trib>
+                    </valores>
+                </IBSCBS>
+            </infDPS>
+            <Signature xmlns="http://www.w3.org/2000/09/xmldsig#">
+                <SignedInfo>
+                    <CanonicalizationMethod Algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315"></CanonicalizationMethod>
+                    <SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha1"></SignatureMethod>
+                    <Reference URI="#DPS111111111111111111111100001000000000000001">
+                        <Transforms>
+                            <Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature"></Transform>
+                            <Transform Algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315"></Transform>
+                        </Transforms>
+                        <DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"></DigestMethod>
+                        <DigestValue>0000000000000000000000000000000000000000=</DigestValue>
+                    </Reference>
+                </SignedInfo>
+                <SignatureValue>0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000==</SignatureValue>
+                <KeyInfo>
+                    <X509Data>
+                        <X509Certificate>0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000==</X509Certificate>
+                    </X509Data>
+                </KeyInfo>
+            </Signature>
+        </DPS>
+    </infNFSe>
+    <Signature xmlns="http://www.w3.org/2000/09/xmldsig#">
+        <SignedInfo>
+            <CanonicalizationMethod Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#WithComments"></CanonicalizationMethod>
+            <SignatureMethod Algorithm="http://www.w3.org/2001/04/xmldsig-more#rsa-sha256"></SignatureMethod>
+            <Reference URI="#NFS11111111111111111111110000000000000101010101010101">
+                <Transforms>
+                    <Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature"></Transform>
+                    <Transform Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#WithComments"></Transform>
+                </Transforms>
+                <DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha256"></DigestMethod>
+                <DigestValue>0000000000000000000000000000000000000000000=</DigestValue>
+            </Reference>
+        </SignedInfo>
+        <SignatureValue>0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000==</SignatureValue>
+        <KeyInfo>
+            <X509Data>
+                <X509Certificate>0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000==</X509Certificate>
+            </X509Data>
+        </KeyInfo>
+    </Signature>
+</NFSe>
