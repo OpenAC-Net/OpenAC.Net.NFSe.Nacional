@@ -80,6 +80,10 @@ internal static class DANFSeConstantes
             public const string TextoHomologacao = "#ff222d";
 
             public const string TextoSemValidadeJuridica = "#CCffb2b4";
+
+            public const string TextoCancelada = TextoSemValidadeJuridica;
+
+            public const string TextoSubstituida = TextoSemValidadeJuridica;
         }
 
     }
@@ -110,6 +114,10 @@ internal static class DANFSeConstantes
         public const string TipoEmissao = "Tipo de emissão: {0}";
 
         public const string NfseSemValidadeJuridica = "NFS-e SEM VALIDADE JURÍDICA";
+
+        public const string NfseCancelada = "CANCELADA";
+
+        public const string NfseSubstituida = "SUBSTITUÍDA";
 
         public const string ChaveAcesso = "CHAVE DE ACESSO DA NFS-e";
 

@@ -173,6 +173,34 @@ public class NfsePdfTests
         SalvarPdf("sem_ibs_cbs", pdf);
     }
 
+    [Fact]
+    public void Deve_Gerar_Pdf_Cancelada()
+    {
+        var nfse = CarregadorNfse.Carregar("nota.xml");
+        var configuracao = new DANFSeConfiguracao
+        {
+            Cancelada = true
+        };
+        var pdf = nfse.GerarPdf(configuracao);
+        Assert.NotNull(pdf);
+        Assert.True(pdf.Length > 100);
+        SalvarPdf("nota_cancelada", pdf);
+    }
+
+    [Fact]
+    public void Deve_Gerar_Pdf_Substituida()
+    {
+        var nfse = CarregadorNfse.Carregar("nota.xml");
+        var configuracao = new DANFSeConfiguracao
+        {
+            Substituida = true
+        };
+        var pdf = nfse.GerarPdf(configuracao);
+        Assert.NotNull(pdf);
+        Assert.True(pdf.Length > 100);
+        SalvarPdf("nota_substituida", pdf);
+    }
+
     private static DANFSeConfiguracao CriarConfiguracao(bool comCanhoto, bool comQrCode)
     {
         var configuracao = new DANFSeConfiguracao

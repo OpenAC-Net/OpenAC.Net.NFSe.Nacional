@@ -208,8 +208,62 @@ internal sealed class Documento : IDocument
     }
 
     /// <summary>
+    /// Renderiza a marca d'água do documento
+    /// </summary>
+    /// <param name="pagina">Descritor da página do QuestPDF.</param>
+    /// <param name="texto">Texto que será renderizado.</param>
+    /// <param name="cor">Cor do texto que será renderizado.</param>
+    private static void RenderizarMarcaDagua(
+        PageDescriptor pagina,
+        string texto,
+        string cor)
+    {
+        pagina
+            .Foreground()
+            .AlignCenter()
+            .AlignMiddle()
+            .Rotate(-40)
+            .Text(texto)
+            .FontSize(DANFSeConstantes.Fonte.TamanhoTituloGigante)
+            .FontColor(cor)
+            .Bold();
+    }
+
+    /// <summary>
+    /// Renderiza a marca d'água do documento quando a nota estiver cancelada,
+    /// substituída ou em ambiente de homologação.
+    /// </summary>
+    /// <param name="pagina">Descritor da página do QuestPDF.</param>
+    private void CriarMarcaDagua(PageDescriptor pagina)
+    {
+        if (_configuracao.Cancelada)
+        {
+            RenderizarMarcaDagua(
+                pagina,
+                DANFSeConstantes.Mensagens.NfseCancelada,
+                DANFSeConstantes.Fonte.Cores.TextoCancelada);
+            return;
+        }
+        if (_configuracao.Substituida)
+        {
+            RenderizarMarcaDagua(
+                pagina,
+                DANFSeConstantes.Mensagens.NfseSubstituida,
+                DANFSeConstantes.Fonte.Cores.TextoSubstituida);
+            return;
+        }
+        if (_configuracao.Homologacao)
+        {
+            RenderizarMarcaDagua(
+                pagina,
+                DANFSeConstantes.Mensagens.NfseSemValidadeJuridica,
+                DANFSeConstantes.Fonte.Cores.TextoSemValidadeJuridica);
+        }
+    }
+
+    /// <summary>
     /// Compõe o conteúdo principal do DANFSe, incluindo todos os componentes
-    /// e a marca d'água de homologação quando configurada.
+    /// e a marca d'água de cancelada, substituída ou homologação quando configurada.
     /// </summary>
     /// <param name="pagina">Descritor da página do QuestPDF.</param>
     private void CriarConteudo(PageDescriptor pagina)
@@ -237,18 +291,7 @@ internal sealed class Documento : IDocument
                         CriarInformacoesComplementares(coluna);
                     });
             });
-        if (_configuracao.Homologacao)
-        {
-            pagina
-                .Foreground()
-                .AlignCenter()
-                .AlignMiddle()
-                .Rotate(-40)
-                .Text(DANFSeConstantes.Mensagens.NfseSemValidadeJuridica)
-                .FontSize(DANFSeConstantes.Fonte.TamanhoTituloGigante)
-                .FontColor(DANFSeConstantes.Fonte.Cores.TextoSemValidadeJuridica)
-                .Bold();
-        }
+        CriarMarcaDagua(pagina);
     }
 
     /// <summary>
@@ -295,7 +338,7 @@ internal sealed class Documento : IDocument
         }
         return $"{DANFSeConstantes.Mensagens.Nfse} {numero}";
     }
-    
+
     /// <summary>
     /// Retorna os metadados do documento PDF.
     /// </summary>
