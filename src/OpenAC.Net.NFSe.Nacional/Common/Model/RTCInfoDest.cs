@@ -21,7 +21,7 @@ namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 /// <summary>
 /// Grupo de informações relativas ao Destinatário.
 /// </summary>
-public sealed class RTCInfoDest
+public sealed partial class RTCInfoDest
 {
     #region Choice
 

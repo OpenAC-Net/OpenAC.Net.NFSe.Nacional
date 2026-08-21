@@ -36,7 +36,7 @@ namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 /// <summary>
 /// Totalizadores do IBS.
 /// </summary>
-public sealed class RTCTotalIBS
+public sealed partial class RTCTotalIBS
 {
     /// <summary>
     /// Valor total do IBS.

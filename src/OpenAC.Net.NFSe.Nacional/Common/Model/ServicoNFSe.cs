@@ -36,7 +36,7 @@ namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 /// <summary>
 /// Representa o serviço da NFSe, contendo informações obrigatórias e opcionais conforme o layout nacional.
 /// </summary>
-public sealed class ServicoNFSe
+public sealed partial class ServicoNFSe
 {
     /// <summary>
     /// Localidade da prestação do serviço.

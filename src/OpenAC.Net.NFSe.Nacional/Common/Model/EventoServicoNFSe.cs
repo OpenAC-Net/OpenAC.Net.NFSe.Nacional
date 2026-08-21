@@ -39,7 +39,7 @@ namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 /// <summary>
 /// Representa um evento de serviço para NFSe.
 /// </summary>
-public sealed class EventoServicoNFSe
+public sealed partial class EventoServicoNFSe
 {
     #region Properties
 

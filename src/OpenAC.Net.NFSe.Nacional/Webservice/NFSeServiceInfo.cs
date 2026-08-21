@@ -11,7 +11,7 @@ namespace OpenAC.Net.NFSe.Nacional.Webservice;
 /// Representa informações do serviço de NFSe de um município:
 /// código IBGE, provedor(es), nome e UF.
 /// </summary>
-public sealed class NFSeServiceInfo
+public sealed partial class NFSeServiceInfo
 {
     /// <summary>
     /// Retorna o ambiente de NFSe correspondente ao <see cref="DFeTipoAmbiente"/> informado.
@@ -51,6 +51,9 @@ public sealed class NFSeServiceInfo
     [DFeElement(TipoCampo.Enum, "UF")]
     public DFeSiglaUF UF { get; set; }
     
+    /// <summary>
+    /// Define ou retorna a coleção de ambientes do serviço.
+    /// </summary>
     [DFeCollection("Ambientes")]
     [DFeItem(typeof(NFSeEnvironment), "Ambiente")]
     public DFeCollection<NFSeEnvironment> Ambientes { get; set; } = new();

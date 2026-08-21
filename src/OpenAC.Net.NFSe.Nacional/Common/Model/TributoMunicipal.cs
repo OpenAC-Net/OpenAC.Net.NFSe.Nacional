@@ -38,7 +38,7 @@ namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 /// <summary>
 /// Representa os tributos municipais relacionados ao ISSQN.
 /// </summary>
-public sealed class TributoMunicipal
+public sealed partial class TributoMunicipal
 {
     /// <summary>
     /// Informações do tributo ISSQN.

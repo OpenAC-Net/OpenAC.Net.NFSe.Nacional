@@ -37,7 +37,7 @@ namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 /// <summary>
 /// Representa os valores do serviço na NFSe.
 /// </summary>
-public sealed class ValoresServico
+public sealed partial class ValoresServico
 {
     /// <summary>
     /// Valor recebido referente ao serviço (opcional).

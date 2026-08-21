@@ -38,7 +38,7 @@ namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 /// <summary>
 /// Representa as informações de locação.
 /// </summary>
-public sealed class InformacoesLocacao
+public sealed partial class InformacoesLocacao
 {
     /// <summary>
     /// Categoria da locação.

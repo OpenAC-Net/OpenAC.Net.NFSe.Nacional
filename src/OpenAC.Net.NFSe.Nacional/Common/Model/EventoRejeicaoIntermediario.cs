@@ -37,7 +37,7 @@ namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 /// <summary>
 /// Representa o evento de rejeição do intermediário no processo de NFSe.
 /// </summary>
-public sealed class EventoRejeicaoIntermediario : InfoRejeicao, IEventoNFSe
+public sealed partial class EventoRejeicaoIntermediario : InfoRejeicao, IEventoNFSe
 {
     /// <summary>
     /// Descrição do evento.

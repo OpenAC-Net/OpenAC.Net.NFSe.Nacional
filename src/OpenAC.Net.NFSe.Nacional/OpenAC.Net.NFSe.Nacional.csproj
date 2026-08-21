@@ -31,6 +31,7 @@
         <SymbolPackageFormat>snupkg</SymbolPackageFormat>
         <PackageId>OpenAC.Net.NFSe.Nacional</PackageId>
         <Nullable>enable</Nullable>
+        <NoWarn>$(NoWarn);SYSLIB0014;CS0108</NoWarn>
         <Description>Biblioteca para emissão e trasmissão de NFSe (Nota Fiscal de Serviço Eletrônica) Padrão Nacional.</Description>
     </PropertyGroup>
 
@@ -60,13 +61,13 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Microsoft.SourceLink.GitHub" Version="10.0.301">
+        <PackageReference Include="Microsoft.SourceLink.GitHub" Version="10.0.400">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
         <PackageReference Include="OpenAC.Net.Core" Version="1.6.0" />
-        <PackageReference Include="OpenAC.Net.DFe.Core" Version="1.6.0.2" />
-        <PackageReference Include="System.Net.Http.Json" Version="10.0.10" />
+        <PackageReference Include="OpenAC.Net.DFe.Core" Version="1.7.0.1" />
+        <PackageReference Include="System.Net.Http.Json" Version="10.0.11" />
     </ItemGroup>    
 
     <ItemGroup>

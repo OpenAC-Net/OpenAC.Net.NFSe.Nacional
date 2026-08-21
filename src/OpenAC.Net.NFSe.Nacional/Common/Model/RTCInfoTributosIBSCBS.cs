@@ -13,17 +13,16 @@
 // ***********************************************************************
 
 using OpenAC.Net.DFe.Core.Attributes;
-using OpenAC.Net.DFe.Core.Serializer;
 
 namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 
 /// <summary>
-/// Grupo de informações relacionados aos tributos IBS e CBS.
+/// Grupo de informaÃ§Ãµes relacionados aos tributos IBS e CBS.
 /// </summary>
-public sealed class RTCInfoTributosIBSCBS
+public sealed partial class RTCInfoTributosIBSCBS
 {
     /// <summary>
-    /// Grupo de informações relacionadas ao IBS e à CBS.
+    /// Grupo de informaÃ§Ãµes relacionadas ao IBS e Ã  CBS.
     /// </summary>
     [DFeElement("gIBSCBS", Ocorrencia = Ocorrencia.Obrigatoria)]
     public RTCInfoTributosSitClas GrupoIBSCBS { get; set; } = new();

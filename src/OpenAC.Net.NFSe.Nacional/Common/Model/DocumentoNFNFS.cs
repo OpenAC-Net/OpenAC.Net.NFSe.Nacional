@@ -37,7 +37,7 @@ namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 /// <summary>
 /// Representa o documento NF/NFS com número, modelo e série.
 /// </summary>
-public sealed class DocumentoNFNFS
+public sealed partial class DocumentoNFNFS
 {
     /// <summary>
     /// Número do documento NF/NFS.

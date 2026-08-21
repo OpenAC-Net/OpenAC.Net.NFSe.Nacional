@@ -37,7 +37,7 @@ namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 /// <summary>
 /// Representa os percentuais totais de tributos federais, estaduais e municipais.
 /// </summary>
-public sealed class PorcentagemTotalTributos
+public sealed partial class PorcentagemTotalTributos
 {
     /// <summary>
     /// Percentual total de tributos federais.

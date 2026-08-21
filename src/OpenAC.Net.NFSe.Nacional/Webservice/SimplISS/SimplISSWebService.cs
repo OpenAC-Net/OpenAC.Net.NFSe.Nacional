@@ -1,4 +1,4 @@
-﻿// ***********************************************************************
+// ***********************************************************************
 // Assembly         : OpenAC.Net.NFSe.Nacional
 // Author           : RFTD
 // Created          : 09-09-2023
@@ -42,6 +42,7 @@ using System.Threading.Tasks;
 
 namespace OpenAC.Net.NFSe.Nacional.Webservice.SimplISS;
 
+/// <inheritdoc />
 public class SimplISSWebService : NacionalWebservice
 {
     private static readonly JsonSerializerOptions JsonOptions = new()
@@ -50,11 +51,13 @@ public class SimplISSWebService : NacionalWebservice
         Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping
     };
 
+    /// <inheritdoc />
     public SimplISSWebService(ConfiguracaoNFSe configuracaoNFSe, NFSeServiceInfo serviceInfo) : 
         base(configuracaoNFSe, serviceInfo)
     {
     }
 
+    /// <inheritdoc />
     public override async Task<NFSeResponse<RespostaEnvioDps>> EnviarAsync(Dps dps)
     {
         dps.Assinar(Configuracao);
@@ -86,6 +89,7 @@ public class SimplISSWebService : NacionalWebservice
         return NFSeResponse<RespostaEnvioDps>.Create(dps.Xml, strEnvio, strResponse, httpResponse.IsSuccessStatusCode, JsonOptions);
     }
 
+    /// <inheritdoc />
     public override async Task<NFSeResponse<RespostaEnvioEvento>> EnviarEventoAsync(PedidoRegistroEvento evento)
     {
         evento.Assinar(Configuracao);

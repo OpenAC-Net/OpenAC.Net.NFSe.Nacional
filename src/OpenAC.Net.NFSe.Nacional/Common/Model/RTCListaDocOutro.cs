@@ -18,18 +18,18 @@ using OpenAC.Net.DFe.Core.Serializer;
 namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 
 /// <summary>
-/// Grupo de informações de documento não fiscal.
+/// Grupo de informaÃ§Ãµes de documento nÃ£o fiscal.
 /// </summary>
-public sealed class RTCListaDocOutro
+public sealed partial class RTCListaDocOutro
 {
     /// <summary>
-    /// Número do documento não fiscal.
+    /// NÃºmero do documento nÃ£o fiscal.
     /// </summary>
     [DFeElement(TipoCampo.Str, "nDoc", Min = 1, Max = 255, Ocorrencia = Ocorrencia.Obrigatoria)]
     public string NumeroDocumento { get; set; } = string.Empty;
 
     /// <summary>
-    /// Descrição do documento não fiscal.
+    /// DescriÃ§Ã£o do documento nÃ£o fiscal.
     /// </summary>
     [DFeElement(TipoCampo.Str, "xDoc", Min = 1, Max = 255, Ocorrencia = Ocorrencia.Obrigatoria)]
     public string DescricaoDocumento { get; set; } = string.Empty;

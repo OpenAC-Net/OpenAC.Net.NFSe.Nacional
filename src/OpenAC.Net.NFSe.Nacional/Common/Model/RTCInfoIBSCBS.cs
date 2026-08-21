@@ -38,7 +38,7 @@ namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 /// <summary>
 /// Grupo de informações declaradas pelo emitente referentes ao IBS e à CBS.
 /// </summary>
-public sealed class RTCInfoIBSCBS
+public sealed partial class RTCInfoIBSCBS
 {
     /// <summary>
     /// Indicador da finalidade da emissão de NFS-e (finNFSe).

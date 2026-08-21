@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -15,7 +15,7 @@ namespace OpenAC.Net.NFSe.Nacional.Webservice;
 /// <summary>
 /// Gerenciador de serviços para NFSe.
 /// </summary>
-public sealed class NFSeServiceManager
+public sealed partial class NFSeServiceManager
 {
     #region Fields
 
@@ -190,9 +190,9 @@ public sealed class NFSeServiceManager
     /// <exception cref="InvalidOperationException">Se a instância do provedor não puder ser criada.</exception>
     public NFSeWebserviceBase GetProvider(ConfiguracaoNFSe config)
     {
-        var serviceInfo = Services[config.WebServices.CodigoMunicipio];
+        var serviceInfo = Services[config.WebServices.CodigoMunicipio] ?? 
+                          throw new OpenException("Serviço não encontrado para o município informado!");
 
-        // ReSharper disable once PossibleNullReferenceException
         var providerType = Providers[serviceInfo.Provider][config.Geral.Versao];
         if (providerType == null) throw new OpenException("Provedor não encontrado!");
         if (!CheckBaseType(providerType)) throw new OpenException("Classe base do provedor incorreta!");

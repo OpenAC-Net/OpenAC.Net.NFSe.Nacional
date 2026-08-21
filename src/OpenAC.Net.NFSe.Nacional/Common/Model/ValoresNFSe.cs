@@ -38,7 +38,7 @@ namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 /// <summary>
 /// Representa os valores de uma NFSe, incluindo base de cálculo, alíquotas, valores de ISSQN, retenções e informações adicionais.
 /// </summary>
-public sealed class ValoresNFSe
+public sealed partial class ValoresNFSe
 {
 
     /// <summary>

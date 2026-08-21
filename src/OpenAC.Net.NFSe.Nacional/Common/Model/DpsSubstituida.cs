@@ -38,7 +38,7 @@ namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 /// <summary>
 /// Representa uma DPS substituída, contendo informações sobre a chave, motivo e descrição da substituição.
 /// </summary>
-public sealed class DpsSubstituida
+public sealed partial class DpsSubstituida
 {
     #region Properties
 

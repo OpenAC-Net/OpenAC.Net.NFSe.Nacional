@@ -37,7 +37,7 @@ namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 /// <summary>
 /// Representa o endereço do emitente.
 /// </summary>
-public sealed class EnderecoEmitente
+public sealed partial class EnderecoEmitente
 {
     #region Properties
 

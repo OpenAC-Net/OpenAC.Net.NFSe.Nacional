@@ -36,7 +36,7 @@ namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 /// <summary>
 /// Valores da CBS.
 /// </summary>
-public sealed class RTCValoresIBSCBSFederal
+public sealed partial class RTCValoresIBSCBSFederal
 {
     /// <summary>
     /// Aliquota da CBS parametrizada.

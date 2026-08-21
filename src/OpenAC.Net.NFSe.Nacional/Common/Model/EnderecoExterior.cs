@@ -37,7 +37,7 @@ namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 /// <summary>
 /// Representa um endereço no exterior.
 /// </summary>
-public sealed class EnderecoExterior
+public sealed partial class EnderecoExterior
 {
     /// <summary>
     /// Código do endereço postal no exterior.

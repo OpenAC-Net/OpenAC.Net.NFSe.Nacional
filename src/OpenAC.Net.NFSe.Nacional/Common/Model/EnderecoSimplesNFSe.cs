@@ -38,7 +38,7 @@ namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 /// <summary>
 /// Representa um endereço simples para NFSe.
 /// </summary>
-public sealed class EnderecoSimplesNFSe
+public sealed partial class EnderecoSimplesNFSe
 {
     #region Properties
 

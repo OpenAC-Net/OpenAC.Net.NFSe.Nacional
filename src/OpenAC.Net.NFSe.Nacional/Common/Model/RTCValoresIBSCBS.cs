@@ -36,7 +36,7 @@ namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 /// <summary>
 /// Valores brutos calculados para IBS/CBS.
 /// </summary>
-public sealed class RTCValoresIBSCBS
+public sealed partial class RTCValoresIBSCBS
 {
     /// <summary>
     /// Base de calculo do IBS/CBS antes das reducoes.

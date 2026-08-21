@@ -36,7 +36,7 @@ namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 /// <summary>
 /// Totais de credito presumido para a CBS.
 /// </summary>
-public sealed class RTCTotalCBSCredPres
+public sealed partial class RTCTotalCBSCredPres
 {
     /// <summary>
     /// Aliquota do credito presumido da CBS.

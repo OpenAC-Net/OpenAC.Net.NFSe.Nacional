@@ -1,0 +1,61 @@
+name: "Sugestão de Melhoria / Nova Funcionalidade"
+description: "Sugira uma melhoria, suporte a novo provedor ou novo recurso para o OpenAC.Net.NFSe.Nacional"
+title: "[Melhoria]: "
+labels: ["enhancement"]
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Obrigado por ajudar a evoluir o **OpenAC.Net.NFSe.Nacional**!
+        Descreva sua sugestão com o máximo de detalhes possível para facilitar a análise e implementação.
+
+  - type: dropdown
+    id: category
+    attributes:
+      label: "Categoria da Sugestão"
+      description: "Qual área do projeto esta melhoria abrange?"
+      options:
+        - "Novo Provedor de NFS-e"
+        - "Novos Schemas / Layouts (ex: Reforma Tributária IBS/CBS)"
+        - "Nova Operação / Endpoint de API REST ou SOAP"
+        - "Melhoria de Performance / Refatoração"
+        - "Validação / Assinatura Digital"
+        - "Documentação / Exemplos de Uso"
+        - "Outro"
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem-statement
+    attributes:
+      label: "Qual problema ou necessidade esta melhoria atende?"
+      description: "Descreva a necessidade, limitação atual ou cenário de uso que motivou esta solicitação."
+      placeholder: "Atualmente, a biblioteca não suporta..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposed-solution
+    attributes:
+      label: "Solução Proposta"
+      description: "Descreva a solução que você gostaria de ver implementada, incluindo exemplos de API ou assinaturas de métodos se possível."
+      placeholder: "Uma possível abordagem seria adicionar..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives-considered
+    attributes:
+      label: "Alternativas Consideradas"
+      description: "Alguma solução alternativa ou contorno (workaround) foi considerado?"
+    validations:
+      required: false
+
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: "Documentação de Referência / Informações Adicionais"
+      description: "Links para notas técnicas, manuais oficiais da SEFIN/Receita Federal, schemas XSD ou qualquer material de apoio."
+    validations:
+      required: false

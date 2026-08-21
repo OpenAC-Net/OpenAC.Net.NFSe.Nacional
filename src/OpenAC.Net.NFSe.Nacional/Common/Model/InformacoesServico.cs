@@ -37,7 +37,7 @@ namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 /// <summary>
 /// Representa as informações do serviço para a NFSe.
 /// </summary>
-public sealed class InformacoesServico
+public sealed partial class InformacoesServico
 {
     /// <summary>
     /// Código de Tributação Nacional (cTribNac).

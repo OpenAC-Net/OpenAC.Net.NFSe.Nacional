@@ -37,7 +37,7 @@ namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 /// <summary>
 /// Representa um município localizado no exterior.
 /// </summary>
-public sealed class MunicipioExterior : IMunicipio
+public sealed partial class MunicipioExterior : IMunicipio
 {
     #region Properties
 

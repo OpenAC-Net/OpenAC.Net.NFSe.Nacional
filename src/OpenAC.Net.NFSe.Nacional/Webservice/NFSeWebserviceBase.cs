@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Security.Authentication;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Schema;
@@ -261,6 +260,7 @@ public abstract class NFSeWebserviceBase : IOpenLog
     /// <param name="nomeArquivo">Nome do arquivo.</param>
     /// <param name="documento">Documento do prestador.</param>
     /// <param name="data">Data de emissão.</param>
+    /// <param name="incrementarNome">Indica se o nome do arquivo deve ser incrementado caso já exista.</param>
     protected virtual void GravarDpsEmDisco(string conteudoArquivo, string nomeArquivo, string? documento, DateTime data, bool incrementarNome = false)
     {
         if (Configuracao.Arquivos.Salvar == false) return;
@@ -275,6 +275,7 @@ public abstract class NFSeWebserviceBase : IOpenLog
     /// <param name="nomeArquivo">Nome do arquivo.</param>
     /// <param name="documento">Documento do prestador.</param>
     /// <param name="data">Data de emissão.</param>
+    /// <param name="incrementarNome">Indica se o nome do arquivo deve ser incrementado caso já exista.</param>
     protected virtual void GravarNFSeEmDisco(string conteudoArquivo, string nomeArquivo, string? documento, DateTime data, bool incrementarNome = false)
     {
         if (Configuracao.Arquivos.Salvar == false) return;

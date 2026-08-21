@@ -37,7 +37,7 @@ namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 /// <summary>
 /// Representa a localidade de prestação de serviço na NFSe.
 /// </summary>
-public sealed class LocalidadeNFSe
+public sealed partial class LocalidadeNFSe
 {
     /// <summary>
     /// Código do município de prestação do serviço (7 dígitos).
