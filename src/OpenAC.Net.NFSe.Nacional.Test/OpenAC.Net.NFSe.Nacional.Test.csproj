@@ -17,7 +17,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="DotNetEnv" Version="3.2.0" />
-    <PackageReference Include="TUnit" Version="1.65.0" />
+    <PackageReference Include="TUnit" Version="1.65.38" />
   </ItemGroup>
 
   <ItemGroup>
