@@ -5,9 +5,11 @@ using Microsoft.Extensions.Options;
 using OpenAC.Net.NFSe.Nacional.Common;
 using OpenAC.Net.NFSe.Nacional.Common.Model;
 using OpenAC.Net.NFSe.Nacional.Storage;
+using OpenAC.Net.NFSe.Nacional.Web.Configuration;
+using OpenAC.Net.NFSe.Nacional.Web.Exception;
 using OpenAC.Net.NFSe.Nacional.Webservice;
 
-namespace OpenAC.Net.NFSe.Nacional.Web;
+namespace OpenAC.Net.NFSe.Nacional.Web.Client;
 
 internal sealed class OpenNFSeNacionalWebClient(
     ConfiguracaoNFSe configuracao,
@@ -61,8 +63,8 @@ internal sealed class OpenNFSeNacionalWebClient(
                 new KeyValuePair<string, object?>("outcome", "cancelled"));
             throw;
         }
-        catch (Exception exception) when (exception is HttpRequestException or Polly.CircuitBreaker.BrokenCircuitException
-                                          or Polly.Timeout.TimeoutRejectedException)
+        catch (System.Exception exception) when (exception is HttpRequestException or Polly.CircuitBreaker.BrokenCircuitException
+                                                     or Polly.Timeout.TimeoutRejectedException)
         {
             logger.LogError(exception, "Falha na operação {Operation}", operation);
             activity?.SetStatus(ActivityStatusCode.Error, exception.Message);
@@ -70,7 +72,7 @@ internal sealed class OpenNFSeNacionalWebClient(
                 new KeyValuePair<string, object?>("outcome", "technical_error"));
             throw new NFSeTechnicalException(operation, $"Falha técnica na operação '{operation}'.", exception);
         }
-        catch (Exception exception)
+        catch (System.Exception exception)
         {
             logger.LogError(exception, "Falha na operação {Operation}", operation);
             activity?.SetStatus(ActivityStatusCode.Error, exception.Message);

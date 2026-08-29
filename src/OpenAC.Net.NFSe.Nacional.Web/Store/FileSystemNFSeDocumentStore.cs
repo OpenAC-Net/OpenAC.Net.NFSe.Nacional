@@ -2,8 +2,10 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using OpenAC.Net.NFSe.Nacional.Common;
 using OpenAC.Net.NFSe.Nacional.Storage;
+using OpenAC.Net.NFSe.Nacional.Web.Accessor;
+using OpenAC.Net.NFSe.Nacional.Web.Configuration;
 
-namespace OpenAC.Net.NFSe.Nacional.Web;
+namespace OpenAC.Net.NFSe.Nacional.Web.Store;
 
 /// <summary>Persiste payloads técnicos e documentos fiscais no sistema de arquivos do host ASP.NET Core.</summary>
 /// <remarks>

@@ -6,6 +6,8 @@ using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using OpenAC.Net.NFSe.Nacional.Common;
 using OpenAC.Net.NFSe.Nacional.Web;
+using OpenAC.Net.NFSe.Nacional.Web.Client;
+using OpenAC.Net.NFSe.Nacional.Web.Provider;
 
 namespace OpenAC.Net.NFSe.Nacional.Test;
 

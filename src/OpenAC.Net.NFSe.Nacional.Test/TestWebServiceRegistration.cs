@@ -2,7 +2,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using OpenAC.Net.NFSe.Nacional.Common;
-using OpenAC.Net.NFSe.Nacional.Web;
+using OpenAC.Net.NFSe.Nacional.Web.Policy;
 
 namespace OpenAC.Net.NFSe.Nacional.Test;
 

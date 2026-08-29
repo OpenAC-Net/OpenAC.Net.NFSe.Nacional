@@ -1,6 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
-using OpenAC.Net.NFSe.Nacional.DANFSe.PDFSharp.Web;
-using OpenAC.Net.NFSe.Nacional.Web;
+using OpenAC.Net.NFSe.Nacional.DANFSe.PDFSharp.Web.Configuration;
+using OpenAC.Net.NFSe.Nacional.DANFSe.PDFSharp.Web.Service;
+using OpenAC.Net.NFSe.Nacional.Web.Provider;
 
 namespace OpenAC.Net.NFSe.Nacional.Test;
 
@@ -17,7 +18,7 @@ public sealed class TestDANFSeWebRegistration
             options.Configuracoes.ExibirCanhoto = true;
         });
 
-        using var provider = services.BuildServiceProvider();
+        await using var provider = services.BuildServiceProvider();
         var primeiro = provider.GetRequiredService<IOpenDANFSeNacionalWeb>();
         var segundo = provider.GetRequiredService<IOpenDANFSeNacionalWeb>();
         var configurationProvider = provider

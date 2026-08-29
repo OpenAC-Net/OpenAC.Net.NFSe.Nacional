@@ -1,4 +1,4 @@
-namespace OpenAC.Net.NFSe.Nacional.Web;
+namespace OpenAC.Net.NFSe.Nacional.Web.Common;
 
 /// <summary>Disponibiliza identificadores convencionais de empresa usados pela integração Web.</summary>
 public static class NFSeTenant

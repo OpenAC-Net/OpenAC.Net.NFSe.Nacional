@@ -69,11 +69,11 @@ public sealed class DesktopNFSeHttpTransport : INFSeHttpTransport
 
         if (conteudo is not null)
             clone.Content = new ByteArrayContent(conteudo);
-        
+
         if (cabecalhosConteudo is null) return clone;
-        
+
         foreach (var header in cabecalhosConteudo)
-            clone.Content.Headers.TryAddWithoutValidation(header.Key, header.Value);
+            clone.Content!.Headers.TryAddWithoutValidation(header.Key, header.Value);
 
         return clone;
     }

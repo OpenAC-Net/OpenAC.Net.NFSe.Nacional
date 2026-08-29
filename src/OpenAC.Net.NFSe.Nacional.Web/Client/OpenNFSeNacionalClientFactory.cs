@@ -1,12 +1,16 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OpenAC.Net.NFSe.Nacional.Storage;
+using OpenAC.Net.NFSe.Nacional.Web.Common;
+using OpenAC.Net.NFSe.Nacional.Web.Configuration;
+using OpenAC.Net.NFSe.Nacional.Web.Provider;
+using OpenAC.Net.NFSe.Nacional.Web.Transport;
 using OpenAC.Net.NFSe.Nacional.Webservice;
 
-namespace OpenAC.Net.NFSe.Nacional.Web;
+namespace OpenAC.Net.NFSe.Nacional.Web.Client;
 
 internal sealed class OpenNFSeNacionalClientFactory(
-    INFSeConfigurationProvider<Common.ConfiguracaoNFSe> configurationProvider,
+    INFSeConfigurationProvider<Nacional.Common.ConfiguracaoNFSe> configurationProvider,
     INFSeCertificateProvider certificateProvider,
     INFSeHttpTransport transport,
     INFSeDocumentStore documentStore,

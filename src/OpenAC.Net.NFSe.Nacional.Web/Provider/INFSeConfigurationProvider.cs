@@ -1,4 +1,6 @@
-namespace OpenAC.Net.NFSe.Nacional.Web;
+using OpenAC.Net.NFSe.Nacional.Web.Common;
+
+namespace OpenAC.Net.NFSe.Nacional.Web.Provider;
 
 /// <summary>Define o contrato para obter uma configuração independente para cada empresa.</summary>
 /// <typeparam name="TConfiguration">Tipo da configuração fornecida.</typeparam>

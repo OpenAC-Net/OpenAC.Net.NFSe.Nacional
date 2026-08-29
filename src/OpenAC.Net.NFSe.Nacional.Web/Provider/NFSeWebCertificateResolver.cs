@@ -1,7 +1,7 @@
 using System.Security.Cryptography.X509Certificates;
 using OpenAC.Net.NFSe.Nacional.Common;
 
-namespace OpenAC.Net.NFSe.Nacional.Web;
+namespace OpenAC.Net.NFSe.Nacional.Web.Provider;
 
 /// <summary>Carrega certificados explicitamente configurados sem recorrer a seleção interativa.</summary>
 internal static class NFSeWebCertificateResolver

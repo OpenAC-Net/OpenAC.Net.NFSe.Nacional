@@ -1,4 +1,4 @@
-namespace OpenAC.Net.NFSe.Nacional.Web;
+namespace OpenAC.Net.NFSe.Nacional.Web.Policy;
 
 /// <summary>Disponibiliza a matriz de idempotência das operações do cliente de NFS-e.</summary>
 public static class NFSeOperationPolicies

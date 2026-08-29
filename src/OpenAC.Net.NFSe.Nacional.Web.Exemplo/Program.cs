@@ -1,6 +1,7 @@
 using OpenAC.Net.NFSe.Nacional;
 using OpenAC.Net.NFSe.Nacional.Common.Model;
-using OpenAC.Net.NFSe.Nacional.DANFSe.PDFSharp.Web;
+using OpenAC.Net.NFSe.Nacional.DANFSe.PDFSharp.Web.Document;
+using OpenAC.Net.NFSe.Nacional.DANFSe.PDFSharp.Web.Service;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,9 +11,6 @@ var certificadoPath = ResolverCaminho(builder.Environment.ContentRootPath,
     builder.Configuration["NFSe:Certificado:Caminho"]);
 var certificadoBytes = LerArquivoOpcional(certificadoPath);
 var senhaCertificado = builder.Configuration["NFSe:Certificado:Senha"] ?? string.Empty;
-var logoPath = ResolverCaminho(builder.Environment.ContentRootPath,
-    builder.Configuration["DANFSe:LogoPrestador"]);
-var logoBytes = LerArquivoOpcional(logoPath);
 
 builder.Services.AddOpenNFSeNacionalWeb(
     configuracao =>
@@ -32,13 +30,7 @@ builder.Services.AddOpenNFSeNacionalWeb(
         infraestrutura.CaminhoDocumentos = "App_Data/NFSe";
     });
 
-builder.Services.AddOpenDANFSeNacionalWeb(options =>
-{
-    options.Configuracoes.ExibirQRCode = true;
-    options.Configuracoes.LogoPrestador = logoBytes;
-    options.ForcarDownload = false;
-    options.NomeArquivo = nota => $"DANFSe-{nota.Informacoes.NumeroNFSe}.pdf";
-});
+builder.Services.AddOpenDANFSeNacionalWeb();
 
 var app = builder.Build();
 
@@ -51,6 +43,8 @@ app.MapGet("/", () => Results.Ok(new
         "POST /nfse/emissoes/pdf",
         "POST /danfse/pdf",
         "POST /danfse/pdf/lote",
+        "POST /empresas/{empresaId}/danfse/pdf",
+        "POST /empresas/{empresaId}/danfse/pdf/lote",
         "GET /nfse/{chave}/danfse-oficial"
     }
 }));
@@ -89,6 +83,26 @@ app.MapPost("/danfse/pdf/lote", async (
     IOpenDANFSeNacionalWeb danfse,
     CancellationToken cancellationToken) =>
     await danfse.GerarResultadoAsync(notas, cancellationToken: cancellationToken));
+
+app.MapPost("/empresas/{empresaId}/danfse/pdf", async (
+    string empresaId,
+    NotaFiscalServico nota,
+    IOpenDANFSeNacionalWeb danfse,
+    CancellationToken cancellationToken) =>
+    await danfse.GerarResultadoAsync(
+        nota,
+        tenantId: empresaId,
+        cancellationToken: cancellationToken));
+
+app.MapPost("/empresas/{empresaId}/danfse/pdf/lote", async (
+    string empresaId,
+    NotaFiscalServico[] notas,
+    IOpenDANFSeNacionalWeb danfse,
+    CancellationToken cancellationToken) =>
+    await danfse.GerarResultadoAsync(
+        notas,
+        tenantId: empresaId,
+        cancellationToken: cancellationToken));
 
 app.MapGet("/nfse/{chave}/danfse-oficial", async (
     string chave,

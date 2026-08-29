@@ -1,7 +1,7 @@
 using OpenAC.Net.NFSe.Nacional.Common.Model;
 using OpenAC.Net.NFSe.Nacional.DANFSe.PDFSharp.Configuracao;
 
-namespace OpenAC.Net.NFSe.Nacional.DANFSe.PDFSharp.Web;
+namespace OpenAC.Net.NFSe.Nacional.DANFSe.PDFSharp.Web.Configuration;
 
 /// <summary>Configura a geração e a resposta HTTP do DANFSe em aplicações ASP.NET Core.</summary>
 public sealed class DANFSeNacionalWebOptions

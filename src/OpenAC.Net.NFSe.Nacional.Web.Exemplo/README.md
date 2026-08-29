@@ -8,7 +8,8 @@ Este projeto demonstra o uso conjunto das bibliotecas:
 ## Configuração
 
 Edite o `appsettings.json` e informe o município, o certificado PFX e sua senha. Caminhos relativos
-são resolvidos a partir da raiz da aplicação. O logo do prestador é opcional.
+são resolvidos a partir da raiz da aplicação. Cada entrada em `DANFSe:Tenants` possui configuração
+própria de logo, nome de arquivo, QR Code e comportamento de download.
 
 Não adicione certificados ou senhas reais ao controle de versão. Em produção, prefira secret
 stores, variáveis de ambiente ou um `INFSeConfigurationProvider<TConfiguration>` próprio.
@@ -19,8 +20,15 @@ Também é possível sobrescrever valores por variáveis de ambiente:
 NFSe__CodigoMunicipio=5002704
 NFSe__Certificado__Caminho=/run/secrets/certificado.pfx
 NFSe__Certificado__Senha=senha
-DANFSe__LogoPrestador=/app/imagens/logo.png
+DANFSe__Tenants__default__LogoPrestador=/app/imagens/logo-padrao.png
+DANFSe__Tenants__empresa-a__LogoPrestador=/app/imagens/logo-empresa-a.png
 ```
+
+O `DANFSePorEmpresaConfigurationProvider` implementa
+`INFSeConfigurationProvider<DANFSeNacionalWebOptions>` e cria uma configuração independente a cada
+operação. Dessa forma, os bytes do logo e as demais opções nunca são compartilhados entre tenants.
+As rotas sem `empresaId` utilizam `NFSeTenant.Padrao`; no `appsettings.json`, ele corresponde à
+seção `DANFSe:Tenants:default`.
 
 ## Execução
 
@@ -36,6 +44,8 @@ dotnet run --project OpenAC.Net.NFSe.Nacional.Web.Exemplo
 | `POST` | `/nfse/emissoes/pdf` | Envia uma DPS e devolve o DANFSe local quando a emissão for autorizada. |
 | `POST` | `/danfse/pdf` | Gera o PDF local a partir de uma `NotaFiscalServico`. |
 | `POST` | `/danfse/pdf/lote` | Gera um PDF local contendo várias notas. |
+| `POST` | `/empresas/{empresaId}/danfse/pdf` | Gera o PDF com logo e opções da empresa. |
+| `POST` | `/empresas/{empresaId}/danfse/pdf/lote` | Gera um lote com a configuração da empresa. |
 | `GET` | `/nfse/{chave}/danfse-oficial` | Baixa o DANFSe disponibilizado pelo webservice. |
 
 O arquivo `OpenAC.Net.NFSe.Nacional.Web.Exemplo.http` contém requisições iniciais. Os objetos DPS e

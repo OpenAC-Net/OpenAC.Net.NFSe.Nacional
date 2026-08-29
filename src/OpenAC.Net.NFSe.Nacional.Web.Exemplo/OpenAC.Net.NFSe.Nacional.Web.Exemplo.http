@@ -17,6 +17,18 @@ Content-Type: application/json
 
 ###
 
+POST {{host}}/empresas/empresa-a/danfse/pdf
+Content-Type: application/json
+
+{
+  "versao": "1.00",
+  "informacoes": {
+    "numeroNFSe": 1
+  }
+}
+
+###
+
 POST {{host}}/nfse/emissoes
 Content-Type: application/json
 

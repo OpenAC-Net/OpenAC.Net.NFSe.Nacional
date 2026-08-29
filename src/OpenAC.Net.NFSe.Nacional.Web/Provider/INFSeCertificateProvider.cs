@@ -1,6 +1,6 @@
 using OpenAC.Net.NFSe.Nacional.Common;
 
-namespace OpenAC.Net.NFSe.Nacional.Web;
+namespace OpenAC.Net.NFSe.Nacional.Web.Provider;
 
 /// <summary>Define o contrato para carregar ou renovar o certificado digital de uma empresa.</summary>
 /// <remarks>A implementação não deve compartilhar configuração mutável de certificado entre empresas.</remarks>

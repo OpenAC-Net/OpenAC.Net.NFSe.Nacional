@@ -1,8 +1,13 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using OpenAC.Net.NFSe.Nacional.DANFSe.PDFSharp.Web;
+using OpenAC.Net.NFSe.Nacional.DANFSe.PDFSharp.Web.Configuration;
+using OpenAC.Net.NFSe.Nacional.DANFSe.PDFSharp.Web.Service;
 using OpenAC.Net.NFSe.Nacional.Web;
+using OpenAC.Net.NFSe.Nacional.Web.Provider;
 
-namespace OpenAC.Net.NFSe.Nacional.DANFSe.PDFSharp.Web;
+// ReSharper disable once CheckNamespace
+namespace Microsoft.Extensions.DependencyInjection;
 
 /// <summary>Extensões para registrar a geração Web do DANFSe no container de serviços.</summary>
 public static class ServiceCollectionExtensions

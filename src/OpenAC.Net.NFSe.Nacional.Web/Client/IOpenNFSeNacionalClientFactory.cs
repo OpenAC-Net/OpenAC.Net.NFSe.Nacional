@@ -1,4 +1,6 @@
-namespace OpenAC.Net.NFSe.Nacional.Web;
+using OpenAC.Net.NFSe.Nacional.Web.Common;
+
+namespace OpenAC.Net.NFSe.Nacional.Web.Client;
 
 /// <summary>Cria clientes de NFS-e com configuração, certificado e pool HTTP isolados por empresa.</summary>
 public interface IOpenNFSeNacionalClientFactory

@@ -1,17 +1,20 @@
 using System.Collections.Concurrent;
 using System.Net;
 using System.Net.Security;
+using System.Runtime.CompilerServices;
 using System.Security.Authentication;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using Microsoft.Extensions.Http;
-using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Http.Resilience;
-using Polly;
+using Microsoft.Extensions.Options;
 using OpenAC.Net.NFSe.Nacional.Common;
-using System.Runtime.CompilerServices;
+using OpenAC.Net.NFSe.Nacional.Web.Accessor;
+using OpenAC.Net.NFSe.Nacional.Web.Common;
+using OpenAC.Net.NFSe.Nacional.Web.Configuration;
+using Polly;
 
-namespace OpenAC.Net.NFSe.Nacional.Web;
+namespace OpenAC.Net.NFSe.Nacional.Web.Transport;
 
 internal sealed record NFSeHttpClientRegistration(X509Certificate2 Certificate, SslProtocols Protocols,
     int Tentativas, TimeSpan IntervaloTentativas);

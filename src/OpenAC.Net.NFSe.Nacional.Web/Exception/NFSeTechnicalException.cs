@@ -1,7 +1,7 @@
-namespace OpenAC.Net.NFSe.Nacional.Web;
+namespace OpenAC.Net.NFSe.Nacional.Web.Exception;
 
 /// <summary>Representa uma falha técnica de transporte ou infraestrutura, distinta de uma rejeição fiscal.</summary>
-public sealed class NFSeTechnicalException : Exception
+public sealed class NFSeTechnicalException : System.Exception
 {
     /// <summary>Operação que falhou.</summary>
     public string Operacao { get; }
@@ -10,6 +10,6 @@ public sealed class NFSeTechnicalException : Exception
     /// <param name="operacao">Nome da operação do cliente que falhou.</param>
     /// <param name="mensagem">Mensagem que descreve a falha técnica.</param>
     /// <param name="excecaoInterna">Exceção original produzida pelo transporte ou pipeline de resiliência.</param>
-    public NFSeTechnicalException(string operacao, string mensagem, Exception excecaoInterna)
+    public NFSeTechnicalException(string operacao, string mensagem, System.Exception excecaoInterna)
         : base(mensagem, excecaoInterna) => Operacao = operacao;
 }

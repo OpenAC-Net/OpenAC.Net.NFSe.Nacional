@@ -1,4 +1,4 @@
-namespace OpenAC.Net.NFSe.Nacional.DANFSe.PDFSharp.Web;
+namespace OpenAC.Net.NFSe.Nacional.DANFSe.PDFSharp.Web.Document;
 
 /// <summary>Representa um DANFSe pronto para ser devolvido por uma aplicação Web.</summary>
 public sealed class DANFSeWebDocument

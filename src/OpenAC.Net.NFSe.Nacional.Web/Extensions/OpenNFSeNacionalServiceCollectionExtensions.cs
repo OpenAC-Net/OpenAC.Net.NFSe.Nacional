@@ -2,8 +2,16 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Http;
 using Microsoft.Extensions.Options;
 using OpenAC.Net.NFSe.Nacional.Common;
+using OpenAC.Net.NFSe.Nacional.Web.Accessor;
+using OpenAC.Net.NFSe.Nacional.Web.Client;
+using OpenAC.Net.NFSe.Nacional.Web.Common;
+using OpenAC.Net.NFSe.Nacional.Web.Configuration;
+using OpenAC.Net.NFSe.Nacional.Web.Provider;
+using OpenAC.Net.NFSe.Nacional.Web.Store;
+using OpenAC.Net.NFSe.Nacional.Web.Transport;
 using OpenAC.Net.NFSe.Nacional.Webservice;
 
+// ReSharper disable once CheckNamespace
 namespace Microsoft.Extensions.DependencyInjection;
 
 /// <summary>Extensões de registro da NFS-e Nacional no container do ASP.NET Core.</summary>
@@ -16,14 +24,14 @@ public static class OpenNFSeNacionalServiceCollectionExtensions
     /// <returns>A mesma coleção de serviços, permitindo encadeamento de chamadas.</returns>
     public static IServiceCollection AddOpenNFSeNacionalWeb(this IServiceCollection services,
         Action<ConfiguracaoNFSe> configure,
-        Action<OpenAC.Net.NFSe.Nacional.Web.OpenNFSeNacionalWebOptions>? configureInfrastructure = null)
+        Action<OpenNFSeNacionalWebOptions>? configureInfrastructure = null)
     {
         ArgumentNullException.ThrowIfNull(services);
         ArgumentNullException.ThrowIfNull(configure);
 
-        var infrastructure = new OpenAC.Net.NFSe.Nacional.Web.OpenNFSeNacionalWebOptions();
+        var infrastructure = new OpenNFSeNacionalWebOptions();
         configureInfrastructure?.Invoke(infrastructure);
-        services.AddOptions<OpenAC.Net.NFSe.Nacional.Web.OpenNFSeNacionalWebOptions>()
+        services.AddOptions<OpenNFSeNacionalWebOptions>()
             .Configure(options =>
             {
                 options.TimeoutOperacao = infrastructure.TimeoutOperacao;
@@ -42,12 +50,12 @@ public static class OpenNFSeNacionalServiceCollectionExtensions
         {
             var configuration = new ConfiguracaoNFSe();
             configure(configuration);
-            serviceProvider.GetRequiredService<OpenAC.Net.NFSe.Nacional.Web.NFSeHttpClientRegistry>()
-                .Bind(configuration, OpenAC.Net.NFSe.Nacional.Web.NFSeTenant.Padrao);
+            serviceProvider.GetRequiredService<NFSeHttpClientRegistry>()
+                .Bind(configuration, NFSeTenant.Padrao);
             return configuration;
         });
-        services.TryAddSingleton<OpenAC.Net.NFSe.Nacional.Web.INFSeConfigurationProvider<ConfiguracaoNFSe>>(
-            new OpenAC.Net.NFSe.Nacional.Web.DefaultNFSeConfigurationProvider<ConfiguracaoNFSe>(() =>
+        services.TryAddSingleton<INFSeConfigurationProvider<ConfiguracaoNFSe>>(
+            new DefaultNFSeConfigurationProvider<ConfiguracaoNFSe>(() =>
             {
                 var configuration = new ConfiguracaoNFSe();
                 configure(configuration);
@@ -65,41 +73,41 @@ public static class OpenNFSeNacionalServiceCollectionExtensions
     /// <returns>A mesma coleção de serviços, permitindo encadeamento de chamadas.</returns>
     public static IServiceCollection AddOpenNFSeNacionalWebMultiTenant<TConfigurationProvider, TCertificateProvider>(
         this IServiceCollection services,
-        Action<OpenAC.Net.NFSe.Nacional.Web.OpenNFSeNacionalWebOptions>? configureInfrastructure = null)
-        where TConfigurationProvider : class, OpenAC.Net.NFSe.Nacional.Web.INFSeConfigurationProvider<ConfiguracaoNFSe>
-        where TCertificateProvider : class, OpenAC.Net.NFSe.Nacional.Web.INFSeCertificateProvider
+        Action<OpenNFSeNacionalWebOptions>? configureInfrastructure = null)
+        where TConfigurationProvider : class, INFSeConfigurationProvider<ConfiguracaoNFSe>
+        where TCertificateProvider : class, INFSeCertificateProvider
     {
         ArgumentNullException.ThrowIfNull(services);
-        var infrastructure = new OpenAC.Net.NFSe.Nacional.Web.OpenNFSeNacionalWebOptions();
+        var infrastructure = new OpenNFSeNacionalWebOptions();
         configureInfrastructure?.Invoke(infrastructure);
-        services.AddOptions<OpenAC.Net.NFSe.Nacional.Web.OpenNFSeNacionalWebOptions>()
+        services.AddOptions<OpenNFSeNacionalWebOptions>()
             .Configure(options => Copy(infrastructure, options));
-        services.TryAddSingleton<OpenAC.Net.NFSe.Nacional.Web.INFSeConfigurationProvider<ConfiguracaoNFSe>,
+        services.TryAddSingleton<INFSeConfigurationProvider<ConfiguracaoNFSe>,
             TConfigurationProvider>();
-        services.TryAddSingleton<OpenAC.Net.NFSe.Nacional.Web.INFSeCertificateProvider, TCertificateProvider>();
+        services.TryAddSingleton<INFSeCertificateProvider, TCertificateProvider>();
         AddCoreServices(services);
-        services.TryAddSingleton<OpenAC.Net.NFSe.Nacional.Web.IOpenNFSeNacionalClientFactory,
-            OpenAC.Net.NFSe.Nacional.Web.OpenNFSeNacionalClientFactory>();
+        services.TryAddSingleton<IOpenNFSeNacionalClientFactory,
+            OpenNFSeNacionalClientFactory>();
         return services;
     }
 
     private static void AddCoreServices(IServiceCollection services)
     {
         services.AddHttpClient();
-        services.TryAddSingleton<OpenAC.Net.NFSe.Nacional.Web.NFSeHttpClientRegistry>();
-        services.TryAddSingleton<OpenAC.Net.NFSe.Nacional.Web.INFSeTenantContextAccessor>(serviceProvider =>
-            serviceProvider.GetRequiredService<OpenAC.Net.NFSe.Nacional.Web.NFSeHttpClientRegistry>());
+        services.TryAddSingleton<NFSeHttpClientRegistry>();
+        services.TryAddSingleton<INFSeTenantContextAccessor>(serviceProvider =>
+            serviceProvider.GetRequiredService<NFSeHttpClientRegistry>());
         services.TryAddEnumerable(ServiceDescriptor.Singleton<IConfigureOptions<HttpClientFactoryOptions>,
-            OpenAC.Net.NFSe.Nacional.Web.NFSeHttpClientOptions>());
+            NFSeHttpClientOptions>());
         services.TryAddSingleton<OpenAC.Net.NFSe.Nacional.Storage.INFSeDocumentStore,
-            OpenAC.Net.NFSe.Nacional.Web.FileSystemNFSeDocumentStore>();
-        services.TryAddSingleton<INFSeHttpTransport, OpenAC.Net.NFSe.Nacional.Web.NFSeHttpTransport>();
+            FileSystemNFSeDocumentStore>();
+        services.TryAddSingleton<INFSeHttpTransport, NFSeHttpTransport>();
         services.TryAddScoped<OpenAC.Net.NFSe.Nacional.IOpenNFSeNacionalClient,
-            OpenAC.Net.NFSe.Nacional.Web.OpenNFSeNacionalWebClient>();
+            OpenNFSeNacionalWebClient>();
     }
 
-    private static void Copy(OpenAC.Net.NFSe.Nacional.Web.OpenNFSeNacionalWebOptions source,
-        OpenAC.Net.NFSe.Nacional.Web.OpenNFSeNacionalWebOptions target)
+    private static void Copy(OpenNFSeNacionalWebOptions source,
+        OpenNFSeNacionalWebOptions target)
     {
         target.TimeoutOperacao = source.TimeoutOperacao;
         target.TimeoutTentativa = source.TimeoutTentativa;

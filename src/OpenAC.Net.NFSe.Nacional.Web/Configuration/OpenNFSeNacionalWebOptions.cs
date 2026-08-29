@@ -1,4 +1,4 @@
-namespace OpenAC.Net.NFSe.Nacional.Web;
+namespace OpenAC.Net.NFSe.Nacional.Web.Configuration;
 
 /// <summary>Configura transporte HTTP, resiliência, certificados e persistência da integração ASP.NET Core.</summary>
 public sealed class OpenNFSeNacionalWebOptions

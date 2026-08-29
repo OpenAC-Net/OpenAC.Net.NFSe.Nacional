@@ -1,26 +1,16 @@
 using Microsoft.Extensions.Logging;
 using OpenAC.Net.NFSe.Nacional.Common;
+using OpenAC.Net.NFSe.Nacional.Web.Provider;
 using OpenAC.Net.NFSe.Nacional.Webservice;
 
-namespace OpenAC.Net.NFSe.Nacional.Web;
+namespace OpenAC.Net.NFSe.Nacional.Web.Transport;
 
 /// <summary>
 /// Transporte web apoiado integralmente pelo <see cref="IHttpClientFactory"/>.
 /// </summary>
-internal sealed class NFSeHttpTransport : INFSeHttpTransport
+internal sealed class NFSeHttpTransport(IHttpClientFactory httpClientFactory, NFSeHttpClientRegistry registry,
+    ILogger<NFSeHttpTransport> logger) : INFSeHttpTransport
 {
-    private readonly IHttpClientFactory httpClientFactory;
-    private readonly NFSeHttpClientRegistry registry;
-    private readonly ILogger<NFSeHttpTransport> logger;
-
-    public NFSeHttpTransport(IHttpClientFactory httpClientFactory, NFSeHttpClientRegistry registry,
-        ILogger<NFSeHttpTransport> logger)
-    {
-        this.httpClientFactory = httpClientFactory;
-        this.registry = registry;
-        this.logger = logger;
-    }
-
     public Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, ConfiguracaoNFSe configuracao,
         CancellationToken cancellationToken = default)
     {
