@@ -4,6 +4,7 @@ using System.IO;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Xml.Schema;
 using OpenAC.Net.Core.Logging;
@@ -11,6 +12,7 @@ using OpenAC.Net.DFe.Core;
 using OpenAC.Net.NFSe.Nacional.Common;
 using OpenAC.Net.NFSe.Nacional.Common.Model;
 using OpenAC.Net.NFSe.Nacional.Common.Types;
+using OpenAC.Net.NFSe.Nacional.Storage;
 
 namespace OpenAC.Net.NFSe.Nacional.Webservice;
 
@@ -52,10 +54,15 @@ public abstract class NFSeWebserviceBase : IOpenLog
     /// </summary>
     /// <param name="configuracaoNFSe">Configuração da NFSe.</param>
     /// <param name="serviceInfo"></param>
-    protected NFSeWebserviceBase(ConfiguracaoNFSe configuracaoNFSe, NFSeServiceInfo serviceInfo)
+    /// <param name="httpTransport">Transporte HTTP fornecido pelo host ou <see langword="null"/> para usar o transporte desktop.</param>
+    /// <param name="documentStore">Armazenamento de documentos fornecido pelo host ou <see langword="null"/> para usar o armazenamento desktop.</param>
+    protected NFSeWebserviceBase(ConfiguracaoNFSe configuracaoNFSe, NFSeServiceInfo serviceInfo,
+        INFSeHttpTransport? httpTransport = null, INFSeDocumentStore? documentStore = null)
     {
         Configuracao = configuracaoNFSe;
         ServiceInfo = serviceInfo;
+        HttpTransport = httpTransport ?? DesktopNFSeHttpTransport.Instance;
+        DocumentStore = documentStore ?? DesktopNFSeDocumentStore.Instancia;
     }
 
     #endregion Constructors
@@ -72,93 +79,136 @@ public abstract class NFSeWebserviceBase : IOpenLog
     /// </summary>
     public NFSeServiceInfo ServiceInfo { get; }
 
+    /// <summary>
+    /// Transporte HTTP fornecido pelo host. Quando nulo, mantém o transporte legado para aplicações desktop.
+    /// </summary>
+    protected INFSeHttpTransport HttpTransport { get; }
+
+    /// <summary>Obtém o armazenamento usado para persistir payloads técnicos e documentos fiscais.</summary>
+    protected internal INFSeDocumentStore DocumentStore { get; internal set; }
+
     #endregion Properties
 
     #region Methods
+
+    // Sobrecargas mantidas para compatibilidade com consumidores desktop existentes.
+    /// <inheritdoc cref="DownloadDANFSeAsync(string, CancellationToken)" />
+    public virtual Task<byte[]> DownloadDANFSeAsync(string chave) => DownloadDANFSeAsync(chave, CancellationToken.None);
+    /// <inheritdoc cref="ConsultaNsuAsync(int, CancellationToken)" />
+    public virtual Task<NFSeResponse<RespostaConsultaDFe>> ConsultaNsuAsync(int nsu) => ConsultaNsuAsync(nsu, CancellationToken.None);
+    /// <inheritdoc cref="ConsultaChaveAsync(string, CancellationToken)" />
+    public virtual Task<NFSeResponse<RespostaConsultaDFe>> ConsultaChaveAsync(string chave) => ConsultaChaveAsync(chave, CancellationToken.None);
+    /// <inheritdoc cref="ConsultaChaveDpsAsync(string, CancellationToken)" />
+    public virtual Task<NFSeResponse<RespostaConsultaChaveDps>> ConsultaChaveDpsAsync(string id) => ConsultaChaveDpsAsync(id, CancellationToken.None);
+    /// <inheritdoc cref="ConsultaExisteDpsAsync(string, CancellationToken)" />
+    public virtual Task<bool> ConsultaExisteDpsAsync(string id) => ConsultaExisteDpsAsync(id, CancellationToken.None);
+    /// <inheritdoc cref="EnviarEventoAsync(PedidoRegistroEvento, CancellationToken)" />
+    public virtual Task<NFSeResponse<RespostaEnvioEvento>> EnviarEventoAsync(PedidoRegistroEvento evento) => EnviarEventoAsync(evento, CancellationToken.None);
+    /// <inheritdoc cref="EnviarAsync(Dps, CancellationToken)" />
+    public virtual Task<NFSeResponse<RespostaEnvioDps>> EnviarAsync(Dps dps) => EnviarAsync(dps, CancellationToken.None);
+    /// <inheritdoc cref="EnviarLoteAsync(LoteDps, CancellationToken)" />
+    public virtual Task<NFSeResponse<RespostaRecepcaoLote>> EnviarLoteAsync(LoteDps lote) => EnviarLoteAsync(lote, CancellationToken.None);
+    /// <inheritdoc cref="EnviarLoteSincronoAsync(LoteDps, CancellationToken)" />
+    public virtual Task<NFSeResponse<RespostaRecepcaoLoteSincrono>> EnviarLoteSincronoAsync(LoteDps lote) => EnviarLoteSincronoAsync(lote, CancellationToken.None);
+    /// <inheritdoc cref="ConsultarLoteAsync(ConsultaLoteFiltro, CancellationToken)" />
+    public virtual Task<NFSeResponse<RespostaConsultaLote>> ConsultarLoteAsync(ConsultaLoteFiltro filtro) => ConsultarLoteAsync(filtro, CancellationToken.None);
+    /// <inheritdoc cref="ConsultarNFSeAsync(ConsultaNFSeFiltro, CancellationToken)" />
+    public virtual Task<NFSeResponse<RespostaConsultaNFSe>> ConsultarNFSeAsync(ConsultaNFSeFiltro filtro) => ConsultarNFSeAsync(filtro, CancellationToken.None);
 
     /// <summary>
     /// Retorna o DANFSe de uma NFS-e a partir de sua chave de acesso.
     /// </summary>
     /// <param name="chave">Chave de acesso da NFS-e.</param>
+    /// <param name="cancellationToken">Token para cancelar a operação assíncrona.</param>
     /// <returns>Array de bytes contendo o DANFSe.</returns>
-    public abstract Task<byte[]> DownloadDANFSeAsync(string chave);
+    public abstract Task<byte[]> DownloadDANFSeAsync(string chave, CancellationToken cancellationToken);
 
     /// <summary>
     /// Distribui os DF-e para contribuintes relacionados à NFS-e.
     /// </summary>
     /// <param name="nsu">Número NSU.</param>
+    /// <param name="cancellationToken">Token para cancelar a operação assíncrona.</param>
     /// <returns>Resposta da consulta contendo os DF-e.</returns>
-    public abstract Task<NFSeResponse<RespostaConsultaDFe>> ConsultaNsuAsync(int nsu);
+    public abstract Task<NFSeResponse<RespostaConsultaDFe>> ConsultaNsuAsync(int nsu, CancellationToken cancellationToken);
 
     /// <summary>
     /// Distribui os DF-e vinculados à chave de acesso informada.
     /// </summary>
     /// <param name="chave">Chave de acesso da NFS-e.</param>
+    /// <param name="cancellationToken">Token para cancelar a operação assíncrona.</param>
     /// <returns>Resposta da consulta contendo os DF-e.</returns>
-    public abstract Task<NFSeResponse<RespostaConsultaDFe>> ConsultaChaveAsync(string chave);
+    public abstract Task<NFSeResponse<RespostaConsultaDFe>> ConsultaChaveAsync(string chave, CancellationToken cancellationToken);
 
     /// <summary>
     /// Retorna a chave de acesso da NFS-e a partir do identificador do DPS.
     /// </summary>
     /// <param name="id">Identificação do DPS.</param>
+    /// <param name="cancellationToken">Token para cancelar a operação assíncrona.</param>
     /// <returns>Resposta da consulta contendo a chave de acesso.</returns>
-    public abstract Task<NFSeResponse<RespostaConsultaChaveDps>> ConsultaChaveDpsAsync(string id);
+    public abstract Task<NFSeResponse<RespostaConsultaChaveDps>> ConsultaChaveDpsAsync(string id, CancellationToken cancellationToken);
 
     /// <summary>
     /// Verifica se uma NFS-e foi emitida a partir do Id do DPS.
     /// </summary>
     /// <param name="id">Identificação do DPS.</param>
+    /// <param name="cancellationToken">Token para cancelar a operação assíncrona.</param>
     /// <returns>True se existir, caso contrário false.</returns>
-    public abstract Task<bool> ConsultaExisteDpsAsync(string id);
+    public abstract Task<bool> ConsultaExisteDpsAsync(string id, CancellationToken cancellationToken);
 
     /// <summary>
     /// Recepciona o Pedido de Registro de Evento e gera Eventos de NFS-e, crédito, débito e apuração.
     /// </summary>
     /// <param name="evento">Evento a ser enviado.</param>
+    /// <param name="cancellationToken">Token para cancelar a operação assíncrona.</param>
     /// <returns>Resposta do envio do evento.</returns>
-    public abstract Task<NFSeResponse<RespostaEnvioEvento>> EnviarEventoAsync(PedidoRegistroEvento evento);
+    public abstract Task<NFSeResponse<RespostaEnvioEvento>> EnviarEventoAsync(PedidoRegistroEvento evento, CancellationToken cancellationToken);
 
     /// <summary>
     /// Recepciona a DPS e gera a NFS-e de forma síncrona.
     /// </summary>
     /// <param name="dps">DPS a ser enviada.</param>
+    /// <param name="cancellationToken">Token para cancelar a operação assíncrona.</param>
     /// <returns>Resposta do envio da DPS.</returns>
-    public abstract Task<NFSeResponse<RespostaEnvioDps>> EnviarAsync(Dps dps);
+    public abstract Task<NFSeResponse<RespostaEnvioDps>> EnviarAsync(Dps dps, CancellationToken cancellationToken);
 
     /// <summary>
     /// Recepciona um lote de DPS de forma assíncrona, retornando o protocolo para acompanhamento.
     /// </summary>
     /// <param name="lote">Lote de DPS a ser enviado.</param>
+    /// <param name="cancellationToken">Token para cancelar a operação assíncrona.</param>
     /// <returns>Resposta contendo o protocolo do lote.</returns>
     /// <remarks>Suportado apenas por provedores que expõem envio em lote (ex.: Fiorilli).</remarks>
-    public virtual Task<NFSeResponse<RespostaRecepcaoLote>> EnviarLoteAsync(LoteDps lote) =>
+    public virtual Task<NFSeResponse<RespostaRecepcaoLote>> EnviarLoteAsync(LoteDps lote, CancellationToken cancellationToken) =>
         throw OperacaoNaoSuportada(nameof(EnviarLoteAsync));
 
     /// <summary>
     /// Recepciona um lote de DPS de forma síncrona, retornando as NFS-e geradas.
     /// </summary>
     /// <param name="lote">Lote de DPS a ser enviado.</param>
+    /// <param name="cancellationToken">Token para cancelar a operação assíncrona.</param>
     /// <returns>Resposta contendo o protocolo e as NFS-e geradas.</returns>
     /// <remarks>Suportado apenas por provedores que expõem envio em lote síncrono (ex.: Fiorilli).</remarks>
-    public virtual Task<NFSeResponse<RespostaRecepcaoLoteSincrono>> EnviarLoteSincronoAsync(LoteDps lote) =>
+    public virtual Task<NFSeResponse<RespostaRecepcaoLoteSincrono>> EnviarLoteSincronoAsync(LoteDps lote, CancellationToken cancellationToken) =>
         throw OperacaoNaoSuportada(nameof(EnviarLoteSincronoAsync));
 
     /// <summary>
     /// Consulta o resultado do processamento de um lote de DPS a partir do protocolo.
     /// </summary>
     /// <param name="filtro">Filtro contendo o protocolo e a identificação do transmissor.</param>
+    /// <param name="cancellationToken">Token para cancelar a operação assíncrona.</param>
     /// <returns>Resposta contendo a situação e as NFS-e do lote.</returns>
     /// <remarks>Suportado apenas por provedores que expõem consulta de lote (ex.: Fiorilli).</remarks>
-    public virtual Task<NFSeResponse<RespostaConsultaLote>> ConsultarLoteAsync(ConsultaLoteFiltro filtro) =>
+    public virtual Task<NFSeResponse<RespostaConsultaLote>> ConsultarLoteAsync(ConsultaLoteFiltro filtro, CancellationToken cancellationToken) =>
         throw OperacaoNaoSuportada(nameof(ConsultarLoteAsync));
 
     /// <summary>
     /// Consulta NFS-e por chave, Id do DPS ou número/série do DPS.
     /// </summary>
     /// <param name="filtro">Filtro da consulta.</param>
+    /// <param name="cancellationToken">Token para cancelar a operação assíncrona.</param>
     /// <returns>Resposta contendo as NFS-e encontradas.</returns>
     /// <remarks>Suportado apenas por provedores que expõem consulta de NFS-e (ex.: Fiorilli).</remarks>
-    public virtual Task<NFSeResponse<RespostaConsultaNFSe>> ConsultarNFSeAsync(ConsultaNFSeFiltro filtro) =>
+    public virtual Task<NFSeResponse<RespostaConsultaNFSe>> ConsultarNFSeAsync(ConsultaNFSeFiltro filtro, CancellationToken cancellationToken) =>
         throw OperacaoNaoSuportada(nameof(ConsultarNFSeAsync));
 
     /// <summary>
@@ -176,18 +226,12 @@ public abstract class NFSeWebserviceBase : IOpenLog
     /// <param name="method">Método HTTP.</param>
     /// <param name="url">URL do serviço.</param>
     /// <param name="headers">Cabeçalhos adicionais a serem incluídos na requisição (ex.: SOAPAction).</param>
+    /// <param name="cancellationToken">Token para cancelar o envio da requisição.</param>
     /// <returns>Resposta HTTP.</returns>
     protected virtual async Task<HttpResponseMessage> SendAsync(HttpContent? content, HttpMethod method, string url,
-        IEnumerable<KeyValuePair<string, string>>? headers = null)
+        IEnumerable<KeyValuePair<string, string>>? headers = null, CancellationToken cancellationToken = default)
     {
-        var handler = new HttpClientHandler();
-
-        //handler.SslProtocols = (SslProtocols)Configuracao.WebServices.Protocolos;
-
-        handler.ClientCertificates.Add(Configuracao.Certificados.ObterCertificado());
-        var client = new HttpClient(handler);
-
-        var request = new HttpRequestMessage(method, url);
+        using var request = new HttpRequestMessage(method, url);
 
         var assemblyName = GetType().Assembly.GetName();
         var productValue = new ProductInfoHeaderValue("OpenAC.Net.NFSe.Nacional", assemblyName!.Version!.ToString());
@@ -202,7 +246,7 @@ public abstract class NFSeWebserviceBase : IOpenLog
 
         request.Content = content;
 
-        return await client.SendAsync(request);
+        return await HttpTransport.SendAsync(request, Configuracao, cancellationToken).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -261,11 +305,13 @@ public abstract class NFSeWebserviceBase : IOpenLog
     /// <param name="documento">Documento do prestador.</param>
     /// <param name="data">Data de emissão.</param>
     /// <param name="incrementarNome">Indica se o nome do arquivo deve ser incrementado caso já exista.</param>
-    protected virtual void GravarDpsEmDisco(string conteudoArquivo, string nomeArquivo, string? documento, DateTime data, bool incrementarNome = false)
+    /// <param name="cancellationToken">Token para cancelar a gravação.</param>
+    protected virtual Task GravarDpsEmDiscoAsync(string conteudoArquivo, string nomeArquivo, string? documento,
+        DateTime data, bool incrementarNome = false, CancellationToken cancellationToken = default)
     {
-        if (Configuracao.Arquivos.Salvar == false) return;
-
-        GravarArquivoEmDisco(TipoArquivo.Rps, conteudoArquivo, nomeArquivo, documento, data, incrementarNome);
+        if (!Configuracao.Arquivos.Salvar) return Task.CompletedTask;
+        return DocumentStore.SaveAsync(new NFSeDocument(NFSeDocumentType.Dps, conteudoArquivo, nomeArquivo,
+            documento, data, incrementarNome), Configuracao, cancellationToken);
     }
 
     /// <summary>
@@ -276,11 +322,13 @@ public abstract class NFSeWebserviceBase : IOpenLog
     /// <param name="documento">Documento do prestador.</param>
     /// <param name="data">Data de emissão.</param>
     /// <param name="incrementarNome">Indica se o nome do arquivo deve ser incrementado caso já exista.</param>
-    protected virtual void GravarNFSeEmDisco(string conteudoArquivo, string nomeArquivo, string? documento, DateTime data, bool incrementarNome = false)
+    /// <param name="cancellationToken">Token para cancelar a gravação.</param>
+    protected virtual Task GravarNFSeEmDiscoAsync(string conteudoArquivo, string nomeArquivo, string? documento,
+        DateTime data, bool incrementarNome = false, CancellationToken cancellationToken = default)
     {
-        if (Configuracao.Arquivos.Salvar == false) return;
-
-        GravarArquivoEmDisco(TipoArquivo.NFSe, conteudoArquivo, nomeArquivo, documento, data, incrementarNome);
+        if (!Configuracao.Arquivos.Salvar) return Task.CompletedTask;
+        return DocumentStore.SaveAsync(new NFSeDocument(NFSeDocumentType.NFSe, conteudoArquivo, nomeArquivo,
+            documento, data, incrementarNome), Configuracao, cancellationToken);
     }
 
     /// <summary>
@@ -289,64 +337,16 @@ public abstract class NFSeWebserviceBase : IOpenLog
     /// <param name="conteudoArquivo">Conteúdo do arquivo.</param>
     /// <param name="nomeArquivo">Nome do arquivo.</param>
     /// <param name="documento">Documento do prestador.</param>
-    protected virtual void GravarArquivoEmDisco(string conteudoArquivo, string nomeArquivo, string? documento)
+    /// <param name="cancellationToken">Token para cancelar a gravação.</param>
+    protected virtual Task GravarArquivoEmDiscoAsync(string conteudoArquivo, string nomeArquivo, string? documento,
+        CancellationToken cancellationToken = default)
     {
-        if (!Configuracao.Geral.Salvar) return;
-
-        GravarArquivoEmDisco(TipoArquivo.Webservice, conteudoArquivo, nomeArquivo, documento);
-    }
-
-    /// <summary>
-    /// Grava o arquivo no disco conforme o tipo especificado.
-    /// </summary>
-    /// <param name="tipo">Tipo do arquivo.</param>
-    /// <param name="conteudoArquivo">Conteúdo do arquivo.</param>
-    /// <param name="nomeArquivo">Nome do arquivo.</param>
-    /// <param name="documento">Documento do prestador.</param>
-    /// <param name="data">Data de emissão (opcional).</param>
-    /// <param name="incrementarNome">
-    /// Indica se o nome do arquivo deve ser incrementado caso já exista,
-    /// adicionando um sufixo numérico (_1, _2, etc.) para evitar sobrescrita.
-    /// </param>
-    protected virtual void GravarArquivoEmDisco(TipoArquivo tipo, string conteudoArquivo, string nomeArquivo, string? documento, DateTime? data = null, bool incrementarNome = false)
-    {
-        var diretorio = tipo switch
-        {
-            TipoArquivo.Webservice => Path.Combine(Configuracao.Arquivos.GetPathEnvio(data ?? DateTime.Today, documento ?? string.Empty)),
-            TipoArquivo.Rps => Path.Combine(Configuracao.Arquivos.GetPathDps(data ?? DateTime.Today, documento ?? string.Empty)),
-            TipoArquivo.NFSe => Path.Combine(Configuracao.Arquivos.GetPathNFSe(data ?? DateTime.Today, documento ?? string.Empty)),
-            _ => throw new ArgumentOutOfRangeException(nameof(tipo), tipo, null)
-        };
-
-        var caminhoFinal = !incrementarNome ? GerarPathUnico(diretorio, nomeArquivo) : Path.Combine(diretorio, nomeArquivo);
-
-        File.WriteAllText(caminhoFinal, conteudoArquivo, Encoding.UTF8);
-    }
-
-    /// <summary>
-    /// Verifica se o arquivo já existe antes de escrever, e incrementa um sufixo numérico caso exista.
-    /// </summary>
-    /// <param name="diretorio">Diretório onde o arquivo será salvo.</param>
-    /// <param name="nomeArquivo">Nome do arquivo.</param>
-    private static string GerarPathUnico(string diretorio, string nomeArquivo)
-    {
-        var caminho = Path.Combine(diretorio, nomeArquivo);
-
-        if (!File.Exists(caminho))
-            return caminho;
-
-        var semExtensao = Path.GetFileNameWithoutExtension(nomeArquivo);
-        var extensao = Path.GetExtension(nomeArquivo);
-        var contador = 1;
-
-        do
-        {
-            var novoNome = $"{semExtensao}_{contador++}{extensao}";
-            caminho = Path.Combine(diretorio, novoNome);
-        }
-        while (File.Exists(caminho));
-
-        return caminho;
+        if (!Configuracao.Geral.Salvar) return Task.CompletedTask;
+        var type = nomeArquivo.Contains("-resp.", StringComparison.OrdinalIgnoreCase)
+            ? NFSeDocumentType.RespostaTecnica
+            : NFSeDocumentType.SolicitacaoTecnica;
+        return DocumentStore.SaveAsync(new NFSeDocument(type, conteudoArquivo, nomeArquivo, documento,
+            DateTime.Today), Configuracao, cancellationToken);
     }
 
     #endregion Methods

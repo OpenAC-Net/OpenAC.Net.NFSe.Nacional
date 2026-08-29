@@ -1,0 +1,41 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>net8.0;net9.0;net10.0</TargetFrameworks>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <LangVersion>latest</LangVersion>
+    <AssemblyName>OpenAC.Net.NFSe.Nacional.DANFSe.PDFSharp.Web</AssemblyName>
+    <RootNamespace>OpenAC.Net.NFSe.Nacional.DANFSe.PDFSharp.Web</RootNamespace>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageId>OpenAC.Net.NFSe.Nacional.DANFSe.PDFSharp.Web</PackageId>
+    <Version>1.0.0</Version>
+    <Authors>Projeto OpenAC .Net</Authors>
+    <Company>OpenAC .Net - Automação Comercial em .Net</Company>
+    <Copyright>Copyright © Projeto OpenAC .Net 2014 - 2026</Copyright>
+    <Description>Integração ASP.NET Core para geração de DANFSe Nacional em PDF com PDFSharp.</Description>
+    <PackageTags>OpenAC.Net NFSe Nacional DANFSe PDFSharp ASP.NET Core Web</PackageTags>
+    <PackageProjectUrl>https://openac.net.br/</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/OpenAC-Net/OpenAC.Net.NFSe.Nacional</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageIcon>nuget.png</PackageIcon>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>..\OpenAC.Net.NFSe.Nacional.DANFSe.PDFSharp\OpenAC.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+    <ProjectReference Include="..\OpenAC.Net.NFSe.Nacional.DANFSe.PDFSharp\OpenAC.Net.NFSe.Nacional.DANFSe.PDFSharp.csproj" />
+    <ProjectReference Include="..\OpenAC.Net.NFSe.Nacional.Web\OpenAC.Net.NFSe.Nacional.Web.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\..\LICENSE" Pack="true" PackagePath="/" />
+    <None Include="..\..\nuget.png" Pack="true" PackagePath="/" Link="nuget.png" />
+    <None Include="README.md" Pack="true" PackagePath="/" />
+  </ItemGroup>
+
+</Project>

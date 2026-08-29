@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFrameworks>net8.0;net9.0;net10.0</TargetFrameworks>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <PackageId>OpenAC.Net.NFSe.Nacional.Web</PackageId>
+    <Description>Integração da OpenAC.Net.NFSe.Nacional com DI, logging e serviços do ASP.NET Core.</Description>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\OpenAC.Net.NFSe.Nacional\OpenAC.Net.NFSe.Nacional.csproj" />
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+    <PackageReference Include="Microsoft.Extensions.Http.Resilience" Version="10.9.0" />
+  </ItemGroup>
+</Project>

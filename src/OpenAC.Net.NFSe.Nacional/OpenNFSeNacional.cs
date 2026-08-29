@@ -31,6 +31,7 @@
 
 using System;
 using System.Net;
+using System.Threading;
 using System.Threading.Tasks;
 using OpenAC.Net.Core.Logging;
 using OpenAC.Net.NFSe.Nacional.Common;
@@ -42,7 +43,7 @@ namespace OpenAC.Net.NFSe.Nacional;
 /// <summary>
 /// Classe principal para integração com a NFS-e Nacional.
 /// </summary>
-public sealed class OpenNFSeNacional : IOpenLog
+public sealed class OpenNFSeNacional : IOpenNFSeNacionalClient, IOpenLog
 {
     #region Properties
 
@@ -60,7 +61,8 @@ public sealed class OpenNFSeNacional : IOpenLog
     /// </summary>
     /// <param name="dps">Objeto <see cref="Dps"/> a ser enviado.</param>
     /// <returns>Resposta do envio contendo informações da NFS-e gerada.</returns>
-    public Task<NFSeResponse<RespostaEnvioDps>> EnviarAsync(Dps dps)
+    /// <param name="cancellationToken">Token para cancelar a operação assíncrona.</param>
+    public Task<NFSeResponse<RespostaEnvioDps>> EnviarAsync(Dps dps, CancellationToken cancellationToken = default)
     {
         var provider = NFSeServiceManager.Instance.GetProvider(Configuracoes);
         var oldProtocol = ServicePointManager.SecurityProtocol;
@@ -68,7 +70,7 @@ public sealed class OpenNFSeNacional : IOpenLog
         try
         {
             ServicePointManager.SecurityProtocol = Configuracoes.WebServices.Protocolos;
-            return provider.EnviarAsync(dps);
+            return provider.EnviarAsync(dps, cancellationToken);
         }
         catch (Exception exception)
         {
@@ -86,7 +88,8 @@ public sealed class OpenNFSeNacional : IOpenLog
     /// </summary>
     /// <param name="evento">Objeto <see cref="PedidoRegistroEvento"/> representando o evento.</param>
     /// <returns>Resposta do envio do evento.</returns>
-    public Task<NFSeResponse<RespostaEnvioEvento>> EnviarEventoAsync(PedidoRegistroEvento evento)
+    /// <param name="cancellationToken">Token para cancelar a operação assíncrona.</param>
+    public Task<NFSeResponse<RespostaEnvioEvento>> EnviarEventoAsync(PedidoRegistroEvento evento, CancellationToken cancellationToken = default)
     {
         var provider = NFSeServiceManager.Instance.GetProvider(Configuracoes);
         var oldProtocol = ServicePointManager.SecurityProtocol;
@@ -94,7 +97,7 @@ public sealed class OpenNFSeNacional : IOpenLog
         try
         {
             ServicePointManager.SecurityProtocol = Configuracoes.WebServices.Protocolos;
-            return provider.EnviarEventoAsync(evento);
+            return provider.EnviarEventoAsync(evento, cancellationToken);
         }
         catch (Exception exception)
         {
@@ -112,7 +115,8 @@ public sealed class OpenNFSeNacional : IOpenLog
     /// </summary>
     /// <param name="nsu">Número do NSU.</param>
     /// <returns>Dados da consulta dos DF-e.</returns>
-    public Task<NFSeResponse<RespostaConsultaDFe>> ConsultaNsuAsync(int nsu)
+    /// <param name="cancellationToken">Token para cancelar a operação assíncrona.</param>
+    public Task<NFSeResponse<RespostaConsultaDFe>> ConsultaNsuAsync(int nsu, CancellationToken cancellationToken = default)
     {
         var provider = NFSeServiceManager.Instance.GetProvider(Configuracoes);
         var oldProtocol = ServicePointManager.SecurityProtocol;
@@ -120,7 +124,7 @@ public sealed class OpenNFSeNacional : IOpenLog
         try
         {
             ServicePointManager.SecurityProtocol = Configuracoes.WebServices.Protocolos;
-            return provider.ConsultaNsuAsync(nsu);
+            return provider.ConsultaNsuAsync(nsu, cancellationToken);
         }
         catch (Exception exception)
         {
@@ -138,7 +142,8 @@ public sealed class OpenNFSeNacional : IOpenLog
     /// </summary>
     /// <param name="chave">Chave de acesso da NFS-e.</param>
     /// <returns>Dados da consulta dos DF-e.</returns>
-    public Task<NFSeResponse<RespostaConsultaDFe>> ConsultaChaveAsync(string chave)
+    /// <param name="cancellationToken">Token para cancelar a operação assíncrona.</param>
+    public Task<NFSeResponse<RespostaConsultaDFe>> ConsultaChaveAsync(string chave, CancellationToken cancellationToken = default)
     {
         var provider = NFSeServiceManager.Instance.GetProvider(Configuracoes);
         var oldProtocol = ServicePointManager.SecurityProtocol;
@@ -146,7 +151,7 @@ public sealed class OpenNFSeNacional : IOpenLog
         try
         {
             ServicePointManager.SecurityProtocol = Configuracoes.WebServices.Protocolos;
-            return provider.ConsultaChaveAsync(chave);
+            return provider.ConsultaChaveAsync(chave, cancellationToken);
         }
         catch (Exception exception)
         {
@@ -164,7 +169,8 @@ public sealed class OpenNFSeNacional : IOpenLog
     /// </summary>
     /// <param name="chave">Chave de acesso da NFS-e.</param>
     /// <returns>Array de bytes contendo o DANFSe.</returns>
-    public Task<byte[]> DownloadDANFSeAsync(string chave)
+    /// <param name="cancellationToken">Token para cancelar a operação assíncrona.</param>
+    public Task<byte[]> DownloadDANFSeAsync(string chave, CancellationToken cancellationToken = default)
     {
         var provider = NFSeServiceManager.Instance.GetProvider(Configuracoes);
         var oldProtocol = ServicePointManager.SecurityProtocol;
@@ -172,7 +178,7 @@ public sealed class OpenNFSeNacional : IOpenLog
         try
         {
             ServicePointManager.SecurityProtocol = Configuracoes.WebServices.Protocolos;
-            return provider.DownloadDANFSeAsync(chave);
+            return provider.DownloadDANFSeAsync(chave, cancellationToken);
         }
         catch (Exception exception)
         {
@@ -190,7 +196,8 @@ public sealed class OpenNFSeNacional : IOpenLog
     /// </summary>
     /// <param name="id">Identificação da DPS.</param>
     /// <returns>Dados da consulta da chave de acesso.</returns>
-    public Task<NFSeResponse<RespostaConsultaChaveDps>> ConsultaChaveDpsAsync(string id)
+    /// <param name="cancellationToken">Token para cancelar a operação assíncrona.</param>
+    public Task<NFSeResponse<RespostaConsultaChaveDps>> ConsultaChaveDpsAsync(string id, CancellationToken cancellationToken = default)
     {
         var provider = NFSeServiceManager.Instance.GetProvider(Configuracoes);
         var oldProtocol = ServicePointManager.SecurityProtocol;
@@ -198,7 +205,7 @@ public sealed class OpenNFSeNacional : IOpenLog
         try
         {
             ServicePointManager.SecurityProtocol = Configuracoes.WebServices.Protocolos;
-            return provider.ConsultaChaveDpsAsync(id);
+            return provider.ConsultaChaveDpsAsync(id, cancellationToken);
         }
         catch (Exception exception)
         {
@@ -216,7 +223,8 @@ public sealed class OpenNFSeNacional : IOpenLog
     /// </summary>
     /// <param name="id">Identificação da DPS.</param>
     /// <returns>True se a NFS-e existe, caso contrário, false.</returns>
-    public Task<bool> ConsultaExisteDpsAsync(string id)
+    /// <param name="cancellationToken">Token para cancelar a operação assíncrona.</param>
+    public Task<bool> ConsultaExisteDpsAsync(string id, CancellationToken cancellationToken = default)
     {
         var provider = NFSeServiceManager.Instance.GetProvider(Configuracoes);
         var oldProtocol = ServicePointManager.SecurityProtocol;
@@ -224,7 +232,7 @@ public sealed class OpenNFSeNacional : IOpenLog
         try
         {
             ServicePointManager.SecurityProtocol = Configuracoes.WebServices.Protocolos;
-            return provider.ConsultaExisteDpsAsync(id);
+            return provider.ConsultaExisteDpsAsync(id, cancellationToken);
         }
         catch (Exception exception)
         {
@@ -243,7 +251,8 @@ public sealed class OpenNFSeNacional : IOpenLog
     /// <param name="lote">Lote de DPS a ser enviado.</param>
     /// <returns>Resposta contendo o protocolo do lote.</returns>
     /// <remarks>Suportado apenas por provedores que expõem envio em lote (ex.: Fiorilli).</remarks>
-    public Task<NFSeResponse<RespostaRecepcaoLote>> EnviarLoteAsync(LoteDps lote)
+    /// <param name="cancellationToken">Token para cancelar a operação assíncrona.</param>
+    public Task<NFSeResponse<RespostaRecepcaoLote>> EnviarLoteAsync(LoteDps lote, CancellationToken cancellationToken = default)
     {
         var provider = NFSeServiceManager.Instance.GetProvider(Configuracoes);
         var oldProtocol = ServicePointManager.SecurityProtocol;
@@ -251,7 +260,7 @@ public sealed class OpenNFSeNacional : IOpenLog
         try
         {
             ServicePointManager.SecurityProtocol = Configuracoes.WebServices.Protocolos;
-            return provider.EnviarLoteAsync(lote);
+            return provider.EnviarLoteAsync(lote, cancellationToken);
         }
         catch (Exception exception)
         {
@@ -270,7 +279,8 @@ public sealed class OpenNFSeNacional : IOpenLog
     /// <param name="lote">Lote de DPS a ser enviado.</param>
     /// <returns>Resposta contendo o protocolo e as NFS-e geradas.</returns>
     /// <remarks>Suportado apenas por provedores que expõem envio em lote síncrono (ex.: Fiorilli).</remarks>
-    public Task<NFSeResponse<RespostaRecepcaoLoteSincrono>> EnviarLoteSincronoAsync(LoteDps lote)
+    /// <param name="cancellationToken">Token para cancelar a operação assíncrona.</param>
+    public Task<NFSeResponse<RespostaRecepcaoLoteSincrono>> EnviarLoteSincronoAsync(LoteDps lote, CancellationToken cancellationToken = default)
     {
         var provider = NFSeServiceManager.Instance.GetProvider(Configuracoes);
         var oldProtocol = ServicePointManager.SecurityProtocol;
@@ -278,7 +288,7 @@ public sealed class OpenNFSeNacional : IOpenLog
         try
         {
             ServicePointManager.SecurityProtocol = Configuracoes.WebServices.Protocolos;
-            return provider.EnviarLoteSincronoAsync(lote);
+            return provider.EnviarLoteSincronoAsync(lote, cancellationToken);
         }
         catch (Exception exception)
         {
@@ -297,7 +307,8 @@ public sealed class OpenNFSeNacional : IOpenLog
     /// <param name="filtro">Filtro com o protocolo e a identificação do transmissor.</param>
     /// <returns>Resposta contendo a situação e as NFS-e do lote.</returns>
     /// <remarks>Suportado apenas por provedores que expõem consulta de lote (ex.: Fiorilli).</remarks>
-    public Task<NFSeResponse<RespostaConsultaLote>> ConsultarLoteAsync(ConsultaLoteFiltro filtro)
+    /// <param name="cancellationToken">Token para cancelar a operação assíncrona.</param>
+    public Task<NFSeResponse<RespostaConsultaLote>> ConsultarLoteAsync(ConsultaLoteFiltro filtro, CancellationToken cancellationToken = default)
     {
         var provider = NFSeServiceManager.Instance.GetProvider(Configuracoes);
         var oldProtocol = ServicePointManager.SecurityProtocol;
@@ -305,7 +316,7 @@ public sealed class OpenNFSeNacional : IOpenLog
         try
         {
             ServicePointManager.SecurityProtocol = Configuracoes.WebServices.Protocolos;
-            return provider.ConsultarLoteAsync(filtro);
+            return provider.ConsultarLoteAsync(filtro, cancellationToken);
         }
         catch (Exception exception)
         {
@@ -324,7 +335,8 @@ public sealed class OpenNFSeNacional : IOpenLog
     /// <param name="filtro">Filtro da consulta.</param>
     /// <returns>Resposta contendo as NFS-e encontradas.</returns>
     /// <remarks>Suportado apenas por provedores que expõem consulta de NFS-e (ex.: Fiorilli).</remarks>
-    public Task<NFSeResponse<RespostaConsultaNFSe>> ConsultarNFSeAsync(ConsultaNFSeFiltro filtro)
+    /// <param name="cancellationToken">Token para cancelar a operação assíncrona.</param>
+    public Task<NFSeResponse<RespostaConsultaNFSe>> ConsultarNFSeAsync(ConsultaNFSeFiltro filtro, CancellationToken cancellationToken = default)
     {
         var provider = NFSeServiceManager.Instance.GetProvider(Configuracoes);
         var oldProtocol = ServicePointManager.SecurityProtocol;
@@ -332,7 +344,7 @@ public sealed class OpenNFSeNacional : IOpenLog
         try
         {
             ServicePointManager.SecurityProtocol = Configuracoes.WebServices.Protocolos;
-            return provider.ConsultarNFSeAsync(filtro);
+            return provider.ConsultarNFSeAsync(filtro, cancellationToken);
         }
         catch (Exception exception)
         {
