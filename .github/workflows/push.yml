@@ -19,13 +19,13 @@ jobs:
   build_solution:
     runs-on: windows-latest
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v7
       with:
         fetch-depth: 0 # Get all history to allow automatic versioning using MinVer
         
     # Install the .NET SDK indicated in the global.json file
     - name: Setup .NET
-      uses: actions/setup-dotnet@v5.0.0
+      uses: actions/setup-dotnet@v6
       with:
         dotnet-version: |
           8.x
@@ -33,7 +33,7 @@ jobs:
           10.x
 
     - name: Setup NuGet
-      uses: nuget/setup-nuget@v2.0.1
+      uses: nuget/setup-nuget@v3
       
     - name: Restore NuGet packages
       run: nuget restore OpenAC.Net.NFSe.Nacional.sln
