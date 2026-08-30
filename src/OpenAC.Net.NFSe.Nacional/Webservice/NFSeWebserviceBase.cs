@@ -136,6 +136,15 @@ public abstract class NFSeWebserviceBase : IOpenLog
     public abstract Task<bool> ConsultaExisteDpsAsync(string id, CancellationToken cancellationToken = default);
 
     /// <summary>
+    /// Consulta eventos por chave de acesso, tipo de evento e número sequencial do evento
+    /// </summary>
+    /// <param name="chaveAcesso">Chave de acesso da NFS-e</param>
+    /// <param name="tipoEvento">Tipo de evento</param>
+    /// <param name="numSeqEvento">Número sequencial do evento</param>
+    /// <returns>Resposta da consulta contendo a chave de acesso.</returns>
+    public abstract Task<NFSeResponse<RespostaConsultaEvento>> ConsultaEventoAsync(string chaveAcesso, string tipoEvento, int numSeqEvento);
+
+    /// <summary>
     /// Recepciona o Pedido de Registro de Evento e gera Eventos de NFS-e, crédito, débito e apuração.
     /// </summary>
     /// <param name="evento">Evento a ser enviado.</param>

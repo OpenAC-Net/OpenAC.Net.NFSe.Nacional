@@ -193,6 +193,23 @@ public class NacionalWebservice : NFSeWebserviceBase
 
     #region Eventos
 
+    /// <inheritdoc/>
+    public override async Task<NFSeResponse<RespostaConsultaEvento>> ConsultaEventoAsync(string chaveAcesso, string tipoEvento, int numSeqEvento)
+    {
+        this.Log().Debug($"Webservice: [ConsultaEvento][Envio] - {chaveAcesso}, {tipoEvento}, {numSeqEvento}");
+
+        var url = ServiceInfo[Configuracao.WebServices.Ambiente][TipoUrl.ConsultarEvento];
+        var httpResponse = await SendAsync(null, HttpMethod.Get, $"{url}/nfse/{chaveAcesso}/eventos/{tipoEvento}/{numSeqEvento}");
+
+        var strResponse = await httpResponse.Content.ReadAsStringAsync();
+
+        this.Log().Debug($"Webservice: [ConsultaEvento][Resposta] - {strResponse}");
+
+        GravarArquivoEmDisco(strResponse, $"ConsultaEvento-{chaveAcesso}{tipoEvento}{numSeqEvento}-resp.json", "");
+
+        return NFSeResponse<RespostaConsultaEvento>.Create("", "", strResponse, httpResponse.IsSuccessStatusCode);
+    }
+
     /// <summary>
     /// Recepciona o Pedido de Registro de Evento e gera Eventos de NFS-e, crédito, débito e apuração.
     /// </summary>
