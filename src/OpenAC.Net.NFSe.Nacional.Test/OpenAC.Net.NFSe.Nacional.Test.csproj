@@ -17,12 +17,14 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="DotNetEnv" Version="3.2.0" />
-    <PackageReference Include="TUnit" Version="1.65.38" />
+    <PackageReference Include="TUnit" Version="1.65.68" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\OpenAC.Net.NFSe.Nacional\OpenAC.Net.NFSe.Nacional.csproj" />
+    <ProjectReference Include="..\OpenAC.Net.NFSe.Nacional.Web\OpenAC.Net.NFSe.Nacional.Web.csproj" />
     <ProjectReference Include="..\OpenAC.Net.NFSe.Nacional.DANFSe.PDFSharp\OpenAC.Net.NFSe.Nacional.DANFSe.PDFSharp.csproj" />
+    <ProjectReference Include="..\OpenAC.Net.NFSe.Nacional.DANFSe.PDFSharp.Web\OpenAC.Net.NFSe.Nacional.DANFSe.PDFSharp.Web.csproj" />
   </ItemGroup>
 
   <ItemGroup>

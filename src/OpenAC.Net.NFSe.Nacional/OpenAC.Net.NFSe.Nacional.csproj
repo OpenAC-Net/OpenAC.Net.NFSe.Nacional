@@ -20,8 +20,8 @@
         <PackageLicenseFile>LICENSE</PackageLicenseFile>
         <PackageReadmeFile>README.md</PackageReadmeFile>
         <NeutralLanguage>pt-BR</NeutralLanguage>
-        <AssemblyVersion>1.5.0.0</AssemblyVersion>
-        <FileVersion>1.5.0.0</FileVersion>
+        <AssemblyVersion>1.5.0.1</AssemblyVersion>
+        <FileVersion>1.5.0.1</FileVersion>
         <Version>1.5.0</Version>
         <PublishRepositoryUrl>true</PublishRepositoryUrl>
         <EmbedUntrackedSources>true</EmbedUntrackedSources>
@@ -66,7 +66,7 @@
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
         <PackageReference Include="OpenAC.Net.Core" Version="1.6.0" />
-        <PackageReference Include="OpenAC.Net.DFe.Core" Version="1.7.0.1" />
+        <PackageReference Include="OpenAC.Net.DFe.Core" Version="1.7.0.3" />
         <PackageReference Include="System.Net.Http.Json" Version="10.0.11" />
     </ItemGroup>    
 

@@ -29,18 +29,20 @@
 // <summary></summary>
 // ***********************************************************************
 
-using OpenAC.Net.Core.Logging;
-using OpenAC.Net.NFSe.Nacional.Common;
-using OpenAC.Net.NFSe.Nacional.Common.Model;
-using OpenAC.Net.NFSe.Nacional.Common.Types;
-using OpenAC.Net.NFSe.Nacional.Webservice.Nacional;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Xml.Linq;
+using OpenAC.Net.Core.Logging;
 using OpenAC.Net.DFe.Core.Common;
+using OpenAC.Net.NFSe.Nacional.Common;
+using OpenAC.Net.NFSe.Nacional.Common.Model;
+using OpenAC.Net.NFSe.Nacional.Common.Types;
+using OpenAC.Net.NFSe.Nacional.Webservice.Nacional;
 
 namespace OpenAC.Net.NFSe.Nacional.Webservice.ISSNet;
 
@@ -53,8 +55,14 @@ public class ISSNetWebService : NacionalWebservice
     {
     }
 
+    /// <summary>Inicializa o provedor com um transporte HTTP fornecido pelo host.</summary>
+    public ISSNetWebService(ConfiguracaoNFSe configuracaoNFSe, NFSeServiceInfo serviceInfo,
+        INFSeHttpTransport httpTransport) : base(configuracaoNFSe, serviceInfo, httpTransport)
+    {
+    }
+
     /// <inheritdoc />
-    public override async Task<NFSeResponse<RespostaEnvioDps>> EnviarAsync(Dps dps)
+    public override async Task<NFSeResponse<RespostaEnvioDps>> EnviarAsync(Dps dps, CancellationToken cancellationToken = default)
     {
         var options = DFeSaveOptions.DisableFormatting;
         if (Configuracao.Geral.RetirarAcentos)
@@ -67,16 +75,16 @@ public class ISSNetWebService : NacionalWebservice
 
         var documento = dps.Informacoes.Prestador.CPF ?? dps.Informacoes.Prestador.CNPJ ?? throw new InvalidOperationException("CPF ou CNPJ do prestador deve ser informado.");
 
-        GravarDpsEmDisco(dps.Xml, $"{dps.Informacoes.NumeroDps:000000}_dps.xml",
-            documento, dps.Informacoes.DhEmissao.DateTime);
+        await GravarDpsEmDiscoAsync(dps.Xml, $"{dps.Informacoes.NumeroDps:000000}_dps.xml",
+            documento, dps.Informacoes.DhEmissao.DateTime, cancellationToken: cancellationToken);
 
-        GravarArquivoEmDisco(dps.Xml, $"Enviar-{dps.Informacoes.NumeroDps:000000}-env.xml", documento);
+        await GravarArquivoEmDiscoAsync(dps.Xml, $"Enviar-{dps.Informacoes.NumeroDps:000000}-env.xml", documento, cancellationToken);
 
         var xmlEnvio = $@"<nfse:GerarNfseEnvio>{dps.Xml}</nfse:GerarNfseEnvio>";
 
         this.Log().Debug($"ISSNet: [Enviar][Envio] - {xmlEnvio}");
 
-        var xmlCabecalho = $@"<cabecalho versao=""1.01""><versaoDados>1.01</versaoDados></cabecalho>";
+        var xmlCabecalho = "<cabecalho versao=\"1.01\"><versaoDados>1.01</versaoDados></cabecalho>";
 
         var soapEnvelope = $@"
             <soapenv:Envelope xmlns:soapenv=""http://schemas.xmlsoap.org/soap/envelope/"" xmlns:nfse=""http://www.sped.fazenda.gov.br/nfse"">
@@ -89,20 +97,20 @@ public class ISSNetWebService : NacionalWebservice
                 </soapenv:Body>
             </soapenv:Envelope>";
 
-        var content = new StringContent(soapEnvelope, System.Text.Encoding.UTF8, "text/xml");
+        var content = new StringContent(soapEnvelope, Encoding.UTF8, "text/xml");
         var soapAction = "http://www.sped.fazenda.gov.br/nfse/GerarNfse";
         content.Headers.Add("SOAPAction", $"\"{soapAction}\"");
 
-        GravarArquivoEmDisco(xmlEnvio, $"Enviar-{dps.Informacoes.NumeroDps:000000}-env.xml", documento);
+        await GravarArquivoEmDiscoAsync(xmlEnvio, $"Enviar-{dps.Informacoes.NumeroDps:000000}-env.xml", documento, cancellationToken);
 
         var url = ServiceInfo[Configuracao.WebServices.Ambiente][TipoUrl.Enviar] ?? throw new InvalidOperationException("URL de envio não encontrada na configuração do serviço.");
-        var httpResponse = await SendAsync(content, HttpMethod.Post, $"{url}/nfse.asmx");
+        using var httpResponse = await SendAsync(content, HttpMethod.Post, $"{url}/nfse.asmx", cancellationToken: cancellationToken);
 
         var strResponse = await httpResponse.Content.ReadAsStringAsync();
 
         this.Log().Debug($"ISSNet: [Enviar][Resposta] - {strResponse}");
 
-        GravarArquivoEmDisco(strResponse, $"Enviar-{dps.Informacoes.NumeroDps:000000}-resp.xml", documento);
+        await GravarArquivoEmDiscoAsync(strResponse, $"Enviar-{dps.Informacoes.NumeroDps:000000}-resp.xml", documento, cancellationToken);
 
         var success = httpResponse.IsSuccessStatusCode;
 
@@ -115,7 +123,7 @@ public class ISSNetWebService : NacionalWebservice
     }
 
     /// <inheritdoc />
-    public override async Task<NFSeResponse<RespostaEnvioEvento>> EnviarEventoAsync(PedidoRegistroEvento evento)
+    public override async Task<NFSeResponse<RespostaEnvioEvento>> EnviarEventoAsync(PedidoRegistroEvento evento, CancellationToken cancellationToken = default)
     {
         var options = DFeSaveOptions.DisableFormatting;
         if (Configuracao.Geral.RetirarAcentos)
@@ -128,14 +136,14 @@ public class ISSNetWebService : NacionalWebservice
 
         var documento = evento.Informacoes.CPFAutor ?? evento.Informacoes.CNPJAutor ?? throw new InvalidOperationException("CPF ou CNPJ do autor do evento deve ser informado.");
 
-        GravarDpsEmDisco(evento.Xml, $"{evento.Informacoes.ChNFSe}{evento.Informacoes.Evento}_evento.xml",
+        await GravarDpsEmDiscoAsync(evento.Xml, $"{evento.Informacoes.ChNFSe}{evento.Informacoes.Evento}_evento.xml",
             documento, evento.Informacoes.DhEvento.DateTime);
 
         var xmlEnvio = $@"<nfse:CancelarNfseEnvio >{evento.Xml}</nfse:CancelarNfseEnvio >";
 
         this.Log().Debug($"ISSNet: [Evento][Envio] - {xmlEnvio}");
 
-        var xmlCabecalho = $@"<cabecalho versao=""1.01""><versaoDados>1.01</versaoDados></cabecalho>";
+        var xmlCabecalho = @"<cabecalho versao=""1.01""><versaoDados>1.01</versaoDados></cabecalho>";
 
         var soapEnvelope = $@"
             <soapenv:Envelope xmlns:soapenv=""http://schemas.xmlsoap.org/soap/envelope/"" xmlns:nfse=""http://www.sped.fazenda.gov.br/nfse"">
@@ -148,20 +156,20 @@ public class ISSNetWebService : NacionalWebservice
                 </soapenv:Body>
             </soapenv:Envelope>";
 
-        var content = new StringContent(soapEnvelope, System.Text.Encoding.UTF8, "text/xml");
+        var content = new StringContent(soapEnvelope, Encoding.UTF8, "text/xml");
         var soapAction = "http://www.sped.fazenda.gov.br/nfse/CancelarNfse";
         content.Headers.Add("SOAPAction", $"\"{soapAction}\"");
 
-        GravarArquivoEmDisco(xmlEnvio, $"Evento-{evento.Informacoes.ChNFSe}{evento.Informacoes.Evento}-env.xml", documento);
+        await GravarArquivoEmDiscoAsync(xmlEnvio, $"Evento-{evento.Informacoes.ChNFSe}{evento.Informacoes.Evento}-env.xml", documento);
 
         var url = ServiceInfo[Configuracao.WebServices.Ambiente][TipoUrl.Enviar] ?? throw new InvalidOperationException("URL de envio não encontrada na configuração do serviço.");
-        var httpResponse = await SendAsync(content, HttpMethod.Post, $"{url}/nfse.asmx");
+        using var httpResponse = await SendAsync(content, HttpMethod.Post, $"{url}/nfse.asmx", cancellationToken: cancellationToken);
 
         var strResponse = await httpResponse.Content.ReadAsStringAsync();
 
         this.Log().Debug($"ISSNet: [Evento][Resposta] - {strResponse}");
 
-        GravarArquivoEmDisco(strResponse, $"Evento-{evento.Informacoes.ChNFSe}{evento.Informacoes.Evento}-resp.xml", documento);
+        await GravarArquivoEmDiscoAsync(strResponse, $"Evento-{evento.Informacoes.ChNFSe}{evento.Informacoes.Evento}-resp.xml", documento);
 
         var success = httpResponse.IsSuccessStatusCode;
 

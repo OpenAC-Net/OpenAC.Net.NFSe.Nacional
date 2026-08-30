@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\OpenAC.Net.NFSe.Nacional.DANFSe.PDFSharp.Web\OpenAC.Net.NFSe.Nacional.DANFSe.PDFSharp.Web.csproj" />
+  </ItemGroup>
+
+</Project>

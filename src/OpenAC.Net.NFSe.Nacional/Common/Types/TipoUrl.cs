@@ -25,7 +25,7 @@ public enum TipoUrl
 
     /// <summary>Verificar existência do DPS.</summary>
     ConsultaExisteDps,
-
+    
     /// <summary>Consultar evento por chave de acesso, tipo de evento e número sequencial do evento.</summary>
-    ConsultarEvento,
+    ConsultarEvento
 }

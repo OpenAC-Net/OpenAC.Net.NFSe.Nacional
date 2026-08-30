@@ -38,9 +38,11 @@ using System;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Text.Json;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace OpenAC.Net.NFSe.Nacional.Webservice.Tiplan;
+
 /// <summary>
 /// Classe de serviço web para integração com a Tiplan.
 /// </summary>
@@ -61,76 +63,99 @@ public class TiplanWebService : NacionalWebservice
         base(configuracaoNFSe, serviceInfo)
     {
     }
+
+    /// <summary>Inicializa o provedor com um transporte HTTP fornecido pelo host.</summary>
+    public TiplanWebService(ConfiguracaoNFSe configuracaoNFSe, NFSeServiceInfo serviceInfo,
+        INFSeHttpTransport httpTransport) : base(configuracaoNFSe, serviceInfo, httpTransport)
+    {
+    }
+
     /// <summary>
     /// Envio da DPS para geração da NFS-e de forma assíncrona.
     /// </summary>
     /// <param name="dps"></param>
     /// <returns></returns>
     /// <exception cref="InvalidOperationException"></exception>
-    public override async Task<NFSeResponse<RespostaEnvioDps>> EnviarAsync(Dps dps)
+    /// <param name="cancellationToken">Token para cancelar a operação assíncrona.</param>
+    public override async Task<NFSeResponse<RespostaEnvioDps>> EnviarAsync(Dps dps,
+        CancellationToken cancellationToken = default)
     {
         dps.Assinar(Configuracao);
 
         ValidarSchema(SchemaNFSe.DPS, dps.Xml, dps.Versao);
 
-        string documento = dps.Informacoes.Prestador.CPF ?? dps.Informacoes.Prestador.CNPJ ?? throw new InvalidOperationException("CPF ou CNPJ do prestador deve ser informado.");
+        var documento = dps.Informacoes.Prestador.CPF ?? dps.Informacoes.Prestador.CNPJ ??
+            throw new InvalidOperationException("CPF ou CNPJ do prestador deve ser informado.");
 
-        GravarDpsEmDisco(dps.Xml, $"{dps.Informacoes.NumeroDps:000000}_dps.xml",
-            documento, dps.Informacoes.DhEmissao.DateTime);
+        await GravarDpsEmDiscoAsync(dps.Xml, $"{dps.Informacoes.NumeroDps:000000}_dps.xml",
+            documento, dps.Informacoes.DhEmissao.DateTime, cancellationToken: cancellationToken);
 
-        DpsEnvio envio = new DpsEnvio { XmlDps = dps.Xml };
-        JsonContent content = JsonContent.Create(envio);
-        string strEnvio = await content.ReadAsStringAsync();
+        var envio = new DpsEnvio { XmlDps = dps.Xml };
+        var content = JsonContent.Create(envio);
+        var strEnvio = await content.ReadAsStringAsync();
 
         this.Log().Debug($"Tiplan: [Enviar][Envio] - {strEnvio}");
 
-        GravarArquivoEmDisco(strEnvio, $"Enviar-{dps.Informacoes.NumeroDps:000000}-env.json", documento);
+        await GravarArquivoEmDiscoAsync(strEnvio, $"Enviar-{dps.Informacoes.NumeroDps:000000}-env.json", documento,
+            cancellationToken);
 
-        string url = ServiceInfo[Configuracao.WebServices.Ambiente][TipoUrl.Enviar] ?? throw new InvalidOperationException("URL de envio não encontrada na configuração do serviço.");
-        HttpResponseMessage httpResponse = await SendAsync(content, HttpMethod.Post, $"{url}/adn/dps/recepcao");
+        var url = ServiceInfo[Configuracao.WebServices.Ambiente][TipoUrl.Enviar] ??
+                  throw new InvalidOperationException("URL de envio não encontrada na configuração do serviço.");
+        using var httpResponse = await SendAsync(content, HttpMethod.Post, $"{url}/adn/dps/recepcao",
+            cancellationToken: cancellationToken);
 
-        string strResponse = await httpResponse.Content.ReadAsStringAsync();
+        var strResponse = await httpResponse.Content.ReadAsStringAsync();
 
         this.Log().Debug($"Tiplan: [Enviar][Resposta] - {strResponse}");
 
-        GravarArquivoEmDisco(strResponse, $"Enviar-{dps.Informacoes.NumeroDps:000000}-resp.json", documento);
+        await GravarArquivoEmDiscoAsync(strResponse, $"Enviar-{dps.Informacoes.NumeroDps:000000}-resp.json", documento,
+            cancellationToken);
 
-        return NFSeResponse<RespostaEnvioDps>.Create(dps.Xml, strEnvio, strResponse, httpResponse.IsSuccessStatusCode, JsonOptions);
+        return NFSeResponse<RespostaEnvioDps>.Create(dps.Xml, strEnvio, strResponse, httpResponse.IsSuccessStatusCode,
+            JsonOptions);
     }
+
     /// <summary>
     /// Envio de evento assincrono.
     /// </summary>
     /// <param name="evento"></param>
     /// <returns></returns>
     /// <exception cref="InvalidOperationException"></exception>
-    public override async Task<NFSeResponse<RespostaEnvioEvento>> EnviarEventoAsync(PedidoRegistroEvento evento)
+    /// <param name="cancellationToken">Token para cancelar a operação assíncrona.</param>
+    public override async Task<NFSeResponse<RespostaEnvioEvento>> EnviarEventoAsync(PedidoRegistroEvento evento,
+        CancellationToken cancellationToken = default)
     {
         evento.Assinar(Configuracao);
         ValidarSchema(SchemaNFSe.Evento, evento.Xml, evento.Versao);
 
-        string? documento = evento.Informacoes.CPFAutor ?? evento.Informacoes.CNPJAutor ?? throw new InvalidOperationException("CPF ou CNPJ do autor do evento deve ser informado.");
+        var documento = evento.Informacoes.CPFAutor ?? evento.Informacoes.CNPJAutor ??
+            throw new InvalidOperationException("CPF ou CNPJ do autor do evento deve ser informado.");
 
-        GravarDpsEmDisco(evento.Xml, $"{evento.Informacoes.ChNFSe}{evento.Informacoes.Evento}_evento.xml",
-            documento, evento.Informacoes.DhEvento.DateTime);
+        await GravarDpsEmDiscoAsync(evento.Xml, $"{evento.Informacoes.ChNFSe}{evento.Informacoes.Evento}_evento.xml",
+            documento, evento.Informacoes.DhEvento.DateTime, cancellationToken: cancellationToken);
 
-        EventoEnvio envio = new EventoEnvio { XmlEvento = evento.Xml };
-        JsonContent content = JsonContent.Create(envio);
-        string strEnvio = await content.ReadAsStringAsync();
+        var envio = new EventoEnvio { XmlEvento = evento.Xml };
+        var content = JsonContent.Create(envio);
+        var strEnvio = await content.ReadAsStringAsync();
 
         this.Log().Debug($"Tiplan: [Evento][Envio] - {strEnvio}");
 
-        GravarArquivoEmDisco(strEnvio, $"Evento-{evento.Informacoes.ChNFSe}{evento.Informacoes.Evento}-env.json", documento);
+        await GravarArquivoEmDiscoAsync(strEnvio,
+            $"Evento-{evento.Informacoes.ChNFSe}{evento.Informacoes.Evento}-env.json", documento, cancellationToken);
 
-        string url = ServiceInfo[Configuracao.WebServices.Ambiente][TipoUrl.EnviarEvento] ?? throw new InvalidOperationException("URL de envio não encontrada na configuração do serviço.");
-        HttpResponseMessage httpResponse = await SendAsync(content, HttpMethod.Post, $"{url}/adn/dps/evento");
+        var url = ServiceInfo[Configuracao.WebServices.Ambiente][TipoUrl.EnviarEvento] ??
+                  throw new InvalidOperationException("URL de envio não encontrada na configuração do serviço.");
+        using var httpResponse = await SendAsync(content, HttpMethod.Post, $"{url}/adn/dps/evento",
+            cancellationToken: cancellationToken);
 
-        string strResponse = await httpResponse.Content.ReadAsStringAsync();
+        var strResponse = await httpResponse.Content.ReadAsStringAsync();
 
         this.Log().Debug($"Tiplan: [Evento][Resposta] - {strResponse}");
 
-        GravarArquivoEmDisco(strResponse, $"Evento-{evento.Informacoes.ChNFSe}{evento.Informacoes.Evento}-resp.json", documento);
+        await GravarArquivoEmDiscoAsync(strResponse,
+            $"Evento-{evento.Informacoes.ChNFSe}{evento.Informacoes.Evento}-resp.json", documento, cancellationToken);
 
-        return NFSeResponse<RespostaEnvioEvento>.Create(evento.Xml, strEnvio, strResponse, httpResponse.IsSuccessStatusCode, JsonOptions);
+        return NFSeResponse<RespostaEnvioEvento>.Create(evento.Xml, strEnvio, strResponse,
+            httpResponse.IsSuccessStatusCode, JsonOptions);
     }
-
 }

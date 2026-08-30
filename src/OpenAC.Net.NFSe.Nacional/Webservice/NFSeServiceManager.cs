@@ -9,6 +9,7 @@ using OpenAC.Net.DFe.Core.Common;
 using OpenAC.Net.NFSe.Nacional.Common;
 using OpenAC.Net.NFSe.Nacional.Common.Types;
 using OpenAC.Net.NFSe.Nacional.Webservice.Nacional;
+using OpenAC.Net.NFSe.Nacional.Storage;
 
 namespace OpenAC.Net.NFSe.Nacional.Webservice;
 
@@ -180,15 +181,9 @@ public sealed partial class NFSeServiceManager
         Services = NFSeServices.Load(stream);
     }
 
-    /// <summary>
-    /// Retorna uma instância do provedor NFSe para o município nas configurações informadas.
-    /// </summary>
-    /// <param name="config">Configuração do NFSe (não pode ser nulo).</param>
-    /// <returns>Instância de <see cref="NFSeWebserviceBase"/> correspondente ao provedor e versão.</returns>
-    /// <exception cref="ArgumentNullException">Se <paramref name="config"/> for nulo.</exception>
-    /// <exception cref="OpenException">Se o provedor ou versão não estiverem registrados ou a classe do provedor for incompatível.</exception>
-    /// <exception cref="InvalidOperationException">Se a instância do provedor não puder ser criada.</exception>
-    public NFSeWebserviceBase GetProvider(ConfiguracaoNFSe config)
+    /// <summary>Retorna um provedor configurado com o transporte HTTP informado.</summary>
+    public NFSeWebserviceBase GetProvider(ConfiguracaoNFSe config, INFSeHttpTransport? httpTransport = null,
+        INFSeDocumentStore? documentStore = null)
     {
         var serviceInfo = Services[config.WebServices.CodigoMunicipio] ?? 
                           throw new OpenException("Serviço não encontrado para o município informado!");
@@ -198,8 +193,13 @@ public sealed partial class NFSeServiceManager
         if (!CheckBaseType(providerType)) throw new OpenException("Classe base do provedor incorreta!");
 
         // ReSharper disable once AssignNullToNotNullAttribute
-        return (NFSeWebserviceBase?)Activator.CreateInstance(providerType, config, serviceInfo) ??
-                throw new InvalidOperationException();
+        var arguments = httpTransport == null
+            ? new object[] { config, serviceInfo }
+            : new object[] { config, serviceInfo, httpTransport };
+        var provider = (NFSeWebserviceBase?)Activator.CreateInstance(providerType, arguments) ??
+                       throw new InvalidOperationException();
+        if (documentStore != null) provider.DocumentStore = documentStore;
+        return provider;
     }
 
     private static bool CheckBaseType(Type providerType)
