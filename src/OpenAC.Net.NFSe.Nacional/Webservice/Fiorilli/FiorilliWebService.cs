@@ -361,10 +361,6 @@ public class FiorilliWebService : NFSeWebserviceBase
     public override Task<NFSeResponse<RespostaConsultaDFe>> ConsultaChaveAsync(string chave, CancellationToken cancellationToken = default) =>
         throw OperacaoNaoSuportada(nameof(ConsultaChaveAsync));
 
-    /// <inheritdoc/>
-    public override async Task<NFSeResponse<RespostaConsultaEvento>> ConsultaEventoAsync(string chaveAcesso, string tipoEvento, int numSeqEvento) =>
-        throw OperacaoNaoSuportada(nameof(ConsultaChaveAsync));
-
     #endregion Não suportadas
 
     #region Helpers
