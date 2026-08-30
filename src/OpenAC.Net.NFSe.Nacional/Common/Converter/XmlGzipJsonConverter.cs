@@ -54,13 +54,20 @@ public class XmlGzipJsonConverter : JsonConverter<string>
     public override string? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
         var dados = reader.GetString();
-        if (dados!.IsEmpty()) return dados;
+        if (dados == null || dados.IsEmpty()) return dados;
 
-        using var memoryStream = new MemoryStream(Convert.FromBase64String(dados!));
+        var gzipBytes = Convert.FromBase64String(dados);
+        if (IsDoubleBase64Gzip(dados))
+        {
+            var base64 = Encoding.UTF8.GetString(gzipBytes).Trim();
+            gzipBytes = Convert.FromBase64String(base64);
+        }
+
+        using var memoryStream = new MemoryStream(gzipBytes);
         using var gZipStream = new GZipStream(memoryStream, CompressionMode.Decompress);
         using var memoryStreamOutput = new MemoryStream();
         gZipStream.CopyTo(memoryStreamOutput);
-        
+
         var outputBytes = memoryStreamOutput.ToArray();
 
         return Encoding.UTF8.GetString(outputBytes);
@@ -87,5 +94,27 @@ public class XmlGzipJsonConverter : JsonConverter<string>
 
         var compressedBytes = memoryStream.ToArray();
         writer.WriteBase64StringValue(compressedBytes);
+    }
+
+    private static bool IsDoubleBase64Gzip(string dados)
+    {
+        /*
+        * O campo eventoXmlGZipB64 normalmente retorna o XML compactado em GZip
+        * e codificado em Base64.
+        *
+        * Em alguns retornos, o conteúdo é codificado em Base64 duas vezes:
+        *
+        *   GZip → Base64 → Base64
+        *
+        * Quando isso ocorre, após a primeira codificação Base64 o conteúdo
+        * começa com "H4sI", que é a representação Base64 dos bytes iniciais
+        * do GZip (1F 8B).
+        *
+        * Ao codificar novamente essa string em Base64, o resultado começa
+        * com "SDRz". Portanto, "SDRz" é utilizado como indicador de que
+        * o conteúdo possui uma segunda camada de Base64 e precisa ser
+        * decodificado novamente antes da descompactação do GZip.
+        */
+        return dados.StartsWith("SDRz");
     }
 }

@@ -15,6 +15,7 @@
 						<Endereco Tipo="DownloadDanfse">https://adn.producaorestrita.nfse.gov.br</Endereco>
 						<Endereco Tipo="ConsultarChaveDps">https://sefin.producaorestrita.nfse.gov.br/SefinNacional</Endereco>
 						<Endereco Tipo="ConsultaExisteDps">https://sefin.producaorestrita.nfse.gov.br/SefinNacional</Endereco>
+						<Endereco Tipo="ConsultarEvento">https://sefin.producaorestrita.nfse.gov.br/SefinNacional</Endereco>
 					</Enderecos>
 				</Ambiente>
 				<Ambiente Tipo="1">
@@ -26,6 +27,7 @@
 						<Endereco Tipo="DownloadDanfse">https://adn.nfse.gov.br</Endereco>
 						<Endereco Tipo="ConsultarChaveDps">https://sefin.nfse.gov.br/sefinnacional</Endereco>
 						<Endereco Tipo="ConsultaExisteDps">https://sefin.nfse.gov.br/sefinnacional</Endereco>
+						<Endereco Tipo="ConsultarEvento">https://sefin.nfse.gov.br/sefinnacional</Endereco>
 					</Enderecos>
 				</Ambiente>
 			</Ambientes>
