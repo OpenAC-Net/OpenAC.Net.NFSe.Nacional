@@ -65,21 +65,15 @@ public sealed class OpenNFSeNacional : IOpenNFSeNacionalClient, IOpenLog
     public Task<NFSeResponse<RespostaEnvioDps>> EnviarAsync(Dps dps, CancellationToken cancellationToken = default)
     {
         var provider = NFSeServiceManager.Instance.GetProvider(Configuracoes);
-        var oldProtocol = ServicePointManager.SecurityProtocol;
         
         try
         {
-            ServicePointManager.SecurityProtocol = Configuracoes.WebServices.Protocolos;
             return provider.EnviarAsync(dps, cancellationToken);
         }
         catch (Exception exception)
         {
             this.Log().Error("[Enviar]", exception);
             throw;
-        }
-        finally
-        {
-            ServicePointManager.SecurityProtocol = oldProtocol;
         }
     }
 
@@ -92,21 +86,15 @@ public sealed class OpenNFSeNacional : IOpenNFSeNacionalClient, IOpenLog
     public Task<NFSeResponse<RespostaEnvioEvento>> EnviarEventoAsync(PedidoRegistroEvento evento, CancellationToken cancellationToken = default)
     {
         var provider = NFSeServiceManager.Instance.GetProvider(Configuracoes);
-        var oldProtocol = ServicePointManager.SecurityProtocol;
         
         try
         {
-            ServicePointManager.SecurityProtocol = Configuracoes.WebServices.Protocolos;
             return provider.EnviarEventoAsync(evento, cancellationToken);
         }
         catch (Exception exception)
         {
             this.Log().Error("[EnviarEvento]", exception);
             throw;
-        }
-        finally
-        {
-            ServicePointManager.SecurityProtocol = oldProtocol;
         }
     }
 
@@ -119,21 +107,15 @@ public sealed class OpenNFSeNacional : IOpenNFSeNacionalClient, IOpenLog
     public Task<NFSeResponse<RespostaConsultaDFe>> ConsultaNsuAsync(int nsu, CancellationToken cancellationToken = default)
     {
         var provider = NFSeServiceManager.Instance.GetProvider(Configuracoes);
-        var oldProtocol = ServicePointManager.SecurityProtocol;
         
         try
         {
-            ServicePointManager.SecurityProtocol = Configuracoes.WebServices.Protocolos;
             return provider.ConsultaNsuAsync(nsu, cancellationToken);
         }
         catch (Exception exception)
         {
             this.Log().Error("[ConsultaNsu]", exception);
             throw;
-        }
-        finally
-        {
-            ServicePointManager.SecurityProtocol = oldProtocol;
         }
     }
 
@@ -146,21 +128,15 @@ public sealed class OpenNFSeNacional : IOpenNFSeNacionalClient, IOpenLog
     public Task<NFSeResponse<RespostaConsultaDFe>> ConsultaChaveAsync(string chave, CancellationToken cancellationToken = default)
     {
         var provider = NFSeServiceManager.Instance.GetProvider(Configuracoes);
-        var oldProtocol = ServicePointManager.SecurityProtocol;
         
         try
         {
-            ServicePointManager.SecurityProtocol = Configuracoes.WebServices.Protocolos;
             return provider.ConsultaChaveAsync(chave, cancellationToken);
         }
         catch (Exception exception)
         {
             this.Log().Error("[ConsultaChave]", exception);
             throw;
-        }
-        finally
-        {
-            ServicePointManager.SecurityProtocol = oldProtocol;
         }
     }
 
@@ -173,21 +149,15 @@ public sealed class OpenNFSeNacional : IOpenNFSeNacionalClient, IOpenLog
     public Task<byte[]> DownloadDANFSeAsync(string chave, CancellationToken cancellationToken = default)
     {
         var provider = NFSeServiceManager.Instance.GetProvider(Configuracoes);
-        var oldProtocol = ServicePointManager.SecurityProtocol;
         
         try
         {
-            ServicePointManager.SecurityProtocol = Configuracoes.WebServices.Protocolos;
             return provider.DownloadDANFSeAsync(chave, cancellationToken);
         }
         catch (Exception exception)
         {
             this.Log().Error("[DownloadDANFSe]", exception);
             throw;
-        }
-        finally
-        {
-            ServicePointManager.SecurityProtocol = oldProtocol;
         }
     }
 
@@ -200,21 +170,15 @@ public sealed class OpenNFSeNacional : IOpenNFSeNacionalClient, IOpenLog
     public Task<NFSeResponse<RespostaConsultaChaveDps>> ConsultaChaveDpsAsync(string id, CancellationToken cancellationToken = default)
     {
         var provider = NFSeServiceManager.Instance.GetProvider(Configuracoes);
-        var oldProtocol = ServicePointManager.SecurityProtocol;
         
         try
         {
-            ServicePointManager.SecurityProtocol = Configuracoes.WebServices.Protocolos;
             return provider.ConsultaChaveDpsAsync(id, cancellationToken);
         }
         catch (Exception exception)
         {
             this.Log().Error("[ConsultaChaveDps]", exception);
             throw;
-        }
-        finally
-        {
-            ServicePointManager.SecurityProtocol = oldProtocol;
         }
     }
 
@@ -227,21 +191,15 @@ public sealed class OpenNFSeNacional : IOpenNFSeNacionalClient, IOpenLog
     public Task<bool> ConsultaExisteDpsAsync(string id, CancellationToken cancellationToken = default)
     {
         var provider = NFSeServiceManager.Instance.GetProvider(Configuracoes);
-        var oldProtocol = ServicePointManager.SecurityProtocol;
         
         try
         {
-            ServicePointManager.SecurityProtocol = Configuracoes.WebServices.Protocolos;
             return provider.ConsultaExisteDpsAsync(id, cancellationToken);
         }
         catch (Exception exception)
         {
             this.Log().Error("[ConsultaExisteDps]", exception);
             throw;
-        }
-        finally
-        {
-            ServicePointManager.SecurityProtocol = oldProtocol;
         }
     }
 
@@ -255,21 +213,15 @@ public sealed class OpenNFSeNacional : IOpenNFSeNacionalClient, IOpenLog
     public Task<NFSeResponse<RespostaRecepcaoLote>> EnviarLoteAsync(LoteDps lote, CancellationToken cancellationToken = default)
     {
         var provider = NFSeServiceManager.Instance.GetProvider(Configuracoes);
-        var oldProtocol = ServicePointManager.SecurityProtocol;
 
         try
         {
-            ServicePointManager.SecurityProtocol = Configuracoes.WebServices.Protocolos;
             return provider.EnviarLoteAsync(lote, cancellationToken);
         }
         catch (Exception exception)
         {
             this.Log().Error("[EnviarLote]", exception);
             throw;
-        }
-        finally
-        {
-            ServicePointManager.SecurityProtocol = oldProtocol;
         }
     }
 
@@ -283,21 +235,15 @@ public sealed class OpenNFSeNacional : IOpenNFSeNacionalClient, IOpenLog
     public Task<NFSeResponse<RespostaRecepcaoLoteSincrono>> EnviarLoteSincronoAsync(LoteDps lote, CancellationToken cancellationToken = default)
     {
         var provider = NFSeServiceManager.Instance.GetProvider(Configuracoes);
-        var oldProtocol = ServicePointManager.SecurityProtocol;
 
         try
         {
-            ServicePointManager.SecurityProtocol = Configuracoes.WebServices.Protocolos;
             return provider.EnviarLoteSincronoAsync(lote, cancellationToken);
         }
         catch (Exception exception)
         {
             this.Log().Error("[EnviarLoteSincrono]", exception);
             throw;
-        }
-        finally
-        {
-            ServicePointManager.SecurityProtocol = oldProtocol;
         }
     }
 
@@ -311,21 +257,15 @@ public sealed class OpenNFSeNacional : IOpenNFSeNacionalClient, IOpenLog
     public Task<NFSeResponse<RespostaConsultaLote>> ConsultarLoteAsync(ConsultaLoteFiltro filtro, CancellationToken cancellationToken = default)
     {
         var provider = NFSeServiceManager.Instance.GetProvider(Configuracoes);
-        var oldProtocol = ServicePointManager.SecurityProtocol;
 
         try
         {
-            ServicePointManager.SecurityProtocol = Configuracoes.WebServices.Protocolos;
             return provider.ConsultarLoteAsync(filtro, cancellationToken);
         }
         catch (Exception exception)
         {
             this.Log().Error("[ConsultarLote]", exception);
             throw;
-        }
-        finally
-        {
-            ServicePointManager.SecurityProtocol = oldProtocol;
         }
     }
 
@@ -339,16 +279,40 @@ public sealed class OpenNFSeNacional : IOpenNFSeNacionalClient, IOpenLog
     public Task<NFSeResponse<RespostaConsultaNFSe>> ConsultarNFSeAsync(ConsultaNFSeFiltro filtro, CancellationToken cancellationToken = default)
     {
         var provider = NFSeServiceManager.Instance.GetProvider(Configuracoes);
-        var oldProtocol = ServicePointManager.SecurityProtocol;
 
         try
         {
-            ServicePointManager.SecurityProtocol = Configuracoes.WebServices.Protocolos;
             return provider.ConsultarNFSeAsync(filtro, cancellationToken);
         }
         catch (Exception exception)
         {
             this.Log().Error("[ConsultarNFSe]", exception);
+            throw;
+        }
+    }
+
+    /// <summary>
+    /// Consulta eventos por chave de acesso, tipo de evento e número sequencial do evento
+    /// </summary>
+    /// <param name="chaveAcesso">Chave de acesso da NFS-e</param>
+    /// <param name="tipoEvento">Tipo de evento</param>
+    /// <param name="numSeqEvento">Número sequencial do evento</param>
+    /// <param name="cancellationToken">Token para cancelar a operação assíncrona.</param>
+    /// <returns>Resposta da consulta contendo a chave de acesso.</returns>
+    public Task<NFSeResponse<RespostaConsultaEvento>> ConsultaEventoAsync(string chaveAcesso, string tipoEvento, int numSeqEvento,
+        CancellationToken cancellationToken = default)
+    {
+        var provider = NFSeServiceManager.Instance.GetProvider(Configuracoes);
+        var oldProtocol = ServicePointManager.SecurityProtocol;
+
+        try
+        {
+            ServicePointManager.SecurityProtocol = Configuracoes.WebServices.Protocolos;
+            return provider.ConsultaEventoAsync(chaveAcesso, tipoEvento, numSeqEvento, cancellationToken);
+        }
+        catch (Exception exception)
+        {
+            this.Log().Error("[ConsultaEvento]", exception);
             throw;
         }
         finally

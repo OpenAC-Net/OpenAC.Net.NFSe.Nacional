@@ -1,7 +1,7 @@
 namespace OpenAC.Net.NFSe.Nacional.Storage;
 
 /// <summary>Classifica separadamente documentos fiscais e payloads técnicos.</summary>
-public enum NFSeDocumentType
+public enum NFSeTipoDocumento
 {
     /// <summary>Payload técnico enviado ao webservice.</summary>
     SolicitacaoTecnica,

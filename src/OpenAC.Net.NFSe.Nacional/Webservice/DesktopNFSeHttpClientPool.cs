@@ -79,7 +79,7 @@ internal sealed class DesktopNFSeHttpClientPool
         lock (syncRoot)
         {
             entrada.RequisicoesAtivas--;
-            if (entrada.Removido && entrada.RequisicoesAtivas == 0)
+            if (entrada is { Removido: true, RequisicoesAtivas: 0 })
                 entrada.Http.Dispose();
         }
     }

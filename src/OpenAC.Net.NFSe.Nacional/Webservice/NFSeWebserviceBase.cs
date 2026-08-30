@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Xml.Schema;
@@ -35,10 +34,12 @@ public abstract class NFSeWebserviceBase : IOpenLog
         /// Arquivo de comunicação com o webservice.
         /// </summary>
         Webservice,
+
         /// <summary>
         /// Arquivo de RPS (Recibo Provisório de Serviços).
         /// </summary>
         Rps,
+
         /// <summary>
         /// Arquivo de NFS-e (Nota Fiscal de Serviço eletrônica).
         /// </summary>
@@ -91,37 +92,13 @@ public abstract class NFSeWebserviceBase : IOpenLog
 
     #region Methods
 
-    // Sobrecargas mantidas para compatibilidade com consumidores desktop existentes.
-    /// <inheritdoc cref="DownloadDANFSeAsync(string, CancellationToken)" />
-    public virtual Task<byte[]> DownloadDANFSeAsync(string chave) => DownloadDANFSeAsync(chave, CancellationToken.None);
-    /// <inheritdoc cref="ConsultaNsuAsync(int, CancellationToken)" />
-    public virtual Task<NFSeResponse<RespostaConsultaDFe>> ConsultaNsuAsync(int nsu) => ConsultaNsuAsync(nsu, CancellationToken.None);
-    /// <inheritdoc cref="ConsultaChaveAsync(string, CancellationToken)" />
-    public virtual Task<NFSeResponse<RespostaConsultaDFe>> ConsultaChaveAsync(string chave) => ConsultaChaveAsync(chave, CancellationToken.None);
-    /// <inheritdoc cref="ConsultaChaveDpsAsync(string, CancellationToken)" />
-    public virtual Task<NFSeResponse<RespostaConsultaChaveDps>> ConsultaChaveDpsAsync(string id) => ConsultaChaveDpsAsync(id, CancellationToken.None);
-    /// <inheritdoc cref="ConsultaExisteDpsAsync(string, CancellationToken)" />
-    public virtual Task<bool> ConsultaExisteDpsAsync(string id) => ConsultaExisteDpsAsync(id, CancellationToken.None);
-    /// <inheritdoc cref="EnviarEventoAsync(PedidoRegistroEvento, CancellationToken)" />
-    public virtual Task<NFSeResponse<RespostaEnvioEvento>> EnviarEventoAsync(PedidoRegistroEvento evento) => EnviarEventoAsync(evento, CancellationToken.None);
-    /// <inheritdoc cref="EnviarAsync(Dps, CancellationToken)" />
-    public virtual Task<NFSeResponse<RespostaEnvioDps>> EnviarAsync(Dps dps) => EnviarAsync(dps, CancellationToken.None);
-    /// <inheritdoc cref="EnviarLoteAsync(LoteDps, CancellationToken)" />
-    public virtual Task<NFSeResponse<RespostaRecepcaoLote>> EnviarLoteAsync(LoteDps lote) => EnviarLoteAsync(lote, CancellationToken.None);
-    /// <inheritdoc cref="EnviarLoteSincronoAsync(LoteDps, CancellationToken)" />
-    public virtual Task<NFSeResponse<RespostaRecepcaoLoteSincrono>> EnviarLoteSincronoAsync(LoteDps lote) => EnviarLoteSincronoAsync(lote, CancellationToken.None);
-    /// <inheritdoc cref="ConsultarLoteAsync(ConsultaLoteFiltro, CancellationToken)" />
-    public virtual Task<NFSeResponse<RespostaConsultaLote>> ConsultarLoteAsync(ConsultaLoteFiltro filtro) => ConsultarLoteAsync(filtro, CancellationToken.None);
-    /// <inheritdoc cref="ConsultarNFSeAsync(ConsultaNFSeFiltro, CancellationToken)" />
-    public virtual Task<NFSeResponse<RespostaConsultaNFSe>> ConsultarNFSeAsync(ConsultaNFSeFiltro filtro) => ConsultarNFSeAsync(filtro, CancellationToken.None);
-
     /// <summary>
     /// Retorna o DANFSe de uma NFS-e a partir de sua chave de acesso.
     /// </summary>
     /// <param name="chave">Chave de acesso da NFS-e.</param>
     /// <param name="cancellationToken">Token para cancelar a operação assíncrona.</param>
     /// <returns>Array de bytes contendo o DANFSe.</returns>
-    public abstract Task<byte[]> DownloadDANFSeAsync(string chave, CancellationToken cancellationToken);
+    public abstract Task<byte[]> DownloadDANFSeAsync(string chave, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Distribui os DF-e para contribuintes relacionados à NFS-e.
@@ -129,7 +106,8 @@ public abstract class NFSeWebserviceBase : IOpenLog
     /// <param name="nsu">Número NSU.</param>
     /// <param name="cancellationToken">Token para cancelar a operação assíncrona.</param>
     /// <returns>Resposta da consulta contendo os DF-e.</returns>
-    public abstract Task<NFSeResponse<RespostaConsultaDFe>> ConsultaNsuAsync(int nsu, CancellationToken cancellationToken);
+    public abstract Task<NFSeResponse<RespostaConsultaDFe>> ConsultaNsuAsync(int nsu,
+        CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Distribui os DF-e vinculados à chave de acesso informada.
@@ -137,7 +115,8 @@ public abstract class NFSeWebserviceBase : IOpenLog
     /// <param name="chave">Chave de acesso da NFS-e.</param>
     /// <param name="cancellationToken">Token para cancelar a operação assíncrona.</param>
     /// <returns>Resposta da consulta contendo os DF-e.</returns>
-    public abstract Task<NFSeResponse<RespostaConsultaDFe>> ConsultaChaveAsync(string chave, CancellationToken cancellationToken);
+    public abstract Task<NFSeResponse<RespostaConsultaDFe>> ConsultaChaveAsync(string chave,
+        CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Retorna a chave de acesso da NFS-e a partir do identificador do DPS.
@@ -145,7 +124,8 @@ public abstract class NFSeWebserviceBase : IOpenLog
     /// <param name="id">Identificação do DPS.</param>
     /// <param name="cancellationToken">Token para cancelar a operação assíncrona.</param>
     /// <returns>Resposta da consulta contendo a chave de acesso.</returns>
-    public abstract Task<NFSeResponse<RespostaConsultaChaveDps>> ConsultaChaveDpsAsync(string id, CancellationToken cancellationToken);
+    public abstract Task<NFSeResponse<RespostaConsultaChaveDps>> ConsultaChaveDpsAsync(string id,
+        CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Verifica se uma NFS-e foi emitida a partir do Id do DPS.
@@ -153,7 +133,7 @@ public abstract class NFSeWebserviceBase : IOpenLog
     /// <param name="id">Identificação do DPS.</param>
     /// <param name="cancellationToken">Token para cancelar a operação assíncrona.</param>
     /// <returns>True se existir, caso contrário false.</returns>
-    public abstract Task<bool> ConsultaExisteDpsAsync(string id, CancellationToken cancellationToken);
+    public abstract Task<bool> ConsultaExisteDpsAsync(string id, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Recepciona o Pedido de Registro de Evento e gera Eventos de NFS-e, crédito, débito e apuração.
@@ -161,7 +141,8 @@ public abstract class NFSeWebserviceBase : IOpenLog
     /// <param name="evento">Evento a ser enviado.</param>
     /// <param name="cancellationToken">Token para cancelar a operação assíncrona.</param>
     /// <returns>Resposta do envio do evento.</returns>
-    public abstract Task<NFSeResponse<RespostaEnvioEvento>> EnviarEventoAsync(PedidoRegistroEvento evento, CancellationToken cancellationToken);
+    public abstract Task<NFSeResponse<RespostaEnvioEvento>> EnviarEventoAsync(PedidoRegistroEvento evento,
+        CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Recepciona a DPS e gera a NFS-e de forma síncrona.
@@ -169,7 +150,7 @@ public abstract class NFSeWebserviceBase : IOpenLog
     /// <param name="dps">DPS a ser enviada.</param>
     /// <param name="cancellationToken">Token para cancelar a operação assíncrona.</param>
     /// <returns>Resposta do envio da DPS.</returns>
-    public abstract Task<NFSeResponse<RespostaEnvioDps>> EnviarAsync(Dps dps, CancellationToken cancellationToken);
+    public abstract Task<NFSeResponse<RespostaEnvioDps>> EnviarAsync(Dps dps, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Recepciona um lote de DPS de forma assíncrona, retornando o protocolo para acompanhamento.
@@ -178,7 +159,8 @@ public abstract class NFSeWebserviceBase : IOpenLog
     /// <param name="cancellationToken">Token para cancelar a operação assíncrona.</param>
     /// <returns>Resposta contendo o protocolo do lote.</returns>
     /// <remarks>Suportado apenas por provedores que expõem envio em lote (ex.: Fiorilli).</remarks>
-    public virtual Task<NFSeResponse<RespostaRecepcaoLote>> EnviarLoteAsync(LoteDps lote, CancellationToken cancellationToken) =>
+    public virtual Task<NFSeResponse<RespostaRecepcaoLote>> EnviarLoteAsync(LoteDps lote,
+        CancellationToken cancellationToken = default) =>
         throw OperacaoNaoSuportada(nameof(EnviarLoteAsync));
 
     /// <summary>
@@ -188,7 +170,8 @@ public abstract class NFSeWebserviceBase : IOpenLog
     /// <param name="cancellationToken">Token para cancelar a operação assíncrona.</param>
     /// <returns>Resposta contendo o protocolo e as NFS-e geradas.</returns>
     /// <remarks>Suportado apenas por provedores que expõem envio em lote síncrono (ex.: Fiorilli).</remarks>
-    public virtual Task<NFSeResponse<RespostaRecepcaoLoteSincrono>> EnviarLoteSincronoAsync(LoteDps lote, CancellationToken cancellationToken) =>
+    public virtual Task<NFSeResponse<RespostaRecepcaoLoteSincrono>> EnviarLoteSincronoAsync(LoteDps lote,
+        CancellationToken cancellationToken = default) =>
         throw OperacaoNaoSuportada(nameof(EnviarLoteSincronoAsync));
 
     /// <summary>
@@ -198,7 +181,8 @@ public abstract class NFSeWebserviceBase : IOpenLog
     /// <param name="cancellationToken">Token para cancelar a operação assíncrona.</param>
     /// <returns>Resposta contendo a situação e as NFS-e do lote.</returns>
     /// <remarks>Suportado apenas por provedores que expõem consulta de lote (ex.: Fiorilli).</remarks>
-    public virtual Task<NFSeResponse<RespostaConsultaLote>> ConsultarLoteAsync(ConsultaLoteFiltro filtro, CancellationToken cancellationToken) =>
+    public virtual Task<NFSeResponse<RespostaConsultaLote>> ConsultarLoteAsync(ConsultaLoteFiltro filtro,
+        CancellationToken cancellationToken = default) =>
         throw OperacaoNaoSuportada(nameof(ConsultarLoteAsync));
 
     /// <summary>
@@ -208,8 +192,21 @@ public abstract class NFSeWebserviceBase : IOpenLog
     /// <param name="cancellationToken">Token para cancelar a operação assíncrona.</param>
     /// <returns>Resposta contendo as NFS-e encontradas.</returns>
     /// <remarks>Suportado apenas por provedores que expõem consulta de NFS-e (ex.: Fiorilli).</remarks>
-    public virtual Task<NFSeResponse<RespostaConsultaNFSe>> ConsultarNFSeAsync(ConsultaNFSeFiltro filtro, CancellationToken cancellationToken) =>
+    public virtual Task<NFSeResponse<RespostaConsultaNFSe>> ConsultarNFSeAsync(ConsultaNFSeFiltro filtro,
+        CancellationToken cancellationToken = default) =>
         throw OperacaoNaoSuportada(nameof(ConsultarNFSeAsync));
+
+    /// <summary>
+    /// Consulta eventos por chave de acesso, tipo de evento e número sequencial do evento
+    /// </summary>
+    /// <param name="chaveAcesso">Chave de acesso da NFS-e</param>
+    /// <param name="tipoEvento">Tipo de evento</param>
+    /// <param name="numSeqEvento">Número sequencial do evento</param>
+    /// <param name="cancellationToken">Token para cancelar a operação assíncrona.</param>
+    /// <returns>Resposta da consulta contendo a chave de acesso.</returns>
+    public virtual Task<NFSeResponse<RespostaConsultaEvento>> ConsultaEventoAsync(string chaveAcesso,
+        string tipoEvento, int numSeqEvento, CancellationToken cancellationToken = default) =>
+        throw OperacaoNaoSuportada(nameof(ConsultaEventoAsync));
 
     /// <summary>
     /// Cria a exceção padrão para operações não suportadas pelo provedor atual.
@@ -234,7 +231,7 @@ public abstract class NFSeWebserviceBase : IOpenLog
         using var request = new HttpRequestMessage(method, url);
 
         var assemblyName = GetType().Assembly.GetName();
-        var productValue = new ProductInfoHeaderValue("OpenAC.Net.NFSe.Nacional", assemblyName!.Version!.ToString());
+        var productValue = new ProductInfoHeaderValue("OpenAC.Net.NFSe.Nacional", assemblyName.Version!.ToString());
         var commentValue = new ProductInfoHeaderValue("(+https://github.com/OpenAC-Net/OpenAC.Net.NFSe.Nacional)");
 
         request.Headers.UserAgent.Add(productValue);
@@ -310,7 +307,7 @@ public abstract class NFSeWebserviceBase : IOpenLog
         DateTime data, bool incrementarNome = false, CancellationToken cancellationToken = default)
     {
         if (!Configuracao.Arquivos.Salvar) return Task.CompletedTask;
-        return DocumentStore.SaveAsync(new NFSeDocument(NFSeDocumentType.Dps, conteudoArquivo, nomeArquivo,
+        return DocumentStore.SaveAsync(new NFSeDocument(NFSeTipoDocumento.Dps, conteudoArquivo, nomeArquivo,
             documento, data, incrementarNome), Configuracao, cancellationToken);
     }
 
@@ -327,7 +324,7 @@ public abstract class NFSeWebserviceBase : IOpenLog
         DateTime data, bool incrementarNome = false, CancellationToken cancellationToken = default)
     {
         if (!Configuracao.Arquivos.Salvar) return Task.CompletedTask;
-        return DocumentStore.SaveAsync(new NFSeDocument(NFSeDocumentType.NFSe, conteudoArquivo, nomeArquivo,
+        return DocumentStore.SaveAsync(new NFSeDocument(NFSeTipoDocumento.NFSe, conteudoArquivo, nomeArquivo,
             documento, data, incrementarNome), Configuracao, cancellationToken);
     }
 
@@ -342,10 +339,11 @@ public abstract class NFSeWebserviceBase : IOpenLog
         CancellationToken cancellationToken = default)
     {
         if (!Configuracao.Geral.Salvar) return Task.CompletedTask;
-        var type = nomeArquivo.Contains("-resp.", StringComparison.OrdinalIgnoreCase)
-            ? NFSeDocumentType.RespostaTecnica
-            : NFSeDocumentType.SolicitacaoTecnica;
-        return DocumentStore.SaveAsync(new NFSeDocument(type, conteudoArquivo, nomeArquivo, documento,
+        
+        var tipo = nomeArquivo.Contains("-resp.", StringComparison.OrdinalIgnoreCase)
+            ? NFSeTipoDocumento.RespostaTecnica
+            : NFSeTipoDocumento.SolicitacaoTecnica;
+        return DocumentStore.SaveAsync(new NFSeDocument(tipo, conteudoArquivo, nomeArquivo, documento,
             DateTime.Today), Configuracao, cancellationToken);
     }
 

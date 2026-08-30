@@ -11,7 +11,8 @@ public static class NFSeOperationPolicies
         nameof(IOpenNFSeNacionalClient.ConsultaChaveDpsAsync),
         nameof(IOpenNFSeNacionalClient.ConsultaExisteDpsAsync),
         nameof(IOpenNFSeNacionalClient.ConsultarLoteAsync),
-        nameof(IOpenNFSeNacionalClient.ConsultarNFSeAsync)
+        nameof(IOpenNFSeNacionalClient.ConsultarNFSeAsync),
+        nameof(IOpenNFSeNacionalClient.ConsultaEventoAsync)
     };
 
     /// <summary>Indica se uma operação pode ser repetida automaticamente.</summary>

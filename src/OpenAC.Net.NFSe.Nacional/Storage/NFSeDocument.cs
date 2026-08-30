@@ -12,7 +12,7 @@ public sealed class NFSeDocument
     /// <param name="documentoContribuinte">CPF ou CNPJ usado na organização dos diretórios.</param>
     /// <param name="data">Data de referência usada na organização dos diretórios.</param>
     /// <param name="preservarNomeArquivo">Indica se uma colisão de nome deve impedir a criação de um arquivo com sufixo.</param>
-    public NFSeDocument(NFSeDocumentType tipo, string conteudo, string nomeArquivo,
+    public NFSeDocument(NFSeTipoDocumento tipo, string conteudo, string nomeArquivo,
         string? documentoContribuinte, DateTime data, bool preservarNomeArquivo = false)
     {
         Tipo = tipo;
@@ -24,7 +24,7 @@ public sealed class NFSeDocument
     }
 
     /// <summary>Tipo do documento ou payload.</summary>
-    public NFSeDocumentType Tipo { get; }
+    public NFSeTipoDocumento Tipo { get; }
 
     /// <summary>Conteúdo que será armazenado.</summary>
     public string Conteudo { get; }

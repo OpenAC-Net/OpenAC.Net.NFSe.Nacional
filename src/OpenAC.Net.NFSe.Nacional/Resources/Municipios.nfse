@@ -15,6 +15,7 @@
 						<Endereco Tipo="DownloadDanfse">https://adn.producaorestrita.nfse.gov.br</Endereco>
 						<Endereco Tipo="ConsultarChaveDps">https://sefin.producaorestrita.nfse.gov.br/SefinNacional</Endereco>
 						<Endereco Tipo="ConsultaExisteDps">https://sefin.producaorestrita.nfse.gov.br/SefinNacional</Endereco>
+						<Endereco Tipo="ConsultarEvento">https://sefin.producaorestrita.nfse.gov.br/SefinNacional</Endereco>
 					</Enderecos>
 				</Ambiente>
 				<Ambiente Tipo="1">
@@ -26,6 +27,7 @@
 						<Endereco Tipo="DownloadDanfse">https://adn.nfse.gov.br</Endereco>
 						<Endereco Tipo="ConsultarChaveDps">https://sefin.nfse.gov.br/sefinnacional</Endereco>
 						<Endereco Tipo="ConsultaExisteDps">https://sefin.nfse.gov.br/sefinnacional</Endereco>
+						<Endereco Tipo="ConsultarEvento">https://sefin.nfse.gov.br/sefinnacional</Endereco>
 					</Enderecos>
 				</Ambiente>
 			</Ambientes>
@@ -44,6 +46,7 @@
 						<Endereco Tipo="DownloadDanfse">https://adn.producaorestrita.nfse.gov.br</Endereco>
 						<Endereco Tipo="ConsultarChaveDps">https://sefin.producaorestrita.nfse.gov.br/SefinNacional</Endereco>
 						<Endereco Tipo="ConsultaExisteDps">https://sefin.producaorestrita.nfse.gov.br/SefinNacional</Endereco>
+						<Endereco Tipo="ConsultarEvento">https://sefin.producaorestrita.nfse.gov.br/SefinNacional</Endereco>
 					</Enderecos>
 				</Ambiente>
 				<Ambiente Tipo="1">
@@ -55,6 +58,7 @@
 						<Endereco Tipo="DownloadDanfse">https://adn.nfse.gov.br</Endereco>
 						<Endereco Tipo="ConsultarChaveDps">https://sefin.nfse.gov.br/sefinnacional</Endereco>
 						<Endereco Tipo="ConsultaExisteDps">https://sefin.nfse.gov.br/sefinnacional</Endereco>
+						<Endereco Tipo="ConsultarEvento">https://sefin.nfse.gov.br/sefinnacional</Endereco>
 					</Enderecos>
 				</Ambiente>
 			</Ambientes>
@@ -73,6 +77,7 @@
 						<Endereco Tipo="DownloadDanfse">https://adn.producaorestrita.nfse.gov.br</Endereco>
 						<Endereco Tipo="ConsultarChaveDps">https://sefin.producaorestrita.nfse.gov.br/SefinNacional</Endereco>
 						<Endereco Tipo="ConsultaExisteDps">https://sefin.producaorestrita.nfse.gov.br/SefinNacional</Endereco>
+						<Endereco Tipo="ConsultarEvento">https://sefin.producaorestrita.nfse.gov.br/SefinNacional</Endereco>
 					</Enderecos>
 				</Ambiente>
 				<Ambiente Tipo="1">
@@ -84,6 +89,7 @@
 						<Endereco Tipo="DownloadDanfse">https://adn.producaorestrita.nfse.gov.br</Endereco>
 						<Endereco Tipo="ConsultarChaveDps">https://sefin.producaorestrita.nfse.gov.br/SefinNacional</Endereco>
 						<Endereco Tipo="ConsultaExisteDps">https://sefin.producaorestrita.nfse.gov.br/SefinNacional</Endereco>
+						<Endereco Tipo="ConsultarEvento">https://sefin.nfse.gov.br/sefinnacional</Endereco>
 					</Enderecos>
 				</Ambiente>
 			</Ambientes>
@@ -102,6 +108,7 @@
 						<Endereco Tipo="DownloadDanfse">https://sefin.producaorestrita.nfse.gov.br/SefinNacional</Endereco>
 						<Endereco Tipo="ConsultarChaveDps">https://sefin.producaorestrita.nfse.gov.br/SefinNacional</Endereco>
 						<Endereco Tipo="ConsultaExisteDps">https://sefin.producaorestrita.nfse.gov.br/SefinNacional</Endereco>
+						<Endereco Tipo="ConsultarEvento">https://sefin.producaorestrita.nfse.gov.br/SefinNacional</Endereco>
 					</Enderecos>
 				</Ambiente>
 				<Ambiente Tipo="1">
@@ -113,6 +120,7 @@
 						<Endereco Tipo="DownloadDanfse">https://sefin.nfse.gov.br/sefinnacional</Endereco>
 						<Endereco Tipo="ConsultarChaveDps">https://sefin.nfse.gov.br/sefinnacional</Endereco>
 						<Endereco Tipo="ConsultaExisteDps">https://sefin.nfse.gov.br/sefinnacional</Endereco>
+						<Endereco Tipo="ConsultarEvento">https://sefin.nfse.gov.br/sefinnacional</Endereco>
 					</Enderecos>
 				</Ambiente>
 			</Ambientes>
@@ -131,6 +139,7 @@
                         <Endereco Tipo="DownloadDanfse">http://fi1.fiorilli.com.br:5663/IssWeb-ejb/IssWebWSNacional/IssWebWSNacionalPortType?wsdl</Endereco>
                         <Endereco Tipo="ConsultarChaveDps">http://fi1.fiorilli.com.br:5663/IssWeb-ejb/IssWebWSNacional/IssWebWSNacionalPortType?wsdl</Endereco>
                         <Endereco Tipo="ConsultaExisteDps">http://fi1.fiorilli.com.br:5663/IssWeb-ejb/IssWebWSNacional/IssWebWSNacionalPortType?wsdl</Endereco>
+                        <Endereco Tipo="ConsultaExisteDps">http://fi1.fiorilli.com.br:5663/IssWeb-ejb/IssWebWSNacional/IssWebWSNacionalPortType?wsdl</Endereco>
                     </Enderecos>
                 </Ambiente>
                 <Ambiente Tipo="1">
@@ -141,6 +150,7 @@
                         <Endereco Tipo="ConsultarChave">http://187.62.191.5:5661/IssWeb-ejb/IssWebWSNacional/IssWebWSNacionalPortType?wsdl</Endereco>
                         <Endereco Tipo="DownloadDanfse">http://187.62.191.5:5661/IssWeb-ejb/IssWebWSNacional/IssWebWSNacionalPortType?wsdl</Endereco>
                         <Endereco Tipo="ConsultarChaveDps">http://187.62.191.5:5661/IssWeb-ejb/IssWebWSNacional/IssWebWSNacionalPortType?wsdl</Endereco>
+                        <Endereco Tipo="ConsultaExisteDps">http://187.62.191.5:5661/IssWeb-ejb/IssWebWSNacional/IssWebWSNacionalPortType?wsdl</Endereco>
                         <Endereco Tipo="ConsultaExisteDps">http://187.62.191.5:5661/IssWeb-ejb/IssWebWSNacional/IssWebWSNacionalPortType?wsdl</Endereco>
                     </Enderecos>
                 </Ambiente>

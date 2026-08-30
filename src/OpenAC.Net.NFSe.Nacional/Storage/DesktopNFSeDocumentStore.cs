@@ -21,10 +21,10 @@ public sealed class DesktopNFSeDocumentStore : INFSeDocumentStore
     {
         var directory = document.Tipo switch
         {
-            NFSeDocumentType.SolicitacaoTecnica or NFSeDocumentType.RespostaTecnica =>
+            NFSeTipoDocumento.SolicitacaoTecnica or NFSeTipoDocumento.RespostaTecnica =>
                 configuration.Arquivos.GetPathEnvio(document.Data, document.DocumentoContribuinte ?? string.Empty),
-            NFSeDocumentType.Dps => configuration.Arquivos.GetPathDps(document.Data, document.DocumentoContribuinte ?? string.Empty),
-            NFSeDocumentType.NFSe => configuration.Arquivos.GetPathNFSe(document.Data, document.DocumentoContribuinte ?? string.Empty),
+            NFSeTipoDocumento.Dps => configuration.Arquivos.GetPathDps(document.Data, document.DocumentoContribuinte ?? string.Empty),
+            NFSeTipoDocumento.NFSe => configuration.Arquivos.GetPathNFSe(document.Data, document.DocumentoContribuinte ?? string.Empty),
             _ => throw new ArgumentOutOfRangeException()
         };
         Directory.CreateDirectory(directory);

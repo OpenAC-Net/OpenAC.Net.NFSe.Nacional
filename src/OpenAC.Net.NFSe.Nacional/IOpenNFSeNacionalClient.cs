@@ -72,4 +72,15 @@ public interface IOpenNFSeNacionalClient
     /// <param name="cancellationToken">Token para cancelar a operação.</param>
     /// <returns>Notas fiscais encontradas pelo provedor.</returns>
     Task<NFSeResponse<RespostaConsultaNFSe>> ConsultarNFSeAsync(ConsultaNFSeFiltro filtro, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Consulta eventos por chave de acesso, tipo de evento e número sequencial do evento
+    /// </summary>
+    /// <param name="chaveAcesso">Chave de acesso da NFS-e</param>
+    /// <param name="tipoEvento">Tipo de evento</param>
+    /// <param name="numSeqEvento">Número sequencial do evento</param>
+    /// <param name="cancellationToken">Token para cancelar a operação assíncrona.</param>
+    /// <returns>Resposta da consulta contendo a chave de acesso.</returns>
+    Task<NFSeResponse<RespostaConsultaEvento>> ConsultaEventoAsync(string chaveAcesso, string tipoEvento,
+        int numSeqEvento, CancellationToken cancellationToken = default);
 }

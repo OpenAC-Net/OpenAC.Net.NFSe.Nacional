@@ -24,10 +24,14 @@ internal sealed class OpenNFSeNacionalWebClient(
     private static readonly ActivitySource ActivitySource = new(InstrumentationName);
     private static readonly Meter Meter = new(InstrumentationName);
     private static readonly Counter<long> Operations = Meter.CreateCounter<long>("openac.nfse.operations");
-    private static readonly Histogram<double> Duration = Meter.CreateHistogram<double>("openac.nfse.operation.duration", "ms");
+
+    private static readonly Histogram<double> Duration =
+        Meter.CreateHistogram<double>("openac.nfse.operation.duration", "ms");
+
     private readonly OpenNFSeNacionalWebOptions options = options.Value;
 
-    private NFSeWebserviceBase Provider() => NFSeServiceManager.Instance.GetProvider(configuracao, transport, documentStore);
+    private NFSeWebserviceBase Provider() =>
+        NFSeServiceManager.Instance.GetProvider(configuracao, transport, documentStore);
 
     private async Task<T> ExecuteAsync<T>(string operation, CancellationToken cancellationToken,
         Func<NFSeWebserviceBase, CancellationToken, Task<T>> action)
@@ -39,7 +43,8 @@ internal sealed class OpenNFSeNacionalWebClient(
         var started = Stopwatch.GetTimestamp();
         using var timeout = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
         timeout.CancelAfter(options.TimeoutsPorOperacao.TryGetValue(operation, out var operationTimeout)
-            ? operationTimeout : options.TimeoutOperacao);
+            ? operationTimeout
+            : options.TimeoutOperacao);
         using var scope = logger.BeginScope(new Dictionary<string, object?>
         {
             ["NFSe.Operation"] = operation,
@@ -63,7 +68,8 @@ internal sealed class OpenNFSeNacionalWebClient(
                 new KeyValuePair<string, object?>("outcome", "cancelled"));
             throw;
         }
-        catch (System.Exception exception) when (exception is HttpRequestException or Polly.CircuitBreaker.BrokenCircuitException
+        catch (System.Exception exception) when (exception is HttpRequestException
+                                                     or Polly.CircuitBreaker.BrokenCircuitException
                                                      or Polly.Timeout.TimeoutRejectedException)
         {
             logger.LogError(exception, "Falha na operação {Operation}", operation);
@@ -89,24 +95,48 @@ internal sealed class OpenNFSeNacionalWebClient(
 
     public Task<NFSeResponse<RespostaEnvioDps>> EnviarAsync(Dps dps, CancellationToken cancellationToken = default) =>
         ExecuteAsync(nameof(EnviarAsync), cancellationToken, (p, ct) => p.EnviarAsync(dps, ct));
-    public Task<NFSeResponse<RespostaEnvioEvento>> EnviarEventoAsync(PedidoRegistroEvento evento, CancellationToken cancellationToken = default) =>
+
+    public Task<NFSeResponse<RespostaEnvioEvento>> EnviarEventoAsync(PedidoRegistroEvento evento,
+        CancellationToken cancellationToken = default) =>
         ExecuteAsync(nameof(EnviarEventoAsync), cancellationToken, (p, ct) => p.EnviarEventoAsync(evento, ct));
-    public Task<NFSeResponse<RespostaConsultaDFe>> ConsultaNsuAsync(int nsu, CancellationToken cancellationToken = default) =>
+
+    public Task<NFSeResponse<RespostaConsultaDFe>> ConsultaNsuAsync(int nsu,
+        CancellationToken cancellationToken = default) =>
         ExecuteAsync(nameof(ConsultaNsuAsync), cancellationToken, (p, ct) => p.ConsultaNsuAsync(nsu, ct));
-    public Task<NFSeResponse<RespostaConsultaDFe>> ConsultaChaveAsync(string chave, CancellationToken cancellationToken = default) =>
+
+    public Task<NFSeResponse<RespostaConsultaDFe>> ConsultaChaveAsync(string chave,
+        CancellationToken cancellationToken = default) =>
         ExecuteAsync(nameof(ConsultaChaveAsync), cancellationToken, (p, ct) => p.ConsultaChaveAsync(chave, ct));
+
     public Task<byte[]> DownloadDANFSeAsync(string chave, CancellationToken cancellationToken = default) =>
         ExecuteAsync(nameof(DownloadDANFSeAsync), cancellationToken, (p, ct) => p.DownloadDANFSeAsync(chave, ct));
-    public Task<NFSeResponse<RespostaConsultaChaveDps>> ConsultaChaveDpsAsync(string id, CancellationToken cancellationToken = default) =>
+
+    public Task<NFSeResponse<RespostaConsultaChaveDps>> ConsultaChaveDpsAsync(string id,
+        CancellationToken cancellationToken = default) =>
         ExecuteAsync(nameof(ConsultaChaveDpsAsync), cancellationToken, (p, ct) => p.ConsultaChaveDpsAsync(id, ct));
+
     public Task<bool> ConsultaExisteDpsAsync(string id, CancellationToken cancellationToken = default) =>
         ExecuteAsync(nameof(ConsultaExisteDpsAsync), cancellationToken, (p, ct) => p.ConsultaExisteDpsAsync(id, ct));
-    public Task<NFSeResponse<RespostaRecepcaoLote>> EnviarLoteAsync(LoteDps lote, CancellationToken cancellationToken = default) =>
+
+    public Task<NFSeResponse<RespostaRecepcaoLote>> EnviarLoteAsync(LoteDps lote,
+        CancellationToken cancellationToken = default) =>
         ExecuteAsync(nameof(EnviarLoteAsync), cancellationToken, (p, ct) => p.EnviarLoteAsync(lote, ct));
-    public Task<NFSeResponse<RespostaRecepcaoLoteSincrono>> EnviarLoteSincronoAsync(LoteDps lote, CancellationToken cancellationToken = default) =>
-        ExecuteAsync(nameof(EnviarLoteSincronoAsync), cancellationToken, (p, ct) => p.EnviarLoteSincronoAsync(lote, ct));
-    public Task<NFSeResponse<RespostaConsultaLote>> ConsultarLoteAsync(ConsultaLoteFiltro filtro, CancellationToken cancellationToken = default) =>
+
+    public Task<NFSeResponse<RespostaRecepcaoLoteSincrono>> EnviarLoteSincronoAsync(LoteDps lote,
+        CancellationToken cancellationToken = default) =>
+        ExecuteAsync(nameof(EnviarLoteSincronoAsync), cancellationToken,
+            (p, ct) => p.EnviarLoteSincronoAsync(lote, ct));
+
+    public Task<NFSeResponse<RespostaConsultaLote>> ConsultarLoteAsync(ConsultaLoteFiltro filtro,
+        CancellationToken cancellationToken = default) =>
         ExecuteAsync(nameof(ConsultarLoteAsync), cancellationToken, (p, ct) => p.ConsultarLoteAsync(filtro, ct));
-    public Task<NFSeResponse<RespostaConsultaNFSe>> ConsultarNFSeAsync(ConsultaNFSeFiltro filtro, CancellationToken cancellationToken = default) =>
+
+    public Task<NFSeResponse<RespostaConsultaNFSe>> ConsultarNFSeAsync(ConsultaNFSeFiltro filtro,
+        CancellationToken cancellationToken = default) =>
         ExecuteAsync(nameof(ConsultarNFSeAsync), cancellationToken, (p, ct) => p.ConsultarNFSeAsync(filtro, ct));
+
+    public Task<NFSeResponse<RespostaConsultaEvento>> ConsultaEventoAsync(string chaveAcesso, string tipoEvento,
+        int numSeqEvento, CancellationToken cancellationToken = default) =>
+        ExecuteAsync(nameof(ConsultaEventoAsync), cancellationToken,
+            (p, ct) => p.ConsultaEventoAsync(chaveAcesso, tipoEvento, numSeqEvento, ct));
 }
