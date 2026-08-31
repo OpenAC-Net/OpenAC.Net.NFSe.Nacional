@@ -7,7 +7,7 @@
         <RootNamespace>OpenAC.Net.NFSe.Nacional.DANFSe.PDFSharp</RootNamespace>
         <SignAssembly>true</SignAssembly>
         <AssemblyOriginatorKeyFile>OpenAC.snk</AssemblyOriginatorKeyFile>
-        <Copyright>Copyright © Projeto OpenAC .Net 2014 - 2025</Copyright>
+        <Copyright>Copyright © Projeto OpenAC .Net 2014 - 2026</Copyright>
         <Company>OpenAC .Net - Automação Comercial em .Net</Company>
         <Authors>Projeto OpenAC .Net</Authors>
         <PackageProjectUrl>https://openac.net.br/</PackageProjectUrl>
