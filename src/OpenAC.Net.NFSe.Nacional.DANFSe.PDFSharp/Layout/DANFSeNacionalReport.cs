@@ -904,7 +904,7 @@ internal sealed class DANFSeNacionalReport
     };
 
     private static string ObterPais(string? codigoPais) =>
-        string.IsNullOrWhiteSpace(codigoPais) ? "BR" : codigoPais!;
+        string.IsNullOrWhiteSpace(codigoPais) ? "-" : codigoPais!;
 
     private static byte[]? CarregarLogoNacionalPadrao()
     {
