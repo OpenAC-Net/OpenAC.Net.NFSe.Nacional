@@ -624,9 +624,7 @@ internal sealed class DANFSeNacionalReport
 
         // Linha 3
         PdfDrawHelper.DesenharCampo(gfx, xMm + 0 * colW, yMm, colW, lineH, "Benefício Municipal",
-            vNfse.TipoBeneficioMunicipalInformado
-                ? ObterDescricaoBeneficioMunicipal(vNfse.TipoBeneficioMunicipal)
-                : "-");
+            ObterDescricaoBeneficioMunicipal(vNfse.TipoBeneficioMunicipal));
         PdfDrawHelper.DesenharCampo(gfx, xMm + 1 * colW, yMm, colW, lineH, "Cálculo do BM", FormatarMoedaOpcional(vNfse.ValorBcBeneficioMunicipal));
         PdfDrawHelper.DesenharCampo(gfx, xMm + 2 * colW, yMm, colW, lineH, "Total Deduções / Reduções", FormatarMoedaOpcional(vDps.ValoresDeducaoReducao?.Valor));
         PdfDrawHelper.DesenharCampo(gfx, xMm + 3 * colW, yMm, colW, lineH, "Desconto Incondicionado", FormatarMoedaOpcional(vDps.ValoresDesconto?.ValorIncodicional));
