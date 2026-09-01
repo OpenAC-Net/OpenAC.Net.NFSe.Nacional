@@ -747,25 +747,27 @@ internal sealed class DANFSeNacionalReport
         var vDps = nota.Informacoes.Dps.Informacoes.Valores;
 
         var vServicos = vDps.ValoresServico.Valor;
-        var vDescIncond = vDps.ValoresDesconto?.ValorIncodicional ?? 0;
-        var vDescCond = vDps.ValoresDesconto?.ValorCondicional ?? 0;
-        var vRetencoes = vNfse.TotalRetido ?? 0;
-        var vLiq = vNfse.ValorLiquido ?? (vServicos - vDescIncond - vRetencoes);
-        var totalIBSCBS = (nota.Informacoes.IBSCBS?.Totais.TotalIBS.ValorTotalIBS ?? 0) + (nota.Informacoes.IBSCBS?.Totais.TotalCBS.ValorCBS ?? 0);
+        var vDescIncond = vDps.ValoresDesconto?.ValorIncodicional;
+        var vDescCond = vDps.ValoresDesconto?.ValorCondicional;
+        var totaisIBSCBS = nota.Informacoes.IBSCBS?.Totais;
+        decimal? totalIBSCBS = totaisIBSCBS == null
+            ? null
+            : totaisIBSCBS.TotalIBS.ValorTotalIBS + totaisIBSCBS.TotalCBS.ValorCBS;
+        var valorTotalNF = totaisIBSCBS?.ValorTotalNF;
 
         // Linha 1
         PdfDrawHelper.DesenharTituloBlocoInline(gfx, xMm, yMm, colW, lineH, "Valor Total da NFS-e");
         PdfDrawHelper.DesenharCampo(gfx, xMm + 1 * colW, yMm, colW, lineH, "Valor da Operação / Serviço", FormatarMoeda(vServicos));
-        PdfDrawHelper.DesenharCampo(gfx, xMm + 2 * colW, yMm, colW, lineH, "Desconto Incondicionado", FormatarMoeda(vDescIncond));
-        PdfDrawHelper.DesenharCampo(gfx, xMm + 3 * colW, yMm, colW, lineH, "Desconto Condicionado", FormatarMoeda(vDescCond));
+        PdfDrawHelper.DesenharCampo(gfx, xMm + 2 * colW, yMm, colW, lineH, "Desconto Incondicionado", FormatarMoedaOpcional(vDescIncond));
+        PdfDrawHelper.DesenharCampo(gfx, xMm + 3 * colW, yMm, colW, lineH, "Desconto Condicionado", FormatarMoedaOpcional(vDescCond));
 
         yMm += lineH;
 
         // Linha 2
-        PdfDrawHelper.DesenharCampo(gfx, xMm + 0 * colW, yMm, colW, lineH, "Total Retenções (ISS / Federais)", FormatarMoeda(vRetencoes));
-        PdfDrawHelper.DesenharCampo(gfx, xMm + 1 * colW, yMm, colW, lineH, "Valor Líquido da NFS-e", FormatarMoeda(vLiq), negrito: true);
-        PdfDrawHelper.DesenharCampo(gfx, xMm + 2 * colW, yMm, colW, lineH, "Total IBS / CBS", FormatarMoeda(totalIBSCBS));
-        PdfDrawHelper.DesenharCampo(gfx, xMm + 3 * colW, yMm, colW, lineH, "Valor Líquido + IBS/CBS", FormatarMoeda(vLiq + totalIBSCBS), sombreado: true, negrito: true);
+        PdfDrawHelper.DesenharCampo(gfx, xMm + 0 * colW, yMm, colW, lineH, "Total Retenções (ISS / Federais)", FormatarMoedaOpcional(vNfse.TotalRetido));
+        PdfDrawHelper.DesenharCampo(gfx, xMm + 1 * colW, yMm, colW, lineH, "Valor Líquido da NFS-e", FormatarMoedaOpcional(vNfse.ValorLiquido), negrito: true);
+        PdfDrawHelper.DesenharCampo(gfx, xMm + 2 * colW, yMm, colW, lineH, "Total IBS / CBS", FormatarMoedaOpcional(totalIBSCBS));
+        PdfDrawHelper.DesenharCampo(gfx, xMm + 3 * colW, yMm, colW, lineH, "Valor Líquido + IBS/CBS", FormatarMoedaOpcional(valorTotalNF), sombreado: true, negrito: true);
 
         yMm += lineH;
         PdfDrawHelper.DesenharLinhaSeparadora(gfx, xMm, yMm, largUtilMm);
