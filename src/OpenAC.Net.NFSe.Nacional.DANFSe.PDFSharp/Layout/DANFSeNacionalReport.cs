@@ -625,19 +625,26 @@ internal sealed class DANFSeNacionalReport
         var lineH = DANFSeConstantes.AlturaLinhaPadraoMm;
         var vDps = nota.Informacoes.Dps.Informacoes.Valores;
         var tribFed = vDps.Tributos.Federal;
+        var pisCofins = tribFed?.PisCofins;
+        var pisCofinsRetidos = pisCofins?.TipoRetencao == TipoRetencaoPisCofinsCsll.PisCofinsRetidos;
+        var valorContribuicoesSociais = pisCofinsRetidos
+            ? SomarValoresInformados(tribFed?.ValorCSLL, pisCofins?.ValorPis, pisCofins?.ValorCofins)
+            : tribFed?.ValorCSLL;
+        var valorPis = pisCofinsRetidos ? 0m : pisCofins?.ValorPis;
+        var valorCofins = pisCofinsRetidos ? 0m : pisCofins?.ValorCofins;
 
         // Linha 1
         PdfDrawHelper.DesenharTituloBlocoInline(gfx, xMm, yMm, colW, lineH, "Tributação Federal (Exceto CBS)");
         PdfDrawHelper.DesenharCampo(gfx, xMm + 1 * colW, yMm, colW, lineH, "IRRF", FormatarMoedaOpcional(tribFed?.ValorIRRF));
         PdfDrawHelper.DesenharCampo(gfx, xMm + 2 * colW, yMm, colW, lineH, "Contribuição Previdenciária", FormatarMoedaOpcional(tribFed?.ValorCP));
-        PdfDrawHelper.DesenharCampo(gfx, xMm + 3 * colW, yMm, colW, lineH, "Contribuições Sociais", FormatarMoedaOpcional(tribFed?.ValorCSLL));
+        PdfDrawHelper.DesenharCampo(gfx, xMm + 3 * colW, yMm, colW, lineH, "Contribuições Sociais", FormatarMoedaOpcional(valorContribuicoesSociais));
 
         yMm += lineH;
 
         // Linha 2
         PdfDrawHelper.DesenharCampo(gfx, xMm + 0 * colW, yMm, colW, lineH, "", "");
-        PdfDrawHelper.DesenharCampo(gfx, xMm + 1 * colW, yMm, colW, lineH, "PIS - Débito de Apuração Própria", FormatarMoedaOpcional(tribFed?.PisCofins?.ValorPis));
-        PdfDrawHelper.DesenharCampo(gfx, xMm + 2 * colW, yMm, colW, lineH, "COFINS - Débito de Apuração", FormatarMoedaOpcional(tribFed?.PisCofins?.ValorCofins));
+        PdfDrawHelper.DesenharCampo(gfx, xMm + 1 * colW, yMm, colW, lineH, "PIS - Débito de Apuração Própria", FormatarMoedaOpcional(valorPis));
+        PdfDrawHelper.DesenharCampo(gfx, xMm + 2 * colW, yMm, colW, lineH, "COFINS - Débito de Apuração", FormatarMoedaOpcional(valorCofins));
         PdfDrawHelper.DesenharCampo(gfx, xMm + 3 * colW, yMm, colW, lineH, "Outras Retenções", "-");
 
         yMm += lineH;
@@ -941,6 +948,11 @@ internal sealed class DANFSeNacionalReport
     private static string FormatarMoedaOpcional(decimal? valor) => valor?.ToString("N2", PtBr) ?? "-";
     private static string FormatarPercentualOpcional(decimal? valor) => valor == null ? "-" : valor.Value.ToString("N2", PtBr) + " %";
 
+    private static decimal? SomarValoresInformados(decimal? valorCsll, decimal? valorPis, decimal? valorCofins) =>
+        valorCsll.HasValue || valorPis.HasValue || valorCofins.HasValue
+            ? (valorCsll ?? 0m) + (valorPis ?? 0m) + (valorCofins ?? 0m)
+            : null;
+
     private static string ObterDescricaoTributacaoISSQN(TributoISSQN tributacao) => tributacao switch
     {
         TributoISSQN.OperacaoTributavel => "Operação Tributável",
@@ -984,7 +996,11 @@ internal sealed class DANFSeNacionalReport
         _ => nota.Informacoes.SituacaoNFSe.ToString()
     };
 
-    private string ObterFinalidade() => nota.Informacoes.Dps.Informacoes.IBSCBS?.FinalidadeNFSe.ToString() ?? "Normal";
+    private string ObterFinalidade() => nota.Informacoes.Dps.Informacoes.IBSCBS?.FinalidadeNFSe switch
+    {
+        RTCFinNFSe.Regular => "NFS-e regular",
+        _ => "-"
+    };
 
     private static string ObterSimplesNacionalDescricao(OptanteSimplesNacional opcao) => opcao switch
     {
