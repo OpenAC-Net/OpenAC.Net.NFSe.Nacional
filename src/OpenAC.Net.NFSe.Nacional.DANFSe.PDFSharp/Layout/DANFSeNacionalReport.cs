@@ -377,7 +377,7 @@ internal sealed class DANFSeNacionalReport
 
         // Linha 1: Número da NFS-e / Competência / Data Emissão NFS-e
         PdfDrawHelper.DesenharCampo(gfx, xMm + 0 * colW, curY, colW, lineH, "NÚMERO DA NFS-e", nota.Informacoes.NumeroNFSe.ToString());
-        PdfDrawHelper.DesenharCampo(gfx, xMm + 1 * colW, curY, colW, lineH, "COMPETÊNCIA", dps.Competencia > DateTime.MinValue ? dps.Competencia.ToString("MM/yyyy") : "-");
+        PdfDrawHelper.DesenharCampo(gfx, xMm + 1 * colW, curY, colW, lineH, "COMPETÊNCIA", dps.Competencia > DateTime.MinValue ? dps.Competencia.ToString("dd/MM/yyyy") : "-");
         PdfDrawHelper.DesenharCampo(gfx, xMm + 2 * colW, curY, colW, lineH, "DATA/HORA EMISSÃO NFS-e", nota.Informacoes.DhProcessamento.ToString("dd/MM/yyyy HH:mm:ss"));
 
         curY += lineH;
@@ -994,8 +994,10 @@ internal sealed class DANFSeNacionalReport
 
     private string ObterSituacaoNFSe() => nota.Informacoes.SituacaoNFSe switch
     {
-        StatusNFSe.Gerada => "Emitida com Sucesso",
-        StatusNFSe.SubstituicaoGerada => "Substituída",
+        StatusNFSe.Gerada => "NFS-e Gerada",
+        StatusNFSe.SubstituicaoGerada => "NFS-e de Substituição Gerada",
+        StatusNFSe.DecisaoJudicial => "NFS-e de Decisão Judicial",
+        StatusNFSe.Avulsa => "NFS-e Avulsa",
         _ => nota.Informacoes.SituacaoNFSe.ToString()
     };
 
