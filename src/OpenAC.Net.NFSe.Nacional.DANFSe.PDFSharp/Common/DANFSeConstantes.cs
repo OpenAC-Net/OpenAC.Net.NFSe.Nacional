@@ -96,9 +96,6 @@ public static class DANFSeConstantes
     /// <summary>Mensagem padrão quando o destinatário não foi identificado.</summary>
     public const string MsgDestVazio = "DESTINATÁRIO DA OPERAÇÃO NÃO IDENTIFICADO NA NFS-e";
 
-    /// <summary>Mensagem padrão quando o destinatário é o próprio tomador.</summary>
-    public const string MsgDestIgualTomador = "O DESTINATÁRIO É O PRÓPRIO TOMADOR/ADQUIRENTE DA OPERAÇÃO";
-
     /// <summary>Mensagem padrão quando o intermediário não foi identificado.</summary>
     public const string MsgIntermVazio = "INTERMEDIÁRIO DA OPERAÇÃO NÃO IDENTIFICADO NA NFS-e";
 

@@ -115,13 +115,11 @@ internal sealed class DANFSeNacionalReport
         // Tomador / Adquirente
         DesenharBandaTomador(gfx);
 
-        // Destinatário (quando aplicável)
-        if (PossuiDestinatario() || DestinatarioEhTomador())
-            DesenharBandaDestinatario(gfx);
+        // Destinatário
+        DesenharBandaDestinatario(gfx);
 
-        // Intermediário (quando aplicável)
-        if (PossuiIntermediario())
-            DesenharBandaIntermediario(gfx);
+        // Intermediário
+        DesenharBandaIntermediario(gfx);
 
         // Serviço Prestado
         DesenharBandaServicoPrestado(gfx, layout.AlturaDescricaoServicoMm);
@@ -153,11 +151,8 @@ internal sealed class DANFSeNacionalReport
 
         alturaFixaMm += PossuiTomador() ? 3 * lineH : DANFSeConstantes.AlturaLinhaVaziaMm;
 
-        if (PossuiDestinatario() || DestinatarioEhTomador())
-            alturaFixaMm += PossuiDestinatario() ? 2 * lineH : DANFSeConstantes.AlturaLinhaVaziaMm;
-
-        if (PossuiIntermediario())
-            alturaFixaMm += 3 * lineH;
+        alturaFixaMm += PossuiDestinatario() ? 2 * lineH : DANFSeConstantes.AlturaLinhaVaziaMm;
+        alturaFixaMm += PossuiIntermediario() ? 3 * lineH : DANFSeConstantes.AlturaLinhaVaziaMm;
 
         alturaFixaMm += lineH + AlturaDescricaoTributacaoMm;
         alturaFixaMm += 4 * lineH; // Tributação Municipal
@@ -234,31 +229,25 @@ internal sealed class DANFSeNacionalReport
         }
 
         // Destinatário
-        if (PossuiDestinatario() || DestinatarioEhTomador())
+        if (!PossuiDestinatario())
         {
-            if (!PossuiDestinatario())
-            {
-                curY += DANFSeConstantes.AlturaLinhaVaziaMm;
-            }
-            else
-            {
-                PdfDrawHelper.DesenharFundoSombreado(gfx, xMm, curY, colW4, lineH);
-                curY += 3 * lineH;
-            }
+            curY += DANFSeConstantes.AlturaLinhaVaziaMm;
+        }
+        else
+        {
+            PdfDrawHelper.DesenharFundoSombreado(gfx, xMm, curY, colW4, lineH);
+            curY += 2 * lineH;
         }
 
         // Intermediário
-        if (PossuiIntermediario())
+        if (!PossuiIntermediario())
         {
-            if (nota.Informacoes.Dps.Informacoes.Intermediario == null)
-            {
-                curY += DANFSeConstantes.AlturaLinhaVaziaMm;
-            }
-            else
-            {
-                PdfDrawHelper.DesenharFundoSombreado(gfx, xMm, curY, colW4, lineH);
-                curY += 2 * lineH;
-            }
+            curY += DANFSeConstantes.AlturaLinhaVaziaMm;
+        }
+        else
+        {
+            PdfDrawHelper.DesenharFundoSombreado(gfx, xMm, curY, colW4, lineH);
+            curY += 3 * lineH;
         }
 
         // Serviço Prestado
@@ -345,9 +334,10 @@ internal sealed class DANFSeNacionalReport
         var dirX = xMm + largUtilMm - 52.0;
         var dirW = 51.0;
 
+        var emitente = nota.Informacoes.Emitente;
         var municipio = !string.IsNullOrWhiteSpace(config.CabecalhoMunicipio)
             ? config.CabecalhoMunicipio
-            : nota.Informacoes.LocalEmissao;
+            : ObterMunicipioUf(emitente.Endereco.CodMunicipio, nota.Informacoes.LocalEmissao, emitente.Endereco.UF);
 
         var fontMun = new XFont(DANFSeConstantes.FontePadrao, DANFSeConstantes.FonteMunicipioPt, XFontStyleEx.Bold);
         var fontAmb = new XFont(DANFSeConstantes.FontePadrao, DANFSeConstantes.FonteAmbientePt, XFontStyleEx.Regular);
@@ -513,8 +503,7 @@ internal sealed class DANFSeNacionalReport
 
         if (!PossuiDestinatario())
         {
-            var msg = DestinatarioEhTomador() ? DANFSeConstantes.MsgDestIgualTomador : DANFSeConstantes.MsgDestVazio;
-            PdfDrawHelper.DesenharLinhaVazia(gfx, xMm, yMm, largUtilMm, DANFSeConstantes.AlturaLinhaVaziaMm, msg);
+            PdfDrawHelper.DesenharLinhaVazia(gfx, xMm, yMm, largUtilMm, DANFSeConstantes.AlturaLinhaVaziaMm, DANFSeConstantes.MsgDestVazio);
             yMm += DANFSeConstantes.AlturaLinhaVaziaMm;
             PdfDrawHelper.DesenharLinhaSeparadora(gfx, xMm, yMm, largUtilMm);
             return;
@@ -634,10 +623,13 @@ internal sealed class DANFSeNacionalReport
         yMm += lineH;
 
         // Linha 3
-        PdfDrawHelper.DesenharCampo(gfx, xMm + 0 * colW, yMm, colW, lineH, "Benefício Municipal", vNfse.TipoBeneficioMunicipal.ToString());
-        PdfDrawHelper.DesenharCampo(gfx, xMm + 1 * colW, yMm, colW, lineH, "Cálculo do BM", FormatarMoeda(vNfse.ValorBcBeneficioMunicipal));
-        PdfDrawHelper.DesenharCampo(gfx, xMm + 2 * colW, yMm, colW, lineH, "Total Deduções / Reduções", FormatarMoeda(vDps.ValoresDeducaoReducao?.Valor));
-        PdfDrawHelper.DesenharCampo(gfx, xMm + 3 * colW, yMm, colW, lineH, "Desconto Incondicionado", FormatarMoeda(vDps.ValoresDesconto?.ValorIncodicional));
+        PdfDrawHelper.DesenharCampo(gfx, xMm + 0 * colW, yMm, colW, lineH, "Benefício Municipal",
+            vNfse.TipoBeneficioMunicipalInformado
+                ? ObterDescricaoBeneficioMunicipal(vNfse.TipoBeneficioMunicipal)
+                : "-");
+        PdfDrawHelper.DesenharCampo(gfx, xMm + 1 * colW, yMm, colW, lineH, "Cálculo do BM", FormatarMoedaOpcional(vNfse.ValorBcBeneficioMunicipal));
+        PdfDrawHelper.DesenharCampo(gfx, xMm + 2 * colW, yMm, colW, lineH, "Total Deduções / Reduções", FormatarMoedaOpcional(vDps.ValoresDeducaoReducao?.Valor));
+        PdfDrawHelper.DesenharCampo(gfx, xMm + 3 * colW, yMm, colW, lineH, "Desconto Incondicionado", FormatarMoedaOpcional(vDps.ValoresDesconto?.ValorIncodicional));
 
         yMm += lineH;
 
@@ -921,6 +913,15 @@ internal sealed class DANFSeNacionalReport
         _ => "-"
     };
 
+    private static string ObterDescricaoBeneficioMunicipal(TipoBeneficioMunicipal? beneficio) => beneficio switch
+    {
+        TipoBeneficioMunicipal.Isencao => "Isenção",
+        TipoBeneficioMunicipal.ReducaoBCPerc => "Redução percentual da BC",
+        TipoBeneficioMunicipal.ReducaoBCValor => "Redução em valor da BC",
+        TipoBeneficioMunicipal.AliquotaDiferenciada => "Alíquota diferenciada",
+        _ => "-"
+    };
+
     private static string ObterDescricaoRegimeEspecial(RegimeEspecial regime) => regime switch
     {
         RegimeEspecial.Nenhum => "-",
@@ -974,7 +975,6 @@ internal sealed class DANFSeNacionalReport
 
     private bool PossuiTomador() => nota.Informacoes.Dps.Informacoes.Tomador != null;
     private bool PossuiDestinatario() => nota.Informacoes.Dps.Informacoes.IBSCBS?.Destinatario != null;
-    private bool DestinatarioEhTomador() => PossuiTomador() && !PossuiDestinatario();
     private bool PossuiIntermediario() => nota.Informacoes.Dps.Informacoes.Intermediario != null;
     private bool PossuiIBSCBS() => nota.Informacoes.IBSCBS != null;
 
