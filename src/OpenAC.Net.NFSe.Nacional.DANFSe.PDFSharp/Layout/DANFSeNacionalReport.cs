@@ -628,16 +628,16 @@ internal sealed class DANFSeNacionalReport
 
         // Linha 1
         PdfDrawHelper.DesenharTituloBlocoInline(gfx, xMm, yMm, colW, lineH, "Tributação Federal (Exceto CBS)");
-        PdfDrawHelper.DesenharCampo(gfx, xMm + 1 * colW, yMm, colW, lineH, "IRRF", FormatarMoeda(tribFed?.ValorIRRF));
-        PdfDrawHelper.DesenharCampo(gfx, xMm + 2 * colW, yMm, colW, lineH, "Contribuição Previdenciária", FormatarMoeda(tribFed?.ValorCP));
-        PdfDrawHelper.DesenharCampo(gfx, xMm + 3 * colW, yMm, colW, lineH, "Contribuições Sociais", FormatarMoeda(tribFed?.ValorCSLL));
+        PdfDrawHelper.DesenharCampo(gfx, xMm + 1 * colW, yMm, colW, lineH, "IRRF", FormatarMoedaOpcional(tribFed?.ValorIRRF));
+        PdfDrawHelper.DesenharCampo(gfx, xMm + 2 * colW, yMm, colW, lineH, "Contribuição Previdenciária", FormatarMoedaOpcional(tribFed?.ValorCP));
+        PdfDrawHelper.DesenharCampo(gfx, xMm + 3 * colW, yMm, colW, lineH, "Contribuições Sociais", FormatarMoedaOpcional(tribFed?.ValorCSLL));
 
         yMm += lineH;
 
         // Linha 2
         PdfDrawHelper.DesenharCampo(gfx, xMm + 0 * colW, yMm, colW, lineH, "", "");
-        PdfDrawHelper.DesenharCampo(gfx, xMm + 1 * colW, yMm, colW, lineH, "PIS - Débito de Apuração Própria", FormatarMoeda(tribFed?.PisCofins?.ValorPis));
-        PdfDrawHelper.DesenharCampo(gfx, xMm + 2 * colW, yMm, colW, lineH, "COFINS - Débito de Apuração", FormatarMoeda(tribFed?.PisCofins?.ValorCofins));
+        PdfDrawHelper.DesenharCampo(gfx, xMm + 1 * colW, yMm, colW, lineH, "PIS - Débito de Apuração Própria", FormatarMoedaOpcional(tribFed?.PisCofins?.ValorPis));
+        PdfDrawHelper.DesenharCampo(gfx, xMm + 2 * colW, yMm, colW, lineH, "COFINS - Débito de Apuração", FormatarMoedaOpcional(tribFed?.PisCofins?.ValorCofins));
         PdfDrawHelper.DesenharCampo(gfx, xMm + 3 * colW, yMm, colW, lineH, "Outras Retenções", "-");
 
         yMm += lineH;
