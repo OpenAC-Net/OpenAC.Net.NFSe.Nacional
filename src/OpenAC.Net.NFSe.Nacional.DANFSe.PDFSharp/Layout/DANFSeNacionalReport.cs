@@ -584,24 +584,17 @@ internal sealed class DANFSeNacionalReport
         var vNfse = nota.Informacoes.Valores;
         var vDps = nota.Informacoes.Dps.Informacoes.Valores;
         var tribMun = vDps.Tributos.Municipal;
-
-        if (vNfse.ValorISSQN == null && tribMun.Aliquota == null && (vNfse.ValorBc == null || vNfse.ValorBc == 0))
-        {
-            PdfDrawHelper.DesenharLinhaVazia(gfx, xMm, yMm, largUtilMm, DANFSeConstantes.AlturaLinhaVaziaMm, DANFSeConstantes.MsgIssqnVazio);
-            yMm += DANFSeConstantes.AlturaLinhaVaziaMm;
-            PdfDrawHelper.DesenharLinhaSeparadora(gfx, xMm, yMm, largUtilMm);
-            return;
-        }
+        var regime = nota.Informacoes.Dps.Informacoes.Prestador.Regime;
 
         // Linha 1
         PdfDrawHelper.DesenharTituloBlocoInline(gfx, xMm, yMm, colW, lineH, "Tributação Municipal (ISSQN)");
-        PdfDrawHelper.DesenharCampo(gfx, xMm + 1 * colW, yMm, colW, lineH, "Tipo de Tributação", tribMun.ISSQN.ToString());
+        PdfDrawHelper.DesenharCampo(gfx, xMm + 1 * colW, yMm, colW, lineH, "Tipo de Tributação", ObterDescricaoTributacaoISSQN(tribMun.ISSQN));
         PdfDrawHelper.DesenharCampo(gfx, xMm + 2 * colW, yMm, colW * 2.0, lineH, "Município / Sigla UF / País da Incidência", $"{nota.Informacoes.LocalIncidencia} / BR");
 
         yMm += lineH;
 
         // Linha 2
-        PdfDrawHelper.DesenharCampo(gfx, xMm + 0 * colW, yMm, colW, lineH, "Regime Especial de Tributação", tribMun.ISSQN.ToString());
+        PdfDrawHelper.DesenharCampo(gfx, xMm + 0 * colW, yMm, colW, lineH, "Regime Especial de Tributação", ObterDescricaoRegimeEspecial(regime.RegimeEspecial));
         PdfDrawHelper.DesenharCampo(gfx, xMm + 1 * colW, yMm, colW, lineH, "Tipo de Imunidade do ISSQN", tribMun.TipoImunidade?.ToString() ?? "-");
         PdfDrawHelper.DesenharCampo(gfx, xMm + 2 * colW, yMm, colW, lineH, "Suspensão da Exigibilidade", tribMun.Suspensao?.TipoSuspensao.ToString() ?? "-");
         PdfDrawHelper.DesenharCampo(gfx, xMm + 3 * colW, yMm, colW, lineH, "Nº Processo Suspensão", tribMun.Suspensao?.NumeroProcesso ?? "-");
@@ -617,10 +610,10 @@ internal sealed class DANFSeNacionalReport
         yMm += lineH;
 
         // Linha 4
-        PdfDrawHelper.DesenharCampo(gfx, xMm + 0 * colW, yMm, colW, lineH, "BC ISSQN", FormatarMoeda(vNfse.ValorBc));
-        PdfDrawHelper.DesenharCampo(gfx, xMm + 1 * colW, yMm, colW, lineH, "Alíquota Aplicada", FormatarPercentual(vNfse.Aliquota));
-        PdfDrawHelper.DesenharCampo(gfx, xMm + 2 * colW, yMm, colW, lineH, "Retenção do ISSQN", tribMun.TipoRetencaoISSQN?.ToString() ?? "-");
-        PdfDrawHelper.DesenharCampo(gfx, xMm + 3 * colW, yMm, colW, lineH, "ISSQN Apurado", FormatarMoeda(vNfse.ValorISSQN));
+        PdfDrawHelper.DesenharCampo(gfx, xMm + 0 * colW, yMm, colW, lineH, "BC ISSQN", FormatarMoedaOpcional(vNfse.ValorBc));
+        PdfDrawHelper.DesenharCampo(gfx, xMm + 1 * colW, yMm, colW, lineH, "Alíquota Aplicada", FormatarPercentualOpcional(vNfse.Aliquota));
+        PdfDrawHelper.DesenharCampo(gfx, xMm + 2 * colW, yMm, colW, lineH, "Retenção do ISSQN", ObterDescricaoRetencaoISSQN(tribMun.TipoRetencaoISSQN));
+        PdfDrawHelper.DesenharCampo(gfx, xMm + 3 * colW, yMm, colW, lineH, "ISSQN Apurado", FormatarMoedaOpcional(vNfse.ValorISSQN));
 
         yMm += lineH;
         PdfDrawHelper.DesenharLinhaSeparadora(gfx, xMm, yMm, largUtilMm);
@@ -945,6 +938,37 @@ internal sealed class DANFSeNacionalReport
 
     private static string FormatarMoeda(decimal? valor) => (valor ?? 0).ToString("N2", PtBr);
     private static string FormatarPercentual(decimal? valor) => (valor ?? 0).ToString("N2", PtBr) + " %";
+    private static string FormatarMoedaOpcional(decimal? valor) => valor?.ToString("N2", PtBr) ?? "-";
+    private static string FormatarPercentualOpcional(decimal? valor) => valor == null ? "-" : valor.Value.ToString("N2", PtBr) + " %";
+
+    private static string ObterDescricaoTributacaoISSQN(TributoISSQN tributacao) => tributacao switch
+    {
+        TributoISSQN.OperacaoTributavel => "Operação Tributável",
+        TributoISSQN.Imunidade => "Imunidade",
+        TributoISSQN.ExportacaoServico => "Exportação de Serviço",
+        TributoISSQN.NaoIncidencia => "Não Incidência",
+        _ => tributacao.ToString()
+    };
+
+    private static string ObterDescricaoRetencaoISSQN(TipoRetencaoISSQN? retencao) => retencao switch
+    {
+        TipoRetencaoISSQN.NaoRetido => "Não Retido",
+        TipoRetencaoISSQN.RetidoTomador => "Retido pelo Tomador",
+        TipoRetencaoISSQN.RetidoIntermediario => "Retido pelo Intermediário",
+        _ => "-"
+    };
+
+    private static string ObterDescricaoRegimeEspecial(RegimeEspecial regime) => regime switch
+    {
+        RegimeEspecial.Nenhum => "-",
+        RegimeEspecial.Cooperativa => "Ato Cooperado (Cooperativa)",
+        RegimeEspecial.Estimativa => "Estimativa",
+        RegimeEspecial.MicroempresaMunicipal => "Microempresa Municipal",
+        RegimeEspecial.NotarioRegistrador => "Notário ou Registrador",
+        RegimeEspecial.ProfissionalAutonomo => "Profissional Autônomo",
+        RegimeEspecial.SociedadeProfissionais => "Sociedade de Profissionais",
+        _ => regime.ToString()
+    };
 
     private string ObterDescricaoAmbienteGerador() => nota.Informacoes.AmbienteGerador switch
     {
