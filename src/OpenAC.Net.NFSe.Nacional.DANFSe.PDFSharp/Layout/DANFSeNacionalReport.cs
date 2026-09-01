@@ -34,6 +34,7 @@ internal sealed class DANFSeNacionalReport
 
     private const string LogoNacionalResourceName =
         "OpenAC.Net.NFSe.Nacional.DANFSe.PDFSharp.Resources.Images.NfseHorizontal.png";
+    private const string MsgDestProprioTomador = "O DESTINATÁRIO É O PRÓPRIO TOMADOR/ADQUIRENTE DA OPERAÇÃO";
     private const double AlturaDescricaoTributacaoMm = 3.8;
     private const double AlturaMinimaDescricaoServicoMm = 6.3;
     private const double AlturaMinimaInformacoesComplementaresMm = 15.0;
@@ -390,7 +391,7 @@ internal sealed class DANFSeNacionalReport
         curY += lineH;
 
         // Linha 3: Emitente / Situação / Finalidade
-        PdfDrawHelper.DesenharCampo(gfx, xMm + 0 * colW, curY, colW, lineH, "EMITENTE DA NFS-e", "Prestador", sombreado: true);
+        PdfDrawHelper.DesenharCampo(gfx, xMm + 0 * colW, curY, colW, lineH, "EMITENTE DA NFS-e", ObterDescricaoEmitente(dps.TipoEmitente), sombreado: true);
         PdfDrawHelper.DesenharCampo(gfx, xMm + 1 * colW, curY, colW, lineH, "SITUAÇÃO DA NFS-e", ObterSituacaoNFSe());
         PdfDrawHelper.DesenharCampo(gfx, xMm + 2 * colW, curY, colW, lineH, "FINALIDADE", ObterFinalidade());
 
@@ -499,7 +500,10 @@ internal sealed class DANFSeNacionalReport
 
         if (!PossuiDestinatario())
         {
-            PdfDrawHelper.DesenharLinhaVazia(gfx, xMm, yMm, largUtilMm, DANFSeConstantes.AlturaLinhaVaziaMm, DANFSeConstantes.MsgDestVazio);
+            var mensagem = DestinatarioEhProprioTomador()
+                ? MsgDestProprioTomador
+                : DANFSeConstantes.MsgDestVazio;
+            PdfDrawHelper.DesenharLinhaVazia(gfx, xMm, yMm, largUtilMm, DANFSeConstantes.AlturaLinhaVaziaMm, mensagem);
             yMm += DANFSeConstantes.AlturaLinhaVaziaMm;
             PdfDrawHelper.DesenharLinhaSeparadora(gfx, xMm, yMm, largUtilMm);
             return;
@@ -787,14 +791,9 @@ internal sealed class DANFSeNacionalReport
         if (!string.IsNullOrWhiteSpace(complServ?.Informacoes))
             complementares.AppendLine(complServ!.Informacoes);
 
-        // Tributos aproximados (IBPT / Lei 12.741)
+        // Tributos aproximados (Lei 12.741/2012)
         var totTrib = nota.Informacoes.Dps.Informacoes.Valores.Tributos.Total;
-        if (totTrib.ValorTotal != null)
-        {
-            complementares.AppendLine($"Valor aproximado dos tributos: Federais: {FormatarMoeda(totTrib.ValorTotal.TotalFederal)}, " +
-                                   $"Estaduais: {FormatarMoeda(totTrib.ValorTotal.TotalEstadual)}, " +
-                                   $"Municipais: {FormatarMoeda(totTrib.ValorTotal.TotalMunicipal)} (Lei 12.741/2012)");
-        }
+        complementares.AppendLine(ObterTotaisAproximadosTributos(totTrib));
 
         PdfDrawHelper.DesenharTextoComReticencias(
             gfx,
@@ -815,8 +814,6 @@ internal sealed class DANFSeNacionalReport
             texto = DANFSeConstantes.MsgCancelada;
         else if (config.Substituida)
             texto = DANFSeConstantes.MsgSubstituida;
-        else if (config.Homologacao)
-            texto = DANFSeConstantes.MsgSemValidade;
 
         if (!string.IsNullOrWhiteSpace(texto))
         {
@@ -1007,6 +1004,37 @@ internal sealed class DANFSeNacionalReport
         _ => "-"
     };
 
+    private static string ObterDescricaoEmitente(EmitenteDps emitente) => emitente switch
+    {
+        EmitenteDps.Prestador => "Prestador",
+        EmitenteDps.Tomador => "Tomador",
+        EmitenteDps.Intermediário => "Intermediário",
+        _ => emitente.ToString()
+    };
+
+    private static string ObterTotaisAproximadosTributos(TotalTributos total)
+    {
+        var federal = "-";
+        var estadual = "-";
+        var municipal = "-";
+
+        if (total.ValorTotal != null)
+        {
+            federal = $"R$ {FormatarMoeda(total.ValorTotal.TotalFederal)}";
+            estadual = $"R$ {FormatarMoeda(total.ValorTotal.TotalEstadual)}";
+            municipal = $"R$ {FormatarMoeda(total.ValorTotal.TotalMunicipal)}";
+        }
+        else if (total.PorcentagemTotal != null)
+        {
+            federal = FormatarPercentual(total.PorcentagemTotal.TotalFederal);
+            estadual = FormatarPercentual(total.PorcentagemTotal.TotalEstadual);
+            municipal = FormatarPercentual(total.PorcentagemTotal.TotalMunicipal);
+        }
+
+        return $"Totais Aproximados dos Tributos cfe. Lei nº 12.741/2012: Federais: {federal}; " +
+               $"Estaduais: {estadual}; Municipais: {municipal};";
+    }
+
     private static string ObterSimplesNacionalDescricao(OptanteSimplesNacional opcao) => opcao switch
     {
         OptanteSimplesNacional.NaoOptante => "Não Optante",
@@ -1027,7 +1055,11 @@ internal sealed class DANFSeNacionalReport
     };
 
     private bool PossuiTomador() => nota.Informacoes.Dps.Informacoes.Tomador != null;
-    private bool PossuiDestinatario() => nota.Informacoes.Dps.Informacoes.IBSCBS?.Destinatario != null;
+    private bool DestinatarioEhProprioTomador() =>
+        nota.Informacoes.Dps.Informacoes.IBSCBS?.IndicadorDestinatario == RTCIndDest.ProprioTomador;
+
+    private bool PossuiDestinatario() =>
+        !DestinatarioEhProprioTomador() && nota.Informacoes.Dps.Informacoes.IBSCBS?.Destinatario != null;
     private bool PossuiIntermediario() => nota.Informacoes.Dps.Informacoes.Intermediario != null;
 
     private sealed class LayoutAlturas
