@@ -416,7 +416,7 @@ internal sealed class DANFSeNacionalReport
 
         // Linha 2
         PdfDrawHelper.DesenharCampo(gfx, xMm, yMm, colW * 2.0, lineH, "Nome / Nome Empresarial", emit.RazaoSocial);
-        PdfDrawHelper.DesenharCampo(gfx, xMm + 2 * colW, yMm, colW, lineH, "Município / Sigla UF", $"{nota.Informacoes.LocalEmissao} / {end.UF}");
+        PdfDrawHelper.DesenharCampo(gfx, xMm + 2 * colW, yMm, colW, lineH, "Município / Sigla UF", ObterMunicipioUf(end.CodMunicipio, nota.Informacoes.LocalEmissao, end.UF));
         PdfDrawHelper.DesenharCampo(gfx, xMm + 3 * colW, yMm, colW, lineH, "Código IBGE / CEP", $"{end.CodMunicipio} / {FormatarCep(end.CEP)}");
 
         yMm += lineH;
@@ -451,8 +451,6 @@ internal sealed class DANFSeNacionalReport
         }
 
         var end = tomador?.Endereco;
-        var munNac = end?.Municipio as MunicipioNacional;
-
         // Linha 1
         PdfDrawHelper.DesenharTituloBlocoInline(gfx, xMm, yMm, colW, lineH, "Tomador / Adquirente");
         PdfDrawHelper.DesenharCampo(gfx, xMm + 1 * colW, yMm, colW, lineH, "CNPJ/CPF/NIF", FormatarCpfCnpj(tomador?.CNPJ ?? tomador?.CPF ?? tomador?.Nif));
@@ -463,8 +461,8 @@ internal sealed class DANFSeNacionalReport
 
         // Linha 2
         PdfDrawHelper.DesenharCampo(gfx, xMm, yMm, colW * 2.0, lineH, "Nome / Nome Empresarial", tomador?.Nome ?? "-");
-        PdfDrawHelper.DesenharCampo(gfx, xMm + 2 * colW, yMm, colW, lineH, "Município / Sigla UF", munNac != null ? $"{munNac.CodMunicipio}" : "-");
-        PdfDrawHelper.DesenharCampo(gfx, xMm + 3 * colW, yMm, colW, lineH, "Código IBGE / CEP", munNac != null ? $"{munNac.CodMunicipio} / {FormatarCep(munNac.CEP)}" : "-");
+        PdfDrawHelper.DesenharCampo(gfx, xMm + 2 * colW, yMm, colW, lineH, "Município / Sigla UF", ObterMunicipioUf(end?.Municipio));
+        PdfDrawHelper.DesenharCampo(gfx, xMm + 3 * colW, yMm, colW, lineH, "Código IBGE / CEP", ObterCodigoIbgeCep(end?.Municipio));
 
         yMm += lineH;
 
@@ -493,8 +491,6 @@ internal sealed class DANFSeNacionalReport
 
         var dest = nota.Informacoes.Dps.Informacoes.IBSCBS?.Destinatario;
         var end = dest?.Endereco;
-        var munNac = end?.Municipio as MunicipioNacional;
-
         // Linha 1
         PdfDrawHelper.DesenharTituloBlocoInline(gfx, xMm, yMm, colW, lineH, "Destinatário da Operação");
         PdfDrawHelper.DesenharCampo(gfx, xMm + 1 * colW, yMm, colW * 2.0, lineH, "CNPJ/CPF/NIF", FormatarCpfCnpj(dest?.CNPJ ?? dest?.CPF ?? dest?.NIF));
@@ -504,8 +500,8 @@ internal sealed class DANFSeNacionalReport
 
         // Linha 2
         PdfDrawHelper.DesenharCampo(gfx, xMm, yMm, colW * 2.0, lineH, "Nome / Nome Empresarial", dest?.Nome ?? "-");
-        PdfDrawHelper.DesenharCampo(gfx, xMm + 2 * colW, yMm, colW, lineH, "Município / Sigla UF", munNac != null ? $"{munNac.CodMunicipio}" : "-");
-        PdfDrawHelper.DesenharCampo(gfx, xMm + 3 * colW, yMm, colW, lineH, "Código IBGE / CEP", munNac != null ? $"{munNac.CodMunicipio} / {FormatarCep(munNac.CEP)}" : "-");
+        PdfDrawHelper.DesenharCampo(gfx, xMm + 2 * colW, yMm, colW, lineH, "Município / Sigla UF", ObterMunicipioUf(end?.Municipio));
+        PdfDrawHelper.DesenharCampo(gfx, xMm + 3 * colW, yMm, colW, lineH, "Código IBGE / CEP", ObterCodigoIbgeCep(end?.Municipio));
 
         yMm += lineH;
         PdfDrawHelper.DesenharLinhaSeparadora(gfx, xMm, yMm, largUtilMm);
@@ -525,6 +521,8 @@ internal sealed class DANFSeNacionalReport
             return;
         }
 
+        var end = interm?.Endereco;
+
         PdfDrawHelper.DesenharTituloBlocoInline(gfx, xMm, yMm, colW, lineH, "Intermediário da Operação");
         PdfDrawHelper.DesenharCampo(gfx, xMm + 1 * colW, yMm, colW, lineH, "CNPJ/CPF/NIF", FormatarCpfCnpj(interm?.CNPJ ?? interm?.CPF));
         PdfDrawHelper.DesenharCampo(gfx, xMm + 2 * colW, yMm, colW, lineH, "Indicador Municipal", interm?.InscricaoMunicipal ?? "-");
@@ -533,6 +531,13 @@ internal sealed class DANFSeNacionalReport
         yMm += lineH;
 
         PdfDrawHelper.DesenharCampo(gfx, xMm, yMm, colW * 2.0, lineH, "Nome / Nome Empresarial", interm?.Nome ?? "-");
+        PdfDrawHelper.DesenharCampo(gfx, xMm + 2 * colW, yMm, colW, lineH, "Município / Sigla UF", ObterMunicipioUf(end?.Municipio));
+        PdfDrawHelper.DesenharCampo(gfx, xMm + 3 * colW, yMm, colW, lineH, "Código IBGE / CEP", ObterCodigoIbgeCep(end?.Municipio));
+
+        yMm += lineH;
+
+        var endCompleto = end != null ? $"{end.Logradouro}, {end.Numero} {end.Complemento} - {end.Bairro}" : "-";
+        PdfDrawHelper.DesenharCampo(gfx, xMm, yMm, colW * 2.0, lineH, "Endereço", endCompleto);
         PdfDrawHelper.DesenharCampo(gfx, xMm + 2 * colW, yMm, colW * 2.0, lineH, "E-mail", interm?.Email?.ToLower() ?? "-");
 
         yMm += lineH;
@@ -550,7 +555,7 @@ internal sealed class DANFSeNacionalReport
         PdfDrawHelper.DesenharTituloBlocoInline(gfx, xMm, yMm, colW, lineH, "Serviço Prestado");
         PdfDrawHelper.DesenharCampo(gfx, xMm + 1 * colW, yMm, colW, lineH, "Cód. Tributação Nac. / Mun.", $"{info.CodTributacaoNacional} / {info.CodTributacaoMunicipio ?? "-"}");
         PdfDrawHelper.DesenharCampo(gfx, xMm + 2 * colW, yMm, colW, lineH, "Código da NBS", info.CodNBS ?? "-");
-        PdfDrawHelper.DesenharCampo(gfx, xMm + 3 * colW, yMm, colW, lineH, "Local da Prestação / UF / País", $"{nota.Informacoes.LocalPrestacao} / BR");
+        PdfDrawHelper.DesenharCampo(gfx, xMm + 3 * colW, yMm, colW, lineH, "Local da Prestação / UF / País", $"{ObterMunicipioUf(s.Localidade.CodMunicipioPrestacao, nota.Informacoes.LocalPrestacao)} / {ObterPais(s.Localidade.CodPaisPrestacao)}");
 
         yMm += lineH;
 
@@ -589,7 +594,7 @@ internal sealed class DANFSeNacionalReport
         // Linha 1
         PdfDrawHelper.DesenharTituloBlocoInline(gfx, xMm, yMm, colW, lineH, "Tributação Municipal (ISSQN)");
         PdfDrawHelper.DesenharCampo(gfx, xMm + 1 * colW, yMm, colW, lineH, "Tipo de Tributação", ObterDescricaoTributacaoISSQN(tribMun.ISSQN));
-        PdfDrawHelper.DesenharCampo(gfx, xMm + 2 * colW, yMm, colW * 2.0, lineH, "Município / Sigla UF / País da Incidência", $"{nota.Informacoes.LocalIncidencia} / BR");
+        PdfDrawHelper.DesenharCampo(gfx, xMm + 2 * colW, yMm, colW * 2.0, lineH, "Município / Sigla UF / País da Incidência", $"{ObterMunicipioUf(nota.Informacoes.CodLocalIncidencia, nota.Informacoes.LocalIncidencia)} / {ObterPais(tribMun.CodPais)}");
 
         yMm += lineH;
 
@@ -660,11 +665,12 @@ internal sealed class DANFSeNacionalReport
 
         var cstTrib = nota.Informacoes.Dps.Informacoes.IBSCBS?.Valores.Tributos.GrupoIBSCBS;
         var cstTexto = cstTrib != null ? $"{cstTrib.CodigoSituacaoTributaria} / {cstTrib.CodigoClassificacaoTributaria}" : "-";
+        var municipioIncidencia = ObterMunicipioUf(ibscbs.CodigoLocalidadeIncidencia, ibscbs.DescricaoLocalidadeIncidencia);
 
         // Linha 1
         PdfDrawHelper.DesenharTituloBlocoInline(gfx, xMm, yMm, colW, lineH, "Tributação IBS / CBS");
         PdfDrawHelper.DesenharCampo(gfx, xMm + 1 * colW, yMm, colW, lineH, "CST / Classificação", cstTexto);
-        PdfDrawHelper.DesenharCampo(gfx, xMm + 2 * colW, yMm, colW * 2.0, lineH, "Localidade Incidência / Sigla UF", $"{ibscbs.DescricaoLocalidadeIncidencia} / {ibscbs.CodigoLocalidadeIncidencia}");
+        PdfDrawHelper.DesenharCampo(gfx, xMm + 2 * colW, yMm, colW * 2.0, lineH, "Código IBGE / Município / UF", $"{ibscbs.CodigoLocalidadeIncidencia} / {municipioIncidencia}");
 
         yMm += lineH;
 
@@ -942,6 +948,39 @@ internal sealed class DANFSeNacionalReport
         if (num.Length == 11) return $"({num.Substring(0, 2)}) {num.Substring(2, 5)}-{num.Substring(7, 4)}";
         return fone!;
     }
+
+    private static string ObterMunicipioUf(IMunicipio? municipio) => municipio switch
+    {
+        MunicipioNacional nacional => ObterMunicipioUf(nacional.CodMunicipio),
+        MunicipioExterior exterior => $"{exterior.Cidade} / {exterior.EstadoProvincia}",
+        _ => "-"
+    };
+
+    private static string ObterMunicipioUf(string? codigoIbge, string? descricaoFallback = null,
+        string? ufFallback = null)
+    {
+        var municipioUf = MunicipioIbgeResolver.ObterMunicipioUf(codigoIbge);
+        if (!string.IsNullOrWhiteSpace(municipioUf)) return municipioUf!;
+
+        if (!string.IsNullOrWhiteSpace(descricaoFallback))
+        {
+            return string.IsNullOrWhiteSpace(ufFallback)
+                ? descricaoFallback!
+                : $"{descricaoFallback} / {ufFallback}";
+        }
+
+        return string.IsNullOrWhiteSpace(codigoIbge) ? "-" : codigoIbge!;
+    }
+
+    private static string ObterCodigoIbgeCep(IMunicipio? municipio) => municipio switch
+    {
+        MunicipioNacional nacional => $"{nacional.CodMunicipio} / {FormatarCep(nacional.CEP)}",
+        MunicipioExterior exterior => string.IsNullOrWhiteSpace(exterior.EnderecoPostal) ? "-" : exterior.EnderecoPostal,
+        _ => "-"
+    };
+
+    private static string ObterPais(string? codigoPais) =>
+        string.IsNullOrWhiteSpace(codigoPais) ? "BR" : codigoPais!;
 
     private static string FormatarMoeda(decimal? valor) => (valor ?? 0).ToString("N2", PtBr);
     private static string FormatarPercentual(decimal? valor) => (valor ?? 0).ToString("N2", PtBr) + " %";

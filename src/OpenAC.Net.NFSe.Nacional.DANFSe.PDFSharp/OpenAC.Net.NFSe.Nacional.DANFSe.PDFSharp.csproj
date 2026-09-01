@@ -49,6 +49,7 @@
 
     <ItemGroup>
         <EmbeddedResource Include="Resources\Fonts\*.ttf" />
+        <EmbeddedResource Include="Resources\MunicipiosIBGE.json" />
     </ItemGroup>
 
     <!-- Itens do pacote nuget -->
