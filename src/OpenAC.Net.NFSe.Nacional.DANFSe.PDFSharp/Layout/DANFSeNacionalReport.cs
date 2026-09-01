@@ -12,6 +12,7 @@
 
 using System;
 using System.Globalization;
+using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
 using OpenAC.Net.NFSe.Nacional.Common.Model;
@@ -31,6 +32,10 @@ internal sealed class DANFSeNacionalReport
 {
     #region Fields
 
+    private const string LogoNacionalResourceName =
+        "OpenAC.Net.NFSe.Nacional.DANFSe.PDFSharp.Resources.Images.NfseHorizontal.png";
+
+    private static readonly Lazy<byte[]?> LogoNacionalPadrao = new(CarregarLogoNacionalPadrao);
     private readonly NotaFiscalServico nota;
     private readonly DANFSeNacionalConfig config;
     private static readonly CultureInfo PtBr = new("pt-BR");
@@ -286,7 +291,7 @@ internal sealed class DANFSeNacionalReport
 
         // Logo NFS-e / Prestador (lado esquerdo)
         var logoW = 40.0;
-        var logoBytes = config.LogoNacional ?? config.LogoPrestador;
+        var logoBytes = config.LogoNacional ?? config.LogoPrestador ?? LogoNacionalPadrao.Value;
         if (logoBytes != null && logoBytes.Length > 0)
         {
             PdfDrawHelper.DesenharImagem(gfx, xMm + 1.5, yMm + 1.0, logoW, hCab - 2.0, logoBytes);
@@ -981,6 +986,17 @@ internal sealed class DANFSeNacionalReport
 
     private static string ObterPais(string? codigoPais) =>
         string.IsNullOrWhiteSpace(codigoPais) ? "BR" : codigoPais!;
+
+    private static byte[]? CarregarLogoNacionalPadrao()
+    {
+        var assembly = typeof(DANFSeNacionalReport).Assembly;
+        using var stream = assembly.GetManifestResourceStream(LogoNacionalResourceName);
+        if (stream == null) return null;
+
+        using var memoryStream = new MemoryStream();
+        stream.CopyTo(memoryStream);
+        return memoryStream.ToArray();
+    }
 
     private static string FormatarMoeda(decimal? valor) => (valor ?? 0).ToString("N2", PtBr);
     private static string FormatarPercentual(decimal? valor) => (valor ?? 0).ToString("N2", PtBr) + " %";

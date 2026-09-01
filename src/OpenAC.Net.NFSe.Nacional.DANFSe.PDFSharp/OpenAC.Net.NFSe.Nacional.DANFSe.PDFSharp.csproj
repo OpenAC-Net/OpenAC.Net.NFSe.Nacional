@@ -49,6 +49,7 @@
 
     <ItemGroup>
         <EmbeddedResource Include="Resources\Fonts\*.ttf" />
+        <EmbeddedResource Include="Resources\Images\NfseHorizontal.png" />
         <EmbeddedResource Include="Resources\MunicipiosIBGE.json" />
     </ItemGroup>
 
