@@ -702,7 +702,7 @@ internal sealed class DANFSeNacionalReport
         yMm += lineH;
 
         // Linha 2
-        PdfDrawHelper.DesenharCampo(gfx, xMm + 0 * colW, yMm, colW, lineH, "Exclusões e Reduções da Base de Cálculo", FormatarMoeda(valores?.ValorCalcReeRepRes));
+        PdfDrawHelper.DesenharCampo(gfx, xMm + 0 * colW, yMm, colW, lineH, "Exclusões e Reduções da Base de Cálculo", FormatarMoedaOpcional(calculado == null ? null : valores!.ValorCalcReeRepRes));
         PdfDrawHelper.DesenharCampo(gfx, xMm + 1 * colW, yMm, colW, lineH, "Base de Cálculo Após Exclusões e Reduções", FormatarMoedaOpcional(calculado == null ? null : valores!.ValorBaseCalculo));
         PdfDrawHelper.DesenharCampo(gfx, xMm + 2 * colW, yMm, colW, lineH, "Red. Alíquota IBS / Red. Alíquota CBS",
             FormatarPercentuais(valores?.Estado.PercentualReducaoAliquotaUf, valores?.Municipio.PercentualReducaoAliquotaMunicipal,
