@@ -25,7 +25,7 @@ using PdfSharp.Pdf;
 namespace OpenAC.Net.NFSe.Nacional.DANFSe.PDFSharp.Layout;
 
 /// <summary>
-/// Motor de renderização do DANFSe Padrão Nacional em PDF (NT 008 v2.0).
+/// Motor de renderização do DANFSe Padrão Nacional em PDF (NT 008 v1.02 / DANFSe v2.0).
 /// </summary>
 internal sealed class DANFSeNacionalReport
 {
