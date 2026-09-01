@@ -430,7 +430,7 @@ internal sealed class DANFSeNacionalReport
 
         // Linha 4
         PdfDrawHelper.DesenharCampo(gfx, xMm, yMm, colW * 2.0, lineH, "Simples Nacional na Data de Competência", ObterSimplesNacionalDescricao(reg.OptanteSimplesNacional));
-        PdfDrawHelper.DesenharCampo(gfx, xMm + 2 * colW, yMm, colW * 2.0, lineH, "Regime de Apuração Tributária pelo SN", reg.RegimeApuracao?.ToString() ?? "-");
+        PdfDrawHelper.DesenharCampo(gfx, xMm + 2 * colW, yMm, colW * 2.0, lineH, "Regime de Apuração Tributária pelo SN", ObterDescricaoRegimeApuracao(reg.RegimeApuracao));
 
         yMm += lineH;
         PdfDrawHelper.DesenharLinhaSeparadora(gfx, xMm, yMm, largUtilMm);
@@ -992,6 +992,17 @@ internal sealed class DANFSeNacionalReport
         OptanteSimplesNacional.OptanteMEEPP => "Optante - ME ou EPP",
         OptanteSimplesNacional.OptanteMEI => "Optante - MEI",
         _ => opcao.ToString()
+    };
+
+    private static string ObterDescricaoRegimeApuracao(RegimeApuracao? regime) => regime switch
+    {
+        RegimeApuracao.TributosFederaisMunicipalSN =>
+            "Regime de apuração dos tributos federais e municipal pelo Simples Nacional",
+        RegimeApuracao.TributosFederaisSNISSQNPorForaSN =>
+            "Regime de apuração dos tributos federais pelo Simples Nacional e ISSQN por fora do Simples Nacional",
+        RegimeApuracao.TributosFederaisMunicipalForaSN =>
+            "Regime de apuração dos tributos federais e municipal por fora do Simples Nacional",
+        _ => "-"
     };
 
     private bool PossuiTomador() => nota.Informacoes.Dps.Informacoes.Tomador != null;
