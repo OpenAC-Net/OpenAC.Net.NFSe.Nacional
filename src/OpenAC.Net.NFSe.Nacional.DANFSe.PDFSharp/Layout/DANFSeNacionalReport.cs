@@ -15,6 +15,7 @@ using System.Globalization;
 using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
+using OpenAC.Net.DFe.Core.Common;
 using OpenAC.Net.NFSe.Nacional.Common.Model;
 using OpenAC.Net.NFSe.Nacional.Common.Types;
 using OpenAC.Net.NFSe.Nacional.DANFSe.PDFSharp.Common;
@@ -343,11 +344,10 @@ internal sealed class DANFSeNacionalReport
         gfx.DrawString($"Município: {municipio}", fontMun, PdfDrawHelper.BrushPreto, rectMun, XStringFormats.Center);
 
         var rectAmbGer = new XRect(PdfDrawHelper.MmToPt(dirX), PdfDrawHelper.MmToPt(yMm + 5.2), PdfDrawHelper.MmToPt(dirW), PdfDrawHelper.MmToPt(3.0));
-        gfx.DrawString($"Ambiente Gerador: {ObterDescricaoAmbienteGerador()}", fontAmb, PdfDrawHelper.BrushPreto, rectAmbGer, XStringFormats.Center);
+        gfx.DrawString($"Ambiente Gerador: {ObterCodigoAmbienteGerador()}", fontAmb, PdfDrawHelper.BrushPreto, rectAmbGer, XStringFormats.Center);
 
         var rectTpAmb = new XRect(PdfDrawHelper.MmToPt(dirX), PdfDrawHelper.MmToPt(yMm + 8.2), PdfDrawHelper.MmToPt(dirW), PdfDrawHelper.MmToPt(3.0));
-        var tipoAmbTexto = config.Homologacao ? "Homologação" : "Produção";
-        gfx.DrawString($"Tipo de Ambiente: {tipoAmbTexto}", fontAmb, PdfDrawHelper.BrushPreto, rectTpAmb, XStringFormats.Center);
+        gfx.DrawString($"Tipo de Ambiente: {ObterCodigoTipoAmbiente()}", fontAmb, PdfDrawHelper.BrushPreto, rectTpAmb, XStringFormats.Center);
 
         yMm += hCab;
         PdfDrawHelper.DesenharLinhaSeparadora(gfx, xMm, yMm, largUtilMm);
@@ -366,7 +366,7 @@ internal sealed class DANFSeNacionalReport
 
         // Chave de Acesso
         var fontLabel = new XFont(DANFSeConstantes.FontePadrao, DANFSeConstantes.FonteTituloBlocoPt, XFontStyleEx.Bold);
-        var fontChave = new XFont(DANFSeConstantes.FontePadrao, 7.5, XFontStyleEx.Bold);
+        var fontChave = new XFont(DANFSeConstantes.FontePadrao, 7.0, XFontStyleEx.Regular);
 
         gfx.DrawString("CHAVE DE ACESSO DA NFS-e", fontLabel, PdfDrawHelper.BrushPreto,
             new XRect(PdfDrawHelper.MmToPt(xMm + 1.0), PdfDrawHelper.MmToPt(yMm + 0.5), PdfDrawHelper.MmToPt(dadosWMm), PdfDrawHelper.MmToPt(3.0)), XStringFormats.TopLeft);
@@ -982,11 +982,18 @@ internal sealed class DANFSeNacionalReport
         _ => regime.ToString()
     };
 
-    private string ObterDescricaoAmbienteGerador() => nota.Informacoes.AmbienteGerador switch
+    private string ObterCodigoAmbienteGerador() => nota.Informacoes.AmbienteGerador switch
     {
-        AmbienteGerador.Nacional => "Sefin Nacional NFS-e",
-        AmbienteGerador.Prefeitura => "Prefeitura Municipal",
-        _ => nota.Informacoes.AmbienteGerador.ToString()
+        AmbienteGerador.Prefeitura => "1",
+        AmbienteGerador.Nacional => "2",
+        _ => "-"
+    };
+
+    private string ObterCodigoTipoAmbiente() => nota.Informacoes.Dps.Informacoes.TipoAmbiente switch
+    {
+        DFeTipoAmbiente.Producao => "1",
+        DFeTipoAmbiente.Homologacao => "2",
+        _ => "-"
     };
 
     private string ObterSituacaoNFSe() => nota.Informacoes.SituacaoNFSe switch
