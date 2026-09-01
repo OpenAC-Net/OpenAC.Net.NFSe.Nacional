@@ -656,16 +656,16 @@ internal sealed class DANFSeNacionalReport
         // Linha 1
         PdfDrawHelper.DesenharTituloBlocoInline(gfx, xMm, yMm, colW, lineH, "Tributação Federal (Exceto CBS)");
         PdfDrawHelper.DesenharCampo(gfx, xMm + 1 * colW, yMm, colW, lineH, "IRRF", FormatarMoedaOpcional(tribFed?.ValorIRRF));
-        PdfDrawHelper.DesenharCampo(gfx, xMm + 2 * colW, yMm, colW, lineH, "Contribuição Previdenciária", FormatarMoedaOpcional(tribFed?.ValorCP));
-        PdfDrawHelper.DesenharCampo(gfx, xMm + 3 * colW, yMm, colW, lineH, "Contribuições Sociais", FormatarMoedaOpcional(valorContribuicoesSociais));
+        PdfDrawHelper.DesenharCampo(gfx, xMm + 2 * colW, yMm, colW, lineH, "Contribuição Previdenciária - Retida", FormatarMoedaOpcional(tribFed?.ValorCP));
+        PdfDrawHelper.DesenharCampo(gfx, xMm + 3 * colW, yMm, colW, lineH, "Contribuições Sociais - Retidas", FormatarMoedaOpcional(valorContribuicoesSociais));
 
         yMm += lineH;
 
         // Linha 2
-        PdfDrawHelper.DesenharCampo(gfx, xMm + 0 * colW, yMm, colW, lineH, "", "");
-        PdfDrawHelper.DesenharCampo(gfx, xMm + 1 * colW, yMm, colW, lineH, "PIS - Débito de Apuração Própria", FormatarMoedaOpcional(valorPis));
-        PdfDrawHelper.DesenharCampo(gfx, xMm + 2 * colW, yMm, colW, lineH, "COFINS - Débito de Apuração", FormatarMoedaOpcional(valorCofins));
-        PdfDrawHelper.DesenharCampo(gfx, xMm + 3 * colW, yMm, colW, lineH, "Outras Retenções", "-");
+        PdfDrawHelper.DesenharCampo(gfx, xMm + 0 * colW, yMm, colW, lineH, "PIS - Débito de Apuração Própria", FormatarMoedaOpcional(valorPis));
+        PdfDrawHelper.DesenharCampo(gfx, xMm + 1 * colW, yMm, colW, lineH, "COFINS - Débito de Apuração Própria", FormatarMoedaOpcional(valorCofins));
+        PdfDrawHelper.DesenharCampo(gfx, xMm + 2 * colW, yMm, colW * 2.0, lineH, "Descrição Contrib. Sociais - Retidas",
+            ObterDescricaoRetencaoPisCofins(pisCofins?.TipoRetencao));
 
         yMm += lineH;
         PdfDrawHelper.DesenharLinhaSeparadora(gfx, xMm, yMm, largUtilMm);
@@ -944,6 +944,21 @@ internal sealed class DANFSeNacionalReport
         TipoRetencaoISSQN.NaoRetido => "Não Retido",
         TipoRetencaoISSQN.RetidoTomador => "Retido pelo Tomador",
         TipoRetencaoISSQN.RetidoIntermediario => "Retido pelo Intermediário",
+        _ => "-"
+    };
+
+    private static string ObterDescricaoRetencaoPisCofins(TipoRetencaoPisCofinsCsll? retencao) => retencao switch
+    {
+        TipoRetencaoPisCofinsCsll.PisCofinsCsllNaoRetidos => "PIS/COFINS/CSLL Não Retidos",
+        TipoRetencaoPisCofinsCsll.PisCofinsRetidos => "PIS/COFINS Retidos",
+        TipoRetencaoPisCofinsCsll.PisCofinsNaoRetidos => "PIS/COFINS Não Retidos",
+        TipoRetencaoPisCofinsCsll.PisCofinsCsllRetidos => "PIS/COFINS/CSLL Retidos",
+        TipoRetencaoPisCofinsCsll.PisCofinsRetidosCsllNaoRetido => "PIS/COFINS Retidos, CSLL Não Retida",
+        TipoRetencaoPisCofinsCsll.PisRetidoCofinsCsllNaoRetidos => "PIS Retido, COFINS/CSLL Não Retidos",
+        TipoRetencaoPisCofinsCsll.CofinsRetidoPisCSllNaoRetidos => "COFINS Retida, PIS/CSLL Não Retidos",
+        TipoRetencaoPisCofinsCsll.PisNaoRetidoCofinsCsllRetidos => "PIS Não Retido, COFINS/CSLL Retidos",
+        TipoRetencaoPisCofinsCsll.PisCofinsNaoRetidosCsllRetido => "PIS/COFINS Não Retidos, CSLL Retida",
+        TipoRetencaoPisCofinsCsll.CofinsNaoRetidoPisCSllRetidos => "COFINS Não Retida, PIS/CSLL Retidos",
         _ => "-"
     };
 
