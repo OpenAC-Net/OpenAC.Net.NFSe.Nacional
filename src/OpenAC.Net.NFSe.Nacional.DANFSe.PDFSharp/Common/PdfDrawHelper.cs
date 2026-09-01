@@ -101,7 +101,8 @@ internal static class PdfDrawHelper
         string valor,
         bool sombreado = false,
         bool negrito = false,
-        XStringAlignment alinhamento = XStringAlignment.Near)
+        XStringAlignment alinhamento = XStringAlignment.Near,
+        bool multilinha = false)
     {
         var rect = new XRect(MmToPt(xMm), MmToPt(yMm), MmToPt(wMm), MmToPt(hMm));
         gfx.DrawRectangle(PenBordaLinha, rect);
@@ -132,9 +133,24 @@ internal static class PdfDrawHelper
             LineAlignment = XLineAlignment.Near
         };
 
-        // Truncar ou formatar texto caso ultrapasse a largura
-        var textoAjustado = TruncarTexto(gfx, valorTexto, fontValor, innerWidthPt);
-        gfx.DrawString(textoAjustado, fontValor, BrushPreto, valorRect, format);
+        if (multilinha)
+        {
+            DesenharTextoComReticencias(
+                gfx,
+                xMm + 0.8,
+                yMm + posYMm,
+                wMm - 1.6,
+                hMm - posYMm - 0.3,
+                valorTexto,
+                DANFSeConstantes.FonteConteudoPt,
+                negrito);
+        }
+        else
+        {
+            // Truncar ou formatar texto caso ultrapasse a largura
+            var textoAjustado = TruncarTexto(gfx, valorTexto, fontValor, innerWidthPt);
+            gfx.DrawString(textoAjustado, fontValor, BrushPreto, valorRect, format);
+        }
     }
 
     public static void DesenharLinhaVazia(XGraphics gfx, double xMm, double yMm, double wMm, double hMm, string mensagem)
@@ -232,6 +248,63 @@ internal static class PdfDrawHelper
         }
 
         return result;
+    }
+
+    public static double MedirAlturaTextoMm(
+        XGraphics gfx,
+        string texto,
+        double larguraMm,
+        double fontSizePt = DANFSeConstantes.FonteConteudoPt,
+        bool negrito = false)
+    {
+        if (string.IsNullOrWhiteSpace(texto)) return 0;
+
+        var font = new XFont(DANFSeConstantes.FontePadrao, fontSizePt,
+            negrito ? XFontStyleEx.Bold : XFontStyleEx.Regular);
+        var linhas = QuebrarEmLinhas(gfx, texto, font, MmToPt(larguraMm));
+        return linhas.Count * fontSizePt * 1.25 * 25.4 / 72.0;
+    }
+
+    public static void DesenharTextoComReticencias(
+        XGraphics gfx,
+        double xMm,
+        double yMm,
+        double wMm,
+        double hMm,
+        string texto,
+        double fontSizePt = DANFSeConstantes.FonteConteudoPt,
+        bool negrito = false)
+    {
+        if (string.IsNullOrWhiteSpace(texto) || wMm <= 0 || hMm <= 0) return;
+
+        var font = new XFont(DANFSeConstantes.FontePadrao, fontSizePt,
+            negrito ? XFontStyleEx.Bold : XFontStyleEx.Regular);
+        var maxWidthPt = MmToPt(wMm);
+        var lineHeightPt = fontSizePt * 1.25;
+        var linhas = QuebrarEmLinhas(gfx, texto, font, maxWidthPt);
+        var maxLinhas = Math.Max(1, (int)Math.Floor(MmToPt(hMm) / lineHeightPt));
+        var quantidade = Math.Min(linhas.Count, maxLinhas);
+
+        if (linhas.Count > maxLinhas && quantidade > 0)
+        {
+            const string reticencias = "...";
+            var ultimaLinha = linhas[quantidade - 1].TrimEnd();
+            while (ultimaLinha.Length > 0 &&
+                   gfx.MeasureString($"{ultimaLinha}{reticencias}", font).Width > maxWidthPt)
+            {
+                ultimaLinha = ultimaLinha.Substring(0, ultimaLinha.Length - 1).TrimEnd();
+            }
+
+            linhas[quantidade - 1] = $"{ultimaLinha}{reticencias}";
+        }
+
+        var yPt = MmToPt(yMm) + (fontSizePt * 0.9);
+        for (var i = 0; i < quantidade; i++)
+        {
+            if (!string.IsNullOrEmpty(linhas[i]))
+                gfx.DrawString(linhas[i], font, BrushPreto, MmToPt(xMm), yPt);
+            yPt += lineHeightPt;
+        }
     }
 
     public static string DesenharTextoAutoFitComExcedente(

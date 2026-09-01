@@ -25,11 +25,11 @@ public static class DANFSeConstantes
     /// <summary>Altura da página A4 em milímetros (297.0 mm).</summary>
     public const double PaginaAlturaMm = 297.0;
 
-    /// <summary>Margem padrão da página em milímetros (3.0 mm).</summary>
-    public const double MargemPadraoMm = 3.0;
+    /// <summary>Margem padrão da página em milímetros (1.5 mm).</summary>
+    public const double MargemPadraoMm = 1.5;
 
-    /// <summary>Largura útil imprimível em milímetros (204.0 mm).</summary>
-    public const double LarguraUtilMm = 204.0;
+    /// <summary>Largura útil imprimível em milímetros (207.0 mm).</summary>
+    public const double LarguraUtilMm = 207.0;
 
     /// <summary>Altura padrão do cabeçalho em milímetros (12.0 mm).</summary>
     public const double AlturaCabecalhoMm = 12.0;
@@ -69,10 +69,10 @@ public static class DANFSeConstantes
     public const double FonteTituloBlocoPt = 7.0;
 
     /// <summary>Tamanho da fonte dos rótulos dos campos em pontos.</summary>
-    public const double FonteLabelCampoPt = 5.5;
+    public const double FonteLabelCampoPt = 6.0;
 
     /// <summary>Tamanho da fonte do conteúdo dos campos em pontos.</summary>
-    public const double FonteConteudoPt = 6.8;
+    public const double FonteConteudoPt = 7.0;
 
     /// <summary>Tamanho da fonte do texto complementar do QR Code em pontos.</summary>
     public const double FonteTextoQrPt = 5.0;

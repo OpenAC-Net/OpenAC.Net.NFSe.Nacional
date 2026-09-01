@@ -34,6 +34,9 @@ internal sealed class DANFSeNacionalReport
 
     private const string LogoNacionalResourceName =
         "OpenAC.Net.NFSe.Nacional.DANFSe.PDFSharp.Resources.Images.NfseHorizontal.png";
+    private const double AlturaDescricaoTributacaoMm = 3.8;
+    private const double AlturaMinimaDescricaoServicoMm = 6.3;
+    private const double AlturaMinimaInformacoesComplementaresMm = 15.0;
 
     private static readonly Lazy<byte[]?> LogoNacionalPadrao = new(CarregarLogoNacionalPadrao);
     private readonly NotaFiscalServico nota;
@@ -62,38 +65,24 @@ internal sealed class DANFSeNacionalReport
     {
         if (doc == null) throw new ArgumentNullException(nameof(doc));
 
-        var page1 = doc.AddPage();
-        page1.Size = PageSize.A4;
-        page1.Orientation = PageOrientation.Portrait;
+        var page = doc.AddPage();
+        page.Size = PageSize.A4;
+        page.Orientation = PageOrientation.Portrait;
 
-        Render(page1, out var servicoExcedente, out var complementaresExcedente);
-
-        var numPagina = 2;
-        while (!string.IsNullOrWhiteSpace(servicoExcedente) || !string.IsNullOrWhiteSpace(complementaresExcedente))
-        {
-            var pageCont = doc.AddPage();
-            pageCont.Size = PageSize.A4;
-            pageCont.Orientation = PageOrientation.Portrait;
-
-            RenderContinuacao(pageCont, numPagina++, ref servicoExcedente, ref complementaresExcedente);
-        }
+        Render(page);
     }
 
     public void Render(PdfPage page)
-    {
-        Render(page, out _, out _);
-    }
-
-    public void Render(PdfPage page, out string? servicoExcedente, out string? complementaresExcedente)
     {
         using var gfx = XGraphics.FromPdfPage(page);
 
         xMm = config.MargemHorizontalMm;
         yMm = config.MargemVerticalMm;
         largUtilMm = DANFSeConstantes.PaginaLarguraMm - (2 * config.MargemHorizontalMm);
+        var layout = CalcularLayout(gfx);
 
         // 1. Desenhar fundos sombreados oficiais (NT 008 / DANFSe v2.0)
-        DesenharFundosSombreamento(gfx);
+        DesenharFundosSombreamento(gfx, layout);
 
         // 2. Marca d'água (Homologação, Cancelada ou Substituída) SOBRE os fundos sombreados
         DesenharMarcaDagua(gfx);
@@ -135,7 +124,7 @@ internal sealed class DANFSeNacionalReport
             DesenharBandaIntermediario(gfx);
 
         // Serviço Prestado
-        DesenharBandaServicoPrestado(gfx, out servicoExcedente);
+        DesenharBandaServicoPrestado(gfx, layout.AlturaDescricaoServicoMm);
 
         // Tributação Municipal (ISSQN)
         DesenharBandaTributacaoMunicipal(gfx);
@@ -151,10 +140,57 @@ internal sealed class DANFSeNacionalReport
         DesenharBandaValorTotalNFSe(gfx);
 
         // Informações Complementares
-        DesenharBandaInformacoesComplementares(gfx, out complementaresExcedente);
+        DesenharBandaInformacoesComplementares(gfx, layout.AlturaInformacoesComplementaresMm);
     }
 
-    private void DesenharFundosSombreamento(XGraphics gfx)
+    private LayoutAlturas CalcularLayout(XGraphics gfx)
+    {
+        var lineH = DANFSeConstantes.AlturaLinhaPadraoMm;
+        var alturaFixaMm = DANFSeConstantes.AlturaCabecalhoMm + 6.8 + (3 * lineH) + (4 * lineH);
+
+        if (config.ExibirCanhoto)
+            alturaFixaMm += DANFSeConstantes.AlturaTituloBlocoMm + lineH;
+
+        alturaFixaMm += PossuiTomador() ? 3 * lineH : DANFSeConstantes.AlturaLinhaVaziaMm;
+
+        if (PossuiDestinatario() || DestinatarioEhTomador())
+            alturaFixaMm += PossuiDestinatario() ? 2 * lineH : DANFSeConstantes.AlturaLinhaVaziaMm;
+
+        if (PossuiIntermediario())
+            alturaFixaMm += 3 * lineH;
+
+        alturaFixaMm += lineH + AlturaDescricaoTributacaoMm;
+        alturaFixaMm += 4 * lineH; // Tributação Municipal
+        alturaFixaMm += 2 * lineH; // Tributação Federal
+        if (PossuiIBSCBS()) alturaFixaMm += 3 * lineH;
+        alturaFixaMm += 2 * lineH; // Totais
+        alturaFixaMm += DANFSeConstantes.AlturaTituloBlocoMm;
+
+        var alturaUtilMm = DANFSeConstantes.PaginaAlturaMm - (2 * config.MargemVerticalMm);
+        var alturaFlexivelMm = alturaUtilMm - alturaFixaMm;
+        var alturaFlexivelMinimaMm = AlturaMinimaDescricaoServicoMm +
+                                     AlturaMinimaInformacoesComplementaresMm;
+        if (alturaFlexivelMm < alturaFlexivelMinimaMm)
+            throw new InvalidOperationException("O leiaute do DANFSe excede o espaço disponível em uma página A4.");
+
+        var descricaoServico = nota.Informacoes.Dps.Informacoes.Servico.Informacoes.Descricao;
+        var alturaTextoMm = PdfDrawHelper.MedirAlturaTextoMm(
+            gfx,
+            descricaoServico,
+            largUtilMm - 2.0,
+            DANFSeConstantes.FonteConteudoPt);
+        var alturaNecessariaMm = Math.Max(
+            AlturaMinimaDescricaoServicoMm,
+            2.9 + alturaTextoMm);
+        var alturaMaximaServicoMm = alturaFlexivelMm - AlturaMinimaInformacoesComplementaresMm;
+        var alturaServicoMm = Math.Min(alturaNecessariaMm, alturaMaximaServicoMm);
+
+        return new LayoutAlturas(
+            alturaServicoMm,
+            alturaFlexivelMm - alturaServicoMm);
+    }
+
+    private void DesenharFundosSombreamento(XGraphics gfx, LayoutAlturas layout)
     {
         var curY = config.MargemVerticalMm;
         var colW4 = largUtilMm / 4.0;
@@ -207,7 +243,7 @@ internal sealed class DANFSeNacionalReport
             else
             {
                 PdfDrawHelper.DesenharFundoSombreado(gfx, xMm, curY, colW4, lineH);
-                curY += 2 * lineH;
+                curY += 3 * lineH;
             }
         }
 
@@ -227,21 +263,11 @@ internal sealed class DANFSeNacionalReport
 
         // Serviço Prestado
         PdfDrawHelper.DesenharFundoSombreado(gfx, xMm, curY, colW4, lineH);
-        curY += lineH + 5.2 + 14.0;
+        curY += lineH + AlturaDescricaoTributacaoMm + layout.AlturaDescricaoServicoMm;
 
         // Tributação Municipal (ISSQN)
-        var vNfse = nota.Informacoes.Valores;
-        var vDps = nota.Informacoes.Dps.Informacoes.Valores;
-        var tribMun = vDps.Tributos.Municipal;
-        if (vNfse.ValorISSQN == null && tribMun.Aliquota == null && (vNfse.ValorBc == null || vNfse.ValorBc == 0))
-        {
-            curY += DANFSeConstantes.AlturaLinhaVaziaMm;
-        }
-        else
-        {
-            PdfDrawHelper.DesenharFundoSombreado(gfx, xMm, curY, colW4, lineH);
-            curY += 4 * lineH;
-        }
+        PdfDrawHelper.DesenharFundoSombreado(gfx, xMm, curY, colW4, lineH);
+        curY += 4 * lineH;
 
         // Tributação Federal (Exceto CBS)
         PdfDrawHelper.DesenharFundoSombreado(gfx, xMm, curY, colW4, lineH);
@@ -549,7 +575,7 @@ internal sealed class DANFSeNacionalReport
         PdfDrawHelper.DesenharLinhaSeparadora(gfx, xMm, yMm, largUtilMm);
     }
 
-    private void DesenharBandaServicoPrestado(XGraphics gfx, out string? servicoExcedente)
+    private void DesenharBandaServicoPrestado(XGraphics gfx, double alturaDescricaoMm)
     {
         var colW = largUtilMm / 4.0;
         var lineH = DANFSeConstantes.AlturaLinhaPadraoMm;
@@ -565,25 +591,21 @@ internal sealed class DANFSeNacionalReport
         yMm += lineH;
 
         // Linha 2: Descrição do Código de Tributação Nacional
-        PdfDrawHelper.DesenharCampo(gfx, xMm, yMm, largUtilMm, 5.2, "Descrição do Código de Tributação Nacional", nota.Informacoes.DescricaoTributoNacional);
-        yMm += 5.2;
+        PdfDrawHelper.DesenharCampo(gfx, xMm, yMm, largUtilMm, AlturaDescricaoTributacaoMm, "", nota.Informacoes.DescricaoTributoNacional);
+        yMm += AlturaDescricaoTributacaoMm;
 
-        // Linha 3: Descrição do Serviço (texto livre com quebra e Auto-Fit)
-        var hDesc = 14.0;
-        PdfDrawHelper.DesenharCampo(gfx, xMm, yMm, largUtilMm, hDesc, "Descrição do Serviço", "");
-        var excedente = PdfDrawHelper.DesenharTextoAutoFitComExcedente(
+        // Linha 3: Descrição do Serviço com altura dinâmica e fonte mínima normativa
+        PdfDrawHelper.DesenharCampo(
             gfx,
-            xMm + 1.0,
-            yMm + 3.0,
-            largUtilMm - 2.0,
-            hDesc - 3.5,
+            xMm,
+            yMm,
+            largUtilMm,
+            alturaDescricaoMm,
+            "Descrição do Serviço",
             info.Descricao,
-            DANFSeConstantes.FonteConteudoPt,
-            5.2);
+            multilinha: true);
 
-        servicoExcedente = string.IsNullOrWhiteSpace(excedente) ? null : excedente;
-
-        yMm += hDesc;
+        yMm += alturaDescricaoMm;
         PdfDrawHelper.DesenharLinhaSeparadora(gfx, xMm, yMm, largUtilMm);
     }
 
@@ -728,7 +750,7 @@ internal sealed class DANFSeNacionalReport
         PdfDrawHelper.DesenharLinhaSeparadora(gfx, xMm, yMm, largUtilMm);
     }
 
-    private void DesenharBandaInformacoesComplementares(XGraphics gfx, out string? complementaresExcedente)
+    private void DesenharBandaInformacoesComplementares(XGraphics gfx, double alturaConteudoMm)
     {
         var hTitulo = DANFSeConstantes.AlturaTituloBlocoMm;
         PdfDrawHelper.DesenharTituloBloco(gfx, xMm, yMm, largUtilMm, hTitulo, "INFORMAÇÕES COMPLEMENTARES");
@@ -751,142 +773,16 @@ internal sealed class DANFSeNacionalReport
                                    $"Municipais: {FormatarMoeda(totTrib.ValorTotal.TotalMunicipal)} (Lei 12.741/2012)");
         }
 
-        var espacoRestanteMm = (DANFSeConstantes.PaginaAlturaMm - config.MargemVerticalMm) - yMm;
-        if (espacoRestanteMm < 15.0) espacoRestanteMm = 15.0;
-
-        var excedente = PdfDrawHelper.DesenharTextoAutoFitComExcedente(
+        PdfDrawHelper.DesenharTextoComReticencias(
             gfx,
             xMm + 1.0,
             yMm + 1.0,
             largUtilMm - 2.0,
-            espacoRestanteMm - 2.0,
+            alturaConteudoMm - 2.0,
             complementares.ToString(),
-            DANFSeConstantes.FonteConteudoPt,
-            5.2);
+            DANFSeConstantes.FonteConteudoPt);
 
-        complementaresExcedente = string.IsNullOrWhiteSpace(excedente) ? null : excedente;
-    }
-
-    private void RenderContinuacao(PdfPage page, int numPagina, ref string? servicoRestante, ref string? complementaresRestante)
-    {
-        using var gfx = XGraphics.FromPdfPage(page);
-
-        var xMmCont = config.MargemHorizontalMm;
-        var yMmCont = config.MargemVerticalMm;
-        var largUtilMmCont = DANFSeConstantes.PaginaLarguraMm - (2 * config.MargemHorizontalMm);
-
-        // 1. Sombreamento do cabeçalho de continuação
-        var hCab = 15.0;
-        PdfDrawHelper.DesenharFundoSombreado(gfx, xMmCont, yMmCont, largUtilMmCont, hCab);
-
-        // 2. Marca d'água
-        DesenharMarcaDagua(gfx);
-
-        // 3. Borda Externa da Página
-        var rectBorda = new XRect(
-            PdfDrawHelper.MmToPt(xMmCont),
-            PdfDrawHelper.MmToPt(yMmCont),
-            PdfDrawHelper.MmToPt(largUtilMmCont),
-            PdfDrawHelper.MmToPt(DANFSeConstantes.PaginaAlturaMm - (2 * config.MargemVerticalMm)));
-        gfx.DrawRectangle(PdfDrawHelper.PenBordaExterna, rectBorda);
-
-        // 4. Cabeçalho de Continuação
-        DesenharCabecalhoContinuacao(gfx, xMmCont, yMmCont, largUtilMmCont, hCab, numPagina);
-        yMmCont += hCab;
-        PdfDrawHelper.DesenharLinhaSeparadora(gfx, xMmCont, yMmCont, largUtilMmCont);
-
-        // 5. Bloco de Continuação da Descrição do Serviço (se houver)
-        if (!string.IsNullOrWhiteSpace(servicoRestante))
-        {
-            var hTitulo = DANFSeConstantes.AlturaTituloBlocoMm;
-            PdfDrawHelper.DesenharFundoSombreado(gfx, xMmCont, yMmCont, largUtilMmCont, hTitulo);
-            PdfDrawHelper.DesenharTituloBloco(gfx, xMmCont, yMmCont, largUtilMmCont, hTitulo, "CONTINUAÇÃO DA DESCRIÇÃO DO SERVIÇO");
-            yMmCont += hTitulo;
-
-            var alturaDisponivelMm = !string.IsNullOrWhiteSpace(complementaresRestante)
-                ? ((DANFSeConstantes.PaginaAlturaMm - config.MargemVerticalMm) - yMmCont) / 2.0 - 5.0
-                : (DANFSeConstantes.PaginaAlturaMm - config.MargemVerticalMm) - yMmCont - 2.0;
-
-            if (alturaDisponivelMm < 20.0) alturaDisponivelMm = 20.0;
-
-            PdfDrawHelper.DesenharRetanguloSombreado(gfx, xMmCont, yMmCont, largUtilMmCont, alturaDisponivelMm);
-            var excedenteServico = PdfDrawHelper.DesenharTextoAutoFitComExcedente(
-                gfx,
-                xMmCont + 1.0,
-                yMmCont + 1.0,
-                largUtilMmCont - 2.0,
-                alturaDisponivelMm - 2.0,
-                servicoRestante!,
-                DANFSeConstantes.FonteConteudoPt,
-                5.2);
-
-            servicoRestante = string.IsNullOrWhiteSpace(excedenteServico) ? null : excedenteServico;
-            yMmCont += alturaDisponivelMm;
-            PdfDrawHelper.DesenharLinhaSeparadora(gfx, xMmCont, yMmCont, largUtilMmCont);
-        }
-
-        // 6. Bloco de Continuação das Informações Complementares (se houver)
-        if (!string.IsNullOrWhiteSpace(complementaresRestante))
-        {
-            var hTitulo = DANFSeConstantes.AlturaTituloBlocoMm;
-            PdfDrawHelper.DesenharFundoSombreado(gfx, xMmCont, yMmCont, largUtilMmCont, hTitulo);
-            PdfDrawHelper.DesenharTituloBloco(gfx, xMmCont, yMmCont, largUtilMmCont, hTitulo, "CONTINUAÇÃO DAS INFORMAÇÕES COMPLEMENTARES");
-            yMmCont += hTitulo;
-
-            var alturaDisponivelMm = (DANFSeConstantes.PaginaAlturaMm - config.MargemVerticalMm) - yMmCont;
-            if (alturaDisponivelMm < 20.0) alturaDisponivelMm = 20.0;
-
-            PdfDrawHelper.DesenharRetanguloSombreado(gfx, xMmCont, yMmCont, largUtilMmCont, alturaDisponivelMm);
-            var excedenteCompl = PdfDrawHelper.DesenharTextoAutoFitComExcedente(
-                gfx,
-                xMmCont + 1.0,
-                yMmCont + 1.0,
-                largUtilMmCont - 2.0,
-                alturaDisponivelMm - 2.0,
-                complementaresRestante!,
-                DANFSeConstantes.FonteConteudoPt,
-                5.2);
-
-            complementaresRestante = string.IsNullOrWhiteSpace(excedenteCompl) ? null : excedenteCompl;
-            yMmCont += alturaDisponivelMm;
-        }
-    }
-
-    private void DesenharCabecalhoContinuacao(XGraphics gfx, double x, double y, double w, double h, int numPagina)
-    {
-        var chave = ObterChaveAcesso();
-        var dps = nota.Informacoes.Dps.Informacoes;
-        var emit = nota.Informacoes.Emitente;
-        var tomador = dps.Tomador;
-
-        var fontTituloDoc = new XFont(DANFSeConstantes.FontePadrao, 8.5, XFontStyleEx.Bold);
-        var fontTexto = new XFont(DANFSeConstantes.FontePadrao, 6.5, XFontStyleEx.Regular);
-        var fontBold = new XFont(DANFSeConstantes.FontePadrao, 6.5, XFontStyleEx.Bold);
-
-        // Linha 1: Título e Paginação
-        var colW = w / 3.0;
-        gfx.DrawString("DANFSe v2.0 - Documento Auxiliar da NFS-e", fontTituloDoc, PdfDrawHelper.BrushPreto,
-            new XRect(PdfDrawHelper.MmToPt(x + 1.0), PdfDrawHelper.MmToPt(y + 1.0), PdfDrawHelper.MmToPt(w - 30.0), PdfDrawHelper.MmToPt(4.0)), XStringFormats.TopLeft);
-
-        gfx.DrawString($"Folha {numPagina}", fontBold, PdfDrawHelper.BrushPreto,
-            new XRect(PdfDrawHelper.MmToPt(x + w - 29.0), PdfDrawHelper.MmToPt(y + 1.0), PdfDrawHelper.MmToPt(28.0), PdfDrawHelper.MmToPt(4.0)), XStringFormats.TopRight);
-
-        // Linha 2: Chave de Acesso e Dados da Emissão
-        var chaveTexto = !string.IsNullOrWhiteSpace(chave) ? $"Chave de Acesso: {FormatarChaveAcesso(chave)}" : $"Nº NFS-e: {nota.Informacoes.NumeroNFSe}";
-        var emissaoTexto = $"Série DPS: {dps.Serie}  |  Nº DPS: {dps.NumeroDps}  |  Emissão: {nota.Informacoes.DhProcessamento:dd/MM/yyyy HH:mm:ss}";
-        gfx.DrawString($"{chaveTexto}   ({emissaoTexto})", fontBold, PdfDrawHelper.BrushPreto,
-            new XRect(PdfDrawHelper.MmToPt(x + 1.0), PdfDrawHelper.MmToPt(y + 5.2), PdfDrawHelper.MmToPt(w - 2.0), PdfDrawHelper.MmToPt(3.5)), XStringFormats.TopLeft);
-
-        // Linha 3: Prestador e Tomador
-        var prestadorTexto = $"Prestador: {FormatarCpfCnpj(emit.CNPJ ?? emit.CPF)} - {emit.RazaoSocial}";
-        var tomadorNome = tomador != null ? $"{FormatarCpfCnpj(tomador.CNPJ ?? tomador.CPF ?? tomador.Nif)} - {tomador.Nome}" : "Não identificado";
-        var tomadorTexto = $"Tomador: {tomadorNome}";
-
-        gfx.DrawString(prestadorTexto, fontTexto, PdfDrawHelper.BrushPreto,
-            new XRect(PdfDrawHelper.MmToPt(x + 1.0), PdfDrawHelper.MmToPt(y + 9.5), PdfDrawHelper.MmToPt(colW * 1.5 - 1.0), PdfDrawHelper.MmToPt(4.0)), XStringFormats.TopLeft);
-
-        gfx.DrawString(tomadorTexto, fontTexto, PdfDrawHelper.BrushPreto,
-            new XRect(PdfDrawHelper.MmToPt(x + colW * 1.5), PdfDrawHelper.MmToPt(y + 9.5), PdfDrawHelper.MmToPt(colW * 1.5 - 1.0), PdfDrawHelper.MmToPt(4.0)), XStringFormats.TopLeft);
+        yMm += alturaConteudoMm;
     }
 
     private void DesenharMarcaDagua(XGraphics gfx)
@@ -1081,6 +977,18 @@ internal sealed class DANFSeNacionalReport
     private bool DestinatarioEhTomador() => PossuiTomador() && !PossuiDestinatario();
     private bool PossuiIntermediario() => nota.Informacoes.Dps.Informacoes.Intermediario != null;
     private bool PossuiIBSCBS() => nota.Informacoes.IBSCBS != null;
+
+    private sealed class LayoutAlturas
+    {
+        public LayoutAlturas(double alturaDescricaoServicoMm, double alturaInformacoesComplementaresMm)
+        {
+            AlturaDescricaoServicoMm = alturaDescricaoServicoMm;
+            AlturaInformacoesComplementaresMm = alturaInformacoesComplementaresMm;
+        }
+
+        public double AlturaDescricaoServicoMm { get; }
+        public double AlturaInformacoesComplementaresMm { get; }
+    }
 
     #endregion Helpers de Formatação e Dados
 }

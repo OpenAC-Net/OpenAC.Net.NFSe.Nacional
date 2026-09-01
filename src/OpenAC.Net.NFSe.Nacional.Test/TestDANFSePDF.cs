@@ -300,7 +300,7 @@ public class TestDANFSePDF
         }
         notaLonga.Informacoes.Valores.OutrasInformacoes = sbCompl.ToString();
 
-        var pathLonga = Path.Combine(outputDir, "Exemplo_DANFSe_TextoLongo_Continuacao.pdf");
+        var pathLonga = Path.Combine(outputDir, "Exemplo_DANFSe_TextoLongo_PaginaUnica.pdf");
         OpenDANFSeNacional.GerarPDF(notaLonga, pathLonga, configPadrao);
 
         await Assert.That(File.Exists(pathPadrao)).IsTrue();
@@ -312,7 +312,7 @@ public class TestDANFSePDF
     }
 
     [Test]
-    public async Task GerarPDF_ComTextoLongoServico_GeraPaginaDeContinuacao()
+    public async Task GerarPDF_ComTextoLongoServico_MantemPaginaUnica()
     {
         var nota = CriarNotaExemplo();
         var sb = new StringBuilder();
@@ -328,11 +328,11 @@ public class TestDANFSePDF
         using var readMs = new MemoryStream(ms.ToArray());
         using var pdfDoc = PdfSharp.Pdf.IO.PdfReader.Open(readMs, PdfSharp.Pdf.IO.PdfDocumentOpenMode.Import);
 
-        await Assert.That(pdfDoc.PageCount).IsGreaterThan(1);
+        await Assert.That(pdfDoc.PageCount).IsEqualTo(1);
     }
 
     [Test]
-    public async Task GerarPDF_ComTextoLongoInformacoesComplementares_GeraPaginaDeContinuacao()
+    public async Task GerarPDF_ComTextoLongoInformacoesComplementares_MantemPaginaUnica()
     {
         var nota = CriarNotaExemplo();
         var sb = new StringBuilder();
@@ -348,7 +348,7 @@ public class TestDANFSePDF
         using var readMs = new MemoryStream(ms.ToArray());
         using var pdfDoc = PdfSharp.Pdf.IO.PdfReader.Open(readMs, PdfSharp.Pdf.IO.PdfDocumentOpenMode.Import);
 
-        await Assert.That(pdfDoc.PageCount).IsGreaterThan(1);
+        await Assert.That(pdfDoc.PageCount).IsEqualTo(1);
     }
 
     private static NotaFiscalServico CriarNotaExemplo()
