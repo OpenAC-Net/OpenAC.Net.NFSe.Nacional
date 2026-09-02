@@ -64,7 +64,7 @@ jobs:
         uses: actions/setup-dotnet@v6
 
       # Download the NuGet package created in the previous job
-      - uses: actions/download-artifact@v6
+      - uses: actions/download-artifact@v8
         with:
           name: nuget
           path: ${{ env.NuGetDirectory }}
