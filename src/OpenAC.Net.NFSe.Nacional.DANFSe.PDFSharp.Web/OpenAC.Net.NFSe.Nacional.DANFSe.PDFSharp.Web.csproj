@@ -10,7 +10,9 @@
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageId>OpenAC.Net.NFSe.Nacional.DANFSe.PDFSharp.Web</PackageId>
-    <Version>1.0.0</Version>
+    <AssemblyVersion>1.2.0.0</AssemblyVersion>
+    <FileVersion>1.2.0.0</FileVersion>
+    <Version>1.2.0</Version>
     <Authors>Projeto OpenAC .Net</Authors>
     <Company>OpenAC .Net - Automação Comercial em .Net</Company>
     <Copyright>Copyright © Projeto OpenAC .Net 2014 - 2026</Copyright>
