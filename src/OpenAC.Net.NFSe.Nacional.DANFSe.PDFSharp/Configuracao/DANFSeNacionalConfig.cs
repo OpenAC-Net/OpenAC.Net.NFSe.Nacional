@@ -11,6 +11,7 @@
 // ***********************************************************************
 
 using System.IO;
+using OpenAC.Net.NFSe.Nacional.DANFSe.PDFSharp.Common;
 
 namespace OpenAC.Net.NFSe.Nacional.DANFSe.PDFSharp.Configuracao;
 
@@ -75,14 +76,14 @@ public sealed class DANFSeNacionalConfig
     public bool Substituida { get; set; } = false;
 
     /// <summary>
-    /// Margem superior e inferior em milímetros (padrão: 3.0 mm).
+    /// Margem superior e inferior em milímetros (padrão: 1.5 mm).
     /// </summary>
-    public double MargemVerticalMm { get; set; } = 3.0;
+    public double MargemVerticalMm { get; set; } = DANFSeConstantes.MargemPadraoMm;
 
     /// <summary>
-    /// Margem esquerda e direita em milímetros (padrão: 3.0 mm).
+    /// Margem esquerda e direita em milímetros (padrão: 1.5 mm).
     /// </summary>
-    public double MargemHorizontalMm { get; set; } = 3.0;
+    public double MargemHorizontalMm { get; set; } = DANFSeConstantes.MargemPadraoMm;
 
     /// <summary>
     /// Configurações de segurança e criptografia por senha do PDF.

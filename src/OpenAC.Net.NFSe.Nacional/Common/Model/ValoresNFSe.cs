@@ -40,7 +40,6 @@ namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 /// </summary>
 public sealed partial class ValoresNFSe
 {
-
     /// <summary>
     /// Valor da base de cálculo após redução/dedução.
     /// </summary>
@@ -51,8 +50,9 @@ public sealed partial class ValoresNFSe
     /// <summary>
     /// Tipo do benefício municipal Aplicado
     /// </summary>
-    [DFeElement(TipoCampo.Enum, "tpBM", Ocorrencia = Ocorrencia.Obrigatoria)]
-    public TipoBeneficioMunicipal TipoBeneficioMunicipal { get; set; }
+    [DFeElement(TipoCampo.Enum, "tpBM", Ocorrencia = Ocorrencia.NaoObrigatoria)]
+    public TipoBeneficioMunicipal? TipoBeneficioMunicipal { get; set; }
+
     /// <summary>
     /// Valor da base de cálculo do benefício municipal.
     /// </summary>

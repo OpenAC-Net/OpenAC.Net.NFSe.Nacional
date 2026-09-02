@@ -12,8 +12,10 @@
 
 using System;
 using System.Globalization;
+using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
+using OpenAC.Net.DFe.Core.Common;
 using OpenAC.Net.NFSe.Nacional.Common.Model;
 using OpenAC.Net.NFSe.Nacional.Common.Types;
 using OpenAC.Net.NFSe.Nacional.DANFSe.PDFSharp.Common;
@@ -25,12 +27,20 @@ using PdfSharp.Pdf;
 namespace OpenAC.Net.NFSe.Nacional.DANFSe.PDFSharp.Layout;
 
 /// <summary>
-/// Motor de renderização do DANFSe Padrão Nacional em PDF (NT 008 v2.0).
+/// Motor de renderização do DANFSe Padrão Nacional em PDF (NT 008 v1.02 / DANFSe v2.0).
 /// </summary>
 internal sealed class DANFSeNacionalReport
 {
     #region Fields
 
+    private const string LogoNacionalResourceName =
+        "OpenAC.Net.NFSe.Nacional.DANFSe.PDFSharp.Resources.Images.NfseHorizontal.png";
+    private const string MsgDestProprioTomador = "O DESTINATÁRIO É O PRÓPRIO TOMADOR/ADQUIRENTE DA OPERAÇÃO";
+    private const double AlturaDescricaoTributacaoMm = 3.8;
+    private const double AlturaMinimaDescricaoServicoMm = 6.3;
+    private const double AlturaMinimaInformacoesComplementaresMm = 15.0;
+
+    private static readonly Lazy<byte[]?> LogoNacionalPadrao = new(CarregarLogoNacionalPadrao);
     private readonly NotaFiscalServico nota;
     private readonly DANFSeNacionalConfig config;
     private static readonly CultureInfo PtBr = new("pt-BR");
@@ -57,38 +67,24 @@ internal sealed class DANFSeNacionalReport
     {
         if (doc == null) throw new ArgumentNullException(nameof(doc));
 
-        var page1 = doc.AddPage();
-        page1.Size = PageSize.A4;
-        page1.Orientation = PageOrientation.Portrait;
+        var page = doc.AddPage();
+        page.Size = PageSize.A4;
+        page.Orientation = PageOrientation.Portrait;
 
-        Render(page1, out var servicoExcedente, out var complementaresExcedente);
-
-        var numPagina = 2;
-        while (!string.IsNullOrWhiteSpace(servicoExcedente) || !string.IsNullOrWhiteSpace(complementaresExcedente))
-        {
-            var pageCont = doc.AddPage();
-            pageCont.Size = PageSize.A4;
-            pageCont.Orientation = PageOrientation.Portrait;
-
-            RenderContinuacao(pageCont, numPagina++, ref servicoExcedente, ref complementaresExcedente);
-        }
+        Render(page);
     }
 
     public void Render(PdfPage page)
-    {
-        Render(page, out _, out _);
-    }
-
-    public void Render(PdfPage page, out string? servicoExcedente, out string? complementaresExcedente)
     {
         using var gfx = XGraphics.FromPdfPage(page);
 
         xMm = config.MargemHorizontalMm;
         yMm = config.MargemVerticalMm;
         largUtilMm = DANFSeConstantes.PaginaLarguraMm - (2 * config.MargemHorizontalMm);
+        var layout = CalcularLayout(gfx);
 
         // 1. Desenhar fundos sombreados oficiais (NT 008 / DANFSe v2.0)
-        DesenharFundosSombreamento(gfx);
+        DesenharFundosSombreamento(gfx, layout);
 
         // 2. Marca d'água (Homologação, Cancelada ou Substituída) SOBRE os fundos sombreados
         DesenharMarcaDagua(gfx);
@@ -121,16 +117,14 @@ internal sealed class DANFSeNacionalReport
         // Tomador / Adquirente
         DesenharBandaTomador(gfx);
 
-        // Destinatário (quando aplicável)
-        if (PossuiDestinatario() || DestinatarioEhTomador())
-            DesenharBandaDestinatario(gfx);
+        // Destinatário
+        DesenharBandaDestinatario(gfx);
 
-        // Intermediário (quando aplicável)
-        if (PossuiIntermediario())
-            DesenharBandaIntermediario(gfx);
+        // Intermediário
+        DesenharBandaIntermediario(gfx);
 
         // Serviço Prestado
-        DesenharBandaServicoPrestado(gfx, out servicoExcedente);
+        DesenharBandaServicoPrestado(gfx, layout.AlturaDescricaoServicoMm);
 
         // Tributação Municipal (ISSQN)
         DesenharBandaTributacaoMunicipal(gfx);
@@ -138,18 +132,61 @@ internal sealed class DANFSeNacionalReport
         // Tributação Federal (Exceto CBS)
         DesenharBandaTributacaoFederal(gfx);
 
-        // Reforma Tributária IBS / CBS (quando aplicável)
-        if (PossuiIBSCBS())
-            DesenharBandaTributacaoIBSCBS(gfx);
+        // Reforma Tributária IBS / CBS
+        DesenharBandaTributacaoIBSCBS(gfx);
 
         // Valor Total da NFS-e
         DesenharBandaValorTotalNFSe(gfx);
 
         // Informações Complementares
-        DesenharBandaInformacoesComplementares(gfx, out complementaresExcedente);
+        DesenharBandaInformacoesComplementares(gfx, layout.AlturaInformacoesComplementaresMm);
     }
 
-    private void DesenharFundosSombreamento(XGraphics gfx)
+    private LayoutAlturas CalcularLayout(XGraphics gfx)
+    {
+        var lineH = DANFSeConstantes.AlturaLinhaPadraoMm;
+        var alturaFixaMm = DANFSeConstantes.AlturaCabecalhoMm + 6.8 + (3 * lineH) + (4 * lineH);
+
+        if (config.ExibirCanhoto)
+            alturaFixaMm += DANFSeConstantes.AlturaTituloBlocoMm + lineH;
+
+        alturaFixaMm += PossuiTomador() ? 3 * lineH : DANFSeConstantes.AlturaLinhaVaziaMm;
+
+        alturaFixaMm += PossuiDestinatario() ? 2 * lineH : DANFSeConstantes.AlturaLinhaVaziaMm;
+        alturaFixaMm += PossuiIntermediario() ? 3 * lineH : DANFSeConstantes.AlturaLinhaVaziaMm;
+
+        alturaFixaMm += lineH + AlturaDescricaoTributacaoMm;
+        alturaFixaMm += 4 * lineH; // Tributação Municipal
+        alturaFixaMm += 2 * lineH; // Tributação Federal
+        alturaFixaMm += 4 * lineH; // Tributação IBS / CBS
+        alturaFixaMm += 2 * lineH; // Totais
+        alturaFixaMm += DANFSeConstantes.AlturaTituloBlocoMm;
+
+        var alturaUtilMm = DANFSeConstantes.PaginaAlturaMm - (2 * config.MargemVerticalMm);
+        var alturaFlexivelMm = alturaUtilMm - alturaFixaMm;
+        var alturaFlexivelMinimaMm = AlturaMinimaDescricaoServicoMm +
+                                     AlturaMinimaInformacoesComplementaresMm;
+        if (alturaFlexivelMm < alturaFlexivelMinimaMm)
+            throw new InvalidOperationException("O leiaute do DANFSe excede o espaço disponível em uma página A4.");
+
+        var descricaoServico = nota.Informacoes.Dps.Informacoes.Servico.Informacoes.Descricao;
+        var alturaTextoMm = PdfDrawHelper.MedirAlturaTextoMm(
+            gfx,
+            descricaoServico,
+            largUtilMm - 2.0,
+            DANFSeConstantes.FonteConteudoPt);
+        var alturaNecessariaMm = Math.Max(
+            AlturaMinimaDescricaoServicoMm,
+            2.9 + alturaTextoMm);
+        var alturaMaximaServicoMm = alturaFlexivelMm - AlturaMinimaInformacoesComplementaresMm;
+        var alturaServicoMm = Math.Min(alturaNecessariaMm, alturaMaximaServicoMm);
+
+        return new LayoutAlturas(
+            alturaServicoMm,
+            alturaFlexivelMm - alturaServicoMm);
+    }
+
+    private void DesenharFundosSombreamento(XGraphics gfx, LayoutAlturas layout)
     {
         var curY = config.MargemVerticalMm;
         var colW4 = largUtilMm / 4.0;
@@ -193,61 +230,42 @@ internal sealed class DANFSeNacionalReport
         }
 
         // Destinatário
-        if (PossuiDestinatario() || DestinatarioEhTomador())
-        {
-            if (!PossuiDestinatario())
-            {
-                curY += DANFSeConstantes.AlturaLinhaVaziaMm;
-            }
-            else
-            {
-                PdfDrawHelper.DesenharFundoSombreado(gfx, xMm, curY, colW4, lineH);
-                curY += 2 * lineH;
-            }
-        }
-
-        // Intermediário
-        if (PossuiIntermediario())
-        {
-            if (nota.Informacoes.Dps.Informacoes.Intermediario == null)
-            {
-                curY += DANFSeConstantes.AlturaLinhaVaziaMm;
-            }
-            else
-            {
-                PdfDrawHelper.DesenharFundoSombreado(gfx, xMm, curY, colW4, lineH);
-                curY += 2 * lineH;
-            }
-        }
-
-        // Serviço Prestado
-        PdfDrawHelper.DesenharFundoSombreado(gfx, xMm, curY, colW4, lineH);
-        curY += lineH + 5.2 + 14.0;
-
-        // Tributação Municipal (ISSQN)
-        var vNfse = nota.Informacoes.Valores;
-        var vDps = nota.Informacoes.Dps.Informacoes.Valores;
-        var tribMun = vDps.Tributos.Municipal;
-        if (vNfse.ValorISSQN == null && tribMun.Aliquota == null && (vNfse.ValorBc == null || vNfse.ValorBc == 0))
+        if (!PossuiDestinatario())
         {
             curY += DANFSeConstantes.AlturaLinhaVaziaMm;
         }
         else
         {
             PdfDrawHelper.DesenharFundoSombreado(gfx, xMm, curY, colW4, lineH);
-            curY += 4 * lineH;
+            curY += 2 * lineH;
         }
+
+        // Intermediário
+        if (!PossuiIntermediario())
+        {
+            curY += DANFSeConstantes.AlturaLinhaVaziaMm;
+        }
+        else
+        {
+            PdfDrawHelper.DesenharFundoSombreado(gfx, xMm, curY, colW4, lineH);
+            curY += 3 * lineH;
+        }
+
+        // Serviço Prestado
+        PdfDrawHelper.DesenharFundoSombreado(gfx, xMm, curY, colW4, lineH);
+        curY += lineH + AlturaDescricaoTributacaoMm + layout.AlturaDescricaoServicoMm;
+
+        // Tributação Municipal (ISSQN)
+        PdfDrawHelper.DesenharFundoSombreado(gfx, xMm, curY, colW4, lineH);
+        curY += 4 * lineH;
 
         // Tributação Federal (Exceto CBS)
         PdfDrawHelper.DesenharFundoSombreado(gfx, xMm, curY, colW4, lineH);
         curY += 2 * lineH;
 
         // Tributação IBS / CBS
-        if (PossuiIBSCBS())
-        {
-            PdfDrawHelper.DesenharFundoSombreado(gfx, xMm, curY, colW4, lineH);
-            curY += 3 * lineH;
-        }
+        PdfDrawHelper.DesenharFundoSombreado(gfx, xMm, curY, colW4, lineH);
+        curY += 4 * lineH;
 
         // Valor Total da NFS-e
         PdfDrawHelper.DesenharFundoSombreado(gfx, xMm, curY, colW4, lineH);
@@ -286,7 +304,7 @@ internal sealed class DANFSeNacionalReport
 
         // Logo NFS-e / Prestador (lado esquerdo)
         var logoW = 40.0;
-        var logoBytes = config.LogoNacional ?? config.LogoPrestador;
+        var logoBytes = config.LogoNacional ?? config.LogoPrestador ?? LogoNacionalPadrao.Value;
         if (logoBytes != null && logoBytes.Length > 0)
         {
             PdfDrawHelper.DesenharImagem(gfx, xMm + 1.5, yMm + 1.0, logoW, hCab - 2.0, logoBytes);
@@ -314,9 +332,10 @@ internal sealed class DANFSeNacionalReport
         var dirX = xMm + largUtilMm - 52.0;
         var dirW = 51.0;
 
+        var emitente = nota.Informacoes.Emitente;
         var municipio = !string.IsNullOrWhiteSpace(config.CabecalhoMunicipio)
             ? config.CabecalhoMunicipio
-            : nota.Informacoes.LocalEmissao;
+            : ObterMunicipioUf(emitente.Endereco.CodMunicipio, nota.Informacoes.LocalEmissao, emitente.Endereco.UF);
 
         var fontMun = new XFont(DANFSeConstantes.FontePadrao, DANFSeConstantes.FonteMunicipioPt, XFontStyleEx.Bold);
         var fontAmb = new XFont(DANFSeConstantes.FontePadrao, DANFSeConstantes.FonteAmbientePt, XFontStyleEx.Regular);
@@ -325,11 +344,10 @@ internal sealed class DANFSeNacionalReport
         gfx.DrawString($"Município: {municipio}", fontMun, PdfDrawHelper.BrushPreto, rectMun, XStringFormats.Center);
 
         var rectAmbGer = new XRect(PdfDrawHelper.MmToPt(dirX), PdfDrawHelper.MmToPt(yMm + 5.2), PdfDrawHelper.MmToPt(dirW), PdfDrawHelper.MmToPt(3.0));
-        gfx.DrawString($"Ambiente Gerador: {ObterDescricaoAmbienteGerador()}", fontAmb, PdfDrawHelper.BrushPreto, rectAmbGer, XStringFormats.Center);
+        gfx.DrawString($"Ambiente Gerador: {ObterCodigoAmbienteGerador()}", fontAmb, PdfDrawHelper.BrushPreto, rectAmbGer, XStringFormats.Center);
 
         var rectTpAmb = new XRect(PdfDrawHelper.MmToPt(dirX), PdfDrawHelper.MmToPt(yMm + 8.2), PdfDrawHelper.MmToPt(dirW), PdfDrawHelper.MmToPt(3.0));
-        var tipoAmbTexto = config.Homologacao ? "Homologação" : "Produção";
-        gfx.DrawString($"Tipo de Ambiente: {tipoAmbTexto}", fontAmb, PdfDrawHelper.BrushPreto, rectTpAmb, XStringFormats.Center);
+        gfx.DrawString($"Tipo de Ambiente: {ObterCodigoTipoAmbiente()}", fontAmb, PdfDrawHelper.BrushPreto, rectTpAmb, XStringFormats.Center);
 
         yMm += hCab;
         PdfDrawHelper.DesenharLinhaSeparadora(gfx, xMm, yMm, largUtilMm);
@@ -348,7 +366,7 @@ internal sealed class DANFSeNacionalReport
 
         // Chave de Acesso
         var fontLabel = new XFont(DANFSeConstantes.FontePadrao, DANFSeConstantes.FonteTituloBlocoPt, XFontStyleEx.Bold);
-        var fontChave = new XFont(DANFSeConstantes.FontePadrao, 7.5, XFontStyleEx.Bold);
+        var fontChave = new XFont(DANFSeConstantes.FontePadrao, 7.0, XFontStyleEx.Regular);
 
         gfx.DrawString("CHAVE DE ACESSO DA NFS-e", fontLabel, PdfDrawHelper.BrushPreto,
             new XRect(PdfDrawHelper.MmToPt(xMm + 1.0), PdfDrawHelper.MmToPt(yMm + 0.5), PdfDrawHelper.MmToPt(dadosWMm), PdfDrawHelper.MmToPt(3.0)), XStringFormats.TopLeft);
@@ -360,7 +378,7 @@ internal sealed class DANFSeNacionalReport
 
         // Linha 1: Número da NFS-e / Competência / Data Emissão NFS-e
         PdfDrawHelper.DesenharCampo(gfx, xMm + 0 * colW, curY, colW, lineH, "NÚMERO DA NFS-e", nota.Informacoes.NumeroNFSe.ToString());
-        PdfDrawHelper.DesenharCampo(gfx, xMm + 1 * colW, curY, colW, lineH, "COMPETÊNCIA", dps.Competencia > DateTime.MinValue ? dps.Competencia.ToString("MM/yyyy") : "-");
+        PdfDrawHelper.DesenharCampo(gfx, xMm + 1 * colW, curY, colW, lineH, "COMPETÊNCIA", dps.Competencia > DateTime.MinValue ? dps.Competencia.ToString("dd/MM/yyyy") : "-");
         PdfDrawHelper.DesenharCampo(gfx, xMm + 2 * colW, curY, colW, lineH, "DATA/HORA EMISSÃO NFS-e", nota.Informacoes.DhProcessamento.ToString("dd/MM/yyyy HH:mm:ss"));
 
         curY += lineH;
@@ -373,7 +391,7 @@ internal sealed class DANFSeNacionalReport
         curY += lineH;
 
         // Linha 3: Emitente / Situação / Finalidade
-        PdfDrawHelper.DesenharCampo(gfx, xMm + 0 * colW, curY, colW, lineH, "EMITENTE DA NFS-e", "Prestador", sombreado: true);
+        PdfDrawHelper.DesenharCampo(gfx, xMm + 0 * colW, curY, colW, lineH, "EMITENTE DA NFS-e", ObterDescricaoEmitente(dps.TipoEmitente), sombreado: true);
         PdfDrawHelper.DesenharCampo(gfx, xMm + 1 * colW, curY, colW, lineH, "SITUAÇÃO DA NFS-e", ObterSituacaoNFSe());
         PdfDrawHelper.DesenharCampo(gfx, xMm + 2 * colW, curY, colW, lineH, "FINALIDADE", ObterFinalidade());
 
@@ -416,7 +434,7 @@ internal sealed class DANFSeNacionalReport
 
         // Linha 2
         PdfDrawHelper.DesenharCampo(gfx, xMm, yMm, colW * 2.0, lineH, "Nome / Nome Empresarial", emit.RazaoSocial);
-        PdfDrawHelper.DesenharCampo(gfx, xMm + 2 * colW, yMm, colW, lineH, "Município / Sigla UF", $"{nota.Informacoes.LocalEmissao} / {end.UF}");
+        PdfDrawHelper.DesenharCampo(gfx, xMm + 2 * colW, yMm, colW, lineH, "Município / Sigla UF", ObterMunicipioUf(end.CodMunicipio, nota.Informacoes.LocalEmissao, end.UF));
         PdfDrawHelper.DesenharCampo(gfx, xMm + 3 * colW, yMm, colW, lineH, "Código IBGE / CEP", $"{end.CodMunicipio} / {FormatarCep(end.CEP)}");
 
         yMm += lineH;
@@ -430,7 +448,7 @@ internal sealed class DANFSeNacionalReport
 
         // Linha 4
         PdfDrawHelper.DesenharCampo(gfx, xMm, yMm, colW * 2.0, lineH, "Simples Nacional na Data de Competência", ObterSimplesNacionalDescricao(reg.OptanteSimplesNacional));
-        PdfDrawHelper.DesenharCampo(gfx, xMm + 2 * colW, yMm, colW * 2.0, lineH, "Regime de Apuração Tributária pelo SN", reg.RegimeApuracao?.ToString() ?? "-");
+        PdfDrawHelper.DesenharCampo(gfx, xMm + 2 * colW, yMm, colW * 2.0, lineH, "Regime de Apuração Tributária pelo SN", ObterDescricaoRegimeApuracao(reg.RegimeApuracao));
 
         yMm += lineH;
         PdfDrawHelper.DesenharLinhaSeparadora(gfx, xMm, yMm, largUtilMm);
@@ -451,8 +469,6 @@ internal sealed class DANFSeNacionalReport
         }
 
         var end = tomador?.Endereco;
-        var munNac = end?.Municipio as MunicipioNacional;
-
         // Linha 1
         PdfDrawHelper.DesenharTituloBlocoInline(gfx, xMm, yMm, colW, lineH, "Tomador / Adquirente");
         PdfDrawHelper.DesenharCampo(gfx, xMm + 1 * colW, yMm, colW, lineH, "CNPJ/CPF/NIF", FormatarCpfCnpj(tomador?.CNPJ ?? tomador?.CPF ?? tomador?.Nif));
@@ -463,8 +479,8 @@ internal sealed class DANFSeNacionalReport
 
         // Linha 2
         PdfDrawHelper.DesenharCampo(gfx, xMm, yMm, colW * 2.0, lineH, "Nome / Nome Empresarial", tomador?.Nome ?? "-");
-        PdfDrawHelper.DesenharCampo(gfx, xMm + 2 * colW, yMm, colW, lineH, "Município / Sigla UF", munNac != null ? $"{munNac.CodMunicipio}" : "-");
-        PdfDrawHelper.DesenharCampo(gfx, xMm + 3 * colW, yMm, colW, lineH, "Código IBGE / CEP", munNac != null ? $"{munNac.CodMunicipio} / {FormatarCep(munNac.CEP)}" : "-");
+        PdfDrawHelper.DesenharCampo(gfx, xMm + 2 * colW, yMm, colW, lineH, "Município / Sigla UF", ObterMunicipioUf(end?.Municipio));
+        PdfDrawHelper.DesenharCampo(gfx, xMm + 3 * colW, yMm, colW, lineH, "Código IBGE / CEP", ObterCodigoIbgeCep(end?.Municipio));
 
         yMm += lineH;
 
@@ -484,8 +500,10 @@ internal sealed class DANFSeNacionalReport
 
         if (!PossuiDestinatario())
         {
-            var msg = DestinatarioEhTomador() ? DANFSeConstantes.MsgDestIgualTomador : DANFSeConstantes.MsgDestVazio;
-            PdfDrawHelper.DesenharLinhaVazia(gfx, xMm, yMm, largUtilMm, DANFSeConstantes.AlturaLinhaVaziaMm, msg);
+            var mensagem = DestinatarioEhProprioTomador()
+                ? MsgDestProprioTomador
+                : DANFSeConstantes.MsgDestVazio;
+            PdfDrawHelper.DesenharLinhaVazia(gfx, xMm, yMm, largUtilMm, DANFSeConstantes.AlturaLinhaVaziaMm, mensagem);
             yMm += DANFSeConstantes.AlturaLinhaVaziaMm;
             PdfDrawHelper.DesenharLinhaSeparadora(gfx, xMm, yMm, largUtilMm);
             return;
@@ -493,8 +511,6 @@ internal sealed class DANFSeNacionalReport
 
         var dest = nota.Informacoes.Dps.Informacoes.IBSCBS?.Destinatario;
         var end = dest?.Endereco;
-        var munNac = end?.Municipio as MunicipioNacional;
-
         // Linha 1
         PdfDrawHelper.DesenharTituloBlocoInline(gfx, xMm, yMm, colW, lineH, "Destinatário da Operação");
         PdfDrawHelper.DesenharCampo(gfx, xMm + 1 * colW, yMm, colW * 2.0, lineH, "CNPJ/CPF/NIF", FormatarCpfCnpj(dest?.CNPJ ?? dest?.CPF ?? dest?.NIF));
@@ -504,8 +520,8 @@ internal sealed class DANFSeNacionalReport
 
         // Linha 2
         PdfDrawHelper.DesenharCampo(gfx, xMm, yMm, colW * 2.0, lineH, "Nome / Nome Empresarial", dest?.Nome ?? "-");
-        PdfDrawHelper.DesenharCampo(gfx, xMm + 2 * colW, yMm, colW, lineH, "Município / Sigla UF", munNac != null ? $"{munNac.CodMunicipio}" : "-");
-        PdfDrawHelper.DesenharCampo(gfx, xMm + 3 * colW, yMm, colW, lineH, "Código IBGE / CEP", munNac != null ? $"{munNac.CodMunicipio} / {FormatarCep(munNac.CEP)}" : "-");
+        PdfDrawHelper.DesenharCampo(gfx, xMm + 2 * colW, yMm, colW, lineH, "Município / Sigla UF", ObterMunicipioUf(end?.Municipio));
+        PdfDrawHelper.DesenharCampo(gfx, xMm + 3 * colW, yMm, colW, lineH, "Código IBGE / CEP", ObterCodigoIbgeCep(end?.Municipio));
 
         yMm += lineH;
         PdfDrawHelper.DesenharLinhaSeparadora(gfx, xMm, yMm, largUtilMm);
@@ -525,6 +541,8 @@ internal sealed class DANFSeNacionalReport
             return;
         }
 
+        var end = interm?.Endereco;
+
         PdfDrawHelper.DesenharTituloBlocoInline(gfx, xMm, yMm, colW, lineH, "Intermediário da Operação");
         PdfDrawHelper.DesenharCampo(gfx, xMm + 1 * colW, yMm, colW, lineH, "CNPJ/CPF/NIF", FormatarCpfCnpj(interm?.CNPJ ?? interm?.CPF));
         PdfDrawHelper.DesenharCampo(gfx, xMm + 2 * colW, yMm, colW, lineH, "Indicador Municipal", interm?.InscricaoMunicipal ?? "-");
@@ -533,13 +551,20 @@ internal sealed class DANFSeNacionalReport
         yMm += lineH;
 
         PdfDrawHelper.DesenharCampo(gfx, xMm, yMm, colW * 2.0, lineH, "Nome / Nome Empresarial", interm?.Nome ?? "-");
+        PdfDrawHelper.DesenharCampo(gfx, xMm + 2 * colW, yMm, colW, lineH, "Município / Sigla UF", ObterMunicipioUf(end?.Municipio));
+        PdfDrawHelper.DesenharCampo(gfx, xMm + 3 * colW, yMm, colW, lineH, "Código IBGE / CEP", ObterCodigoIbgeCep(end?.Municipio));
+
+        yMm += lineH;
+
+        var endCompleto = end != null ? $"{end.Logradouro}, {end.Numero} {end.Complemento} - {end.Bairro}" : "-";
+        PdfDrawHelper.DesenharCampo(gfx, xMm, yMm, colW * 2.0, lineH, "Endereço", endCompleto);
         PdfDrawHelper.DesenharCampo(gfx, xMm + 2 * colW, yMm, colW * 2.0, lineH, "E-mail", interm?.Email?.ToLower() ?? "-");
 
         yMm += lineH;
         PdfDrawHelper.DesenharLinhaSeparadora(gfx, xMm, yMm, largUtilMm);
     }
 
-    private void DesenharBandaServicoPrestado(XGraphics gfx, out string? servicoExcedente)
+    private void DesenharBandaServicoPrestado(XGraphics gfx, double alturaDescricaoMm)
     {
         var colW = largUtilMm / 4.0;
         var lineH = DANFSeConstantes.AlturaLinhaPadraoMm;
@@ -550,30 +575,26 @@ internal sealed class DANFSeNacionalReport
         PdfDrawHelper.DesenharTituloBlocoInline(gfx, xMm, yMm, colW, lineH, "Serviço Prestado");
         PdfDrawHelper.DesenharCampo(gfx, xMm + 1 * colW, yMm, colW, lineH, "Cód. Tributação Nac. / Mun.", $"{info.CodTributacaoNacional} / {info.CodTributacaoMunicipio ?? "-"}");
         PdfDrawHelper.DesenharCampo(gfx, xMm + 2 * colW, yMm, colW, lineH, "Código da NBS", info.CodNBS ?? "-");
-        PdfDrawHelper.DesenharCampo(gfx, xMm + 3 * colW, yMm, colW, lineH, "Local da Prestação / UF / País", $"{nota.Informacoes.LocalPrestacao} / BR");
+        PdfDrawHelper.DesenharCampo(gfx, xMm + 3 * colW, yMm, colW, lineH, "Local da Prestação / UF / País", $"{ObterMunicipioUf(s.Localidade.CodMunicipioPrestacao, nota.Informacoes.LocalPrestacao)} / {ObterPais(s.Localidade.CodPaisPrestacao)}");
 
         yMm += lineH;
 
         // Linha 2: Descrição do Código de Tributação Nacional
-        PdfDrawHelper.DesenharCampo(gfx, xMm, yMm, largUtilMm, 5.2, "Descrição do Código de Tributação Nacional", nota.Informacoes.DescricaoTributoNacional);
-        yMm += 5.2;
+        PdfDrawHelper.DesenharCampo(gfx, xMm, yMm, largUtilMm, AlturaDescricaoTributacaoMm, "", nota.Informacoes.DescricaoTributoNacional);
+        yMm += AlturaDescricaoTributacaoMm;
 
-        // Linha 3: Descrição do Serviço (texto livre com quebra e Auto-Fit)
-        var hDesc = 14.0;
-        PdfDrawHelper.DesenharCampo(gfx, xMm, yMm, largUtilMm, hDesc, "Descrição do Serviço", "");
-        var excedente = PdfDrawHelper.DesenharTextoAutoFitComExcedente(
+        // Linha 3: Descrição do Serviço com altura dinâmica e fonte mínima normativa
+        PdfDrawHelper.DesenharCampo(
             gfx,
-            xMm + 1.0,
-            yMm + 3.0,
-            largUtilMm - 2.0,
-            hDesc - 3.5,
+            xMm,
+            yMm,
+            largUtilMm,
+            alturaDescricaoMm,
+            "Descrição do Serviço",
             info.Descricao,
-            DANFSeConstantes.FonteConteudoPt,
-            5.2);
+            multilinha: true);
 
-        servicoExcedente = string.IsNullOrWhiteSpace(excedente) ? null : excedente;
-
-        yMm += hDesc;
+        yMm += alturaDescricaoMm;
         PdfDrawHelper.DesenharLinhaSeparadora(gfx, xMm, yMm, largUtilMm);
     }
 
@@ -584,24 +605,17 @@ internal sealed class DANFSeNacionalReport
         var vNfse = nota.Informacoes.Valores;
         var vDps = nota.Informacoes.Dps.Informacoes.Valores;
         var tribMun = vDps.Tributos.Municipal;
-
-        if (vNfse.ValorISSQN == null && tribMun.Aliquota == null && (vNfse.ValorBc == null || vNfse.ValorBc == 0))
-        {
-            PdfDrawHelper.DesenharLinhaVazia(gfx, xMm, yMm, largUtilMm, DANFSeConstantes.AlturaLinhaVaziaMm, DANFSeConstantes.MsgIssqnVazio);
-            yMm += DANFSeConstantes.AlturaLinhaVaziaMm;
-            PdfDrawHelper.DesenharLinhaSeparadora(gfx, xMm, yMm, largUtilMm);
-            return;
-        }
+        var regime = nota.Informacoes.Dps.Informacoes.Prestador.Regime;
 
         // Linha 1
         PdfDrawHelper.DesenharTituloBlocoInline(gfx, xMm, yMm, colW, lineH, "Tributação Municipal (ISSQN)");
-        PdfDrawHelper.DesenharCampo(gfx, xMm + 1 * colW, yMm, colW, lineH, "Tipo de Tributação", tribMun.ISSQN.ToString());
-        PdfDrawHelper.DesenharCampo(gfx, xMm + 2 * colW, yMm, colW * 2.0, lineH, "Município / Sigla UF / País da Incidência", $"{nota.Informacoes.LocalIncidencia} / BR");
+        PdfDrawHelper.DesenharCampo(gfx, xMm + 1 * colW, yMm, colW, lineH, "Tipo de Tributação", ObterDescricaoTributacaoISSQN(tribMun.ISSQN));
+        PdfDrawHelper.DesenharCampo(gfx, xMm + 2 * colW, yMm, colW * 2.0, lineH, "Município / Sigla UF / País da Incidência", $"{ObterMunicipioUf(nota.Informacoes.CodLocalIncidencia, nota.Informacoes.LocalIncidencia)} / {ObterPais(tribMun.CodPais)}");
 
         yMm += lineH;
 
         // Linha 2
-        PdfDrawHelper.DesenharCampo(gfx, xMm + 0 * colW, yMm, colW, lineH, "Regime Especial de Tributação", tribMun.ISSQN.ToString());
+        PdfDrawHelper.DesenharCampo(gfx, xMm + 0 * colW, yMm, colW, lineH, "Regime Especial de Tributação", ObterDescricaoRegimeEspecial(regime.RegimeEspecial));
         PdfDrawHelper.DesenharCampo(gfx, xMm + 1 * colW, yMm, colW, lineH, "Tipo de Imunidade do ISSQN", tribMun.TipoImunidade?.ToString() ?? "-");
         PdfDrawHelper.DesenharCampo(gfx, xMm + 2 * colW, yMm, colW, lineH, "Suspensão da Exigibilidade", tribMun.Suspensao?.TipoSuspensao.ToString() ?? "-");
         PdfDrawHelper.DesenharCampo(gfx, xMm + 3 * colW, yMm, colW, lineH, "Nº Processo Suspensão", tribMun.Suspensao?.NumeroProcesso ?? "-");
@@ -609,18 +623,19 @@ internal sealed class DANFSeNacionalReport
         yMm += lineH;
 
         // Linha 3
-        PdfDrawHelper.DesenharCampo(gfx, xMm + 0 * colW, yMm, colW, lineH, "Benefício Municipal", vNfse.TipoBeneficioMunicipal.ToString());
-        PdfDrawHelper.DesenharCampo(gfx, xMm + 1 * colW, yMm, colW, lineH, "Cálculo do BM", FormatarMoeda(vNfse.ValorBcBeneficioMunicipal));
-        PdfDrawHelper.DesenharCampo(gfx, xMm + 2 * colW, yMm, colW, lineH, "Total Deduções / Reduções", FormatarMoeda(vDps.ValoresDeducaoReducao?.Valor));
-        PdfDrawHelper.DesenharCampo(gfx, xMm + 3 * colW, yMm, colW, lineH, "Desconto Incondicionado", FormatarMoeda(vDps.ValoresDesconto?.ValorIncodicional));
+        PdfDrawHelper.DesenharCampo(gfx, xMm + 0 * colW, yMm, colW, lineH, "Benefício Municipal",
+            ObterDescricaoBeneficioMunicipal(vNfse.TipoBeneficioMunicipal));
+        PdfDrawHelper.DesenharCampo(gfx, xMm + 1 * colW, yMm, colW, lineH, "Cálculo do BM", FormatarMoedaOpcional(vNfse.ValorBcBeneficioMunicipal));
+        PdfDrawHelper.DesenharCampo(gfx, xMm + 2 * colW, yMm, colW, lineH, "Total Deduções / Reduções", FormatarMoedaOpcional(vDps.ValoresDeducaoReducao?.Valor));
+        PdfDrawHelper.DesenharCampo(gfx, xMm + 3 * colW, yMm, colW, lineH, "Desconto Incondicionado", FormatarMoedaOpcional(vDps.ValoresDesconto?.ValorIncodicional));
 
         yMm += lineH;
 
         // Linha 4
-        PdfDrawHelper.DesenharCampo(gfx, xMm + 0 * colW, yMm, colW, lineH, "BC ISSQN", FormatarMoeda(vNfse.ValorBc));
-        PdfDrawHelper.DesenharCampo(gfx, xMm + 1 * colW, yMm, colW, lineH, "Alíquota Aplicada", FormatarPercentual(vNfse.Aliquota));
-        PdfDrawHelper.DesenharCampo(gfx, xMm + 2 * colW, yMm, colW, lineH, "Retenção do ISSQN", tribMun.TipoRetencaoISSQN?.ToString() ?? "-");
-        PdfDrawHelper.DesenharCampo(gfx, xMm + 3 * colW, yMm, colW, lineH, "ISSQN Apurado", FormatarMoeda(vNfse.ValorISSQN));
+        PdfDrawHelper.DesenharCampo(gfx, xMm + 0 * colW, yMm, colW, lineH, "BC ISSQN", FormatarMoedaOpcional(vNfse.ValorBc));
+        PdfDrawHelper.DesenharCampo(gfx, xMm + 1 * colW, yMm, colW, lineH, "Alíquota Aplicada", FormatarPercentualOpcional(vNfse.Aliquota));
+        PdfDrawHelper.DesenharCampo(gfx, xMm + 2 * colW, yMm, colW, lineH, "Retenção do ISSQN", ObterDescricaoRetencaoISSQN(tribMun.TipoRetencaoISSQN));
+        PdfDrawHelper.DesenharCampo(gfx, xMm + 3 * colW, yMm, colW, lineH, "ISSQN Apurado", FormatarMoedaOpcional(vNfse.ValorISSQN));
 
         yMm += lineH;
         PdfDrawHelper.DesenharLinhaSeparadora(gfx, xMm, yMm, largUtilMm);
@@ -632,20 +647,27 @@ internal sealed class DANFSeNacionalReport
         var lineH = DANFSeConstantes.AlturaLinhaPadraoMm;
         var vDps = nota.Informacoes.Dps.Informacoes.Valores;
         var tribFed = vDps.Tributos.Federal;
+        var pisCofins = tribFed?.PisCofins;
+        var pisCofinsRetidos = pisCofins?.TipoRetencao == TipoRetencaoPisCofinsCsll.PisCofinsRetidos;
+        var valorContribuicoesSociais = pisCofinsRetidos
+            ? SomarValoresInformados(tribFed?.ValorCSLL, pisCofins?.ValorPis, pisCofins?.ValorCofins)
+            : tribFed?.ValorCSLL;
+        var valorPis = pisCofinsRetidos ? 0m : pisCofins?.ValorPis;
+        var valorCofins = pisCofinsRetidos ? 0m : pisCofins?.ValorCofins;
 
         // Linha 1
         PdfDrawHelper.DesenharTituloBlocoInline(gfx, xMm, yMm, colW, lineH, "Tributação Federal (Exceto CBS)");
-        PdfDrawHelper.DesenharCampo(gfx, xMm + 1 * colW, yMm, colW, lineH, "IRRF", FormatarMoeda(tribFed?.ValorIRRF));
-        PdfDrawHelper.DesenharCampo(gfx, xMm + 2 * colW, yMm, colW, lineH, "Contribuição Previdenciária", FormatarMoeda(tribFed?.ValorCP));
-        PdfDrawHelper.DesenharCampo(gfx, xMm + 3 * colW, yMm, colW, lineH, "Contribuições Sociais", FormatarMoeda(tribFed?.ValorCSLL));
+        PdfDrawHelper.DesenharCampo(gfx, xMm + 1 * colW, yMm, colW, lineH, "IRRF", FormatarMoedaOpcional(tribFed?.ValorIRRF));
+        PdfDrawHelper.DesenharCampo(gfx, xMm + 2 * colW, yMm, colW, lineH, "Contribuição Previdenciária - Retida", FormatarMoedaOpcional(tribFed?.ValorCP));
+        PdfDrawHelper.DesenharCampo(gfx, xMm + 3 * colW, yMm, colW, lineH, "Contribuições Sociais - Retidas", FormatarMoedaOpcional(valorContribuicoesSociais));
 
         yMm += lineH;
 
         // Linha 2
-        PdfDrawHelper.DesenharCampo(gfx, xMm + 0 * colW, yMm, colW, lineH, "", "");
-        PdfDrawHelper.DesenharCampo(gfx, xMm + 1 * colW, yMm, colW, lineH, "PIS - Débito de Apuração Própria", FormatarMoeda(tribFed?.PisCofins?.ValorPis));
-        PdfDrawHelper.DesenharCampo(gfx, xMm + 2 * colW, yMm, colW, lineH, "COFINS - Débito de Apuração", FormatarMoeda(tribFed?.PisCofins?.ValorCofins));
-        PdfDrawHelper.DesenharCampo(gfx, xMm + 3 * colW, yMm, colW, lineH, "Outras Retenções", "-");
+        PdfDrawHelper.DesenharCampo(gfx, xMm + 0 * colW, yMm, colW, lineH, "PIS - Débito de Apuração Própria", FormatarMoedaOpcional(valorPis));
+        PdfDrawHelper.DesenharCampo(gfx, xMm + 1 * colW, yMm, colW, lineH, "COFINS - Débito de Apuração Própria", FormatarMoedaOpcional(valorCofins));
+        PdfDrawHelper.DesenharCampo(gfx, xMm + 2 * colW, yMm, colW * 2.0, lineH, "Descrição Contrib. Sociais - Retidas",
+            ObterDescricaoRetencaoPisCofins(pisCofins?.TipoRetencao));
 
         yMm += lineH;
         PdfDrawHelper.DesenharLinhaSeparadora(gfx, xMm, yMm, largUtilMm);
@@ -655,31 +677,65 @@ internal sealed class DANFSeNacionalReport
     {
         var colW = largUtilMm / 4.0;
         var lineH = DANFSeConstantes.AlturaLinhaPadraoMm;
-        var ibscbs = nota.Informacoes.IBSCBS;
-        if (ibscbs == null) return;
+        var declarado = nota.Informacoes.Dps.Informacoes.IBSCBS;
+        var calculado = nota.Informacoes.IBSCBS;
+        var classificacao = declarado?.Valores.Tributos.GrupoIBSCBS;
+        var valores = calculado?.Valores;
+        var totalIbs = calculado?.Totais.TotalIBS;
+        var totalCbs = calculado?.Totais.TotalCBS;
 
-        var cstTrib = nota.Informacoes.Dps.Informacoes.IBSCBS?.Valores.Tributos.GrupoIBSCBS;
-        var cstTexto = cstTrib != null ? $"{cstTrib.CodigoSituacaoTributaria} / {cstTrib.CodigoClassificacaoTributaria}" : "-";
+        var cstTexto = classificacao == null
+            ? "- / -"
+            : $"{ValorOuTraco(classificacao.CodigoSituacaoTributaria)} / {ValorOuTraco(classificacao.CodigoClassificacaoTributaria)}";
+        var municipioIncidencia = calculado == null ||
+                                  (string.IsNullOrWhiteSpace(calculado.CodigoLocalidadeIncidencia) &&
+                                   string.IsNullOrWhiteSpace(calculado.DescricaoLocalidadeIncidencia))
+            ? "- / -"
+            : ObterMunicipioUf(calculado.CodigoLocalidadeIncidencia, calculado.DescricaoLocalidadeIncidencia);
+        var indicadorLocal = $"{ValorOuTraco(declarado?.CodigoIndicadorOperacao)} / " +
+                             $"{ValorOuTraco(calculado?.CodigoLocalidadeIncidencia)} / {municipioIncidencia}";
 
         // Linha 1
         PdfDrawHelper.DesenharTituloBlocoInline(gfx, xMm, yMm, colW, lineH, "Tributação IBS / CBS");
-        PdfDrawHelper.DesenharCampo(gfx, xMm + 1 * colW, yMm, colW, lineH, "CST / Classificação", cstTexto);
-        PdfDrawHelper.DesenharCampo(gfx, xMm + 2 * colW, yMm, colW * 2.0, lineH, "Localidade Incidência / Sigla UF", $"{ibscbs.DescricaoLocalidadeIncidencia} / {ibscbs.CodigoLocalidadeIncidencia}");
+        PdfDrawHelper.DesenharCampo(gfx, xMm + 1 * colW, yMm, colW, lineH, "CST / cClassTrib", cstTexto);
+        PdfDrawHelper.DesenharCampo(gfx, xMm + 2 * colW, yMm, colW * 2.0, lineH,
+            "Indicador de Operação / Código IBGE Incidência / Município Incidência / Sigla UF", indicadorLocal);
 
         yMm += lineH;
 
         // Linha 2
-        PdfDrawHelper.DesenharCampo(gfx, xMm + 0 * colW, yMm, colW, lineH, "Exclusões e Reduções da BC", FormatarMoeda(ibscbs.Valores.ValorCalcReeRepRes));
-        PdfDrawHelper.DesenharCampo(gfx, xMm + 1 * colW, yMm, colW, lineH, "BC Após Exclusões e Reduções", FormatarMoeda(ibscbs.Valores.ValorBaseCalculo));
-        PdfDrawHelper.DesenharCampo(gfx, xMm + 2 * colW, yMm, colW, lineH, "Alíquota IBS UF / Mun", $"{FormatarPercentual(ibscbs.Valores.Estado.PercentualIBSUf)} / {FormatarPercentual(ibscbs.Valores.Municipio.PercentualIBSMunicipal)}");
-        PdfDrawHelper.DesenharCampo(gfx, xMm + 3 * colW, yMm, colW, lineH, "Alíquota CBS", FormatarPercentual(ibscbs.Valores.Federal.PercentualCBS));
+        PdfDrawHelper.DesenharCampo(gfx, xMm + 0 * colW, yMm, colW, lineH, "Exclusões e Reduções da Base de Cálculo", FormatarMoedaOpcional(calculado == null ? null : valores!.ValorCalcReeRepRes));
+        PdfDrawHelper.DesenharCampo(gfx, xMm + 1 * colW, yMm, colW, lineH, "Base de Cálculo Após Exclusões e Reduções", FormatarMoedaOpcional(calculado == null ? null : valores!.ValorBaseCalculo));
+        PdfDrawHelper.DesenharCampo(gfx, xMm + 2 * colW, yMm, colW, lineH, "Red. Alíquota IBS / Red. Alíquota CBS",
+            FormatarPercentuais(valores?.Estado.PercentualReducaoAliquotaUf, valores?.Municipio.PercentualReducaoAliquotaMunicipal,
+                valores?.Federal.PercentualReducaoAliquotaCBS));
+        PdfDrawHelper.DesenharCampo(gfx, xMm + 3 * colW, yMm, colW, lineH, "Alíquota - IBS UF / IBS Mun",
+            FormatarPercentuais(calculado == null ? null : valores!.Estado.PercentualIBSUf,
+                calculado == null ? null : valores!.Municipio.PercentualIBSMunicipal));
 
         yMm += lineH;
 
         // Linha 3
-        PdfDrawHelper.DesenharCampo(gfx, xMm + 0 * colW, yMm, colW, lineH, "Valor Total Apurado - IBS", FormatarMoeda(ibscbs.Totais.TotalIBS.ValorTotalIBS));
-        PdfDrawHelper.DesenharCampo(gfx, xMm + 1 * colW, yMm, colW, lineH, "Valor Total Apurado - CBS", FormatarMoeda(ibscbs.Totais.TotalCBS.ValorCBS));
-        PdfDrawHelper.DesenharCampo(gfx, xMm + 2 * colW, yMm, colW * 2.0, lineH, "Total IBS + CBS", FormatarMoeda(ibscbs.Totais.TotalIBS.ValorTotalIBS + ibscbs.Totais.TotalCBS.ValorCBS));
+        PdfDrawHelper.DesenharCampo(gfx, xMm + 0 * colW, yMm, colW, lineH, "Alíq. Efetiva Municipal - IBS",
+            FormatarPercentualOpcional(calculado == null ? null : valores!.Municipio.PercentualAliquotaEfetivaMunicipal));
+        PdfDrawHelper.DesenharCampo(gfx, xMm + 1 * colW, yMm, colW, lineH, "Valor Apurado Municipal - IBS",
+            FormatarMoedaOpcional(totalIbs == null ? null : totalIbs.TotalMunicipal.ValorIBSMunicipal));
+        PdfDrawHelper.DesenharCampo(gfx, xMm + 2 * colW, yMm, colW, lineH, "Alíq. Efetiva Estadual - IBS",
+            FormatarPercentualOpcional(calculado == null ? null : valores!.Estado.PercentualAliquotaEfetivaUf));
+        PdfDrawHelper.DesenharCampo(gfx, xMm + 3 * colW, yMm, colW, lineH, "Valor Apurado Estadual - IBS",
+            FormatarMoedaOpcional(totalIbs == null ? null : totalIbs.TotalEstadual.ValorIBSUF));
+
+        yMm += lineH;
+
+        // Linha 4
+        PdfDrawHelper.DesenharCampo(gfx, xMm + 0 * colW, yMm, colW, lineH, "Valor Total Apurado - IBS",
+            FormatarMoedaOpcional(totalIbs == null ? null : totalIbs.ValorTotalIBS));
+        PdfDrawHelper.DesenharCampo(gfx, xMm + 1 * colW, yMm, colW, lineH, "Alíquota - CBS",
+            FormatarPercentualOpcional(calculado == null ? null : valores!.Federal.PercentualCBS));
+        PdfDrawHelper.DesenharCampo(gfx, xMm + 2 * colW, yMm, colW, lineH, "Alíquota Efetiva - CBS",
+            FormatarPercentualOpcional(calculado == null ? null : valores!.Federal.PercentualAliquotaEfetivaCBS));
+        PdfDrawHelper.DesenharCampo(gfx, xMm + 3 * colW, yMm, colW, lineH, "Valor Total Apurado - CBS",
+            FormatarMoedaOpcional(totalCbs == null ? null : totalCbs.ValorCBS));
 
         yMm += lineH;
         PdfDrawHelper.DesenharLinhaSeparadora(gfx, xMm, yMm, largUtilMm);
@@ -693,31 +749,33 @@ internal sealed class DANFSeNacionalReport
         var vDps = nota.Informacoes.Dps.Informacoes.Valores;
 
         var vServicos = vDps.ValoresServico.Valor;
-        var vDescIncond = vDps.ValoresDesconto?.ValorIncodicional ?? 0;
-        var vDescCond = vDps.ValoresDesconto?.ValorCondicional ?? 0;
-        var vRetencoes = vNfse.TotalRetido ?? 0;
-        var vLiq = vNfse.ValorLiquido ?? (vServicos - vDescIncond - vRetencoes);
-        var totalIBSCBS = (nota.Informacoes.IBSCBS?.Totais.TotalIBS.ValorTotalIBS ?? 0) + (nota.Informacoes.IBSCBS?.Totais.TotalCBS.ValorCBS ?? 0);
+        var vDescIncond = vDps.ValoresDesconto?.ValorIncodicional;
+        var vDescCond = vDps.ValoresDesconto?.ValorCondicional;
+        var totaisIBSCBS = nota.Informacoes.IBSCBS?.Totais;
+        decimal? totalIBSCBS = totaisIBSCBS == null
+            ? null
+            : totaisIBSCBS.TotalIBS.ValorTotalIBS + totaisIBSCBS.TotalCBS.ValorCBS;
+        var valorTotalNF = totaisIBSCBS?.ValorTotalNF;
 
         // Linha 1
         PdfDrawHelper.DesenharTituloBlocoInline(gfx, xMm, yMm, colW, lineH, "Valor Total da NFS-e");
         PdfDrawHelper.DesenharCampo(gfx, xMm + 1 * colW, yMm, colW, lineH, "Valor da Operação / Serviço", FormatarMoeda(vServicos));
-        PdfDrawHelper.DesenharCampo(gfx, xMm + 2 * colW, yMm, colW, lineH, "Desconto Incondicionado", FormatarMoeda(vDescIncond));
-        PdfDrawHelper.DesenharCampo(gfx, xMm + 3 * colW, yMm, colW, lineH, "Desconto Condicionado", FormatarMoeda(vDescCond));
+        PdfDrawHelper.DesenharCampo(gfx, xMm + 2 * colW, yMm, colW, lineH, "Desconto Incondicionado", FormatarMoedaOpcional(vDescIncond));
+        PdfDrawHelper.DesenharCampo(gfx, xMm + 3 * colW, yMm, colW, lineH, "Desconto Condicionado", FormatarMoedaOpcional(vDescCond));
 
         yMm += lineH;
 
         // Linha 2
-        PdfDrawHelper.DesenharCampo(gfx, xMm + 0 * colW, yMm, colW, lineH, "Total Retenções (ISS / Federais)", FormatarMoeda(vRetencoes));
-        PdfDrawHelper.DesenharCampo(gfx, xMm + 1 * colW, yMm, colW, lineH, "Valor Líquido da NFS-e", FormatarMoeda(vLiq), negrito: true);
-        PdfDrawHelper.DesenharCampo(gfx, xMm + 2 * colW, yMm, colW, lineH, "Total IBS / CBS", FormatarMoeda(totalIBSCBS));
-        PdfDrawHelper.DesenharCampo(gfx, xMm + 3 * colW, yMm, colW, lineH, "Valor Líquido + IBS/CBS", FormatarMoeda(vLiq + totalIBSCBS), sombreado: true, negrito: true);
+        PdfDrawHelper.DesenharCampo(gfx, xMm + 0 * colW, yMm, colW, lineH, "Total Retenções (ISS / Federais)", FormatarMoedaOpcional(vNfse.TotalRetido));
+        PdfDrawHelper.DesenharCampo(gfx, xMm + 1 * colW, yMm, colW, lineH, "Valor Líquido da NFS-e", FormatarMoedaOpcional(vNfse.ValorLiquido), negrito: true);
+        PdfDrawHelper.DesenharCampo(gfx, xMm + 2 * colW, yMm, colW, lineH, "Total IBS / CBS", FormatarMoedaOpcional(totalIBSCBS));
+        PdfDrawHelper.DesenharCampo(gfx, xMm + 3 * colW, yMm, colW, lineH, "Valor Líquido + IBS/CBS", FormatarMoedaOpcional(valorTotalNF), sombreado: true, negrito: true);
 
         yMm += lineH;
         PdfDrawHelper.DesenharLinhaSeparadora(gfx, xMm, yMm, largUtilMm);
     }
 
-    private void DesenharBandaInformacoesComplementares(XGraphics gfx, out string? complementaresExcedente)
+    private void DesenharBandaInformacoesComplementares(XGraphics gfx, double alturaConteudoMm)
     {
         var hTitulo = DANFSeConstantes.AlturaTituloBlocoMm;
         PdfDrawHelper.DesenharTituloBloco(gfx, xMm, yMm, largUtilMm, hTitulo, "INFORMAÇÕES COMPLEMENTARES");
@@ -731,151 +789,20 @@ internal sealed class DANFSeNacionalReport
         if (!string.IsNullOrWhiteSpace(complServ?.Informacoes))
             complementares.AppendLine(complServ!.Informacoes);
 
-        // Tributos aproximados (IBPT / Lei 12.741)
+        // Tributos aproximados (Lei 12.741/2012)
         var totTrib = nota.Informacoes.Dps.Informacoes.Valores.Tributos.Total;
-        if (totTrib.ValorTotal != null)
-        {
-            complementares.AppendLine($"Valor aproximado dos tributos: Federais: {FormatarMoeda(totTrib.ValorTotal.TotalFederal)}, " +
-                                   $"Estaduais: {FormatarMoeda(totTrib.ValorTotal.TotalEstadual)}, " +
-                                   $"Municipais: {FormatarMoeda(totTrib.ValorTotal.TotalMunicipal)} (Lei 12.741/2012)");
-        }
+        complementares.AppendLine(ObterTotaisAproximadosTributos(totTrib));
 
-        var espacoRestanteMm = (DANFSeConstantes.PaginaAlturaMm - config.MargemVerticalMm) - yMm;
-        if (espacoRestanteMm < 15.0) espacoRestanteMm = 15.0;
-
-        var excedente = PdfDrawHelper.DesenharTextoAutoFitComExcedente(
+        PdfDrawHelper.DesenharTextoComReticencias(
             gfx,
             xMm + 1.0,
             yMm + 1.0,
             largUtilMm - 2.0,
-            espacoRestanteMm - 2.0,
+            alturaConteudoMm - 2.0,
             complementares.ToString(),
-            DANFSeConstantes.FonteConteudoPt,
-            5.2);
+            DANFSeConstantes.FonteConteudoPt);
 
-        complementaresExcedente = string.IsNullOrWhiteSpace(excedente) ? null : excedente;
-    }
-
-    private void RenderContinuacao(PdfPage page, int numPagina, ref string? servicoRestante, ref string? complementaresRestante)
-    {
-        using var gfx = XGraphics.FromPdfPage(page);
-
-        var xMmCont = config.MargemHorizontalMm;
-        var yMmCont = config.MargemVerticalMm;
-        var largUtilMmCont = DANFSeConstantes.PaginaLarguraMm - (2 * config.MargemHorizontalMm);
-
-        // 1. Sombreamento do cabeçalho de continuação
-        var hCab = 15.0;
-        PdfDrawHelper.DesenharFundoSombreado(gfx, xMmCont, yMmCont, largUtilMmCont, hCab);
-
-        // 2. Marca d'água
-        DesenharMarcaDagua(gfx);
-
-        // 3. Borda Externa da Página
-        var rectBorda = new XRect(
-            PdfDrawHelper.MmToPt(xMmCont),
-            PdfDrawHelper.MmToPt(yMmCont),
-            PdfDrawHelper.MmToPt(largUtilMmCont),
-            PdfDrawHelper.MmToPt(DANFSeConstantes.PaginaAlturaMm - (2 * config.MargemVerticalMm)));
-        gfx.DrawRectangle(PdfDrawHelper.PenBordaExterna, rectBorda);
-
-        // 4. Cabeçalho de Continuação
-        DesenharCabecalhoContinuacao(gfx, xMmCont, yMmCont, largUtilMmCont, hCab, numPagina);
-        yMmCont += hCab;
-        PdfDrawHelper.DesenharLinhaSeparadora(gfx, xMmCont, yMmCont, largUtilMmCont);
-
-        // 5. Bloco de Continuação da Descrição do Serviço (se houver)
-        if (!string.IsNullOrWhiteSpace(servicoRestante))
-        {
-            var hTitulo = DANFSeConstantes.AlturaTituloBlocoMm;
-            PdfDrawHelper.DesenharFundoSombreado(gfx, xMmCont, yMmCont, largUtilMmCont, hTitulo);
-            PdfDrawHelper.DesenharTituloBloco(gfx, xMmCont, yMmCont, largUtilMmCont, hTitulo, "CONTINUAÇÃO DA DESCRIÇÃO DO SERVIÇO");
-            yMmCont += hTitulo;
-
-            var alturaDisponivelMm = !string.IsNullOrWhiteSpace(complementaresRestante)
-                ? ((DANFSeConstantes.PaginaAlturaMm - config.MargemVerticalMm) - yMmCont) / 2.0 - 5.0
-                : (DANFSeConstantes.PaginaAlturaMm - config.MargemVerticalMm) - yMmCont - 2.0;
-
-            if (alturaDisponivelMm < 20.0) alturaDisponivelMm = 20.0;
-
-            PdfDrawHelper.DesenharRetanguloSombreado(gfx, xMmCont, yMmCont, largUtilMmCont, alturaDisponivelMm);
-            var excedenteServico = PdfDrawHelper.DesenharTextoAutoFitComExcedente(
-                gfx,
-                xMmCont + 1.0,
-                yMmCont + 1.0,
-                largUtilMmCont - 2.0,
-                alturaDisponivelMm - 2.0,
-                servicoRestante!,
-                DANFSeConstantes.FonteConteudoPt,
-                5.2);
-
-            servicoRestante = string.IsNullOrWhiteSpace(excedenteServico) ? null : excedenteServico;
-            yMmCont += alturaDisponivelMm;
-            PdfDrawHelper.DesenharLinhaSeparadora(gfx, xMmCont, yMmCont, largUtilMmCont);
-        }
-
-        // 6. Bloco de Continuação das Informações Complementares (se houver)
-        if (!string.IsNullOrWhiteSpace(complementaresRestante))
-        {
-            var hTitulo = DANFSeConstantes.AlturaTituloBlocoMm;
-            PdfDrawHelper.DesenharFundoSombreado(gfx, xMmCont, yMmCont, largUtilMmCont, hTitulo);
-            PdfDrawHelper.DesenharTituloBloco(gfx, xMmCont, yMmCont, largUtilMmCont, hTitulo, "CONTINUAÇÃO DAS INFORMAÇÕES COMPLEMENTARES");
-            yMmCont += hTitulo;
-
-            var alturaDisponivelMm = (DANFSeConstantes.PaginaAlturaMm - config.MargemVerticalMm) - yMmCont;
-            if (alturaDisponivelMm < 20.0) alturaDisponivelMm = 20.0;
-
-            PdfDrawHelper.DesenharRetanguloSombreado(gfx, xMmCont, yMmCont, largUtilMmCont, alturaDisponivelMm);
-            var excedenteCompl = PdfDrawHelper.DesenharTextoAutoFitComExcedente(
-                gfx,
-                xMmCont + 1.0,
-                yMmCont + 1.0,
-                largUtilMmCont - 2.0,
-                alturaDisponivelMm - 2.0,
-                complementaresRestante!,
-                DANFSeConstantes.FonteConteudoPt,
-                5.2);
-
-            complementaresRestante = string.IsNullOrWhiteSpace(excedenteCompl) ? null : excedenteCompl;
-            yMmCont += alturaDisponivelMm;
-        }
-    }
-
-    private void DesenharCabecalhoContinuacao(XGraphics gfx, double x, double y, double w, double h, int numPagina)
-    {
-        var chave = ObterChaveAcesso();
-        var dps = nota.Informacoes.Dps.Informacoes;
-        var emit = nota.Informacoes.Emitente;
-        var tomador = dps.Tomador;
-
-        var fontTituloDoc = new XFont(DANFSeConstantes.FontePadrao, 8.5, XFontStyleEx.Bold);
-        var fontTexto = new XFont(DANFSeConstantes.FontePadrao, 6.5, XFontStyleEx.Regular);
-        var fontBold = new XFont(DANFSeConstantes.FontePadrao, 6.5, XFontStyleEx.Bold);
-
-        // Linha 1: Título e Paginação
-        var colW = w / 3.0;
-        gfx.DrawString("DANFSe v2.0 - Documento Auxiliar da NFS-e", fontTituloDoc, PdfDrawHelper.BrushPreto,
-            new XRect(PdfDrawHelper.MmToPt(x + 1.0), PdfDrawHelper.MmToPt(y + 1.0), PdfDrawHelper.MmToPt(w - 30.0), PdfDrawHelper.MmToPt(4.0)), XStringFormats.TopLeft);
-
-        gfx.DrawString($"Folha {numPagina}", fontBold, PdfDrawHelper.BrushPreto,
-            new XRect(PdfDrawHelper.MmToPt(x + w - 29.0), PdfDrawHelper.MmToPt(y + 1.0), PdfDrawHelper.MmToPt(28.0), PdfDrawHelper.MmToPt(4.0)), XStringFormats.TopRight);
-
-        // Linha 2: Chave de Acesso e Dados da Emissão
-        var chaveTexto = !string.IsNullOrWhiteSpace(chave) ? $"Chave de Acesso: {FormatarChaveAcesso(chave)}" : $"Nº NFS-e: {nota.Informacoes.NumeroNFSe}";
-        var emissaoTexto = $"Série DPS: {dps.Serie}  |  Nº DPS: {dps.NumeroDps}  |  Emissão: {nota.Informacoes.DhProcessamento:dd/MM/yyyy HH:mm:ss}";
-        gfx.DrawString($"{chaveTexto}   ({emissaoTexto})", fontBold, PdfDrawHelper.BrushPreto,
-            new XRect(PdfDrawHelper.MmToPt(x + 1.0), PdfDrawHelper.MmToPt(y + 5.2), PdfDrawHelper.MmToPt(w - 2.0), PdfDrawHelper.MmToPt(3.5)), XStringFormats.TopLeft);
-
-        // Linha 3: Prestador e Tomador
-        var prestadorTexto = $"Prestador: {FormatarCpfCnpj(emit.CNPJ ?? emit.CPF)} - {emit.RazaoSocial}";
-        var tomadorNome = tomador != null ? $"{FormatarCpfCnpj(tomador.CNPJ ?? tomador.CPF ?? tomador.Nif)} - {tomador.Nome}" : "Não identificado";
-        var tomadorTexto = $"Tomador: {tomadorNome}";
-
-        gfx.DrawString(prestadorTexto, fontTexto, PdfDrawHelper.BrushPreto,
-            new XRect(PdfDrawHelper.MmToPt(x + 1.0), PdfDrawHelper.MmToPt(y + 9.5), PdfDrawHelper.MmToPt(colW * 1.5 - 1.0), PdfDrawHelper.MmToPt(4.0)), XStringFormats.TopLeft);
-
-        gfx.DrawString(tomadorTexto, fontTexto, PdfDrawHelper.BrushPreto,
-            new XRect(PdfDrawHelper.MmToPt(x + colW * 1.5), PdfDrawHelper.MmToPt(y + 9.5), PdfDrawHelper.MmToPt(colW * 1.5 - 1.0), PdfDrawHelper.MmToPt(4.0)), XStringFormats.TopLeft);
+        yMm += alturaConteudoMm;
     }
 
     private void DesenharMarcaDagua(XGraphics gfx)
@@ -885,8 +812,6 @@ internal sealed class DANFSeNacionalReport
             texto = DANFSeConstantes.MsgCancelada;
         else if (config.Substituida)
             texto = DANFSeConstantes.MsgSubstituida;
-        else if (config.Homologacao)
-            texto = DANFSeConstantes.MsgSemValidade;
 
         if (!string.IsNullOrWhiteSpace(texto))
         {
@@ -943,24 +868,177 @@ internal sealed class DANFSeNacionalReport
         return fone!;
     }
 
+    private static string ObterMunicipioUf(IMunicipio? municipio) => municipio switch
+    {
+        MunicipioNacional nacional => ObterMunicipioUf(nacional.CodMunicipio),
+        MunicipioExterior exterior => $"{exterior.Cidade} / {exterior.EstadoProvincia}",
+        _ => "-"
+    };
+
+    private static string ObterMunicipioUf(string? codigoIbge, string? descricaoFallback = null,
+        string? ufFallback = null)
+    {
+        var municipioUf = MunicipioIbgeResolver.ObterMunicipioUf(codigoIbge);
+        if (!string.IsNullOrWhiteSpace(municipioUf)) return municipioUf!;
+
+        if (!string.IsNullOrWhiteSpace(descricaoFallback))
+        {
+            return string.IsNullOrWhiteSpace(ufFallback)
+                ? descricaoFallback!
+                : $"{descricaoFallback} / {ufFallback}";
+        }
+
+        return string.IsNullOrWhiteSpace(codigoIbge) ? "-" : codigoIbge!;
+    }
+
+    private static string ObterCodigoIbgeCep(IMunicipio? municipio) => municipio switch
+    {
+        MunicipioNacional nacional => $"{nacional.CodMunicipio} / {FormatarCep(nacional.CEP)}",
+        MunicipioExterior exterior => string.IsNullOrWhiteSpace(exterior.EnderecoPostal) ? "-" : exterior.EnderecoPostal,
+        _ => "-"
+    };
+
+    private static string ObterPais(string? codigoPais) =>
+        string.IsNullOrWhiteSpace(codigoPais) ? "-" : codigoPais!;
+
+    private static byte[]? CarregarLogoNacionalPadrao()
+    {
+        var assembly = typeof(DANFSeNacionalReport).Assembly;
+        using var stream = assembly.GetManifestResourceStream(LogoNacionalResourceName);
+        if (stream == null) return null;
+
+        using var memoryStream = new MemoryStream();
+        stream.CopyTo(memoryStream);
+        return memoryStream.ToArray();
+    }
+
     private static string FormatarMoeda(decimal? valor) => (valor ?? 0).ToString("N2", PtBr);
     private static string FormatarPercentual(decimal? valor) => (valor ?? 0).ToString("N2", PtBr) + " %";
+    private static string FormatarMoedaOpcional(decimal? valor) => valor?.ToString("N2", PtBr) ?? "-";
+    private static string FormatarPercentualOpcional(decimal? valor) => valor == null ? "-" : valor.Value.ToString("N2", PtBr) + " %";
+    private static string FormatarPercentuais(decimal? primeiro, decimal? segundo) =>
+        $"{FormatarPercentualOpcional(primeiro)} / {FormatarPercentualOpcional(segundo)}";
+    private static string FormatarPercentuais(decimal? primeiro, decimal? segundo, decimal? terceiro) =>
+        $"{FormatarPercentualOpcional(primeiro)} / {FormatarPercentualOpcional(segundo)} / {FormatarPercentualOpcional(terceiro)}";
+    private static string ValorOuTraco(string? valor) => string.IsNullOrWhiteSpace(valor) ? "-" : valor!;
 
-    private string ObterDescricaoAmbienteGerador() => nota.Informacoes.AmbienteGerador switch
+    private static decimal? SomarValoresInformados(decimal? valorCsll, decimal? valorPis, decimal? valorCofins) =>
+        valorCsll.HasValue || valorPis.HasValue || valorCofins.HasValue
+            ? (valorCsll ?? 0m) + (valorPis ?? 0m) + (valorCofins ?? 0m)
+            : null;
+
+    private static string ObterDescricaoTributacaoISSQN(TributoISSQN tributacao) => tributacao switch
     {
-        AmbienteGerador.Nacional => "Sefin Nacional NFS-e",
-        AmbienteGerador.Prefeitura => "Prefeitura Municipal",
-        _ => nota.Informacoes.AmbienteGerador.ToString()
+        TributoISSQN.OperacaoTributavel => "Operação Tributável",
+        TributoISSQN.Imunidade => "Imunidade",
+        TributoISSQN.ExportacaoServico => "Exportação de Serviço",
+        TributoISSQN.NaoIncidencia => "Não Incidência",
+        _ => tributacao.ToString()
+    };
+
+    private static string ObterDescricaoRetencaoISSQN(TipoRetencaoISSQN? retencao) => retencao switch
+    {
+        TipoRetencaoISSQN.NaoRetido => "Não Retido",
+        TipoRetencaoISSQN.RetidoTomador => "Retido pelo Tomador",
+        TipoRetencaoISSQN.RetidoIntermediario => "Retido pelo Intermediário",
+        _ => "-"
+    };
+
+    private static string ObterDescricaoRetencaoPisCofins(TipoRetencaoPisCofinsCsll? retencao) => retencao switch
+    {
+        TipoRetencaoPisCofinsCsll.PisCofinsCsllNaoRetidos => "PIS/COFINS/CSLL Não Retidos",
+        TipoRetencaoPisCofinsCsll.PisCofinsRetidos => "PIS/COFINS Retidos",
+        TipoRetencaoPisCofinsCsll.PisCofinsNaoRetidos => "PIS/COFINS Não Retidos",
+        TipoRetencaoPisCofinsCsll.PisCofinsCsllRetidos => "PIS/COFINS/CSLL Retidos",
+        TipoRetencaoPisCofinsCsll.PisCofinsRetidosCsllNaoRetido => "PIS/COFINS Retidos, CSLL Não Retida",
+        TipoRetencaoPisCofinsCsll.PisRetidoCofinsCsllNaoRetidos => "PIS Retido, COFINS/CSLL Não Retidos",
+        TipoRetencaoPisCofinsCsll.CofinsRetidoPisCSllNaoRetidos => "COFINS Retida, PIS/CSLL Não Retidos",
+        TipoRetencaoPisCofinsCsll.PisNaoRetidoCofinsCsllRetidos => "PIS Não Retido, COFINS/CSLL Retidos",
+        TipoRetencaoPisCofinsCsll.PisCofinsNaoRetidosCsllRetido => "PIS/COFINS Não Retidos, CSLL Retida",
+        TipoRetencaoPisCofinsCsll.CofinsNaoRetidoPisCSllRetidos => "COFINS Não Retida, PIS/CSLL Retidos",
+        _ => "-"
+    };
+
+    private static string ObterDescricaoBeneficioMunicipal(TipoBeneficioMunicipal? beneficio) => beneficio switch
+    {
+        TipoBeneficioMunicipal.Isencao => "Isenção",
+        TipoBeneficioMunicipal.ReducaoBCPerc => "Redução percentual da BC",
+        TipoBeneficioMunicipal.ReducaoBCValor => "Redução em valor da BC",
+        TipoBeneficioMunicipal.AliquotaDiferenciada => "Alíquota diferenciada",
+        _ => "-"
+    };
+
+    private static string ObterDescricaoRegimeEspecial(RegimeEspecial regime) => regime switch
+    {
+        RegimeEspecial.Nenhum => "-",
+        RegimeEspecial.Cooperativa => "Ato Cooperado (Cooperativa)",
+        RegimeEspecial.Estimativa => "Estimativa",
+        RegimeEspecial.MicroempresaMunicipal => "Microempresa Municipal",
+        RegimeEspecial.NotarioRegistrador => "Notário ou Registrador",
+        RegimeEspecial.ProfissionalAutonomo => "Profissional Autônomo",
+        RegimeEspecial.SociedadeProfissionais => "Sociedade de Profissionais",
+        _ => regime.ToString()
+    };
+
+    private string ObterCodigoAmbienteGerador() => nota.Informacoes.AmbienteGerador switch
+    {
+        AmbienteGerador.Prefeitura => "1",
+        AmbienteGerador.Nacional => "2",
+        _ => "-"
+    };
+
+    private string ObterCodigoTipoAmbiente() => nota.Informacoes.Dps.Informacoes.TipoAmbiente switch
+    {
+        DFeTipoAmbiente.Producao => "1",
+        DFeTipoAmbiente.Homologacao => "2",
+        _ => "-"
     };
 
     private string ObterSituacaoNFSe() => nota.Informacoes.SituacaoNFSe switch
     {
-        StatusNFSe.Gerada => "Emitida com Sucesso",
-        StatusNFSe.SubstituicaoGerada => "Substituída",
+        StatusNFSe.Gerada => "NFS-e Gerada",
+        StatusNFSe.SubstituicaoGerada => "NFS-e de Substituição Gerada",
+        StatusNFSe.DecisaoJudicial => "NFS-e de Decisão Judicial",
+        StatusNFSe.Avulsa => "NFS-e Avulsa",
         _ => nota.Informacoes.SituacaoNFSe.ToString()
     };
 
-    private string ObterFinalidade() => nota.Informacoes.Dps.Informacoes.IBSCBS?.FinalidadeNFSe.ToString() ?? "Normal";
+    private string ObterFinalidade() => nota.Informacoes.Dps.Informacoes.IBSCBS?.FinalidadeNFSe switch
+    {
+        RTCFinNFSe.Regular => "NFS-e regular",
+        _ => "-"
+    };
+
+    private static string ObterDescricaoEmitente(EmitenteDps emitente) => emitente switch
+    {
+        EmitenteDps.Prestador => "Prestador",
+        EmitenteDps.Tomador => "Tomador",
+        EmitenteDps.Intermediário => "Intermediário",
+        _ => emitente.ToString()
+    };
+
+    private static string ObterTotaisAproximadosTributos(TotalTributos total)
+    {
+        var federal = "-";
+        var estadual = "-";
+        var municipal = "-";
+
+        if (total.ValorTotal != null)
+        {
+            federal = $"R$ {FormatarMoeda(total.ValorTotal.TotalFederal)}";
+            estadual = $"R$ {FormatarMoeda(total.ValorTotal.TotalEstadual)}";
+            municipal = $"R$ {FormatarMoeda(total.ValorTotal.TotalMunicipal)}";
+        }
+        else if (total.PorcentagemTotal != null)
+        {
+            federal = FormatarPercentual(total.PorcentagemTotal.TotalFederal);
+            estadual = FormatarPercentual(total.PorcentagemTotal.TotalEstadual);
+            municipal = FormatarPercentual(total.PorcentagemTotal.TotalMunicipal);
+        }
+
+        return $"Totais Aproximados dos Tributos cfe. Lei nº 12.741/2012: Federais: {federal}; " +
+               $"Estaduais: {estadual}; Municipais: {municipal};";
+    }
 
     private static string ObterSimplesNacionalDescricao(OptanteSimplesNacional opcao) => opcao switch
     {
@@ -970,11 +1048,36 @@ internal sealed class DANFSeNacionalReport
         _ => opcao.ToString()
     };
 
+    private static string ObterDescricaoRegimeApuracao(RegimeApuracao? regime) => regime switch
+    {
+        RegimeApuracao.TributosFederaisMunicipalSN =>
+            "Regime de apuração dos tributos federais e municipal pelo Simples Nacional",
+        RegimeApuracao.TributosFederaisSNISSQNPorForaSN =>
+            "Regime de apuração dos tributos federais pelo Simples Nacional e ISSQN por fora do Simples Nacional",
+        RegimeApuracao.TributosFederaisMunicipalForaSN =>
+            "Regime de apuração dos tributos federais e municipal por fora do Simples Nacional",
+        _ => "-"
+    };
+
     private bool PossuiTomador() => nota.Informacoes.Dps.Informacoes.Tomador != null;
-    private bool PossuiDestinatario() => nota.Informacoes.Dps.Informacoes.IBSCBS?.Destinatario != null;
-    private bool DestinatarioEhTomador() => PossuiTomador() && !PossuiDestinatario();
+    private bool DestinatarioEhProprioTomador() =>
+        nota.Informacoes.Dps.Informacoes.IBSCBS?.IndicadorDestinatario == RTCIndDest.ProprioTomador;
+
+    private bool PossuiDestinatario() =>
+        !DestinatarioEhProprioTomador() && nota.Informacoes.Dps.Informacoes.IBSCBS?.Destinatario != null;
     private bool PossuiIntermediario() => nota.Informacoes.Dps.Informacoes.Intermediario != null;
-    private bool PossuiIBSCBS() => nota.Informacoes.IBSCBS != null;
+
+    private sealed class LayoutAlturas
+    {
+        public LayoutAlturas(double alturaDescricaoServicoMm, double alturaInformacoesComplementaresMm)
+        {
+            AlturaDescricaoServicoMm = alturaDescricaoServicoMm;
+            AlturaInformacoesComplementaresMm = alturaInformacoesComplementaresMm;
+        }
+
+        public double AlturaDescricaoServicoMm { get; }
+        public double AlturaInformacoesComplementaresMm { get; }
+    }
 
     #endregion Helpers de Formatação e Dados
 }

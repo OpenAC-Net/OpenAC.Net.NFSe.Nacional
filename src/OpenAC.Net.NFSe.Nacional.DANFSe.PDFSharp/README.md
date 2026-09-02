@@ -2,7 +2,16 @@
 
 Biblioteca .NET para geração e impressão do **DANFSe (Documento Auxiliar da NFS-e) Padrão Nacional** em PDF utilizando **PDFsharp / PdfSharpCore** (100% Open Source, licença MIT).
 
-Compatível com a **Nota Técnica 008 do Sistema Nacional da NFS-e** (layout DANFSe v2.0 com suporte à Reforma Tributária IBS/CBS).
+Compatível com a **Nota Técnica 008, versão 1.02, de 14/07/2026**, do Sistema Nacional da NFS-e (DANFSe v2.0 com suporte à Reforma Tributária IBS/CBS).
+
+## Referência normativa
+
+- [Nota Técnica SE/CGNFS-e nº 008, versão 1.02](https://www.gov.br/nfse/pt-br/biblioteca/documentacao-tecnica/rtc/nt-008-se-cgnfse-danfse-20260714-v1-02.pdf)
+- [Documentação Técnica RTC do Sistema Nacional da NFS-e](https://www.gov.br/nfse/pt-br/biblioteca/documentacao-tecnica/rtc)
+
+### Catálogo de municípios
+
+Os nomes e as siglas das UFs dos municípios brasileiros são resolvidos localmente a partir de um catálogo incorporado ao pacote. O catálogo foi obtido em 01/09/2026 por meio da [API de Localidades do IBGE](https://servicodados.ibge.gov.br/api/v1/localidades/municipios?orderBy=nome) e contém somente código IBGE, nome e UF. A geração do DANFSe não realiza consultas externas.
 
 ## 🚀 Como usar
 
