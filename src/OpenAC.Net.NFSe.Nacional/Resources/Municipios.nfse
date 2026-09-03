@@ -156,5 +156,37 @@
                 </Ambiente>
             </Ambientes>
         </serviceInfo>
+		<serviceInfo Id="4111803">
+			<Tipo>GovBR</Tipo>
+			<Nome>JACAREZINHO</Nome>
+			<UF>PR</UF>
+			<Ambientes>
+				<Ambiente Tipo="2">
+					<Enderecos>
+						<Endereco Tipo="Enviar">https://reformatributaria.cidade360.cloud/NFSe.Api.Teste</Endereco>
+						<Endereco Tipo="EnviarEvento">https://reformatributaria.cidade360.cloud/NFSe.Api.Teste</Endereco>
+						<Endereco Tipo="ConsultarNsu"></Endereco>
+						<Endereco Tipo="ConsultarChave">https://reformatributaria.cidade360.cloud/NFSe.Api.Teste</Endereco>
+						<Endereco Tipo="DownloadDanfse">https://reformatributaria.cidade360.cloud/NFSe.Api.Teste</Endereco>
+						<Endereco Tipo="ConsultarChaveDps">https://reformatributaria.cidade360.cloud/NFSe.Api.Teste</Endereco>
+						<Endereco Tipo="ConsultaExisteDps">https://reformatributaria.cidade360.cloud/NFSe.Api.Teste</Endereco>
+						<Endereco Tipo="ConsultarEvento">https://reformatributaria.cidade360.cloud/NFSe.Api.Teste</Endereco>
+					</Enderecos>
+				</Ambiente>
+				<!-- Produção ainda não confirmada com o município/fornecedor (GovernancaBrasil) - preencher quando disponível. -->
+				<Ambiente Tipo="1">
+					<Enderecos>
+						<Endereco Tipo="Enviar"></Endereco>
+						<Endereco Tipo="EnviarEvento"></Endereco>
+						<Endereco Tipo="ConsultarNsu"></Endereco>
+						<Endereco Tipo="ConsultarChave"></Endereco>
+						<Endereco Tipo="DownloadDanfse"></Endereco>
+						<Endereco Tipo="ConsultarChaveDps"></Endereco>
+						<Endereco Tipo="ConsultaExisteDps"></Endereco>
+						<Endereco Tipo="ConsultarEvento"></Endereco>
+					</Enderecos>
+				</Ambiente>
+			</Ambientes>
+		</serviceInfo>
 	</Services>
 </NFSeServices>
