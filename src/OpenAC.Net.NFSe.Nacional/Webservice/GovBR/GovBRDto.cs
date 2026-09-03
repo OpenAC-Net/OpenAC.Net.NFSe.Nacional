@@ -85,7 +85,7 @@ internal sealed class RetornoLoteDto
 
     /// <summary>Indica se o processamento do lote já foi concluído no servidor.</summary>
     [JsonPropertyName("processado")]
-    public bool Processado { get; set; }
+    public bool? Processado { get; set; }
 }
 
 /// <summary>Resultado do processamento de um item (DPS ou evento) dentro do lote.</summary>
@@ -133,7 +133,7 @@ internal sealed class RetornoConsultaDto
 {
     /// <summary>Quantidade total de registros da pesquisa, independente da paginação.</summary>
     [JsonPropertyName("total")]
-    public int Total { get; set; }
+    public int? Total { get; set; }
 
     /// <summary>Notas retornadas na pesquisa.</summary>
     [JsonPropertyName("notas")]
@@ -159,13 +159,13 @@ internal sealed class DadosNotaDto
     [JsonPropertyName("codAutenticidade")]
     public string? CodAutenticidade { get; set; }
 
-    /// <summary>Número da nota substituída por esta, quando aplicável.</summary>
+    /// <summary>Número da nota substituída por esta, quando aplicável (a API retorna <c>null</c> quando não há).</summary>
     [JsonPropertyName("numeroNotaSubstituida")]
-    public long NumeroNotaSubstituida { get; set; }
+    public long? NumeroNotaSubstituida { get; set; }
 
-    /// <summary>Número da nota que substituiu esta, quando aplicável.</summary>
+    /// <summary>Número da nota que substituiu esta, quando aplicável (a API retorna <c>null</c> quando não há).</summary>
     [JsonPropertyName("numeroNotaSubstituidora")]
-    public long NumeroNotaSubstituidora { get; set; }
+    public long? NumeroNotaSubstituidora { get; set; }
 }
 
 /// <summary>Item retornado por <c>ConsultarEventos</c>.</summary>

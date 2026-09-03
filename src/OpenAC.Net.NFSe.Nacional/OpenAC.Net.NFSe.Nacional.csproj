@@ -22,7 +22,11 @@
         <NeutralLanguage>pt-BR</NeutralLanguage>
         <AssemblyVersion>1.5.0.2</AssemblyVersion>
         <FileVersion>1.5.0.2</FileVersion>
-        <Version>1.5.0.2</Version>
+        <!-- TEMP: pacote local com o provedor GovBR (Jacarezinho/GovernancaBrasil), ainda nao lancado
+             oficialmente nem via PR upstream. Sufixo -jacarezinho evita colidir com qualquer release
+             oficial futuro. Ver eProNFe.Integracao.NFServicos.OpenACNFSeNacional.csproj e nuget.config
+             na raiz do eProNFe. Reverter para a versao oficial quando/se este provedor for lancado. -->
+        <Version>1.5.0.2-jacarezinho</Version>
         <PublishRepositoryUrl>true</PublishRepositoryUrl>
         <EmbedUntrackedSources>true</EmbedUntrackedSources>
         <DebugType>embedded</DebugType>
