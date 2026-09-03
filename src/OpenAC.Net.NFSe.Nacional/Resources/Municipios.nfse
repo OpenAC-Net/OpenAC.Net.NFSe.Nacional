@@ -156,5 +156,45 @@
                 </Ambiente>
             </Ambientes>
         </serviceInfo>
+		<serviceInfo Id="4111803">
+			<Tipo>GovBR</Tipo>
+			<Nome>JACAREZINHO</Nome>
+			<UF>PR</UF>
+			<Ambientes>
+				<!-- IMPORTANTE: o ambiente de homologação deste provedor exige um IBGE FICTÍCIO
+				     (3542404, código real de Regente Feijó/SP - sem relação nenhuma com Jacarezinho) no
+				     conteúdo da DPS (cLocEmi/cLocPrestacao), diferente do IBGE real usado aqui pro
+				     roteamento (4111803). Isso não é tratado pela lib - quem for montar a DPS pra testar
+				     em homologação precisa fazer essa troca na aplicação, só no conteúdo enviado, nunca
+				     no roteamento. Validado emitindo e consultando ao vivo. -->
+				<Ambiente Tipo="2">
+					<Enderecos>
+						<Endereco Tipo="Enviar">https://reformatributaria.cidade360.cloud/NFSe.Api.Teste</Endereco>
+						<Endereco Tipo="EnviarEvento">https://reformatributaria.cidade360.cloud/NFSe.Api.Teste</Endereco>
+						<Endereco Tipo="ConsultarNsu"></Endereco>
+						<Endereco Tipo="ConsultarChave">https://reformatributaria.cidade360.cloud/NFSe.Api.Teste</Endereco>
+						<Endereco Tipo="DownloadDanfse">https://reformatributaria.cidade360.cloud/NFSe.Api.Teste</Endereco>
+						<Endereco Tipo="ConsultarChaveDps">https://reformatributaria.cidade360.cloud/NFSe.Api.Teste</Endereco>
+						<Endereco Tipo="ConsultaExisteDps">https://reformatributaria.cidade360.cloud/NFSe.Api.Teste</Endereco>
+						<Endereco Tipo="ConsultarEvento">https://reformatributaria.cidade360.cloud/NFSe.Api.Teste</Endereco>
+					</Enderecos>
+				</Ambiente>
+				<!-- Produção validada ao vivo (consultas por chave, por DPS, eventos e download de
+				     DANFSe, todas com sucesso contra uma NFS-e real já emitida). Envio ainda não
+				     testado em produção, só em homologação. -->
+				<Ambiente Tipo="1">
+					<Enderecos>
+						<Endereco Tipo="Enviar">https://webapp1-jacarezinho.cidade360.cloud/NFSe.Api</Endereco>
+						<Endereco Tipo="EnviarEvento">https://webapp1-jacarezinho.cidade360.cloud/NFSe.Api</Endereco>
+						<Endereco Tipo="ConsultarNsu"></Endereco>
+						<Endereco Tipo="ConsultarChave">https://webapp1-jacarezinho.cidade360.cloud/NFSe.Api</Endereco>
+						<Endereco Tipo="DownloadDanfse">https://webapp1-jacarezinho.cidade360.cloud/NFSe.Api</Endereco>
+						<Endereco Tipo="ConsultarChaveDps">https://webapp1-jacarezinho.cidade360.cloud/NFSe.Api</Endereco>
+						<Endereco Tipo="ConsultaExisteDps">https://webapp1-jacarezinho.cidade360.cloud/NFSe.Api</Endereco>
+						<Endereco Tipo="ConsultarEvento">https://webapp1-jacarezinho.cidade360.cloud/NFSe.Api</Endereco>
+					</Enderecos>
+				</Ambiente>
+			</Ambientes>
+		</serviceInfo>
 	</Services>
 </NFSeServices>
