@@ -173,17 +173,18 @@
 						<Endereco Tipo="ConsultarEvento">https://reformatributaria.cidade360.cloud/NFSe.Api.Teste</Endereco>
 					</Enderecos>
 				</Ambiente>
-				<!-- Produção ainda não confirmada com o município/fornecedor (GovernancaBrasil) - preencher quando disponível. -->
+				<!-- Produção: URL encontrada em WIP anterior do eProNFe (commit 9ec7ba278, ago/2026), NUNCA testada
+				     ao vivo por mim - so foi validado o ambiente de homologacao. Confirmar antes de usar em producao real. -->
 				<Ambiente Tipo="1">
 					<Enderecos>
-						<Endereco Tipo="Enviar"></Endereco>
-						<Endereco Tipo="EnviarEvento"></Endereco>
+						<Endereco Tipo="Enviar">https://webapp1-jacarezinho.cidade360.cloud/NFSe.Api</Endereco>
+						<Endereco Tipo="EnviarEvento">https://webapp1-jacarezinho.cidade360.cloud/NFSe.Api</Endereco>
 						<Endereco Tipo="ConsultarNsu"></Endereco>
-						<Endereco Tipo="ConsultarChave"></Endereco>
-						<Endereco Tipo="DownloadDanfse"></Endereco>
-						<Endereco Tipo="ConsultarChaveDps"></Endereco>
-						<Endereco Tipo="ConsultaExisteDps"></Endereco>
-						<Endereco Tipo="ConsultarEvento"></Endereco>
+						<Endereco Tipo="ConsultarChave">https://webapp1-jacarezinho.cidade360.cloud/NFSe.Api</Endereco>
+						<Endereco Tipo="DownloadDanfse">https://webapp1-jacarezinho.cidade360.cloud/NFSe.Api</Endereco>
+						<Endereco Tipo="ConsultarChaveDps">https://webapp1-jacarezinho.cidade360.cloud/NFSe.Api</Endereco>
+						<Endereco Tipo="ConsultaExisteDps">https://webapp1-jacarezinho.cidade360.cloud/NFSe.Api</Endereco>
+						<Endereco Tipo="ConsultarEvento">https://webapp1-jacarezinho.cidade360.cloud/NFSe.Api</Endereco>
 					</Enderecos>
 				</Ambiente>
 			</Ambientes>
