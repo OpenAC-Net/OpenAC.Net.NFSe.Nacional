@@ -37,27 +37,40 @@ public sealed class DesktopNFSeHttpTransport : INFSeHttpTransport
             : 1;
         var intervalo = TimeSpan.FromMilliseconds(Math.Max(0, configuracao.WebServices.IntervaloTentativas));
 
-        for (var tentativa = 1; tentativa <= tentativas; tentativa++)
+#if !NET8_0_OR_GREATER
+        var oldProtocol = ServicePointManager.SecurityProtocol;
+        try
         {
-            using var requisicao = ClonarRequisicao(request, conteudo, cabecalhosConteudo);
-            try
+            ServicePointManager.SecurityProtocol = configuracao.WebServices.Protocolos;
+#endif
+            for (var tentativa = 1; tentativa <= tentativas; tentativa++)
             {
-                var resposta = await cliente.Http.SendAsync(requisicao, cancellationToken).ConfigureAwait(false);
-                if (tentativa == tentativas || !RespostaTransitoria(resposta.StatusCode))
-                    return resposta;
+                using var requisicao = ClonarRequisicao(request, conteudo, cabecalhosConteudo);
+                try
+                {
+                    var resposta = await cliente.Http.SendAsync(requisicao, cancellationToken).ConfigureAwait(false);
+                    if (tentativa == tentativas || !RespostaTransitoria(resposta.StatusCode))
+                        return resposta;
 
-                resposta.Dispose();
-            }
-            catch (HttpRequestException) when (tentativa < tentativas)
-            {
-                // Uma falha de transporte em operação segura pode ser repetida.
+                    resposta.Dispose();
+                }
+                catch (HttpRequestException) when (tentativa < tentativas)
+                {
+                    // Uma falha de transporte em operação segura pode ser repetida.
+                }
+
+                if (intervalo > TimeSpan.Zero)
+                    await Task.Delay(intervalo, cancellationToken).ConfigureAwait(false);
             }
 
-            if (intervalo > TimeSpan.Zero)
-                await Task.Delay(intervalo, cancellationToken).ConfigureAwait(false);
+            throw new InvalidOperationException("O envio HTTP terminou sem produzir uma resposta.");
+#if !NET8_0_OR_GREATER
         }
-
-        throw new InvalidOperationException("O envio HTTP terminou sem produzir uma resposta.");
+        finally
+        {
+            ServicePointManager.SecurityProtocol = oldProtocol;
+        }
+#endif
     }
 
     private static HttpRequestMessage ClonarRequisicao(HttpRequestMessage origem, byte[]? conteudo,

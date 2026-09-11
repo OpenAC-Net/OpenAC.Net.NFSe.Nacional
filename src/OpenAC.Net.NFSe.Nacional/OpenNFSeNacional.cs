@@ -303,21 +303,15 @@ public sealed class OpenNFSeNacional : IOpenNFSeNacionalClient, IOpenLog
         CancellationToken cancellationToken = default)
     {
         var provider = NFSeServiceManager.Instance.GetProvider(Configuracoes);
-        var oldProtocol = ServicePointManager.SecurityProtocol;
 
         try
         {
-            ServicePointManager.SecurityProtocol = Configuracoes.WebServices.Protocolos;
             return provider.ConsultaEventoAsync(chaveAcesso, tipoEvento, numSeqEvento, cancellationToken);
         }
         catch (Exception exception)
         {
             this.Log().Error("[ConsultaEvento]", exception);
             throw;
-        }
-        finally
-        {
-            ServicePointManager.SecurityProtocol = oldProtocol;
         }
     }
 
