@@ -64,6 +64,13 @@ public sealed class DesktopNFSeHttpTransport : INFSeHttpTransport
             }
 
         throw new InvalidOperationException("O envio HTTP terminou sem produzir uma resposta.");
+#if !NET8_0_OR_GREATER
+        }
+        finally
+        {
+            ServicePointManager.SecurityProtocol = oldProtocol;
+        }
+#endif
     }
 
     private static HttpRequestMessage ClonarRequisicao(HttpRequestMessage origem, byte[]? conteudo,
