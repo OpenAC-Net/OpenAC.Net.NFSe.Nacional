@@ -48,15 +48,8 @@ internal sealed class DesktopNFSeHttpClientPool
         DateTimeOffset agora)
     {
         var handler = new HttpClientHandler();
-#if !NETFRAMEWORK
-        try
-        {
-            handler.SslProtocols = protocolos;
-        }
-        catch (PlatformNotSupportedException)
-        {
-            // Fallback caso netstandard2.0 execute em ambiente sem suporte na implementação do handler
-        }
+#if NET8_0_OR_GREATER
+        handler.SslProtocols = protocolos;
 #endif
 
         handler.ClientCertificates.Add(certificado);

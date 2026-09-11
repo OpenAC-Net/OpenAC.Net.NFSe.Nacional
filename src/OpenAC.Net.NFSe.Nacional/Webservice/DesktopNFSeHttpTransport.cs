@@ -37,7 +37,7 @@ public sealed class DesktopNFSeHttpTransport : INFSeHttpTransport
             : 1;
         var intervalo = TimeSpan.FromMilliseconds(Math.Max(0, configuracao.WebServices.IntervaloTentativas));
 
-#if NETFRAMEWORK
+#if !NET8_0_OR_GREATER
         var oldProtocol = ServicePointManager.SecurityProtocol;
         try
         {
@@ -63,14 +63,7 @@ public sealed class DesktopNFSeHttpTransport : INFSeHttpTransport
                     await Task.Delay(intervalo, cancellationToken).ConfigureAwait(false);
             }
 
-            throw new InvalidOperationException("O envio HTTP terminou sem produzir uma resposta.");
-#if NETFRAMEWORK
-        }
-        finally
-        {
-            ServicePointManager.SecurityProtocol = oldProtocol;
-        }
-#endif
+        throw new InvalidOperationException("O envio HTTP terminou sem produzir uma resposta.");
     }
 
     private static HttpRequestMessage ClonarRequisicao(HttpRequestMessage origem, byte[]? conteudo,
