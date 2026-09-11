@@ -47,7 +47,18 @@ internal sealed class DesktopNFSeHttpClientPool
     private static EntradaCliente CriarEntrada(X509Certificate2 certificado, SslProtocols protocolos,
         DateTimeOffset agora)
     {
-        var handler = new HttpClientHandler { SslProtocols = protocolos };
+        var handler = new HttpClientHandler();
+#if !NETFRAMEWORK
+        try
+        {
+            handler.SslProtocols = protocolos;
+        }
+        catch (PlatformNotSupportedException)
+        {
+            // Fallback caso netstandard2.0 execute em ambiente sem suporte na implementação do handler
+        }
+#endif
+
         handler.ClientCertificates.Add(certificado);
 
         var expiracaoCertificado = new DateTimeOffset(certificado.NotAfter.ToUniversalTime());
