@@ -196,5 +196,36 @@
 				</Ambiente>
 			</Ambientes>
 		</serviceInfo>
+		<serviceInfo Id="3540200">
+			<Tipo>Fiorilli</Tipo>
+			<Nome>Pontal</Nome>
+			<UF>SP</UF>
+			<Ambientes>
+				<Ambiente Tipo="2">
+					<Enderecos>
+						<Endereco Tipo="Enviar">http://fi1.fiorilli.com.br:5663/IssWeb-ejb/IssWebWSNacional/IssWebWSNacionalPortType?wsdl</Endereco>
+						<Endereco Tipo="EnviarEvento">http://fi1.fiorilli.com.br:5663/IssWeb-ejb/IssWebWSNacional/IssWebWSNacionalPortType?wsdl</Endereco>
+						<Endereco Tipo="ConsultarNsu">http://fi1.fiorilli.com.br:5663/IssWeb-ejb/IssWebWSNacional/IssWebWSNacionalPortType?wsdl</Endereco>
+						<Endereco Tipo="ConsultarChave">http://fi1.fiorilli.com.br:5663/IssWeb-ejb/IssWebWSNacional/IssWebWSNacionalPortType?wsdl</Endereco>
+						<Endereco Tipo="DownloadDanfse">http://fi1.fiorilli.com.br:5663/IssWeb-ejb/IssWebWSNacional/IssWebWSNacionalPortType?wsdl</Endereco>
+						<Endereco Tipo="ConsultarChaveDps">http://fi1.fiorilli.com.br:5663/IssWeb-ejb/IssWebWSNacional/IssWebWSNacionalPortType?wsdl</Endereco>
+						<Endereco Tipo="ConsultaExisteDps">http://fi1.fiorilli.com.br:5663/IssWeb-ejb/IssWebWSNacional/IssWebWSNacionalPortType?wsdl</Endereco>
+						<Endereco Tipo="ConsultaExisteDps">http://fi1.fiorilli.com.br:5663/IssWeb-ejb/IssWebWSNacional/IssWebWSNacionalPortType?wsdl</Endereco>
+					</Enderecos>
+				</Ambiente>
+				<Ambiente Tipo="1">
+					<Enderecos>
+						<Endereco Tipo="Enviar">http://45.71.128.162:5661/IssWeb-ejb/IssWebWSNacional/IssWebWSNacionalPortType?wsdl</Endereco>
+						<Endereco Tipo="EnviarEvento">http://45.71.128.162:5661/IssWeb-ejb/IssWebWSNacional/IssWebWSNacionalPortType?wsdl</Endereco>
+						<Endereco Tipo="ConsultarNsu">http://45.71.128.162:5661/IssWeb-ejb/IssWebWSNacional/IssWebWSNacionalPortType?wsdl</Endereco>
+						<Endereco Tipo="ConsultarChave">http://45.71.128.162:5661/IssWeb-ejb/IssWebWSNacional/IssWebWSNacionalPortType?wsdl</Endereco>
+						<Endereco Tipo="DownloadDanfse">http://45.71.128.162:5661/IssWeb-ejb/IssWebWSNacional/IssWebWSNacionalPortType?wsdl</Endereco>
+						<Endereco Tipo="ConsultarChaveDps">http://45.71.128.162:5661/IssWeb-ejb/IssWebWSNacional/IssWebWSNacionalPortType?wsdl</Endereco>
+						<Endereco Tipo="ConsultaExisteDps">http://45.71.128.162:5661/IssWeb-ejb/IssWebWSNacional/IssWebWSNacionalPortType?wsdl</Endereco>
+						<Endereco Tipo="ConsultaExisteDps">http://45.71.128.162:5661/IssWeb-ejb/IssWebWSNacional/IssWebWSNacionalPortType?wsdl</Endereco>
+					</Enderecos>
+				</Ambiente>
+			</Ambientes>
+		</serviceInfo>
 	</Services>
 </NFSeServices>
