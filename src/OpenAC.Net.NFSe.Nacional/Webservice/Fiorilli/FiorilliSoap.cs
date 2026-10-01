@@ -276,12 +276,13 @@ internal static class FiorilliSoap
 
     /// <summary>
     /// Indica se a mensagem representa um erro. Segue a convenção da Fiorilli/padrão nacional,
-    /// em que códigos iniciados por "E" são erros (ex.: E172) e por "A" são alertas.
+    /// em que códigos iniciados por "A" são alertas; os demais são erros, incluindo os de regra
+    /// de negócio (ex.: E172) e os de estrutura/schema do XML recebido (ex.: L4).
     /// </summary>
     /// <param name="mensagem">Mensagem de processamento.</param>
     /// <returns><c>true</c> quando a mensagem é um erro.</returns>
     public static bool EhErro(MensagemProcessamento mensagem) =>
-        mensagem.Codigo.StartsWith("E", StringComparison.OrdinalIgnoreCase);
+        !mensagem.Codigo.StartsWith("A", StringComparison.OrdinalIgnoreCase);
 
     /// <summary>
     /// Indica se a coleção contém ao menos uma mensagem de erro.
