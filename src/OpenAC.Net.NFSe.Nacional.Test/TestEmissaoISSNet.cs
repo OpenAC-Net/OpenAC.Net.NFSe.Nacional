@@ -13,7 +13,7 @@ namespace OpenAC.Net.NFSe.Nacional.Test;
 /// <summary>
 /// Testes offline da adequação da DPS ao layout da ISSNet (<see cref="ISSNetDps"/>).
 /// </summary>
-public class TestISSNetDps
+public class TestEmissaoISSNet
 {
     private const string CodMunicipioPrestacao = "3513108";
 
@@ -176,7 +176,7 @@ public class TestISSNetDps
     private static X509Certificate2 CriarCertificado()
     {
         using var rsa = RSA.Create(2048);
-        var requisicao = new CertificateRequest("CN=TESTE ISSNET:35229661000178", rsa, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
+        var requisicao = new CertificateRequest($"CN=TESTE ISSNET:{SetupOpenNFSeNacional.InscricaoFederal}", rsa, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
         using var certificado = requisicao.CreateSelfSigned(DateTimeOffset.Now.AddDays(-1), DateTimeOffset.Now.AddDays(1));
         return X509CertificateLoader.LoadPkcs12(certificado.Export(X509ContentType.Pfx), null, X509KeyStorageFlags.Exportable);
     }
@@ -193,13 +193,13 @@ public class TestISSNetDps
             DhEmissao = DateTime.Now,
             LocalidadeEmitente = "3543402",
             Serie = "1",
-            NumeroDps = "608",
+            NumeroDps = "1",
             Competencia = DateTime.Now,
             TipoEmitente = EmitenteDps.Prestador,
             Prestador = new PrestadorDps
             {
-                CNPJ = "35229661000178",
-                InscricaoMunicipal = "20061727",
+                CNPJ = SetupOpenNFSeNacional.InscricaoFederal,
+                InscricaoMunicipal = SetupOpenNFSeNacional.InscricaoMunicipal,
                 Regime = new RegimeTributario
                 {
                     OptanteSimplesNacional = OptanteSimplesNacional.NaoOptante,
@@ -208,12 +208,12 @@ public class TestISSNetDps
             },
             Tomador = new InfoPessoaNFSe
             {
-                CNPJ = "28845640000111",
+                CNPJ = "99999999999999",
                 Nome = "Tomador de Teste Ltda",
                 Endereco = new EnderecoNFSe
                 {
-                    Logradouro = "Avenida Ricardo Vianna Borelli",
-                    Numero = "10",
+                    Logradouro = "Avenida Teste",
+                    Numero = "58",
                     Bairro = "Setor Industrial",
                     Municipio = new MunicipioNacional
                     {
@@ -241,8 +241,8 @@ public class TestISSNetDps
                     Endereco = new EnderecoSimplesNFSe
                     {
                         CEP = "14140000",
-                        Logradouro = "Avenida Ricardo Vianna Borelli",
-                        Numero = "10",
+                        Logradouro = "Avenida Teste",
+                        Numero = "58",
                         Bairro = "Setor Industrial"
                     }
                 }
