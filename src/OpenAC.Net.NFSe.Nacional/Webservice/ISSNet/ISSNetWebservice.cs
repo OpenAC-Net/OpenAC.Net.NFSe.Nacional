@@ -31,6 +31,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
@@ -71,16 +72,19 @@ public class ISSNetWebService : NacionalWebservice
         options |= DFeSaveOptions.OmitDeclaration;
         dps.Assinar(Configuracao, options);
 
-        ValidarSchema(SchemaNFSe.DPS, dps.Xml, dps.Versao);
+        // O layout da ISSNet diverge do nacional (ex.: endereço da obra), por isso a DPS é adequada
+        // e validada contra o schema da própria ISSNet.
+        var xmlDps = ISSNetDps.Adequar(dps.Xml, dps, () => Configuracao.Certificados.ObterCertificado());
+        ValidarSchemaISSNet(xmlDps, dps.Versao);
 
         var documento = dps.Informacoes.Prestador.CPF ?? dps.Informacoes.Prestador.CNPJ ?? throw new InvalidOperationException("CPF ou CNPJ do prestador deve ser informado.");
 
-        await GravarDpsEmDiscoAsync(dps.Xml, $"{dps.Informacoes.NumeroDps:000000}_dps.xml",
+        await GravarDpsEmDiscoAsync(xmlDps, $"{dps.Informacoes.NumeroDps:000000}_dps.xml",
             documento, dps.Informacoes.DhEmissao.DateTime, cancellationToken: cancellationToken);
 
-        await GravarArquivoEmDiscoAsync(dps.Xml, $"Enviar-{dps.Informacoes.NumeroDps:000000}-env.xml", documento, cancellationToken);
+        await GravarArquivoEmDiscoAsync(xmlDps, $"Enviar-{dps.Informacoes.NumeroDps:000000}-env.xml", documento, cancellationToken);
 
-        var xmlEnvio = $@"<nfse:GerarNfseEnvio>{dps.Xml}</nfse:GerarNfseEnvio>";
+        var xmlEnvio = $@"<nfse:GerarNfseEnvio>{xmlDps}</nfse:GerarNfseEnvio>";
 
         this.Log().Debug($"ISSNet: [Enviar][Envio] - {xmlEnvio}");
 
@@ -119,7 +123,45 @@ public class ISSNetWebService : NacionalWebservice
         if (ret.Erros.Any())
             success = false;
 
-        return NFSeResponse<RespostaEnvioDps>.Create(dps.Xml, strResponse, success, ret);
+        return NFSeResponse<RespostaEnvioDps>.Create(xmlDps, strResponse, success, ret);
+    }
+
+    /// <summary>
+    /// Valida a DPS contra o schema da ISSNet (<c>Schemas/ISSNet/1.01/ISSNet_v1.01.xsd</c>).
+    /// </summary>
+    /// <param name="xmlDps">XML da DPS já adequado ao layout da ISSNet.</param>
+    /// <param name="versao">Versão da DPS.</param>
+    private void ValidarSchemaISSNet(string xmlDps, VersaoNFSe versao)
+    {
+        if (!Configuracao.WebServices.ValidarSchemas) return;
+
+        ValidarSchema(ObterSchemaISSNet(), ISSNetDps.EnvelopeValidacao(xmlDps), versao);
+    }
+
+    /// <summary>
+    /// Localiza o schema da ISSNet. O <c>PathSchemas</c> aponta para a pasta da versão nacional
+    /// (<c>Schemas/1.0x</c>), então a pasta do provedor é procurada ao lado dela
+    /// (<c>Schemas/ISSNet/1.01</c>) e, em seguida, na pasta da aplicação.
+    /// </summary>
+    /// <returns>O caminho do schema (o primeiro existente, ou o primeiro candidato se nenhum existir).</returns>
+    private string ObterSchemaISSNet()
+    {
+        var relativo = Path.Combine(ISSNetDps.PastaSchema, ISSNetDps.VersaoSchema, ISSNetDps.ArquivoSchema);
+        var pathSchemas = Configuracao.Arquivos.PathSchemas?.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+
+        var candidatos = new List<string>();
+        if (!string.IsNullOrEmpty(pathSchemas))
+        {
+            candidatos.Add(Path.Combine(pathSchemas, relativo));
+
+            var pastaSchemas = Path.GetDirectoryName(pathSchemas);
+            if (!string.IsNullOrEmpty(pastaSchemas))
+                candidatos.Add(Path.Combine(pastaSchemas, relativo));
+        }
+
+        candidatos.Add(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Schemas", relativo));
+
+        return candidatos.FirstOrDefault(File.Exists) ?? candidatos[0];
     }
 
     /// <inheritdoc />
