@@ -56,4 +56,15 @@ public sealed partial class EnderecoExterior
     /// </summary>
     [DFeElement(TipoCampo.Str, "xEstProvReg", Min = 1, Max = 60, Ocorrencia = Ocorrencia.Obrigatoria)]
     public string EstadoProvincia { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Código do país do endereço no exterior (Tabela de Países ISO, 2 letras).
+    /// </summary>
+    /// <remarks>
+    /// Não faz parte do layout nacional e nunca é serializado na DPS. É usado apenas por provedores
+    /// cujo layout exige <c>cPais</c> neste endereço, como a ISSNet. Quando não informado, esses
+    /// provedores usam o país de prestação (<c>cPaisPrestacao</c>).
+    /// </remarks>
+    [DFeIgnore]
+    public string? CodPais { get; set; }
 }

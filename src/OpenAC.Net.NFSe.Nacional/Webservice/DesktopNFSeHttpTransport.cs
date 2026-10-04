@@ -63,7 +63,7 @@ public sealed class DesktopNFSeHttpTransport : INFSeHttpTransport
                     await Task.Delay(intervalo, cancellationToken).ConfigureAwait(false);
             }
 
-            throw new InvalidOperationException("O envio HTTP terminou sem produzir uma resposta.");
+        throw new InvalidOperationException("O envio HTTP terminou sem produzir uma resposta.");
 #if !NET8_0_OR_GREATER
         }
         finally

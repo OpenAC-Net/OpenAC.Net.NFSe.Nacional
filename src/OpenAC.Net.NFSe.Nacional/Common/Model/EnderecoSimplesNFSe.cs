@@ -29,7 +29,6 @@
 // <summary></summary>
 // ***********************************************************************
 
-using OpenAC.Net.Core.Extensions;
 using OpenAC.Net.DFe.Core.Attributes;
 using OpenAC.Net.DFe.Core.Serializer;
 
@@ -78,6 +77,17 @@ public sealed partial class EnderecoSimplesNFSe
     [DFeElement(TipoCampo.Str, "xBairro", Min = 1, Max = 60, Ocorrencia = Ocorrencia.Obrigatoria)]
     public string Bairro { get; set; } = string.Empty;
 
+    /// <summary>
+    /// Código IBGE do município do endereço (7 dígitos).
+    /// </summary>
+    /// <remarks>
+    /// Não faz parte do layout nacional e nunca é serializado na DPS. É usado apenas por provedores
+    /// cujo layout exige o grupo <c>endNac</c> (cMun + CEP) neste endereço, como a ISSNet.
+    /// Quando não informado, esses provedores usam o município de prestação (<c>cLocPrestacao</c>).
+    /// </remarks>
+    [DFeIgnore]
+    public string? CodMunicipio { get; set; }
+
     #endregion Properties
 
     #region Methods
@@ -85,12 +95,12 @@ public sealed partial class EnderecoSimplesNFSe
     /// <summary>
     /// Indica se o campo CEP deve ser serializado.
     /// </summary>
-    private bool ShouldSerializeCEP() => EnderecoExterior == null;
+    public bool ShouldSerializeCEP() => EnderecoExterior == null;
     
     /// <summary>
     /// Indica se o campo EnderecoExterior deve ser serializado.
     /// </summary>
-    private bool ShouldSerializeEnderecoExterior() => !CEP.IsEmpty();
+    public bool ShouldSerializeEnderecoExterior() => EnderecoExterior != null;
     
     #endregion Methods
 }

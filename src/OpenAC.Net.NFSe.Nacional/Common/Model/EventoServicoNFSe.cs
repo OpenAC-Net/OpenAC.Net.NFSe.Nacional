@@ -80,12 +80,12 @@ public sealed partial class EventoServicoNFSe
     /// <summary>
     /// Indica se a propriedade IdEvento deve ser serializada.
     /// </summary>
-    private bool ShouldSerializeIdEvento() => Endereco == null;
+    public bool ShouldSerializeIdEvento() => Endereco == null;
     
     /// <summary>
     /// Indica se a propriedade Endereco deve ser serializada.
     /// </summary>
-    private bool ShouldSerializeEndereco() => IdEvento.IsEmpty();
+    public bool ShouldSerializeEndereco() => IdEvento.IsEmpty();
     
     #endregion Methods
 }

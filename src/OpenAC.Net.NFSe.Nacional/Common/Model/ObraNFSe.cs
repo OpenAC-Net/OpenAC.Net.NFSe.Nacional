@@ -62,4 +62,14 @@ public sealed partial class ObraNFSe
     /// </summary>
     [DFeElement("end", Ocorrencia = Ocorrencia.NaoObrigatoria)]
     public EnderecoSimplesNFSe? Endereco { get; set; }
+
+    /// <summary>
+    /// Número de processo da obra no cadastro municipal (numérico, até 20 dígitos).
+    /// </summary>
+    /// <remarks>
+    /// Não faz parte do layout nacional e nunca é serializado na DPS. É usado apenas por provedores
+    /// cujo layout possui o campo <c>nProcessoObra</c>, como a ISSNet.
+    /// </remarks>
+    [DFeIgnore]
+    public string? NumeroProcesso { get; set; }
 }

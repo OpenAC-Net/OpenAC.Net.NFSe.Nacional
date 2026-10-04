@@ -72,24 +72,24 @@
 					<Enderecos>
 						<Endereco Tipo="Enviar">https://nfse.issnetonline.com.br/wsnfsenacional/homologacao</Endereco>
 						<Endereco Tipo="EnviarEvento">https://nfse.issnetonline.com.br/wsnfsenacional/homologacao</Endereco>
-						<Endereco Tipo="ConsultarNsu">https://adn.producaorestrita.nfse.gov.br/contribuintes</Endereco>
-						<Endereco Tipo="ConsultarChave">https://adn.producaorestrita.nfse.gov.br/contribuintes</Endereco>
-						<Endereco Tipo="DownloadDanfse">https://adn.producaorestrita.nfse.gov.br</Endereco>
-						<Endereco Tipo="ConsultarChaveDps">https://sefin.producaorestrita.nfse.gov.br/SefinNacional</Endereco>
-						<Endereco Tipo="ConsultaExisteDps">https://sefin.producaorestrita.nfse.gov.br/SefinNacional</Endereco>
-						<Endereco Tipo="ConsultarEvento">https://sefin.producaorestrita.nfse.gov.br/SefinNacional</Endereco>
+						<Endereco Tipo="ConsultarNsu">https://nfse.issnetonline.com.br/wsnfsenacional/homologacao</Endereco>
+						<Endereco Tipo="ConsultarChave">https://nfse.issnetonline.com.br/wsnfsenacional/homologacao</Endereco>
+						<Endereco Tipo="DownloadDanfse">https://nfse.issnetonline.com.br/wsnfsenacional/homologacao</Endereco>
+						<Endereco Tipo="ConsultarChaveDps">https://nfse.issnetonline.com.br/wsnfsenacional/homologacao</Endereco>
+						<Endereco Tipo="ConsultaExisteDps">https://nfse.issnetonline.com.br/wsnfsenacional/homologacao</Endereco>
+						<Endereco Tipo="ConsultarEvento">https://nfse.issnetonline.com.br/wsnfsenacional/homologacao</Endereco>
 					</Enderecos>
 				</Ambiente>
 				<Ambiente Tipo="1">
 					<Enderecos>
 						<Endereco Tipo="Enviar">https://nfse.issnetonline.com.br/wsnfsenacional/ribeiraopreto</Endereco>
 						<Endereco Tipo="EnviarEvento">https://nfse.issnetonline.com.br/wsnfsenacional/ribeiraopreto</Endereco>
-						<Endereco Tipo="ConsultarNsu">https://adn.producaorestrita.nfse.gov.br/contribuintes</Endereco>
-						<Endereco Tipo="ConsultarChave">https://adn.producaorestrita.nfse.gov.br/contribuintes</Endereco>
-						<Endereco Tipo="DownloadDanfse">https://adn.producaorestrita.nfse.gov.br</Endereco>
-						<Endereco Tipo="ConsultarChaveDps">https://sefin.producaorestrita.nfse.gov.br/SefinNacional</Endereco>
-						<Endereco Tipo="ConsultaExisteDps">https://sefin.producaorestrita.nfse.gov.br/SefinNacional</Endereco>
-						<Endereco Tipo="ConsultarEvento">https://sefin.nfse.gov.br/sefinnacional</Endereco>
+						<Endereco Tipo="ConsultarNsu">https://nfse.issnetonline.com.br/wsnfsenacional/ribeiraopreto</Endereco>
+						<Endereco Tipo="ConsultarChave">https://nfse.issnetonline.com.br/wsnfsenacional/ribeiraopreto</Endereco>
+						<Endereco Tipo="DownloadDanfse">https://nfse.issnetonline.com.br/wsnfsenacional/ribeiraopreto</Endereco>
+						<Endereco Tipo="ConsultarChaveDps">https://nfse.issnetonline.com.br/wsnfsenacional/ribeiraopreto</Endereco>
+						<Endereco Tipo="ConsultaExisteDps">https://nfse.issnetonline.com.br/wsnfsenacional/ribeiraopreto</Endereco>
+						<Endereco Tipo="ConsultarEvento">https://nfse.issnetonline.com.br/wsnfsenacional/ribeiraopreto</Endereco>
 					</Enderecos>
 				</Ambiente>
 			</Ambientes>
@@ -192,6 +192,37 @@
 						<Endereco Tipo="ConsultarChaveDps">https://webapp1-jacarezinho.cidade360.cloud/NFSe.Api</Endereco>
 						<Endereco Tipo="ConsultaExisteDps">https://webapp1-jacarezinho.cidade360.cloud/NFSe.Api</Endereco>
 						<Endereco Tipo="ConsultarEvento">https://webapp1-jacarezinho.cidade360.cloud/NFSe.Api</Endereco>
+					</Enderecos>
+				</Ambiente>
+			</Ambientes>
+		</serviceInfo>
+		<serviceInfo Id="3540200">
+			<Tipo>Fiorilli</Tipo>
+			<Nome>Pontal</Nome>
+			<UF>SP</UF>
+			<Ambientes>
+				<Ambiente Tipo="2">
+					<Enderecos>
+						<Endereco Tipo="Enviar">http://fi1.fiorilli.com.br:5663/IssWeb-ejb/IssWebWSNacional/IssWebWSNacionalPortType?wsdl</Endereco>
+						<Endereco Tipo="EnviarEvento">http://fi1.fiorilli.com.br:5663/IssWeb-ejb/IssWebWSNacional/IssWebWSNacionalPortType?wsdl</Endereco>
+						<Endereco Tipo="ConsultarNsu">http://fi1.fiorilli.com.br:5663/IssWeb-ejb/IssWebWSNacional/IssWebWSNacionalPortType?wsdl</Endereco>
+						<Endereco Tipo="ConsultarChave">http://fi1.fiorilli.com.br:5663/IssWeb-ejb/IssWebWSNacional/IssWebWSNacionalPortType?wsdl</Endereco>
+						<Endereco Tipo="DownloadDanfse">http://fi1.fiorilli.com.br:5663/IssWeb-ejb/IssWebWSNacional/IssWebWSNacionalPortType?wsdl</Endereco>
+						<Endereco Tipo="ConsultarChaveDps">http://fi1.fiorilli.com.br:5663/IssWeb-ejb/IssWebWSNacional/IssWebWSNacionalPortType?wsdl</Endereco>
+						<Endereco Tipo="ConsultaExisteDps">http://fi1.fiorilli.com.br:5663/IssWeb-ejb/IssWebWSNacional/IssWebWSNacionalPortType?wsdl</Endereco>
+						<Endereco Tipo="ConsultaExisteDps">http://fi1.fiorilli.com.br:5663/IssWeb-ejb/IssWebWSNacional/IssWebWSNacionalPortType?wsdl</Endereco>
+					</Enderecos>
+				</Ambiente>
+				<Ambiente Tipo="1">
+					<Enderecos>
+						<Endereco Tipo="Enviar">http://45.71.128.162:5661/IssWeb-ejb/IssWebWSNacional/IssWebWSNacionalPortType?wsdl</Endereco>
+						<Endereco Tipo="EnviarEvento">http://45.71.128.162:5661/IssWeb-ejb/IssWebWSNacional/IssWebWSNacionalPortType?wsdl</Endereco>
+						<Endereco Tipo="ConsultarNsu">http://45.71.128.162:5661/IssWeb-ejb/IssWebWSNacional/IssWebWSNacionalPortType?wsdl</Endereco>
+						<Endereco Tipo="ConsultarChave">http://45.71.128.162:5661/IssWeb-ejb/IssWebWSNacional/IssWebWSNacionalPortType?wsdl</Endereco>
+						<Endereco Tipo="DownloadDanfse">http://45.71.128.162:5661/IssWeb-ejb/IssWebWSNacional/IssWebWSNacionalPortType?wsdl</Endereco>
+						<Endereco Tipo="ConsultarChaveDps">http://45.71.128.162:5661/IssWeb-ejb/IssWebWSNacional/IssWebWSNacionalPortType?wsdl</Endereco>
+						<Endereco Tipo="ConsultaExisteDps">http://45.71.128.162:5661/IssWeb-ejb/IssWebWSNacional/IssWebWSNacionalPortType?wsdl</Endereco>
+						<Endereco Tipo="ConsultaExisteDps">http://45.71.128.162:5661/IssWeb-ejb/IssWebWSNacional/IssWebWSNacionalPortType?wsdl</Endereco>
 					</Enderecos>
 				</Ambiente>
 			</Ambientes>
