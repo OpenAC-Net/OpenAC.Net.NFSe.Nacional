@@ -234,7 +234,7 @@ public class TestEmissaoFiorilli
         await Assert.That(retorno.Sucesso).IsTrue();
     }
     
-    [TestMethod]
+    [Test]
     public async Task ConsultaChaveDpsFiorilli()
     {
         var openNFSeNacional = new OpenNFSeNacional();
@@ -247,10 +247,10 @@ public class TestEmissaoFiorilli
 
         var retorno = await openNFSeNacional.ConsultaChaveDpsAsync(idDps);
 
-        Assert.IsTrue(retorno.Sucesso);
+        await Assert.That(retorno.Sucesso).IsTrue();
     }
     
-    [TestMethod]
+    [Test]
     public async Task ConsultarNFSeFiorilli()
     {
         var openNFSeNacional = new OpenNFSeNacional();
@@ -264,6 +264,6 @@ public class TestEmissaoFiorilli
         };
         var retorno = await openNFSeNacional.ConsultarNFSeAsync(filtro);
 
-        Assert.IsTrue(retorno.Sucesso);
+        await Assert.That(retorno.Sucesso).IsTrue();
     }
 }
