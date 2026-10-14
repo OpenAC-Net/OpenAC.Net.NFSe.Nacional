@@ -37,7 +37,7 @@ namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 /// <summary>
 /// Representa os tributos federais retidos na fonte.
 /// </summary>
-public sealed class TributoFederal
+public sealed partial class TributoFederal
 {
     /// <summary>
     /// Informações de PIS e COFINS.

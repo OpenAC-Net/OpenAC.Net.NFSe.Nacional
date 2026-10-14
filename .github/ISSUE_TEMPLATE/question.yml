@@ -1,0 +1,36 @@
+name: "Dúvida / Pergunta Técnica"
+description: "Faça uma pergunta técnica sobre a biblioteca OpenAC.Net.NFSe.Nacional"
+title: "[Dúvida]: "
+labels: ["question"]
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        > [!TIP]
+        > Para suporte rápido, discussões e ajuda da comunidade, utilize o canal no [Discord](https://discord.com/invite/brdmJ7Yv6w).
+
+  - type: input
+    id: version
+    attributes:
+      label: "Versão da Biblioteca"
+      description: "Qual versão do OpenAC.Net.NFSe.Nacional você está utilizando?"
+      placeholder: "1.4.8"
+    validations:
+      required: false
+
+  - type: textarea
+    id: question
+    attributes:
+      label: "Qual é a sua dúvida?"
+      description: "Descreva sua dúvida técnica de forma detalhada, incluindo trechos de código ou comportamento esperado."
+    validations:
+      required: true
+
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: "Contexto Adicional"
+      description: "Provedor, município ou cenário de integração relacionado à dúvida."
+    validations:
+      required: false

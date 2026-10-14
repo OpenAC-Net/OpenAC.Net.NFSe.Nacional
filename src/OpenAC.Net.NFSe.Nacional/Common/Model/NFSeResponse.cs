@@ -1,4 +1,4 @@
-﻿// ***********************************************************************
+// ***********************************************************************
 // Assembly         : OpenAC.Net.NFSe.Nacional
 // Author           : RFTD
 // Created          : 09-09-2023
@@ -29,9 +29,9 @@
 // <summary></summary>
 // ***********************************************************************
 
+using OpenAC.Net.Core.Logging;
 using System;
 using System.Text.Json;
-using OpenAC.Net.Core.Logging;
 
 namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 
@@ -50,6 +50,7 @@ public sealed class NFSeResponse<T> : IOpenLog where T : class, new()
     /// <param name="envio">Dados de envio em formato JSON.</param>
     /// <param name="resposta">Resposta recebida em formato JSON.</param>
     /// <param name="sucesso">Indica se a operação foi bem-sucedida.</param>
+    /// <param name="options">Opções de serialização JSON utilizadas.</param>
     private NFSeResponse(string xmlEnvio, string envio, string resposta, bool sucesso, JsonSerializerOptions? options)
     {
         XmlEnvio = xmlEnvio;
@@ -69,22 +70,11 @@ public sealed class NFSeResponse<T> : IOpenLog where T : class, new()
         }
     }
 
-    /// <summary>
-    /// Inicializa uma nova instância da classe <see cref="NFSeResponse{T}"/> com o resultado já processado.
-    /// Utilizado por provedores que retornam XML/SOAP (ex.: Fiorilli), onde a resposta não é desserializada de JSON.
-    /// </summary>
-    /// <param name="xmlEnvio">XML enviado na requisição.</param>
-    /// <param name="envio">Conteúdo enviado (envelope/corpo da requisição).</param>
-    /// <param name="resposta">Resposta bruta recebida (envelope/corpo da resposta).</param>
-    /// <param name="sucesso">Indica se a operação foi bem-sucedida.</param>
-    /// <param name="resultado">Resultado já processado a partir da resposta.</param>
-    private NFSeResponse(string xmlEnvio, string envio, string resposta, bool sucesso, T? resultado)
+    private NFSeResponse(string xmlEnvio, string xmlResposta, bool sucesso, T? resultado)
     {
         XmlEnvio = xmlEnvio;
-        JsonEnvio = envio;
-        JsonRetorno = resposta;
+        XmlRetorno = xmlResposta;
         Sucesso = sucesso;
-        JsonOptions = null;
         Resultado = resultado;
     }
 
@@ -98,14 +88,19 @@ public sealed class NFSeResponse<T> : IOpenLog where T : class, new()
     public string XmlEnvio { get; }
 
     /// <summary>
+    /// Obtém a resposta recebida em formato XML.
+    /// </summary>
+    public string? XmlRetorno { get; }
+
+    /// <summary>
     /// Obtém os dados de envio em formato JSON.
     /// </summary>
-    public string JsonEnvio { get; }
+    public string? JsonEnvio { get; }
 
     /// <summary>
     /// Obtém a resposta recebida em formato JSON.
     /// </summary>
-    public string JsonRetorno { get; }
+    public string? JsonRetorno { get; }
 
     /// <summary>
     /// Indica se a operação foi bem-sucedida.
@@ -127,12 +122,13 @@ public sealed class NFSeResponse<T> : IOpenLog where T : class, new()
     #region Methods
 
     /// <summary>
-    /// Cria uma instância de <see cref="NFSeResponse{T}"/> contendo os dados de envio e retorno.
+    /// Cria uma instância de <see cref="NFSeResponse{T}"/> contendo os dados de envio e retorno em Json.
     /// </summary>
     /// <param name="xmlEnvio">XML enviado na requisição.</param>
     /// <param name="envio">Dados de envio em formato JSON.</param>
     /// <param name="resposta">Resposta recebida em formato JSON.</param>
     /// <param name="sucesso">Indica se a operação foi bem-sucedida.</param>
+    /// <param name="jsonOptions">Opções de serialização JSON utilizadas.</param>
     /// <returns>Instância de <see cref="NFSeResponse{T}"/> com o resultado desserializado (ou <c>null</c> em caso de erro de desserialização).</returns>
 
     public static NFSeResponse<T> Create(string xmlEnvio, string envio, string resposta, bool sucesso, JsonSerializerOptions? jsonOptions = null)
@@ -141,18 +137,17 @@ public sealed class NFSeResponse<T> : IOpenLog where T : class, new()
     }
 
     /// <summary>
-    /// Cria uma instância de <see cref="NFSeResponse{T}"/> a partir de um resultado já processado.
-    /// Utilizado por provedores que retornam XML/SOAP (ex.: Fiorilli), evitando a desserialização de JSON.
+    /// Cria uma instância de <see cref="NFSeResponse{T}"/> contendo os dados de envio e retorno, com resultado previamente montado manualmente.
     /// </summary>
     /// <param name="xmlEnvio">XML enviado na requisição.</param>
-    /// <param name="envio">Conteúdo enviado (envelope/corpo da requisição).</param>
-    /// <param name="resposta">Resposta bruta recebida (envelope/corpo da resposta).</param>
+    /// <param name="xmlResposta">Resposta recebida em formato XML.</param>
     /// <param name="sucesso">Indica se a operação foi bem-sucedida.</param>
-    /// <param name="resultado">Resultado já processado a partir da resposta.</param>
-    /// <returns>Instância de <see cref="NFSeResponse{T}"/> com o resultado informado.</returns>
-    public static NFSeResponse<T> CreateComResultado(string xmlEnvio, string envio, string resposta, bool sucesso, T? resultado)
+    /// <param name="resultado">Instância de <typeparamref name="T"/>, o resultado previamente montado e tratado.</param>
+    /// <returns>Instância de <see cref="NFSeResponse{T}"/> com o resultado recebido como parâmetro.</returns>
+
+    public static NFSeResponse<T> Create(string xmlEnvio, string xmlResposta, bool sucesso, T? resultado)
     {
-        return new NFSeResponse<T>(xmlEnvio, envio, resposta, sucesso, resultado);
+        return new NFSeResponse<T>(xmlEnvio, xmlResposta, sucesso, resultado);
     }
 
     #endregion Methods

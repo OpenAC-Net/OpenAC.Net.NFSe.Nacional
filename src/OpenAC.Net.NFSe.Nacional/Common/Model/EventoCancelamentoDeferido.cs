@@ -38,7 +38,7 @@ namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 /// <summary>
 /// Representa o evento de cancelamento de NFS-e deferido por análise fiscal.
 /// </summary>
-public sealed class EventoCancelamentoDeferido : IEventoNFSe
+public sealed partial class EventoCancelamentoDeferido : IEventoNFSe
 {
     /// <summary>
     /// Descrição do evento.

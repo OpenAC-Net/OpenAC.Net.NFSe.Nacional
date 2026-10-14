@@ -38,7 +38,7 @@ namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 /// <summary>
 /// Representa os dados de PIS e COFINS para NFSe.
 /// </summary>
-public sealed class PisCofins
+public sealed partial class PisCofins
 {
     /// <summary>
     /// Código de Situação Tributária do PIS/COFINS.

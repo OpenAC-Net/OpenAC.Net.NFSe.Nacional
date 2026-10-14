@@ -12,7 +12,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using System.Security.Cryptography.Xml;
-using System.Text;
 using System.Xml;
 using System.Xml.Linq;
 using OpenAC.Net.Core.Extensions;
@@ -276,9 +275,9 @@ internal static class FiorilliSoap
     }
 
     /// <summary>
-    /// Indica se a mensagem representa um erro. Na convenção da Fiorilli, códigos
-    /// iniciados por "A" são alertas; os demais representam rejeição ou falha
-    /// de processamento (ex.: E172, L4, N8, N10 e N11).
+    /// Indica se a mensagem representa um erro. Segue a convenção da Fiorilli/padrão nacional,
+    /// em que códigos iniciados por "A" são alertas; os demais são erros, incluindo os de regra
+    /// de negócio (ex.: E172) e os de estrutura/schema do XML recebido (ex.: L4).
     /// </summary>
     /// <param name="mensagem">Mensagem de processamento.</param>
     /// <returns><c>true</c> quando a mensagem é um erro.</returns>

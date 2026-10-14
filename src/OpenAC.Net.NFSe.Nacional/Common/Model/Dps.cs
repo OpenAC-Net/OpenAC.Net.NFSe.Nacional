@@ -1,4 +1,4 @@
-﻿// ***********************************************************************
+// ***********************************************************************
 // Assembly         : OpenAC.Net.NFSe.Nacional
 // Author           : RFTD
 // Created          : 09-09-2023
@@ -43,7 +43,7 @@ namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 /// </summary>
 [DFeSignInfoElement("infDPS")]
 [DFeRoot("DPS", Namespace = "http://www.sped.fazenda.gov.br/nfse")]
-public sealed class Dps : DFeSignDocument<Dps>
+public sealed partial class Dps : DFeSignDocument<Dps>
 {
     #region Constructors
 
@@ -81,22 +81,50 @@ public sealed class Dps : DFeSignDocument<Dps>
     /// <param name="configuracao">Configuração da NFSe.</param>
     public void Assinar(ConfiguracaoNFSe configuracao)
     {
-        if (Informacoes.Id.IsEmpty())
-        {
-            var tipo = Informacoes.Prestador.CNPJ.IsEmpty() ? "1" : "2";
-            var documneto = Informacoes.Prestador.CPF.IsEmpty()
-                ? Informacoes.Prestador.CNPJ
-                : $"000{Informacoes.Prestador.CPF}";
-
-            Informacoes.Id =
-                $"DPS{Informacoes.LocalidadeEmitente:D7}{tipo}{documneto}{Informacoes.Serie:D5}{Informacoes.NumeroDps:D15}";
-        }
-
         var options = DFeSaveOptions.DisableFormatting;
         if (configuracao.Geral.RetirarAcentos)
             options |= DFeSaveOptions.RemoveAccents;
 
+        Assinar(configuracao, options);
+    }
+
+    /// <summary>
+    /// Assina o documento DPS utilizando as configurações fornecidas e as opções de salvamento especificadas.
+    /// </summary>
+    /// <param name="configuracao">Configuração da NFSe.</param>
+    /// <param name="options">Opções de salvamento do documento.</param>
+    public void Assinar(ConfiguracaoNFSe configuracao, DFeSaveOptions options)
+    {        
+        GerarId();
         AssinarDocumento(configuracao.Certificados.ObterCertificado(), options, false);
+    }
+
+    /// <summary>
+    /// Gera o identificador da DPS quando ainda não informado. Chamado automaticamente por
+    /// <see cref="Assinar(OpenAC.Net.NFSe.Nacional.Common.ConfiguracaoNFSe)"/>; um <see cref="InfDps.Id"/> já preenchido é preservado.
+    /// </summary>
+    /// <remarks>
+    /// Layout <c>TSIdDPS</c> (45 posições): <c>"DPS"</c> + Cód.Mun.(7) + Tipo Insc.(1) +
+    /// Insc.Federal(14) + Série(5) + Núm.DPS(15). O tipo 1 (CPF) exige 14 dígitos, com <c>000</c> à
+    /// esquerda; o tipo 2 (CNPJ) admite CNPJ alfanumérico. Como todos os campos são
+    /// <see cref="string"/>, o preenchimento é explícito - especificador de formato numérico
+    /// (<c>D7</c>, <c>D5</c>, <c>D15</c>) não se aplica a <see cref="string"/>.
+    /// </remarks>
+    public void GerarId()
+    {
+        if (!Informacoes.Id.IsEmpty()) return;
+
+        var tipo = string.IsNullOrEmpty(Informacoes.Prestador.CNPJ) ? "1" : "2";
+        var documento = string.IsNullOrEmpty(Informacoes.Prestador.CPF)
+            ? Informacoes.Prestador.CNPJ ?? string.Empty
+            : $"000{Informacoes.Prestador.CPF}";
+
+        Informacoes.Id = "DPS" +
+                         Informacoes.LocalidadeEmitente.PadLeft(7, '0') +
+                         tipo +
+                         documento.PadLeft(14, '0') +
+                         Informacoes.Serie.PadLeft(5, '0') +
+                         Informacoes.NumeroDps.PadLeft(15, '0');
     }
 
     #endregion Methods

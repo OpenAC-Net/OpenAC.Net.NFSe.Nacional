@@ -37,7 +37,7 @@ namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 /// <summary>
 /// Representa o evento de desbloqueio de NFS-e por ofício.
 /// </summary>
-public sealed class EventoDesbloqueioOficio : IEventoNFSe
+public sealed partial class EventoDesbloqueioOficio : IEventoNFSe
 {
     /// <summary>
     /// Descrição do evento.
@@ -52,8 +52,13 @@ public sealed class EventoDesbloqueioOficio : IEventoNFSe
     public string CPFAgTrib { get; set; } = string.Empty;
 
     /// <summary>
-    /// Código de manifestação do evento de desbloqueio por ofício.
+    /// Código de manifestação do evento de desbloqueio por ofício. Embute a inscrição federal,
+    /// que pode ser alfanumérica.
     /// </summary>
-    [DFeElement(TipoCampo.StrNumber, "idBloqOfic", Min = 59, Max = 59, Ocorrencia = Ocorrencia.Obrigatoria)]
-    public string CodManifestacaoEvento { get; set; } = string.Empty;
+    [DFeElement(TipoCampo.Str, "idBloqOfic", Min = 59, Max = 59, Ocorrencia = Ocorrencia.Obrigatoria)]
+    public string CodManifestacaoEvento
+    {
+        get;
+        set => field = value.SomenteAlfanumerico() ?? string.Empty;
+    } = string.Empty;
 }

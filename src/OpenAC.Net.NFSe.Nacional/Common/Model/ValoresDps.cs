@@ -36,7 +36,7 @@ namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 /// <summary>
 /// Representa os valores de uma DPS (Documento de Prestação de Serviço).
 /// </summary>
-public sealed class ValoresDps
+public sealed partial class ValoresDps
 {
     /// <summary>
     /// Valores do serviço prestado.

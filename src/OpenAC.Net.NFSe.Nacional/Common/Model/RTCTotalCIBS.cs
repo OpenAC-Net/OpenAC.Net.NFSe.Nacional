@@ -36,7 +36,7 @@ namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 /// <summary>
 /// Totalizadores do IBS e CBS.
 /// </summary>
-public sealed class RTCTotalCIBS
+public sealed partial class RTCTotalCIBS
 {
     /// <summary>
     /// Valor total da NF considerando IBS e CBS.

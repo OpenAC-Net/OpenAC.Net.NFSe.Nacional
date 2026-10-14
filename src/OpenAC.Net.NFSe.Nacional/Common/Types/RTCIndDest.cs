@@ -17,18 +17,18 @@ using OpenAC.Net.DFe.Core.Attributes;
 namespace OpenAC.Net.NFSe.Nacional.Common.Types;
 
 /// <summary>
-/// A respeito do Destinat·rio dos serviÁos.
+/// A respeito do Destinat√°rio dos servi√ßos.
 /// </summary>
 public enum RTCIndDest
 {
     /// <summary>
-    /// 0 - O destinat·rio È o prÛprio tomador/adquirente
+    /// 0 - O destinat√°rio √© o pr√≥prio tomador/adquirente
     /// </summary>
     [DFeEnum("0")]
     ProprioTomador,
 
     /// <summary>
-    /// 1 - O destinat·rio n„o È o prÛprio adquirente
+    /// 1 - O destinat√°rio n√£o √© o pr√≥prio adquirente
     /// </summary>
     [DFeEnum("1")]
     Outro

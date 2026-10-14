@@ -33,7 +33,7 @@ using OpenAC.Net.DFe.Core.Attributes;
 namespace OpenAC.Net.NFSe.Nacional.Common.Types;
 
 /// <summary>
-/// Indicador da finalidade da emiss„o de NFS-e:
+/// Indicador da finalidade da emiss√£o de NFS-e:
 ///0 - NFS-e regular.
 /// </summary>
 public enum RTCFinNFSe

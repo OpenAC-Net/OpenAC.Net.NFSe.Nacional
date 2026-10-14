@@ -36,7 +36,7 @@ namespace OpenAC.Net.NFSe.Nacional.Common;
 /// <summary>
 /// Represents the configuration for NFSe.
 /// </summary>
-public sealed class ConfiguracaoNFSe : DFeConfigBase<NFSeGeralConfig, NFSeWebserviceConfig, NFSeCertificadoConfig, NFSeArquivoConfig>
+public sealed partial class ConfiguracaoNFSe : DFeConfigBase<NFSeGeralConfig, NFSeWebserviceConfig, NFSeCertificadoConfig, NFSeArquivoConfig>
 {
     #region Constructors
 

@@ -37,7 +37,7 @@ namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 /// <summary>
 /// Representa as informações de anulação ou rejeição.
 /// </summary>
-public sealed class InfoAnulacaoRejeicao
+public sealed partial class InfoAnulacaoRejeicao
 {
     /// <summary>
     /// CPF do agente tributário responsável.
@@ -46,10 +46,14 @@ public sealed class InfoAnulacaoRejeicao
     public string CPFAgTrib { get; set; } = string.Empty;
     
     /// <summary>
-    /// Código do manifesto de rejeição.
+    /// Código do manifesto de rejeição. Embute a inscrição federal, que pode ser alfanumérica.
     /// </summary>
-    [DFeElement(TipoCampo.StrNumber, "idEvManifRej", Min = 59, Max = 59, Ocorrencia = Ocorrencia.Obrigatoria)]
-    public string CodManifestoRejeicao { get; set; } = string.Empty;
+    [DFeElement(TipoCampo.Str, "idEvManifRej", Min = 59, Max = 59, Ocorrencia = Ocorrencia.Obrigatoria)]
+    public string CodManifestoRejeicao
+    {
+        get;
+        set => field = value.SomenteAlfanumerico() ?? string.Empty;
+    } = string.Empty;
     
     /// <summary>
     /// Motivo da anulação ou rejeição.

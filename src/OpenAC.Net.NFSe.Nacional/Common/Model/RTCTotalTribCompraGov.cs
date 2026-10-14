@@ -36,7 +36,7 @@ namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 /// <summary>
 /// Composicao de IBS/CBS em compras governamentais.
 /// </summary>
-public sealed class RTCTotalTribCompraGov
+public sealed partial class RTCTotalTribCompraGov
 {
     /// <summary>
     /// Aliquota do IBS de competencia da UF.

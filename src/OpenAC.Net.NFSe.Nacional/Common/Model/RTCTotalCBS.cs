@@ -36,7 +36,7 @@ namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 /// <summary>
 /// Totalizadores da CBS.
 /// </summary>
-public sealed class RTCTotalCBS
+public sealed partial class RTCTotalCBS
 {
     /// <summary>
     /// Valores de credito presumido da CBS.

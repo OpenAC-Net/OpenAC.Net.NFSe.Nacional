@@ -17,41 +17,41 @@ using OpenAC.Net.DFe.Core.Attributes;
 namespace OpenAC.Net.NFSe.Nacional.Common.Types;
 
 /// <summary>
-/// Tipo de Operação com Entes Governamentais ou outros serviços sobre bens imóveis:
-/// 1 – Fornecimento com pagamento posterior;
-/// 2 - Recebimento do pagamento com fornecimento já realizado;
-/// 3 – Fornecimento com pagamento já realizado;
-/// 4 – Recebimento do pagamento com fornecimento posterior;
-/// 5 – Fornecimento e recebimento do pagamento concomitantes.
+/// Tipo de OperaÃ§Ã£o com Entes Governamentais ou outros serviÃ§os sobre bens imÃ³veis:
+/// 1 Â– Fornecimento com pagamento posterior;
+/// 2 - Recebimento do pagamento com fornecimento jÃ¡ realizado;
+/// 3 Â– Fornecimento com pagamento jÃ¡ realizado;
+/// 4 Â– Recebimento do pagamento com fornecimento posterior;
+/// 5 Â– Fornecimento e recebimento do pagamento concomitantes.
 /// </summary>
 public enum TipoOperacaoIBSCBS
 {
     /// <summary>
-    /// 1 – Fornecimento com pagamento posterior
+    /// 1 Â– Fornecimento com pagamento posterior
     /// </summary>
     [DFeEnum("1")]
     FornecimentoPagamentoPosterior,
 
     /// <summary>
-    /// 2 - Recebimento do pagamento com fornecimento já realizado
+    /// 2 - Recebimento do pagamento com fornecimento jÃ¡ realizado
     /// </summary>
     [DFeEnum("2")]
     RecebimentoPagamentoFornecimentoRealizado,
 
     /// <summary>
-    /// 3 – Fornecimento com pagamento já realizado
+    /// 3 Â– Fornecimento com pagamento jÃ¡ realizado
     /// </summary>
     [DFeEnum("3")]
     FornecimentoPagamentoJaRealizado,
 
     /// <summary>
-    /// 4 – Recebimento do pagamento com fornecimento posterior
+    /// 4 Â– Recebimento do pagamento com fornecimento posterior
     /// </summary>
     [DFeEnum("4")]
     RecebimentoPagamentoFornecimentoPosterior,
 
     /// <summary>
-    /// 5 – Fornecimento e recebimento do pagamento concomitantes
+    /// 5 Â– Fornecimento e recebimento do pagamento concomitantes
     /// </summary>
     [DFeEnum("5")]
     FornecimentoRecebimentoConcomitantes

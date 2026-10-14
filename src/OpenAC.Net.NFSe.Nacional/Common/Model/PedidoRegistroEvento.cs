@@ -1,4 +1,4 @@
-﻿// ***********************************************************************
+// ***********************************************************************
 // Assembly         : OpenAC.Net.NFSe.Nacional
 // Author           : RFTD
 // Created          : 09-09-2023
@@ -42,7 +42,7 @@ namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 /// </summary>
 [DFeSignInfoElement("infPedReg")]
 [DFeRoot("pedRegEvento", Namespace = "http://www.sped.fazenda.gov.br/nfse")]
-public sealed class PedidoRegistroEvento : DFeSignDocument<PedidoRegistroEvento>
+public sealed partial class PedidoRegistroEvento : DFeSignDocument<PedidoRegistroEvento>
 {
     #region Constructors
 
@@ -84,6 +84,16 @@ public sealed class PedidoRegistroEvento : DFeSignDocument<PedidoRegistroEvento>
         if (configuracao.Geral.RetirarAcentos)
             options |= DFeSaveOptions.RemoveAccents;
         
+        AssinarDocumento(configuracao.Certificados.ObterCertificado(), options, false);
+    }
+
+    /// <summary>
+    /// Realiza a assinatura digital do pedido utilizando as configurações fornecidas e as opções de salvamento especificadas.
+    /// </summary>
+    /// <param name="configuracao">Configuração da NFSe.</param>
+    /// <param name="options">Opções de salvamento do documento.</param>
+    public void Assinar(ConfiguracaoNFSe configuracao, DFeSaveOptions options)
+    {
         AssinarDocumento(configuracao.Certificados.ObterCertificado(), options, false);
     }
 

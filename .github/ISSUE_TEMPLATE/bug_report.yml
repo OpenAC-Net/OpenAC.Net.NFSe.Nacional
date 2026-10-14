@@ -1,0 +1,146 @@
+name: "Relato de Bug / Problema"
+description: "Informe um comportamento inesperado ou erro no OpenAC.Net.NFSe.Nacional"
+title: "[Bug]: "
+labels: ["bug"]
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Obrigado por relatar um problema! Por favor, preencha as informações abaixo para facilitar a investigação e resolução do bug.
+        
+        > [!TIP]
+        > Se você tem apenas uma dúvida sobre uso ou configuração, utilize o canal da comunidade no [Discord](https://discord.com/invite/brdmJ7Yv6w).
+
+  - type: input
+    id: version
+    attributes:
+      label: "Versão da Biblioteca"
+      description: "Qual versão do OpenAC.Net.NFSe.Nacional você está utilizando? (ex: 1.4.8 ou commit)"
+      placeholder: "1.4.8"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: target-framework
+    attributes:
+      label: "Target Framework (.NET)"
+      description: "Qual runtime / framework .NET sua aplicação utiliza?"
+      options:
+        - ".NET 10.0"
+        - ".NET 9.0"
+        - ".NET 8.0"
+        - ".NET Framework 4.8"
+        - ".NET Framework 4.6.2"
+        - ".NET Standard 2.0"
+        - "Outro"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: provider
+    attributes:
+      label: "Provedor / Ambiente"
+      description: "Qual provedor ou ambiente foi utilizado no momento da ocorrência?"
+      options:
+        - "Nacional (Ambiente Nacional / API REST & ADN)"
+        - "Fiorilli"
+        - "ISSNet"
+        - "SimplISS"
+        - "Tiplan"
+        - "Geral / Não se aplica"
+        - "Outro"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: operation
+    attributes:
+      label: "Operação / Funcionalidade"
+      description: "Qual operação da biblioteca apresentou o problema?"
+      options:
+        - "Emissão de DPS (Síncrona / Assíncrona / Lote)"
+        - "Cancelamento / Solicitação de Cancelamento"
+        - "Consulta de DF-e (Chave de Acesso / NSU)"
+        - "Consulta de DPS / Situação de Lote"
+        - "Download do DANFSe (PDF)"
+        - "Eventos da NFS-e (Confirmação, Rejeição, Bloqueio, etc.)"
+        - "Assinatura Digital / Certificados A1/A3"
+        - "Validação de Schemas XSD (v1.00 / v1.01)"
+        - "Gerenciador de Municípios (NFSeServiceManager)"
+        - "Serialização / Deserialização XML / JSON"
+        - "Outro"
+    validations:
+      required: false
+
+  - type: dropdown
+    id: environment
+    attributes:
+      label: "Ambiente SEFIN"
+      description: "Em qual ambiente o problema foi observado?"
+      options:
+        - "Homologação"
+        - "Produção"
+        - "Ambos"
+        - "Não se aplica (validação/execução local)"
+    validations:
+      required: false
+
+  - type: textarea
+    id: description
+    attributes:
+      label: "Descrição do Problema"
+      description: "Descreva de forma clara e objetiva o que aconteceu e por que isso é um comportamento incorreto."
+      placeholder: "Ao executar a operação X com os parâmetros Y, o comportamento observado foi..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: "Passos para Reproduzir / Código Mínimo de Exemplo (MRE)"
+      description: "Inclua passos claros ou um trecho de código mínimo necessário para reproduzir o problema."
+      placeholder: |
+        ```csharp
+        var nfse = new OpenNFSeNacional();
+        // Configurações e chamada...
+        ```
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected-behavior
+    attributes:
+      label: "Comportamento Esperado"
+      description: "O que você esperava que acontecesse ao executar a operação?"
+    validations:
+      required: false
+
+  - type: textarea
+    id: logs-errors
+    attributes:
+      label: "Mensagens de Erro / Stack Trace / Retorno XML ou JSON"
+      description: |
+        Cole aqui mensagens de exceção, stack trace completo ou retornos do WebService/API.
+        ⚠️ **IMPORTANTE: Remova certificados, senhas e quaisquer dados sensíveis/pessoais antes de colar.**
+      render: shell
+    validations:
+      required: false
+
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: "Informações Adicionais"
+      description: "Informações adicionais, capturas de tela, arquivos XML/JSON (sanitizados) ou contexto do município/provedor."
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: "Checklist"
+      options:
+        - label: "Verifiquei se já não existe uma issue aberta ou fechada sobre este mesmo problema."
+          required: true
+        - label: "Certifiquei-me de que não há dados sensíveis (senhas, certificados, chaves privadas) no relato."
+          required: true

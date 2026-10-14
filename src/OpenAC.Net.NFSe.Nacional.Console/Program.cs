@@ -22,6 +22,7 @@ homoDoisCorregos.Enderecos.Add(OpenAC.Net.NFSe.Nacional.Common.Types.TipoUrl.Con
 homoDoisCorregos.Enderecos.Add(OpenAC.Net.NFSe.Nacional.Common.Types.TipoUrl.DownloadDanfse, "https://sefin.producaorestrita.nfse.gov.br/SefinNacional");
 homoDoisCorregos.Enderecos.Add(OpenAC.Net.NFSe.Nacional.Common.Types.TipoUrl.ConsultarChaveDps, "https://sefin.producaorestrita.nfse.gov.br/SefinNacional");
 homoDoisCorregos.Enderecos.Add(OpenAC.Net.NFSe.Nacional.Common.Types.TipoUrl.ConsultaExisteDps, "https://sefin.producaorestrita.nfse.gov.br/SefinNacional");
+homoDoisCorregos.Enderecos.Add(OpenAC.Net.NFSe.Nacional.Common.Types.TipoUrl.ConsultarEvento, "https://sefin.producaorestrita.nfse.gov.br/SefinNacional");
 infoDoisCorregos.Ambientes.Add(homoDoisCorregos);
 
 NFSeEnvironment prodDoisCorregos = new();
@@ -33,6 +34,7 @@ prodDoisCorregos.Enderecos.Add(OpenAC.Net.NFSe.Nacional.Common.Types.TipoUrl.Con
 prodDoisCorregos.Enderecos.Add(OpenAC.Net.NFSe.Nacional.Common.Types.TipoUrl.DownloadDanfse, "https://sefin.nfse.gov.br/sefinnacional");
 prodDoisCorregos.Enderecos.Add(OpenAC.Net.NFSe.Nacional.Common.Types.TipoUrl.ConsultarChaveDps, "https://sefin.nfse.gov.br/sefinnacional");
 prodDoisCorregos.Enderecos.Add(OpenAC.Net.NFSe.Nacional.Common.Types.TipoUrl.ConsultaExisteDps, "https://sefin.nfse.gov.br/sefinnacional");
+homoDoisCorregos.Enderecos.Add(OpenAC.Net.NFSe.Nacional.Common.Types.TipoUrl.ConsultarEvento, "https://sefin.nfse.gov.br/sefinnacional");
 infoDoisCorregos.Ambientes.Add(prodDoisCorregos);
 
 manager.Services.Webservices.Add(infoDoisCorregos);

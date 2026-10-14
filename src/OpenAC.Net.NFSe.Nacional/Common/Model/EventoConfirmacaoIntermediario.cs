@@ -37,7 +37,7 @@ namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 /// <summary>
 /// Representa o evento de confirmação do intermediário no processo de NFSe.
 /// </summary>
-public sealed class EventoConfirmacaoIntermediario : IEventoNFSe
+public sealed partial class EventoConfirmacaoIntermediario : IEventoNFSe
 {
     /// <summary>
     /// Descrição do evento de confirmação do intermediário.

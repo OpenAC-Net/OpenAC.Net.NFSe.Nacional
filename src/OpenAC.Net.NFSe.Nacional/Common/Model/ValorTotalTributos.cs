@@ -37,7 +37,7 @@ namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 /// <summary>
 /// Representa os valores totais dos tributos federais, estaduais e municipais.
 /// </summary>
-public sealed class ValorTotalTributos
+public sealed partial class ValorTotalTributos
 {
     /// <summary>
     /// Valor total dos tributos federais.

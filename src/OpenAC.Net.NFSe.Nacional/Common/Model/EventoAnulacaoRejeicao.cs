@@ -37,7 +37,7 @@ namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 /// <summary>
 /// Representa o evento de anulação de rejeição de NFSe.
 /// </summary>
-public sealed class EventoAnulacaoRejeicao : IEventoNFSe
+public sealed partial class EventoAnulacaoRejeicao : IEventoNFSe
 {
     /// <summary>
     /// Descrição do evento.

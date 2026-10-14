@@ -38,7 +38,7 @@ namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 /// <summary>
 /// Representa os dados de serviço prestado no exterior.
 /// </summary>
-public sealed class ServicoExterior
+public sealed partial class ServicoExterior
 {
     /// <summary>
     /// Modalidade da prestação do serviço.

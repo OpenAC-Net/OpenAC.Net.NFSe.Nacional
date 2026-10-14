@@ -31,14 +31,13 @@
 
 using OpenAC.Net.DFe.Core.Attributes;
 using OpenAC.Net.DFe.Core.Serializer;
-using OpenAC.Net.NFSe.Nacional.Common.Types;
 
 namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 
 /// <summary>
 /// Representa o evento de rejeição do tomador no NFSe.
 /// </summary>
-public sealed class EventoRejeicaoTomador : InfoRejeicao, IEventoNFSe
+public sealed partial class EventoRejeicaoTomador : InfoRejeicao, IEventoNFSe
 {
     /// <summary>
     /// Descrição do evento.

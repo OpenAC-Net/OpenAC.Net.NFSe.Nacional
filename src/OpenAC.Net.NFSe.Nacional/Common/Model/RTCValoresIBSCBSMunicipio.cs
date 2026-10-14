@@ -36,7 +36,7 @@ namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 /// <summary>
 /// Valores do IBS municipal.
 /// </summary>
-public sealed class RTCValoresIBSCBSMunicipio
+public sealed partial class RTCValoresIBSCBSMunicipio
 {
     /// <summary>
     /// Aliquota municipal do IBS.

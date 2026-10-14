@@ -17,14 +17,14 @@ using OpenAC.Net.DFe.Core.Attributes;
 namespace OpenAC.Net.NFSe.Nacional.Common.Types;
 
 /// <summary>
-/// Indica operação de uso ou consumo pessoal (art.57):
-///0 - Não;
+/// Indica operaÃ§Ã£o de uso ou consumo pessoal (art.57):
+///0 - NÃ£o;
 ///1 - Sim.
 /// </summary>
 public enum RTCIndFinal
 {
     /// <summary>
-    ///0 - Não
+    ///0 - NÃ£o
     /// </summary>
     [DFeEnum("0")]
     Nao,
