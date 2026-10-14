@@ -38,7 +38,7 @@ namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 /// <summary>
 /// Representa as informações de identificação de uma pessoa para NFSe.
 /// </summary>
-public class InfoPessoaNFSe
+public partial class InfoPessoaNFSe
 {
     #region Properties
 

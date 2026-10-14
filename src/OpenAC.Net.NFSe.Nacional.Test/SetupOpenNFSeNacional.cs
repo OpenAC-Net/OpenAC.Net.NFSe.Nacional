@@ -145,7 +145,7 @@ public class SetupOpenNFSeNacional
     /// <summary>
     /// Obtém o Tomador1 (padrão)
     /// </summary>
-    public static InfoPessoaNFSe ObterTomadorPadrao() => ObterTomador("1");
+    public static InfoPessoaNFSe ObterTomadorPadrao() => ObterTomador();
 
     /// <summary>
     /// Obtém o código do município do tomador

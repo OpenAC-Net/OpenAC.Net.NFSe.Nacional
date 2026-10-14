@@ -40,7 +40,7 @@ namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 /// <summary>
 /// Representa as informações do pedido de registro de evento da NFSe Nacional.
 /// </summary>
-public sealed class InfPedReg
+public sealed partial class InfPedReg
 {
     #region Properties
 

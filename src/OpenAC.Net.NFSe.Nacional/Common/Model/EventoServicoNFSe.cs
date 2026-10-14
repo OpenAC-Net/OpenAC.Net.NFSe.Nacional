@@ -39,7 +39,7 @@ namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 /// <summary>
 /// Representa um evento de serviço para NFSe.
 /// </summary>
-public sealed class EventoServicoNFSe
+public sealed partial class EventoServicoNFSe
 {
     #region Properties
 
@@ -80,12 +80,12 @@ public sealed class EventoServicoNFSe
     /// <summary>
     /// Indica se a propriedade IdEvento deve ser serializada.
     /// </summary>
-    private bool ShouldSerializeIdEvento() => Endereco == null;
+    public bool ShouldSerializeIdEvento() => Endereco == null;
     
     /// <summary>
     /// Indica se a propriedade Endereco deve ser serializada.
     /// </summary>
-    private bool ShouldSerializeEndereco() => IdEvento.IsEmpty();
+    public bool ShouldSerializeEndereco() => IdEvento.IsEmpty();
     
     #endregion Methods
 }

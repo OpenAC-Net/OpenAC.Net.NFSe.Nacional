@@ -37,7 +37,7 @@ namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 /// <summary>
 /// Representa o evento de desbloqueio de NFS-e por ofício.
 /// </summary>
-public sealed class EventoDesbloqueioOficio : IEventoNFSe
+public sealed partial class EventoDesbloqueioOficio : IEventoNFSe
 {
     /// <summary>
     /// Descrição do evento.

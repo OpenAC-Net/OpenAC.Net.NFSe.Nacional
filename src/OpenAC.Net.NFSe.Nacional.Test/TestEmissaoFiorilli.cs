@@ -8,13 +8,12 @@ namespace OpenAC.Net.NFSe.Nacional.Test;
 /// Requerem as variáveis com prefixo "Fiorilli" no arquivo .env (código do município,
 /// inscrições, certificado e, opcionalmente, o endpoint de homologação).
 /// </summary>
-[TestClass]
 public class TestEmissaoFiorilli
 {
     /// <summary>
     /// Emissão simples com tomador (operação recepcionarDps).
     /// </summary>
-    [TestMethod]
+    [Test]
     public async Task EmissaoNFSeFiorilli()
     {
         var openNFSeNacional = new OpenNFSeNacional();
@@ -111,17 +110,17 @@ public class TestEmissaoFiorilli
 
         var retorno = await openNFSeNacional.EnviarAsync(dps);
 
-        Assert.IsTrue(retorno.Sucesso);
+        await Assert.That(retorno.Sucesso).IsTrue();
     }
 
     /// <summary>
     /// Emissão simples sem tomador (operação recepcionarDps).
     /// </summary>
-    [TestMethod]
+    [Test]
     public async Task EmissaoNFSeFiorilliSemTomador()
     {
         var openNFSeNacional = new OpenNFSeNacional();
-        SetupOpenNFSeNacional.ConfigurarFiorilli(openNFSeNacional, "2", "1", "1");
+        SetupOpenNFSeNacional.ConfigurarFiorilli(openNFSeNacional, "2");
 
         var prest = new PrestadorDps
         {
@@ -201,10 +200,10 @@ public class TestEmissaoFiorilli
 
         var retorno = await openNFSeNacional.EnviarAsync(dps);
 
-        Assert.IsTrue(retorno.Sucesso);
+        await Assert.That(retorno.Sucesso).IsTrue();
     }
     
-    [TestMethod]
+    [Test]
     public async Task CancelamentoNFSeFiorilli()
     {
         var openNFSeNacional = new OpenNFSeNacional();
@@ -232,6 +231,6 @@ public class TestEmissaoFiorilli
 
         var retorno = await openNFSeNacional.EnviarEventoAsync(evento);
 
-        Assert.IsTrue(retorno.Sucesso);
+        await Assert.That(retorno.Sucesso).IsTrue();
     }
 }

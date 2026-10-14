@@ -37,7 +37,7 @@ namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 /// <summary>
 /// Representa as informações de anulação ou rejeição.
 /// </summary>
-public sealed class InfoAnulacaoRejeicao
+public sealed partial class InfoAnulacaoRejeicao
 {
     /// <summary>
     /// CPF do agente tributário responsável.

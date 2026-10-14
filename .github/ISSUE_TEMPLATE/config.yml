@@ -1,5 +1,8 @@
 blank_issues_enabled: false
 contact_links:
-  - name: Suporte da comunidade
+  - name: Suporte e Dúvidas na Comunidade (Discord)
     url: https://discord.com/invite/brdmJ7Yv6w
-    about: Faça perguntas e seja ajudado direto para comuniadade OpenAC.
+    about: Faça perguntas, tire dúvidas e converse diretamente com a comunidade OpenAC .Net.
+  - name: Documentação e Exemplos
+    url: https://github.com/OpenAC-Net/OpenAC.Net.NFSe.Nacional#readme
+    about: Consulte o README, exemplos práticos e testes unitários antes de abrir uma issue.

@@ -36,7 +36,7 @@ namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 /// <summary>
 /// Totais de credito presumido para o IBS.
 /// </summary>
-public sealed class RTCTotalIBSCredPres
+public sealed partial class RTCTotalIBSCredPres
 {
     /// <summary>
     /// Aliquota do credito presumido IBS.

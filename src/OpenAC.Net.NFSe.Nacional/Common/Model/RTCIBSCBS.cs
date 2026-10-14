@@ -36,7 +36,7 @@ namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 /// <summary>
 /// Grupo de informacoes geradas pelo sistema referentes ao IBS e CBS.
 /// </summary>
-public sealed class RTCIBSCBS
+public sealed partial class RTCIBSCBS
 {
     /// <summary>
     /// Codigo IBGE da localidade de incidencia do IBS/CBS.

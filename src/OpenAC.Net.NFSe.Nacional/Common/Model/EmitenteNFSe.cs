@@ -37,7 +37,7 @@ namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 /// <summary>
 /// Representa o emitente de uma NFSe.
 /// </summary>
-public sealed class EmitenteNFSe
+public sealed partial class EmitenteNFSe
 {
     #region Properties
 

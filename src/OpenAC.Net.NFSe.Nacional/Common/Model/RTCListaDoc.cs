@@ -22,11 +22,11 @@ namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 /// <summary>
 /// Grupo relativo aos documentos referenciados nos casos de reembolso, repasse e ressarcimento.
 /// </summary>
-public sealed class RTCListaDoc
+public sealed partial class RTCListaDoc
 {
     #region Choice
     /// <summary>
-    /// Lista de documentos fiscais eletrÙnicos nacionais (NF-e, CT-e, MDF-e, NFS-e, etc.).
+    /// Lista de documentos fiscais eletr√¥nicos nacionais (NF-e, CT-e, MDF-e, NFS-e, etc.).
     /// </summary>
     [DFeElement("dFeNacional", Ocorrencia = Ocorrencia.NaoObrigatoria)]
     public RTCListaDocDFe? DocumentoFeNacional { get; set; }
@@ -36,7 +36,7 @@ public sealed class RTCListaDoc
     [DFeElement("docFiscalOutro", Ocorrencia = Ocorrencia.NaoObrigatoria)]
     public RTCListaDocFiscalOutro? DocumentoFiscalOutro { get; set; }
     /// <summary>
-    /// Lista de outros documentos n„o fiscais.
+    /// Lista de outros documentos n√£o fiscais.
     /// </summary>
     [DFeElement("docOutro", Ocorrencia = Ocorrencia.NaoObrigatoria)]
     public RTCListaDocOutro? DocumentoOutro { get; set; }
@@ -44,39 +44,39 @@ public sealed class RTCListaDoc
     #endregion
 
     /// <summary>
-    /// Grupo de informaÁıes do fornecedor do documento referenciado.
+    /// Grupo de informa√ß√µes do fornecedor do documento referenciado.
     /// </summary>
     [DFeElement("fornec", Ocorrencia = Ocorrencia.NaoObrigatoria)]
     public RTCListaDocFornec? Fornecedor { get; set; }
 
     /// <summary>
-    /// Data da emiss„o do documento dedutÌvel.
+    /// Data da emiss√£o do documento dedut√≠vel.
     /// </summary>
     [DFeElement(TipoCampo.Dat, "dtEmiDoc", Ocorrencia = Ocorrencia.Obrigatoria)]
     public DateTime DataEmissaoDocumento { get; set; }
 
     /// <summary>
-    /// Data da competÍncia do documento dedutÌvel.
+    /// Data da compet√™ncia do documento dedut√≠vel.
     /// </summary>
     [DFeElement(TipoCampo.Dat, "dtCompDoc", Ocorrencia = Ocorrencia.Obrigatoria)]
     public DateTime DataCompetenciaDocumento { get; set; }
 
     /// <summary>
-    /// Tipo de valor incluÌdo neste documento, recebido por motivo de estarem relacionadas a operaÁıes de terceiros,
-    /// objeto de reembolso, repasse ou ressarcimento pelo recebedor, j· tributados e aqui referenciados.
+    /// Tipo de valor inclu√≠do neste documento, recebido por motivo de estarem relacionadas a opera√ß√µes de terceiros,
+    /// objeto de reembolso, repasse ou ressarcimento pelo recebedor, j√° tributados e aqui referenciados.
     /// </summary>
     [DFeElement(TipoCampo.Enum, "tpReeRepRes", Ocorrencia = Ocorrencia.Obrigatoria)]
     public RTCTpReeRepRes TipoReembolsoRepasseRessarcimento { get; set; }
 
     /// <summary>
-    /// DescriÁ„o do reembolso ou ressarcimento quando a opÁ„o È "99 ñ Outros reembolsos ou ressarcimentos...".
+    /// Descri√ß√£o do reembolso ou ressarcimento quando a op√ß√£o √© "99 ¬ñ Outros reembolsos ou ressarcimentos...".
     /// </summary>
     [DFeElement(TipoCampo.Str, "xTpReeRepRes", Min = 1, Max = 150, Ocorrencia = Ocorrencia.NaoObrigatoria)]
     public string? DescricaoTipoReembolsoRepasseRessarcimento { get; set; }
 
     /// <summary>
-    /// Valor monet·rio (total ou parcial, conforme documento informado) utilizado para n„o inclus„o na base de c·lculo
-    /// do ISS e do IBS e da CBS da NFS-e que est· sendo emitida (R$).
+    /// Valor monet√°rio (total ou parcial, conforme documento informado) utilizado para n√£o inclus√£o na base de c√°lculo
+    /// do ISS e do IBS e da CBS da NFS-e que est√° sendo emitida (R$).
     /// </summary>
     [DFeElement(TipoCampo.De2, "vlrReeRepRes", Min = 1, Max = 15, Ocorrencia = Ocorrencia.Obrigatoria)]
     public decimal ValorReembolsoRepasseRessarcimento { get; set; }

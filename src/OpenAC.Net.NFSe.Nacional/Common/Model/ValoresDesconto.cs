@@ -37,7 +37,7 @@ namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 /// <summary>
 /// Representa os valores de desconto condicional e incondicional.
 /// </summary>
-public sealed class ValoresDesconto
+public sealed partial class ValoresDesconto
 {
     /// <summary>
     /// Valor do desconto incondicional.

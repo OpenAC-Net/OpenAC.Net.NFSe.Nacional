@@ -10,7 +10,7 @@ namespace OpenAC.Net.NFSe.Nacional.Webservice;
 /// Representa o ambiente de serviço para NFSe Nacional.
 /// Contém o tipo de ambiente (Produção ou Homologação) e os endereços dos serviços por tipo de URL.
 /// </summary>
-public sealed class NFSeEnvironment
+public sealed partial class NFSeEnvironment
 {
     #region Properties
 

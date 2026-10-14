@@ -18,9 +18,9 @@ using OpenAC.Net.DFe.Core.Serializer;
 namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 
 /// <summary>
-/// Grupo de informações relacionadas ao diferimento para IBS e CBS.
+/// Grupo de informaÃ§Ãµes relacionadas ao diferimento para IBS e CBS.
 /// </summary>
-public sealed class RTCInfoTributosDif
+public sealed partial class RTCInfoTributosDif
 {
     /// <summary>
     /// Percentual de diferimento para o IBS estadual.

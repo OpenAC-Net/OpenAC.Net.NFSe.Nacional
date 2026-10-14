@@ -17,7 +17,7 @@ using OpenAC.Net.DFe.Core.Attributes;
 namespace OpenAC.Net.NFSe.Nacional.Common.Types;
 
 /// <summary>
-/// Documento fiscal a que se refere a chaveDfe que seja um dos documentos do Repositório Nacional.
+/// Documento fiscal a que se refere a chaveDfe que seja um dos documentos do RepositÃ³rio Nacional.
 /// </summary>
 public enum RTCTipoChaveDFe
 {

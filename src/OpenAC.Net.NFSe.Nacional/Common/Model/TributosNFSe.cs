@@ -36,7 +36,7 @@ namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 /// <summary>
 /// Representa os tributos de uma NFSe, incluindo municipal, federal e o total.
 /// </summary>
-public sealed class TributosNFSe
+public sealed partial class TributosNFSe
 {
     /// <summary>
     /// Tributo municipal obrigatório.

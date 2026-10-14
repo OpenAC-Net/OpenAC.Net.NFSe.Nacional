@@ -4,14 +4,13 @@ using System.Diagnostics;
 
 namespace OpenAC.Net.NFSe.Nacional.Test;
 
-[TestClass]
 public class TestEmissao
 {
-    [TestMethod]
+    [Test]
     public async Task EmissaoNFSe()
     {
         var openNFSeNacional = new OpenNFSeNacional();
-        SetupOpenNFSeNacional.ConfiguracaoModeloAtual(openNFSeNacional, "1", "13", "1");
+        SetupOpenNFSeNacional.ConfiguracaoModeloAtual(openNFSeNacional, "1", "13");
 
         var prest = new PrestadorDps
         {
@@ -24,14 +23,14 @@ public class TestEmissao
             }
         };
 
-        // Obtém Tomador2 do .env
+        // ObtÃ©m Tomador2 do .env
         var toma = SetupOpenNFSeNacional.ObterTomador("2");
 
         var serv = new ServicoNFSe
         {
             Localidade = new LocalidadeNFSe
             {
-                // Usa o município do tomador
+                // Usa o municÃ­pio do tomador
                 CodMunicipioPrestacao = (toma?.Endereco?.Municipio is MunicipioNacional mn ? mn.CodMunicipio : null) ??
                                         SetupOpenNFSeNacional.CodMunIBGE
             },
@@ -39,7 +38,7 @@ public class TestEmissao
             {
                 CodTributacaoNacional = "010101",
                 CodTributacaoMunicipio = "002",
-                Descricao = "Referente ao serviço prestado de Desenvolvimento"
+                Descricao = "Referente ao serviÃ§o prestado de Desenvolvimento"
             }
         };
 
@@ -95,14 +94,14 @@ public class TestEmissao
 
         var retorno = await openNFSeNacional.EnviarAsync(dps);
 
-        Assert.IsTrue(retorno.Sucesso);
+        await Assert.That(retorno.Sucesso).IsTrue();
     }
 
-    [TestMethod]
+    [Test]
     public async Task EmissaoNFSeOutroTomadorCenario2()
     {
         var openNFSeNacional = new OpenNFSeNacional();
-        SetupOpenNFSeNacional.ConfiguracaoModeloAtual(openNFSeNacional, "28", "1", "1");
+        SetupOpenNFSeNacional.ConfiguracaoModeloAtual(openNFSeNacional, "28");
 
         var prest = new PrestadorDps
         {
@@ -121,7 +120,7 @@ public class TestEmissao
         {
             Localidade = new LocalidadeNFSe
             {
-                // Usa o município do tomador
+                // Usa o municÃ­pio do tomador
                 CodMunicipioPrestacao = (toma?.Endereco?.Municipio is MunicipioNacional mn ? mn.CodMunicipio : null) ??
                                         SetupOpenNFSeNacional.CodMunIBGE
             },
@@ -129,7 +128,7 @@ public class TestEmissao
             {
                 CodTributacaoNacional = "171401",
                 CodTributacaoMunicipio = "001",
-                Descricao = "HHDIR - Honorários - HORA – DIRETOR - R$ 85000,00"
+                Descricao = "HHDIR - HonorÃ¡rios - HORA Â– DIRETOR - R$ 85000,00"
             }
         };
 
@@ -198,15 +197,15 @@ public class TestEmissao
 
         var retorno = await openNFSeNacional.EnviarAsync(dps);
 
-        Assert.IsTrue(retorno.Sucesso);
+        await Assert.That(retorno.Sucesso).IsTrue();
     }
 
 
-    [TestMethod]
+    [Test]
     public async Task EmissaoNFSeSemTomador()
     {
         var openNFSeNacional = new OpenNFSeNacional();
-        SetupOpenNFSeNacional.ConfiguracaoModeloAtual(openNFSeNacional, "30", "1", "1");
+        SetupOpenNFSeNacional.ConfiguracaoModeloAtual(openNFSeNacional, "30");
 
         var prest = new PrestadorDps
         {
@@ -224,14 +223,14 @@ public class TestEmissao
         {
             Localidade = new LocalidadeNFSe
             {
-                // Usa o município do tomador
+                // Usa o municÃ­pio do tomador
                 CodMunicipioPrestacao = SetupOpenNFSeNacional.CodMunIBGE
             },
             Informacoes = new InformacoesServico
             {
                 CodTributacaoNacional = "171401",
                 CodTributacaoMunicipio = "001",
-                Descricao = "SERVIÇO SEM TOMADOR - R$ 85000,00"
+                Descricao = "SERVIÃ‡O SEM TOMADOR - R$ 85000,00"
             }
         };
 
@@ -288,7 +287,7 @@ public class TestEmissao
         try
         {
             var retorno = await openNFSeNacional.EnviarAsync(dps);
-            Assert.IsTrue(retorno.Sucesso);
+            await Assert.That(retorno.Sucesso).IsTrue();
         }
         catch (Exception e)
         {
@@ -296,11 +295,11 @@ public class TestEmissao
         }
     }
 
-    [TestMethod]
+    [Test]
     public async Task EmissaoNFSeTomadorEstrangeiroExportacaoDeServicoHotelaria()
     {
         var openNFSeNacional = new OpenNFSeNacional();
-        SetupOpenNFSeNacional.ConfiguracaoModeloAtual(openNFSeNacional, "43", "1", "1");
+        SetupOpenNFSeNacional.ConfiguracaoModeloAtual(openNFSeNacional, "43");
 
         var prest = new PrestadorDps
         {
@@ -392,7 +391,7 @@ public class TestEmissao
         try
         {
             var retorno = await openNFSeNacional.EnviarAsync(dps);
-            Assert.IsTrue(retorno.Sucesso);
+            await Assert.That(retorno.Sucesso).IsTrue();
         }
         catch (Exception e)
         {
@@ -400,11 +399,11 @@ public class TestEmissao
         }
     }
 
-    [TestMethod]
+    [Test]
     public async Task EmissaoNFSeOutroTomadorServicoAdvocacia()
     {
         var openNFSeNacional = new OpenNFSeNacional();
-        SetupOpenNFSeNacional.ConfiguracaoModeloAtual2(openNFSeNacional, "34", "1", "1");
+        SetupOpenNFSeNacional.ConfiguracaoModeloAtual2(openNFSeNacional, "34");
 
         var prest = new PrestadorDps
         {
@@ -429,7 +428,7 @@ public class TestEmissao
             {
                 CodTributacaoNacional = "171401",
                 CodTributacaoMunicipio = "001",
-                Descricao = "HHDIR - Honorários - HORA – DIRETOR - R$ 85000,00"
+                Descricao = "HHDIR - HonorÃ¡rios - HORA Â– DIRETOR - R$ 85000,00"
             },
             ServicoExterior = new ServicoExterior
             {
@@ -496,7 +495,7 @@ public class TestEmissao
         try
         {
             var retorno = await openNFSeNacional.EnviarAsync(dps);
-            Assert.IsTrue(retorno.Sucesso);
+            await Assert.That(retorno.Sucesso).IsTrue();
         }
         catch (Exception e)
         {
@@ -505,7 +504,7 @@ public class TestEmissao
     }
 
 
-    [TestMethod]
+    [Test]
     public async Task CancelamentoNFSe()
     {
         var openNFSeNacional = new OpenNFSeNacional();
@@ -516,7 +515,7 @@ public class TestEmissao
         var cancelamento = new EventoCancelamento
         {
             CodMotivo = MotivoCancelamento.ErroEmissao,
-            Motivo = "Dados inválidos"
+            Motivo = "Dados invÃ¡lidos"
         };
 
         var evento = new PedidoRegistroEvento();
@@ -533,10 +532,10 @@ public class TestEmissao
 
         var retorno = await openNFSeNacional.EnviarEventoAsync(evento);
 
-        Assert.IsTrue(retorno.Sucesso);
+        await Assert.That(retorno.Sucesso).IsTrue();
     }
 
-    [TestMethod]
+    [Test]
     public async Task SolicitacaoCancelamentoNFSe()
     {
         var openNFSeNacional = new OpenNFSeNacional();
@@ -547,7 +546,7 @@ public class TestEmissao
         var solicitacaoCancelamento = new EventoSolicitacaoCancelamento
         {
             CodMotivo = JustificativaAnalise.Outros,
-            Motivo = "Dados Inválidos",
+            Motivo = "Dados InvÃ¡lidos",
         };
 
         var evento = new PedidoRegistroEvento();
@@ -564,6 +563,6 @@ public class TestEmissao
 
         var retorno = await openNFSeNacional.EnviarEventoAsync(evento);
 
-        Assert.IsTrue(retorno.Sucesso);
+        await Assert.That(retorno.Sucesso).IsTrue();
     }
 }

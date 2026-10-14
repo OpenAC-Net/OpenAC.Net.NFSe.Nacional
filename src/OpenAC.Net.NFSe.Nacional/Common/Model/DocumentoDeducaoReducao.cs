@@ -39,7 +39,7 @@ namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 /// <summary>
 /// Representa um documento utilizado para dedução ou redução no contexto da NFSe.
 /// </summary>
-public sealed class DocumentoDeducaoReducao
+public sealed partial class DocumentoDeducaoReducao
 {
     /// <summary>
     /// Chave da NFSe utilizada para dedução/redução (50 caracteres). Embute a inscrição federal,

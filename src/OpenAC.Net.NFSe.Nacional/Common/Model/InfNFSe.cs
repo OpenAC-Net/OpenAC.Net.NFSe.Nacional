@@ -39,7 +39,7 @@ namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 /// <summary>
 /// Representa as informações principais da NFSe Nacional.
 /// </summary>
-public sealed class InfNFSe
+public sealed partial class InfNFSe
 {
     #region Properties
 

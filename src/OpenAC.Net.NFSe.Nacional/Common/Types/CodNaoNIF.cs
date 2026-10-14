@@ -17,12 +17,12 @@ using OpenAC.Net.DFe.Core.Attributes;
 namespace OpenAC.Net.NFSe.Nacional.Common.Types;
 
 /// <summary>
-/// Motivo para não informação do NIF.
+/// Motivo para nÃ£o informaÃ§Ã£o do NIF.
 /// </summary>
 public enum CodNaoNIF
 {
     /// <summary>
-    /// 0 - Não informado na nota de origem
+    /// 0 - NÃ£o informado na nota de origem
     /// </summary>
     [DFeEnum("0")]
     NaoInformado,
@@ -34,7 +34,7 @@ public enum CodNaoNIF
     Dispensado,
 
     /// <summary>
-    /// 2 - Não exigência do NIF
+    /// 2 - NÃ£o exigÃªncia do NIF
     /// </summary>
     [DFeEnum("2")]
     NaoExigido

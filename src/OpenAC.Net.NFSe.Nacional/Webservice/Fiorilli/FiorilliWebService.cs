@@ -31,6 +31,7 @@ using System.Globalization;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using OpenAC.Net.Core.Extensions;
@@ -66,6 +67,12 @@ public class FiorilliWebService : NFSeWebserviceBase
     {
     }
 
+    /// <summary>Inicializa o provedor com um transporte HTTP fornecido pelo host.</summary>
+    public FiorilliWebService(ConfiguracaoNFSe configuracaoNFSe, NFSeServiceInfo serviceInfo,
+        INFSeHttpTransport httpTransport) : base(configuracaoNFSe, serviceInfo, httpTransport)
+    {
+    }
+
     #endregion Constructors
 
     #region NFS-e
@@ -75,7 +82,8 @@ public class FiorilliWebService : NFSeWebserviceBase
     /// </summary>
     /// <param name="dps">DPS a ser enviada.</param>
     /// <returns>Resposta do envio da DPS.</returns>
-    public override async Task<NFSeResponse<RespostaEnvioDps>> EnviarAsync(Dps dps)
+    /// <param name="cancellationToken">Token para cancelar a operação assíncrona.</param>
+    public override async Task<NFSeResponse<RespostaEnvioDps>> EnviarAsync(Dps dps, CancellationToken cancellationToken = default)
     {
         dps.Assinar(Configuracao);
         ValidarSchema(SchemaNFSe.DPS, dps.Xml, dps.Versao);
@@ -83,14 +91,14 @@ public class FiorilliWebService : NFSeWebserviceBase
         var documento = dps.Informacoes.Prestador.CPF ?? dps.Informacoes.Prestador.CNPJ;
         var prefixo = dps.Informacoes.NumeroDps.ZeroFill(6);
 
-        GravarDpsEmDisco(dps.Xml, $"{prefixo}_dps.xml", documento, dps.Informacoes.DhEmissao.DateTime);
+        await GravarDpsEmDiscoAsync(dps.Xml, $"{prefixo}_dps.xml", documento, dps.Informacoes.DhEmissao.DateTime, cancellationToken: cancellationToken);
 
         var corpo = $"<RecepcionarDpsEnvio xmlns=\"{FiorilliSoap.NsFiorilli}\">" +
                     FiorilliSoap.RemoverProlog(dps.Xml) +
                     "</RecepcionarDpsEnvio>";
         var envelope = FiorilliSoap.Envelope(corpo);
 
-        var (sucessoHttp, resposta) = await EnviarSoapAsync("recepcionarDPS", envelope, $"Enviar-{prefixo}", documento);
+        var (sucessoHttp, resposta) = await EnviarSoapAsync("recepcionarDPS", envelope, $"Enviar-{prefixo}", documento, cancellationToken);
 
         var raiz = FiorilliSoap.CorpoResposta(resposta);
         var notaXml = FiorilliSoap.NotaXml(raiz);
@@ -105,12 +113,12 @@ public class FiorilliWebService : NFSeWebserviceBase
         {
             resultado.ChaveAcesso = FiorilliSoap.ChaveDaNota(notaXml);
             resultado.IdDps = dps.Informacoes.Id;
-            GravarNFSeEmDisco(notaXml, $"{(Configuracao.Arquivos.PadronizarNomes ? resultado.ChaveAcesso : prefixo)}_nfse.xml",
-                documento, dps.Informacoes.DhEmissao.DateTime);
+            await GravarNFSeEmDiscoAsync(notaXml, $"{(Configuracao.Arquivos.PadronizarNomes ? resultado.ChaveAcesso : prefixo)}_nfse.xml",
+                documento, dps.Informacoes.DhEmissao.DateTime, cancellationToken: cancellationToken);
         }
 
         var sucesso = sucessoHttp && !notaXml.IsEmpty() && resultado.Erros.Count == 0;
-        return NFSeResponse<RespostaEnvioDps>.CreateComResultado(dps.Xml, envelope, resposta, sucesso, resultado);
+        return NFSeResponse<RespostaEnvioDps>.Create(envelope, resposta, sucesso, resultado);
     }
 
     #endregion NFS-e
@@ -122,12 +130,13 @@ public class FiorilliWebService : NFSeWebserviceBase
     /// </summary>
     /// <param name="lote">Lote de DPS a ser enviado.</param>
     /// <returns>Resposta contendo o protocolo do lote.</returns>
-    public override async Task<NFSeResponse<RespostaRecepcaoLote>> EnviarLoteAsync(LoteDps lote)
+    /// <param name="cancellationToken">Token para cancelar a operação assíncrona.</param>
+    public override async Task<NFSeResponse<RespostaRecepcaoLote>> EnviarLoteAsync(LoteDps lote, CancellationToken cancellationToken = default)
     {
         var (envelope, documento) = MontarEnvelopeLote(lote, "RecepcionarLoteDpsEnvio");
 
         var (sucessoHttp, resposta) = await EnviarSoapAsync("recepcionarLoteDps", envelope,
-            $"EnviarLote-{lote.NumeroLote}", documento);
+            $"EnviarLote-{lote.NumeroLote}", documento, cancellationToken);
 
         var raiz = FiorilliSoap.CorpoResposta(resposta);
         var resultado = new RespostaRecepcaoLote
@@ -138,7 +147,7 @@ public class FiorilliWebService : NFSeWebserviceBase
         PreencherLote(resultado, raiz);
 
         var sucesso = sucessoHttp && !resultado.Protocolo.IsEmpty() && !FiorilliSoap.TemErro(resultado.Mensagens);
-        return NFSeResponse<RespostaRecepcaoLote>.CreateComResultado(string.Empty, envelope, resposta, sucesso, resultado);
+        return NFSeResponse<RespostaRecepcaoLote>.Create(envelope, resposta, sucesso, resultado);
     }
 
     /// <summary>
@@ -146,12 +155,13 @@ public class FiorilliWebService : NFSeWebserviceBase
     /// </summary>
     /// <param name="lote">Lote de DPS a ser enviado.</param>
     /// <returns>Resposta contendo o protocolo e as NFS-e geradas.</returns>
-    public override async Task<NFSeResponse<RespostaRecepcaoLoteSincrono>> EnviarLoteSincronoAsync(LoteDps lote)
+    /// <param name="cancellationToken">Token para cancelar a operação assíncrona.</param>
+    public override async Task<NFSeResponse<RespostaRecepcaoLoteSincrono>> EnviarLoteSincronoAsync(LoteDps lote, CancellationToken cancellationToken = default)
     {
         var (envelope, documento) = MontarEnvelopeLote(lote, "RecepcionarLoteDpsSincronoEnvio");
 
         var (sucessoHttp, resposta) = await EnviarSoapAsync("recepcionarLoteDpsSincrono", envelope,
-            $"EnviarLoteSincrono-{lote.NumeroLote}", documento);
+            $"EnviarLoteSincrono-{lote.NumeroLote}", documento, cancellationToken);
 
         var raiz = FiorilliSoap.CorpoResposta(resposta);
         var resultado = new RespostaRecepcaoLoteSincrono
@@ -164,7 +174,7 @@ public class FiorilliWebService : NFSeWebserviceBase
 
         var sucesso = sucessoHttp && (resultado.NotasFiscais.Count > 0 || !resultado.Protocolo.IsEmpty()) &&
                       !FiorilliSoap.TemErro(resultado.Mensagens);
-        return NFSeResponse<RespostaRecepcaoLoteSincrono>.CreateComResultado(string.Empty, envelope, resposta, sucesso, resultado);
+        return NFSeResponse<RespostaRecepcaoLoteSincrono>.Create(envelope, resposta, sucesso, resultado);
     }
 
     /// <summary>
@@ -172,7 +182,8 @@ public class FiorilliWebService : NFSeWebserviceBase
     /// </summary>
     /// <param name="filtro">Filtro com o protocolo e a identificação do transmissor.</param>
     /// <returns>Resposta contendo a situação e as NFS-e do lote.</returns>
-    public override async Task<NFSeResponse<RespostaConsultaLote>> ConsultarLoteAsync(ConsultaLoteFiltro filtro)
+    /// <param name="cancellationToken">Token para cancelar a operação assíncrona.</param>
+    public override async Task<NFSeResponse<RespostaConsultaLote>> ConsultarLoteAsync(ConsultaLoteFiltro filtro, CancellationToken cancellationToken = default)
     {
         var documento = filtro.CNPJ ?? filtro.CPF;
         var corpo = $"<ConsultarLoteDpsEnvio xmlns=\"{FiorilliSoap.NsFiorilli}\">" +
@@ -184,7 +195,7 @@ public class FiorilliWebService : NFSeWebserviceBase
         var envelope = FiorilliSoap.Envelope(corpo);
 
         var (sucessoHttp, resposta) = await EnviarSoapAsync("consultarLoteDps", envelope,
-            $"ConsultarLote-{filtro.Protocolo}", documento);
+            $"ConsultarLote-{filtro.Protocolo}", documento, cancellationToken);
 
         var raiz = FiorilliSoap.CorpoResposta(resposta);
         var resultado = new RespostaConsultaLote
@@ -195,7 +206,7 @@ public class FiorilliWebService : NFSeWebserviceBase
         };
 
         var sucesso = sucessoHttp && !FiorilliSoap.TemErro(resultado.Mensagens);
-        return NFSeResponse<RespostaConsultaLote>.CreateComResultado(string.Empty, envelope, resposta, sucesso, resultado);
+        return NFSeResponse<RespostaConsultaLote>.Create(envelope, resposta, sucesso, resultado);
     }
 
     #endregion Lote
@@ -207,7 +218,8 @@ public class FiorilliWebService : NFSeWebserviceBase
     /// </summary>
     /// <param name="filtro">Filtro da consulta.</param>
     /// <returns>Resposta contendo as NFS-e encontradas.</returns>
-    public override async Task<NFSeResponse<RespostaConsultaNFSe>> ConsultarNFSeAsync(ConsultaNFSeFiltro filtro)
+    /// <param name="cancellationToken">Token para cancelar a operação assíncrona.</param>
+    public override async Task<NFSeResponse<RespostaConsultaNFSe>> ConsultarNFSeAsync(ConsultaNFSeFiltro filtro, CancellationToken cancellationToken = default)
     {
         var documento = filtro.CNPJ ?? filtro.CPF;
         var corpo = $"<ConsultarNfseEnvio xmlns=\"{FiorilliSoap.NsFiorilli}\">" +
@@ -223,7 +235,7 @@ public class FiorilliWebService : NFSeWebserviceBase
 
         var identificador = filtro.ChaveNFSe ?? filtro.IdDPS ?? filtro.NumeroDPS ?? "consulta";
         var (sucessoHttp, resposta) = await EnviarSoapAsync("consultarNfse", envelope,
-            $"ConsultarNfse-{identificador}", documento);
+            $"ConsultarNfse-{identificador}", documento, cancellationToken);
 
         var raiz = FiorilliSoap.CorpoResposta(resposta);
         var resultado = new RespostaConsultaNFSe
@@ -233,7 +245,7 @@ public class FiorilliWebService : NFSeWebserviceBase
         };
 
         var sucesso = sucessoHttp && !FiorilliSoap.TemErro(resultado.Mensagens);
-        return NFSeResponse<RespostaConsultaNFSe>.CreateComResultado(string.Empty, envelope, resposta, sucesso, resultado);
+        return NFSeResponse<RespostaConsultaNFSe>.Create(envelope, resposta, sucesso, resultado);
     }
 
     /// <summary>
@@ -242,9 +254,10 @@ public class FiorilliWebService : NFSeWebserviceBase
     /// </summary>
     /// <param name="id">Identificação do DPS.</param>
     /// <returns>Resposta da consulta contendo a chave de acesso.</returns>
-    public override async Task<NFSeResponse<RespostaConsultaChaveDps>> ConsultaChaveDpsAsync(string id)
+    /// <param name="cancellationToken">Token para cancelar a operação assíncrona.</param>
+    public override async Task<NFSeResponse<RespostaConsultaChaveDps>> ConsultaChaveDpsAsync(string id, CancellationToken cancellationToken = default)
     {
-        var consulta = await ConsultarNFSeAsync(new ConsultaNFSeFiltro { IdDPS = id });
+        var consulta = await ConsultarNFSeAsync(new ConsultaNFSeFiltro { IdDPS = id }, cancellationToken);
         var notaXml = consulta.Resultado?.NotasFiscais.FirstOrDefault()?.Xml ?? string.Empty;
 
         var resultado = new RespostaConsultaChaveDps
@@ -255,8 +268,7 @@ public class FiorilliWebService : NFSeWebserviceBase
         if (consulta.Resultado != null) FiorilliSoap.DistribuirMensagens(resultado, consulta.Resultado.Mensagens);
 
         var sucesso = consulta.Sucesso && !resultado.Chave.IsEmpty();
-        return NFSeResponse<RespostaConsultaChaveDps>.CreateComResultado(string.Empty, consulta.JsonEnvio,
-            consulta.JsonRetorno, sucesso, resultado);
+        return NFSeResponse<RespostaConsultaChaveDps>.Create(consulta.XmlEnvio, consulta.XmlRetorno ?? string.Empty, sucesso, resultado);
     }
 
     /// <summary>
@@ -264,7 +276,8 @@ public class FiorilliWebService : NFSeWebserviceBase
     /// </summary>
     /// <param name="id">Identificação do DPS.</param>
     /// <returns>True se existir, caso contrário false.</returns>
-    public override async Task<bool> ConsultaExisteDpsAsync(string id)
+    /// <param name="cancellationToken">Token para cancelar a operação assíncrona.</param>
+    public override async Task<bool> ConsultaExisteDpsAsync(string id, CancellationToken cancellationToken = default)
     {
         var consulta = await ConsultarNFSeAsync(new ConsultaNFSeFiltro { IdDPS = id });
         return consulta.Sucesso && (consulta.Resultado?.NotasFiscais.Count ?? 0) > 0;
@@ -284,7 +297,8 @@ public class FiorilliWebService : NFSeWebserviceBase
     /// municipal do prestador no envelope. A inscrição é lida de
     /// <see cref="Common.NFSeWebserviceConfig.InscricaoMunicipal"/>.
     /// </remarks>
-    public override async Task<NFSeResponse<RespostaEnvioEvento>> EnviarEventoAsync(PedidoRegistroEvento evento)
+    /// <param name="cancellationToken">Token para cancelar a operação assíncrona.</param>
+    public override async Task<NFSeResponse<RespostaEnvioEvento>> EnviarEventoAsync(PedidoRegistroEvento evento, CancellationToken cancellationToken = default)
     {
         var inscricaoMunicipal = Configuracao.WebServices.InscricaoMunicipal;
         if (string.IsNullOrEmpty(inscricaoMunicipal))
@@ -298,8 +312,8 @@ public class FiorilliWebService : NFSeWebserviceBase
             Configuracao.Certificados.ObterCertificado());
         ValidarSchema(SchemaNFSe.Evento, eventoAssinado, evento.Versao);
 
-        GravarDpsEmDisco(eventoAssinado, $"{evento.Informacoes.ChNFSe}{evento.Informacoes.Evento}_evento.xml",
-            documento, evento.Informacoes.DhEvento.DateTime, true);
+        await GravarDpsEmDiscoAsync(eventoAssinado, $"{evento.Informacoes.ChNFSe}{evento.Informacoes.Evento}_evento.xml",
+            documento, evento.Informacoes.DhEvento.DateTime, true, cancellationToken);
 
         var corpo = $"<CancelarNFSeEnvio xmlns=\"{FiorilliSoap.NsFiorilli}\">" +
                     FiorilliSoap.Elemento("IM", inscricaoMunicipal) +
@@ -308,7 +322,7 @@ public class FiorilliWebService : NFSeWebserviceBase
         var envelope = FiorilliSoap.Envelope(corpo);
 
         var (sucessoHttp, resposta) = await EnviarSoapAsync("cancelarNFSe", envelope,
-            $"Cancelar-{evento.Informacoes.ChNFSe}", documento);
+            $"Cancelar-{evento.Informacoes.ChNFSe}", documento, cancellationToken);
 
         var raiz = FiorilliSoap.CorpoResposta(resposta);
         var resultado = new RespostaEnvioEvento
@@ -322,7 +336,7 @@ public class FiorilliWebService : NFSeWebserviceBase
             this.Log().Debug($"Fiorilli: [cancelarNFSe][Status] - {status}");
 
         var sucesso = sucessoHttp && resultado.Erros.Count == 0;
-        return NFSeResponse<RespostaEnvioEvento>.CreateComResultado(eventoAssinado, envelope, resposta, sucesso, resultado);
+        return NFSeResponse<RespostaEnvioEvento>.Create(envelope, resposta, sucesso, resultado);
     }
 
     #endregion Eventos
@@ -332,19 +346,19 @@ public class FiorilliWebService : NFSeWebserviceBase
     /// <summary>
     /// Não suportado pela Fiorilli.
     /// </summary>
-    public override Task<byte[]> DownloadDANFSeAsync(string chave) =>
+    public override Task<byte[]> DownloadDANFSeAsync(string chave, CancellationToken cancellationToken = default) =>
         throw OperacaoNaoSuportada(nameof(DownloadDANFSeAsync));
 
     /// <summary>
     /// Não suportado pela Fiorilli (não há distribuição por NSU no WSDL).
     /// </summary>
-    public override Task<NFSeResponse<RespostaConsultaDFe>> ConsultaNsuAsync(int nsu) =>
+    public override Task<NFSeResponse<RespostaConsultaDFe>> ConsultaNsuAsync(int nsu, CancellationToken cancellationToken = default) =>
         throw OperacaoNaoSuportada(nameof(ConsultaNsuAsync));
 
     /// <summary>
     /// Não suportado pela Fiorilli (não há consulta de eventos por chave no WSDL).
     /// </summary>
-    public override Task<NFSeResponse<RespostaConsultaDFe>> ConsultaChaveAsync(string chave) =>
+    public override Task<NFSeResponse<RespostaConsultaDFe>> ConsultaChaveAsync(string chave, CancellationToken cancellationToken = default) =>
         throw OperacaoNaoSuportada(nameof(ConsultaChaveAsync));
 
     #endregion Não suportadas
@@ -414,22 +428,23 @@ public class FiorilliWebService : NFSeWebserviceBase
     /// <param name="envelope">Envelope SOAP.</param>
     /// <param name="nomeArquivo">Prefixo do nome dos arquivos gravados em disco.</param>
     /// <param name="documento">Documento do prestador/transmissor para composição do caminho.</param>
+    /// <param name="cancellationToken">Token para cancelar o envio e a persistência dos payloads.</param>
     /// <returns>Indicador de sucesso HTTP (sem fault) e o corpo da resposta.</returns>
     private async Task<(bool sucesso, string resposta)> EnviarSoapAsync(string soapAction, string envelope,
-        string nomeArquivo, string? documento)
+        string nomeArquivo, string? documento, CancellationToken cancellationToken = default)
     {
         this.Log().Debug($"Fiorilli: [{soapAction}][Envio] - {envelope}");
-        GravarArquivoEmDisco(envelope, $"{nomeArquivo}-env.xml", documento);
+        await GravarArquivoEmDiscoAsync(envelope, $"{nomeArquivo}-env.xml", documento);
 
         var url = ObterUrl();
         var content = new StringContent(envelope, Encoding.UTF8, "text/xml");
         var headers = new[] { new KeyValuePair<string, string>("SOAPAction", $"\"{soapAction}\"") };
 
-        var httpResponse = await SendAsync(content, HttpMethod.Post, url, headers);
+        using var httpResponse = await SendAsync(content, HttpMethod.Post, url, headers, cancellationToken: cancellationToken);
         var resposta = await httpResponse.Content.ReadAsStringAsync();
 
         this.Log().Debug($"Fiorilli: [{soapAction}][Resposta] - {resposta}");
-        GravarArquivoEmDisco(resposta, $"{nomeArquivo}-resp.xml", documento);
+        await GravarArquivoEmDiscoAsync(resposta, $"{nomeArquivo}-resp.xml", documento);
 
         var possuiFault = FiorilliSoap.PossuiFault(resposta, out var faultMsg);
         if (possuiFault) this.Log().Debug($"Fiorilli: [{soapAction}][Fault] - {faultMsg}");

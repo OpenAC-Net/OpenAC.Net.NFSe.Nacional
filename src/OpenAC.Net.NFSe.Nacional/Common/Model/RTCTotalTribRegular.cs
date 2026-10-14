@@ -36,7 +36,7 @@ namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 /// <summary>
 /// Tributacao regular para IBS e CBS.
 /// </summary>
-public sealed class RTCTotalTribRegular
+public sealed partial class RTCTotalTribRegular
 {
     /// <summary>
     /// Aliquota efetiva de tributacao regular do IBS estadual.
