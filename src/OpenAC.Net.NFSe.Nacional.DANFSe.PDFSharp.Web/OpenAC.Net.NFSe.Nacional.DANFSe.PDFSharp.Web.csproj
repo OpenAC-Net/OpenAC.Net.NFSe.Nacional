@@ -46,4 +46,8 @@
     <None Include="README.md" Pack="true" PackagePath="/" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="OpenAC.Net.DFe.Core" Version="1.7.1" />
+  </ItemGroup>
+
 </Project>
