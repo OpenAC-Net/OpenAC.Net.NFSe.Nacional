@@ -57,5 +57,5 @@ public sealed partial class ValoresDeducaoReducao
     /// </summary>
     [DFeCollection("documentos")]
     [DFeItem(typeof(DocumentoDeducaoReducao), "docDedRed")]
-    public List<DocumentoDeducaoReducao> Documentos { get; set; } = new();
+    public List<DocumentoDeducaoReducao>? Documentos { get; set; }
 }
