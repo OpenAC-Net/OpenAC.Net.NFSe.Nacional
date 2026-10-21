@@ -148,7 +148,7 @@ public class NacionalWebservice : NFSeWebserviceBase
     /// <summary>
     /// Retorna a chave de acesso da NFS-e a partir do identificador do DPS.
     /// </summary>
-    /// <param name="id">Identificação do DPS.</param>
+    /// <param name="id">Id completo com 45 posições: literal <c>DPS</c> + município (7) + tipo de inscrição (1) + CPF/CNPJ (14) + série (5) + número da DPS (15).</param>
     /// <returns>Resposta da consulta contendo a chave de acesso.</returns>
     /// <param name="cancellationToken">Token para cancelar a operação assíncrona.</param>
     public override async Task<NFSeResponse<RespostaConsultaChaveDps>> ConsultaChaveDpsAsync(string id, CancellationToken cancellationToken = default)
@@ -170,7 +170,7 @@ public class NacionalWebservice : NFSeWebserviceBase
     /// <summary>
     /// Verifica se uma NFS-e foi emitida a partir do Id do DPS.
     /// </summary>
-    /// <param name="id">Identificação do DPS.</param>
+    /// <param name="id">Id completo com 45 posições no formato <c>DPS[0-9]{42}</c>.</param>
     /// <returns>True se existir, caso contrário false.</returns>
     /// <param name="cancellationToken">Token para cancelar a operação assíncrona.</param>
     public override async Task<bool> ConsultaExisteDpsAsync(string id, CancellationToken cancellationToken = default)

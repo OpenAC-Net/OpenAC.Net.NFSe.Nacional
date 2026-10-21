@@ -250,9 +250,9 @@ public class FiorilliWebService : NFSeWebserviceBase
 
     /// <summary>
     /// Retorna a chave de acesso da NFS-e a partir do identificador do DPS.
-    /// Implementado via <c>consultarNfse</c> (filtro por <c>IdDPS</c>).
+    /// Implementado via <c>consultarNfse</c>.
     /// </summary>
-    /// <param name="id">Identificação do DPS.</param>
+    /// <param name="id">Id completo com 45 posições: literal <c>DPS</c> + município (7) + tipo de inscrição (1) + CPF/CNPJ (14) + série (5) + número da DPS (15).</param>
     /// <returns>Resposta da consulta contendo a chave de acesso.</returns>
     /// <param name="cancellationToken">Token para cancelar a operação assíncrona.</param>
     public override async Task<NFSeResponse<RespostaConsultaChaveDps>> ConsultaChaveDpsAsync(string id, CancellationToken cancellationToken = default)
@@ -274,7 +274,7 @@ public class FiorilliWebService : NFSeWebserviceBase
     /// <summary>
     /// Verifica se uma NFS-e foi emitida a partir do Id do DPS (via <c>consultarNfse</c>).
     /// </summary>
-    /// <param name="id">Identificação do DPS.</param>
+    /// <param name="id">Id completo com 45 posições no formato <c>DPS[0-9]{42}</c>.</param>
     /// <returns>True se existir, caso contrário false.</returns>
     /// <param name="cancellationToken">Token para cancelar a operação assíncrona.</param>
     public override async Task<bool> ConsultaExisteDpsAsync(string id, CancellationToken cancellationToken = default)
@@ -357,6 +357,7 @@ public class FiorilliWebService : NFSeWebserviceBase
 
     /// <summary>
     /// Não suportado pela Fiorilli (não há consulta de eventos por chave no WSDL).
+    /// Para consultar a própria NFS-e pela chave, utilize <see cref="ConsultarNFSeAsync"/>.
     /// </summary>
     public override Task<NFSeResponse<RespostaConsultaDFe>> ConsultaChaveAsync(string chave, CancellationToken cancellationToken = default) =>
         throw OperacaoNaoSuportada(nameof(ConsultaChaveAsync));
