@@ -4,10 +4,8 @@
     <Platform Name="x64" />
     <Platform Name="x86" />
   </Configurations>
-  <Project Path="OpenAC.Net.NFSe.Nacional.Console/OpenAC.Net.NFSe.Nacional.Console.csproj" />
   <Project Path="OpenAC.Net.NFSe.Nacional.DANFSe.PDFSharp.Web/OpenAC.Net.NFSe.Nacional.DANFSe.PDFSharp.Web.csproj" />
   <Project Path="OpenAC.Net.NFSe.Nacional.DANFSe.PDFSharp/OpenAC.Net.NFSe.Nacional.DANFSe.PDFSharp.csproj" />
-  <Project Path="OpenAC.Net.NFSe.Nacional.Demo.Tests/OpenAC.Net.NFSe.Nacional.Demo.Tests.csproj" />
   <Project Path="OpenAC.Net.NFSe.Nacional.Demo/OpenAC.Net.NFSe.Nacional.Demo.csproj" />
   <Project Path="OpenAC.Net.NFSe.Nacional.Test/OpenAC.Net.NFSe.Nacional.Test.csproj" />
   <Project Path="OpenAC.Net.NFSe.Nacional.Web.Exemplo/OpenAC.Net.NFSe.Nacional.Web.Exemplo.csproj" />
