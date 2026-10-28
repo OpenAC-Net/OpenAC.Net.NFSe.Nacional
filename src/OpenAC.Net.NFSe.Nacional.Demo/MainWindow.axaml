@@ -1,0 +1,341 @@
+<Window xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:local="using:OpenAC.Net.NFSe.Nacional.Demo" x:Class="OpenAC.Net.NFSe.Nacional.Demo.MainWindow"
+        Icon="avares://OpenAC.Net.NFSe.Nacional.Demo/Assets/openac.ico" Title="OpenAC.Net · NFS-e Nacional"
+        Width="1360" Height="900" MinWidth="1080" MinHeight="720" WindowStartupLocation="CenterScreen">
+    <Grid ColumnDefinitions="218,*">
+        <Border Grid.Column="0">
+            <Border.Background>
+                <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+                    <GradientStop Color="#102B51" Offset="0" />
+                    <GradientStop Color="#163D70" Offset="1" />
+                </LinearGradientBrush>
+            </Border.Background>
+            <Grid RowDefinitions="Auto,Auto,*,Auto" Margin="18,30,18,22">
+                <StackPanel Margin="14,0,0,34" Spacing="12">
+                    <Border Width="48" Height="48" Background="White" CornerRadius="13" Padding="4"
+                            HorizontalAlignment="Left" ClipToBounds="True">
+                        <Image Source="avares://OpenAC.Net.NFSe.Nacional.Demo/Assets/openac.png" Stretch="Uniform" />
+                    </Border>
+                    <StackPanel Spacing="4">
+                        <TextBlock Text="OpenAC.Net" Foreground="White" FontSize="21" FontWeight="SemiBold" />
+                        <TextBlock Text="SERVIÇOS ELETRÔNICOS" Foreground="#8FAFD8" FontSize="10" LetterSpacing="1.3" />
+                    </StackPanel>
+                </StackPanel>
+                <ListBox Grid.Row="1" Name="Navigation" Classes="navigation" SelectedIndex="0">
+                    <ListBoxItem>
+                        <StackPanel Orientation="Horizontal" Spacing="12">
+                            <Path Width="17" Height="17" Stretch="Uniform" Stroke="#B6CEF0" StrokeThickness="1.6"
+                                  Data="M2,2 H8 V8 H2 Z M12,2 H18 V8 H12 Z M2,12 H8 V18 H2 Z M12,12 H18 V18 H12 Z" />
+                            <TextBlock Text="Operações" />
+                        </StackPanel>
+                    </ListBoxItem>
+                    <ListBoxItem>
+                        <StackPanel Orientation="Horizontal" Spacing="12">
+                            <Path Width="17" Height="17" Stretch="Uniform" Stroke="#B6CEF0" StrokeThickness="1.6"
+                                  Data="M2,5 H18 M2,10 H18 M2,15 H18 M6,2 V8 M14,7 V13 M8,12 V18" />
+                            <TextBlock Text="Configurações" />
+                        </StackPanel>
+                    </ListBoxItem>
+                    <ListBoxItem>
+                        <StackPanel Orientation="Horizontal" Spacing="12">
+                            <Path Width="17" Height="17" Stretch="Uniform" Stroke="#B6CEF0" StrokeThickness="1.6"
+                                  Data="M3,2 H17 V7 H3 Z M3,13 H17 V18 H3 Z M10,7 V13 M6,5 H7 M6,16 H7" />
+                            <TextBlock Text="Municípios" />
+                        </StackPanel>
+                    </ListBoxItem>
+                </ListBox>
+                <Border Grid.Row="3" Background="#1C4478" CornerRadius="10" Padding="14">
+                    <StackPanel Spacing="7">
+                        <TextBlock Text="NFS-e Nacional" Foreground="White" FontWeight="SemiBold" />
+                        <TextBlock Text="Emissão, consultas e DANFSe em um só lugar." TextWrapping="Wrap"
+                                   Foreground="#AFC9EB" FontSize="12" LineHeight="20" />
+                        <TextBlock Text="DEMONSTRAÇÃO" Foreground="#7EA6DC" FontSize="10" LetterSpacing="1"
+                                   Margin="0,7,0,0" />
+                    </StackPanel>
+                </Border>
+            </Grid>
+        </Border>
+        <Grid Grid.Column="1" RowDefinitions="Auto,*,Auto">
+            <Border Background="White" BorderBrush="#DCE7F7" BorderThickness="0,0,0,1" Padding="28,22">
+                <Grid ColumnDefinitions="*,Auto">
+                    <StackPanel Spacing="5">
+                        <TextBlock Text="Central de NFS-e" FontSize="23" FontWeight="SemiBold" />
+                        <TextBlock Name="ContextText" Classes="muted" Text="Nota Fiscal de Serviço Eletrônica" />
+                    </StackPanel>
+                    <Border Grid.Column="1" Name="EnvironmentBadge" Background="#EAF2FF" CornerRadius="18"
+                            Padding="14,8" VerticalAlignment="Center">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <Ellipse Width="7" Height="7" Fill="#3976DA" VerticalAlignment="Center" />
+                            <TextBlock Name="EnvironmentText" Text="Homologação" Foreground="#2456A4"
+                                       FontWeight="Medium" />
+                        </StackPanel>
+                    </Border>
+                </Grid>
+            </Border>
+            <Grid Grid.Row="1" Name="Workspace" Margin="26,22">
+                <Grid Name="OperationsPage" RowDefinitions="Auto,18,*">
+                    <Grid ColumnDefinitions="*,18,*">
+                        <Border Classes="card">
+                            <StackPanel Spacing="10">
+                                <TextBlock Classes="heading" Text="Documentos e emissão" />
+                                <Grid ColumnDefinitions="*,Auto">
+                                    <StackPanel Spacing="4">
+                                        <TextBlock Name="DocumentNameText" Text="Nenhum XML carregado"
+                                                   TextTrimming="CharacterEllipsis" />
+                                        <TextBlock Name="DocumentCountText" Classes="muted"
+                                                   Text="DPS, NFS-e ou pedido de evento" FontSize="11" />
+                                    </StackPanel>
+                                    <Button Grid.Column="1" Name="OpenXmlButton" Content="Abrir XML" />
+                                </Grid>
+                                <Grid ColumnDefinitions="*,10,*">
+                                    <Button Name="ValidateButton" Content="Validar XML" HorizontalAlignment="Stretch" />
+                                    <Button Name="SignButton" Content="Assinar XML" HorizontalAlignment="Stretch"
+                                            Grid.Column="2" />
+                                </Grid>
+                                <Grid ColumnDefinitions="*,10,*">
+                                    <Button Name="SendButton" Content="Enviar DPS" HorizontalAlignment="Stretch"
+                                            Classes="primary" />
+                                    <Button Name="SendEventButton" Content="Enviar evento"
+                                            HorizontalAlignment="Stretch" Grid.Column="2" />
+                                </Grid>
+                                <Grid ColumnDefinitions="*,10,*">
+                                    <Button Name="SendBatchButton" Content="Enviar lote" HorizontalAlignment="Stretch" />
+                                    <Button Name="SendSyncBatchButton" Content="Lote síncrono"
+                                            HorizontalAlignment="Stretch" Grid.Column="2" />
+                                </Grid>
+                                <Grid ColumnDefinitions="*,10,*">
+                                    <Button Name="PdfButton" Content="Gerar DANFSe PDF" HorizontalAlignment="Stretch" />
+                                    <Button Name="SaveXmlButton" Content="Salvar XML" HorizontalAlignment="Stretch"
+                                            Grid.Column="2" />
+                                </Grid>
+                            </StackPanel>
+                        </Border>
+                        <Border Grid.Column="2" Classes="card">
+                            <StackPanel Spacing="10">
+                                <TextBlock Classes="heading" Text="Consultas e distribuição" />
+                                <StackPanel>
+                                    <TextBlock Classes="label" Text="CHAVE DE ACESSO / IDENTIFICADOR DPS" />
+                                    <TextBox Name="AccessKeyText" PlaceholderText="Chave NFS-e ou identificador DPS" />
+                                </StackPanel>
+                                <Grid ColumnDefinitions="*,10,*">
+                                    <Button Name="QueryButton" Content="Consultar chave" HorizontalAlignment="Stretch"
+                                            Classes="primary" />
+                                    <Button Name="QueryNfseButton" Content="Consultar NFS-e"
+                                            HorizontalAlignment="Stretch" Grid.Column="2" />
+                                </Grid>
+                                <Grid ColumnDefinitions="*,10,*">
+                                    <Button Name="DpsKeyButton" Content="Chave pela DPS" HorizontalAlignment="Stretch" />
+                                    <Button Name="DpsExistsButton" Content="Existe DPS?" HorizontalAlignment="Stretch"
+                                            Grid.Column="2" />
+                                </Grid>
+                                <Grid ColumnDefinitions="*,10,*">
+                                    <Button Name="NsuButton" Content="Consultar NSU" HorizontalAlignment="Stretch" />
+                                    <Button Name="QueryBatchButton" Content="Consultar lote"
+                                            HorizontalAlignment="Stretch" Grid.Column="2" />
+                                </Grid>
+                                <Grid ColumnDefinitions="*,10,*">
+                                    <Button Name="QueryEventButton" Content="Consultar evento"
+                                            HorizontalAlignment="Stretch" />
+                                    <Button Name="DownloadButton" Content="Baixar DANFSe" HorizontalAlignment="Stretch"
+                                            Grid.Column="2" />
+                                </Grid>
+                            </StackPanel>
+                        </Border>
+                    </Grid>
+                    <Border Grid.Row="2" Classes="card" Padding="0">
+                        <Grid RowDefinitions="Auto,*">
+                            <Grid ColumnDefinitions="*,Auto,Auto" Margin="18,12">
+                                <StackPanel Orientation="Horizontal" Spacing="12">
+                                    <TextBlock Classes="heading" Text="Retorno da operação" FontSize="14" />
+                                    <TextBlock Name="LastOperationText" Classes="muted" FontSize="11"
+                                               VerticalAlignment="Center" />
+                                </StackPanel>
+                                <Button Grid.Column="1" Name="CopyButton" Content="Copiar" Margin="0,0,8,0" />
+                                <Button Grid.Column="2" Name="ClearButton" Content="Limpar" />
+                            </Grid>
+                            <TabControl Grid.Row="1" Name="ResponseTabs" Margin="10,0,10,10">
+                                <TabItem Header="Resultado">
+                                    <TextBox Name="ResultText" Classes="code"
+                                             Text="Configure o certificado e o município, carregue um XML ou faça uma consulta." />
+                                </TabItem>
+                                <TabItem Header="XML enviado">
+                                    <TextBox Name="SentXmlText" Classes="code" />
+                                </TabItem>
+                                <TabItem Header="XML retornado">
+                                    <TextBox Name="ReceivedXmlText" Classes="code" />
+                                </TabItem>
+                                <TabItem Header="JSON / SOAP">
+                                    <TextBox Name="TransportText" Classes="code" />
+                                </TabItem>
+                                <TabItem Header="Logs">
+                                    <TextBox Name="LogText" Classes="code" />
+                                </TabItem>
+                            </TabControl>
+                        </Grid>
+                    </Border>
+                </Grid>
+                <ScrollViewer Name="SettingsPage" IsVisible="False">
+                    <StackPanel Spacing="18">
+                        <TextBlock Text="Configurações" Classes="heading" FontSize="19" />
+                        <Grid ColumnDefinitions="*,18,*">
+                            <Border Classes="card">
+                                <StackPanel Spacing="14">
+                                    <TextBlock Classes="heading" Text="Certificado digital" />
+                                    <StackPanel>
+                                        <TextBlock Classes="label" Text="ARQUIVO PFX / P12" />
+                                        <Grid ColumnDefinitions="*,Auto">
+                                            <TextBox Name="CertificatePathText" PlaceholderText="" />
+                                            <Button Grid.Column="1" Name="BrowseCertificatePathButton"
+                                                    Content="Procurar" Margin="8,0,0,0" />
+                                        </Grid>
+                                    </StackPanel>
+                                    <StackPanel>
+                                        <TextBlock Classes="label" Text="SENHA" />
+                                        <TextBox Name="CertificatePasswordText" PasswordChar="●" />
+                                    </StackPanel>
+                                    <StackPanel>
+                                        <TextBlock Classes="label" Text="OU NÚMERO DE SÉRIE" />
+                                        <TextBox Name="CertificateSerialText" PlaceholderText="" />
+                                    </StackPanel>
+                                    <CheckBox Name="RememberPasswordCheck" Content="Lembrar senha neste usuário" />
+                                </StackPanel>
+                            </Border>
+                            <Border Grid.Column="2" Classes="card">
+                                <StackPanel Spacing="14">
+                                    <TextBlock Classes="heading" Text="Conexão e prestador" />
+                                    <Grid ColumnDefinitions="*,10,*">
+                                        <StackPanel>
+                                            <TextBlock Classes="label" Text="AMBIENTE" />
+                                            <ComboBox Name="EnvironmentCombo" />
+                                        </StackPanel>
+                                        <StackPanel Grid.Column="2">
+                                            <TextBlock Classes="label" Text="VERSÃO" />
+                                            <ComboBox Name="VersionCombo" />
+                                        </StackPanel>
+                                    </Grid>
+                                    <Grid ColumnDefinitions="*,10,*">
+                                        <StackPanel>
+                                            <TextBlock Classes="label" Text="CÓDIGO IBGE" />
+                                            <NumericUpDown Name="MunicipalityInput" Minimum="1" Maximum="9999999"
+                                                           Value="5002704" FormatString="0" />
+                                        </StackPanel>
+                                        <StackPanel Grid.Column="2">
+                                            <TextBlock Classes="label" Text="TIMEOUT (SEGUNDOS)" />
+                                            <NumericUpDown Name="TimeoutInput" Minimum="1" Maximum="600" Value="100"
+                                                           FormatString="0" />
+                                        </StackPanel>
+                                    </Grid>
+                                    <Grid ColumnDefinitions="*,10,*">
+                                        <StackPanel>
+                                            <TextBlock Classes="label" Text="CPF / CNPJ" />
+                                            <TextBox Name="TaxIdText" PlaceholderText="" />
+                                        </StackPanel>
+                                        <StackPanel Grid.Column="2">
+                                            <TextBlock Classes="label" Text="INSCRIÇÃO MUNICIPAL" />
+                                            <TextBox Name="RegistrationText" PlaceholderText="" />
+                                        </StackPanel>
+                                    </Grid>
+                                </StackPanel>
+                            </Border>
+                        </Grid>
+                        <Border Classes="card">
+                            <StackPanel Spacing="14">
+                                <TextBlock Classes="heading" Text="Arquivos e validação" />
+                                <Grid ColumnDefinitions="*,10,*">
+                                    <StackPanel>
+                                        <TextBlock Classes="label" Text="PASTA DOS SCHEMAS XSD" />
+                                        <Grid ColumnDefinitions="*,Auto">
+                                            <TextBox Name="SchemasPathText"
+                                                     PlaceholderText="Automático conforme a versão selecionada" />
+                                            <Button Grid.Column="1" Name="BrowseSchemasPathButton" Content="Procurar"
+                                                    Margin="8,0,0,0" />
+                                        </Grid>
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="2">
+                                        <TextBlock Classes="label" Text="DOCUMENTOS XML" />
+                                        <Grid ColumnDefinitions="*,Auto">
+                                            <TextBox Name="DocumentsPathText" PlaceholderText="" />
+                                            <Button Grid.Column="1" Name="BrowseDocumentsPathButton" Content="Procurar"
+                                                    Margin="8,0,0,0" />
+                                        </Grid>
+                                    </StackPanel>
+                                </Grid>
+                                <Grid ColumnDefinitions="*,10,*">
+                                    <StackPanel>
+                                        <TextBlock Classes="label" Text="ENVIO / RETORNO" />
+                                        <Grid ColumnDefinitions="*,Auto">
+                                            <TextBox Name="ExchangePathText" PlaceholderText="" />
+                                            <Button Grid.Column="1" Name="BrowseExchangePathButton" Content="Procurar"
+                                                    Margin="8,0,0,0" />
+                                        </Grid>
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="2">
+                                        <TextBlock Classes="label" Text="NÚMERO DO LOTE" />
+                                        <TextBox Name="BatchText" PlaceholderText="" />
+                                    </StackPanel>
+                                </Grid>
+                                <WrapPanel>
+                                    <CheckBox Name="SignXmlCheck" Content="Assinar ao enviar" IsChecked="True"
+                                              Margin="0,0,20,0" />
+                                    <CheckBox Name="ValidateSchemasCheck" Content="Validar schemas ao enviar"
+                                              IsChecked="True" Margin="0,0,20,0" />
+                                    <CheckBox Name="SaveDocumentsCheck" Content="Salvar documentos" Margin="0,0,20,0" />
+                                    <CheckBox Name="SaveExchangeCheck" Content="Salvar envio / retorno" />
+                                </WrapPanel>
+                            </StackPanel>
+                        </Border>
+                        <Grid ColumnDefinitions="*,Auto">
+                            <TextBlock Name="ConfigurationPathText" Classes="muted" FontSize="11" TextWrapping="Wrap"
+                                       VerticalAlignment="Center" />
+                            <Button Grid.Column="1" Name="SaveSettingsButton" Classes="primary"
+                                    Content="Salvar configurações" />
+                        </Grid>
+                    </StackPanel>
+                </ScrollViewer>
+                <Grid Name="ServicesPage" RowDefinitions="Auto,Auto,*" IsVisible="False">
+                    <StackPanel Spacing="6" Margin="0,0,0,18">
+                        <TextBlock Text="Municípios e endereços" Classes="heading" FontSize="19" />
+                        <TextBlock Classes="muted"
+                                   Text="Cadastre o município, escolha o provedor e configure as URLs de homologação e produção." />
+                    </StackPanel>
+                    <WrapPanel Grid.Row="1" Margin="0,0,0,14">
+                        <Button Name="NewServiceButton" Classes="primary" Content="Novo município" Margin="0,0,10,6" />
+                        <Button Name="EditServiceButton" Content="Editar município" Margin="0,0,10,6" />
+                        <Button Name="UseServiceButton" Content="Usar município" Margin="0,0,10,6" />
+                        <Button Name="LoadServicesButton" Content="Importar Municipios.nfse" Margin="0,0,10,6" />
+                        <Button Name="SaveServicesButton" Content="Exportar catálogo" Margin="0,0,0,6" />
+                    </WrapPanel>
+                    <Border Grid.Row="2" Classes="card">
+                        <Grid RowDefinitions="Auto,*">
+                            <TextBox Name="ServiceSearchText"
+                                     PlaceholderText="Buscar por município, código IBGE, UF ou provedor"
+                                     Margin="0,0,0,14" />
+                            <ListBox Grid.Row="1" Name="ServiceList">
+                                <ListBox.ItemTemplate>
+                                    <DataTemplate x:DataType="local:MunicipalityItem">
+                                        <Grid ColumnDefinitions="90,*,80,130" Margin="8,10">
+                                            <TextBlock Text="{Binding Code}" Classes="muted" />
+                                            <TextBlock Grid.Column="1" Text="{Binding Name}" FontWeight="Medium" />
+                                            <TextBlock Grid.Column="2" Text="{Binding State}" />
+                                            <TextBlock Grid.Column="3" Text="{Binding Provider}" Classes="muted" />
+                                        </Grid>
+                                    </DataTemplate>
+                                </ListBox.ItemTemplate>
+                            </ListBox>
+                        </Grid>
+                    </Border>
+                </Grid>
+            </Grid>
+            <Border Grid.Row="2" Background="White" BorderBrush="#DCE7F7" BorderThickness="0,1,0,0" Padding="26,12">
+                <Grid ColumnDefinitions="Auto,*,Auto">
+                    <ProgressBar Name="BusyProgress" Width="68" Height="4" IsIndeterminate="True" IsVisible="False"
+                                 Margin="0,0,12,0" VerticalAlignment="Center" />
+                    <TextBlock Grid.Column="1" Name="StatusText" Classes="muted" Text="Pronto para operar"
+                               VerticalAlignment="Center" />
+                    <Button Grid.Column="2" Name="CancelOperationButton" Content="Cancelar operação" IsVisible="False"
+                            MinHeight="28" Padding="10,4" />
+                </Grid>
+            </Border>
+        </Grid>
+    </Grid>
+</Window>
