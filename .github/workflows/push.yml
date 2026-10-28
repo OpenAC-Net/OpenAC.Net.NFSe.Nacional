@@ -32,13 +32,10 @@ jobs:
           9.x
           10.x
 
-    - name: Setup NuGet
-      uses: nuget/setup-nuget@v3
-      
     - name: Restore NuGet packages
-      run: nuget restore OpenAC.Net.NFSe.Nacional.sln
+      run: dotnet restore OpenAC.Net.NFSe.Nacional.slnx
       working-directory: src
 
     - name: Build solution
-      run: dotnet msbuild OpenAC.Net.NFSe.Nacional.sln -property:Configuration=Release -property:platform="Any CPU"
+      run: dotnet msbuild OpenAC.Net.NFSe.Nacional.slnx -property:Configuration=Release -property:platform="Any CPU"
       working-directory: src
