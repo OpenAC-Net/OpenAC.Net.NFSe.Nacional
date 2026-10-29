@@ -3,15 +3,17 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Security.Cryptography.X509Certificates;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Xml.Schema;
+using OpenAC.Net.DFe.Core.Http;
 using OpenAC.Net.Core.Logging;
 using OpenAC.Net.DFe.Core;
 using OpenAC.Net.NFSe.Nacional.Common;
 using OpenAC.Net.NFSe.Nacional.Common.Model;
 using OpenAC.Net.NFSe.Nacional.Common.Types;
-using OpenAC.Net.NFSe.Nacional.Storage;
+using OpenAC.Net.DFe.Core.Storage;
 
 namespace OpenAC.Net.NFSe.Nacional.Webservice;
 
@@ -58,12 +60,12 @@ public abstract class NFSeWebserviceBase : IOpenLog
     /// <param name="httpTransport">Transporte HTTP fornecido pelo host ou <see langword="null"/> para usar o transporte desktop.</param>
     /// <param name="documentStore">Armazenamento de documentos fornecido pelo host ou <see langword="null"/> para usar o armazenamento desktop.</param>
     protected NFSeWebserviceBase(ConfiguracaoNFSe configuracaoNFSe, NFSeServiceInfo serviceInfo,
-        INFSeHttpTransport? httpTransport = null, INFSeDocumentStore? documentStore = null)
+        IDFeHttpTransport? httpTransport = null, IDFeDocumentStore? documentStore = null)
     {
         Configuracao = configuracaoNFSe;
         ServiceInfo = serviceInfo;
-        HttpTransport = httpTransport ?? DesktopNFSeHttpTransport.Instance;
-        DocumentStore = documentStore ?? DesktopNFSeDocumentStore.Instancia;
+        HttpTransport = httpTransport ?? configuracaoNFSe.HttpTransport;
+        DocumentStore = documentStore ?? configuracaoNFSe.DocumentStore;
     }
 
     #endregion Constructors
@@ -81,12 +83,14 @@ public abstract class NFSeWebserviceBase : IOpenLog
     public NFSeServiceInfo ServiceInfo { get; }
 
     /// <summary>
-    /// Transporte HTTP fornecido pelo host. Quando nulo, mantém o transporte legado para aplicações desktop.
+    /// Transporte HTTP compartilhado do DFe.Core ou fornecido pelo host.
     /// </summary>
-    protected INFSeHttpTransport HttpTransport { get; }
+    protected IDFeHttpTransport HttpTransport { get; }
 
     /// <summary>Obtém o armazenamento usado para persistir payloads técnicos e documentos fiscais.</summary>
-    protected internal INFSeDocumentStore DocumentStore { get; internal set; }
+    protected internal IDFeDocumentStore DocumentStore { get; internal set; }
+
+    internal Func<X509Certificate2?>? CertificateLoader { get; set; }
 
     #endregion Properties
 
@@ -243,8 +247,17 @@ public abstract class NFSeWebserviceBase : IOpenLog
 
         request.Content = content;
 
-        return await HttpTransport.SendAsync(request, Configuracao, cancellationToken).ConfigureAwait(false);
+        using var operation = CancellationTokenSource.CreateLinkedTokenSource(
+            cancellationToken, Configuracao.OperationToken.Value);
+        operation.Token.ThrowIfCancellationRequested();
+        using var certificate = ObterCertificado();
+        var options = new DFeHttpTransportOptions(Configuracao.WebServices, certificate);
+        return await HttpTransport.SendAsync(request, options, operation.Token).ConfigureAwait(false);
     }
+
+    /// <summary>Carrega uma instância de certificado pertencente ao envio atual.</summary>
+    protected virtual X509Certificate2? ObterCertificado() => CertificateLoader == null
+        ? Configuracao.Certificados.ObterCertificado() : CertificateLoader();
 
     /// <summary>
     /// Valida o XML de acordo com o schema.
@@ -307,8 +320,8 @@ public abstract class NFSeWebserviceBase : IOpenLog
         DateTime data, bool incrementarNome = false, CancellationToken cancellationToken = default)
     {
         if (!Configuracao.Arquivos.Salvar) return Task.CompletedTask;
-        return DocumentStore.SaveAsync(new NFSeDocument(NFSeTipoDocumento.Dps, conteudoArquivo, nomeArquivo,
-            documento, data, incrementarNome), Configuracao, cancellationToken);
+        return DocumentStore.SaveAsync(new DFeDocument(DFeTipoDocumento.Solicitacao, conteudoArquivo, nomeArquivo,
+            documento, data, incrementarNome), Configuracao.Arquivos, cancellationToken);
     }
 
     /// <summary>
@@ -324,8 +337,8 @@ public abstract class NFSeWebserviceBase : IOpenLog
         DateTime data, bool incrementarNome = false, CancellationToken cancellationToken = default)
     {
         if (!Configuracao.Arquivos.Salvar) return Task.CompletedTask;
-        return DocumentStore.SaveAsync(new NFSeDocument(NFSeTipoDocumento.NFSe, conteudoArquivo, nomeArquivo,
-            documento, data, incrementarNome), Configuracao, cancellationToken);
+        return DocumentStore.SaveAsync(new DFeDocument(DFeTipoDocumento.DocumentoFiscal, conteudoArquivo, nomeArquivo,
+            documento, data, incrementarNome), Configuracao.Arquivos, cancellationToken);
     }
 
     /// <summary>
@@ -341,10 +354,10 @@ public abstract class NFSeWebserviceBase : IOpenLog
         if (!Configuracao.Geral.Salvar) return Task.CompletedTask;
         
         var tipo = nomeArquivo.Contains("-resp.", StringComparison.OrdinalIgnoreCase)
-            ? NFSeTipoDocumento.RespostaTecnica
-            : NFSeTipoDocumento.SolicitacaoTecnica;
-        return DocumentStore.SaveAsync(new NFSeDocument(tipo, conteudoArquivo, nomeArquivo, documento,
-            DateTime.Today), Configuracao, cancellationToken);
+            ? DFeTipoDocumento.RespostaTecnica
+            : DFeTipoDocumento.SolicitacaoTecnica;
+        return DocumentStore.SaveAsync(new DFeDocument(tipo, conteudoArquivo, nomeArquivo, documento,
+            DateTime.Today), Configuracao.Arquivos, cancellationToken);
     }
 
     #endregion Methods

@@ -25,6 +25,7 @@
 // <summary></summary>
 // ***********************************************************************
 
+using OpenAC.Net.DFe.Core.Http;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -63,7 +64,7 @@ namespace OpenAC.Net.NFSe.Nacional.Webservice.GovBR;
 /// <see cref="ConsultaChaveAsync"/> lançam <see cref="NotSupportedException"/>).</item>
 /// </list>
 /// A autenticação por certificado digital (mTLS) é tratada de forma transparente pelo
-/// <see cref="INFSeHttpTransport"/> configurado (o mesmo mecanismo usado pelos demais provedores),
+/// <see cref="IDFeHttpTransport"/> configurado (o mesmo mecanismo usado pelos demais provedores),
 /// não exige nenhum código específico aqui.
 /// </remarks>
 public class GovBRWebService : NFSeWebserviceBase
@@ -93,7 +94,7 @@ public class GovBRWebService : NFSeWebserviceBase
 
     /// <summary>Inicializa o provedor com um transporte HTTP fornecido pelo host.</summary>
     public GovBRWebService(ConfiguracaoNFSe configuracaoNFSe, NFSeServiceInfo serviceInfo,
-        INFSeHttpTransport httpTransport) : base(configuracaoNFSe, serviceInfo, httpTransport)
+        IDFeHttpTransport httpTransport) : base(configuracaoNFSe, serviceInfo, httpTransport)
     {
     }
 

@@ -1,3 +1,4 @@
+using OpenAC.Net.DFe.Core.Common;
 using OpenAC.Net.NFSe.Nacional.Common;
 using OpenAC.Net.NFSe.Nacional.Web.Common;
 
@@ -10,4 +11,7 @@ public interface INFSeTenantContextAccessor
     /// <param name="configuration">Configuração cuja empresa associada será consultada.</param>
     /// <returns>Identificador da empresa ou <see cref="NFSeTenant.Padrao"/> quando não houver associação explícita.</returns>
     string GetTenant(ConfiguracaoNFSe configuration);
+
+    /// <summary>Obtém a empresa associada às regras de armazenamento do componente.</summary>
+    string GetTenant(DFeArquivosConfigBase configuration);
 }

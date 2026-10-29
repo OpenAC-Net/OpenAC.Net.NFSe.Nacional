@@ -133,10 +133,12 @@ App_Data/NFSe/
 
 As gravações são assíncronas. Arquivos concorrentes com o mesmo nome recebem um sufixo, evitando
 sobrescrita. Para substituir o armazenamento padrão, registre uma implementação de
-`INFSeDocumentStore` antes de chamar `AddOpenNFSeNacionalWeb`:
+`IDFeDocumentStore` antes de chamar `AddOpenNFSeNacionalWeb`:
 
 ```csharp
-builder.Services.AddSingleton<INFSeDocumentStore, MeuArmazenamentoNFSe>();
+using OpenAC.Net.DFe.Core.Storage;
+
+builder.Services.AddSingleton<IDFeDocumentStore, MeuArmazenamentoNFSe>();
 builder.Services.AddOpenNFSeNacionalWeb(configuracao =>
 {
     // Configuração fiscal.
@@ -273,3 +275,21 @@ builder.Services.AddOpenTelemetry()
 
 Assim, a aplicação consegue diferenciar indisponibilidade técnica, cancelamento da requisição e
 rejeição fiscal sem depender da mensagem textual da exceção.
+
+
+## Infraestrutura compartilhada do DFe.Core
+
+Os contratos HTTP e de persistência pertencem ao `OpenAC.Net.DFe.Core` (1.8.0-beta.1).
+Provedores e extensões usam `IDFeHttpTransport`, `DFeHttpTransportOptions`, `IDFeDocumentStore`,
+`DFeDocument` e `DFeTipoDocumento`. As implementações desktop e o pool locais foram removidos.
+No desktop, `Configuracoes.HttpTransport` e `Configuracoes.DocumentStore` podem ser substituídos;
+no host, registre implementações dos contratos compartilhados no container de DI.
+
+O adaptador web preserva `IHttpClientFactory`, resiliência e isolamento por empresa/endpoint,
+considerando também certificado, TLS, proxy e validação do servidor. O corpo é bufferizado antes
+de devolver a resposta e o timeout inclui sua leitura. Cookies não são compartilhados.
+
+DPS e eventos enviados usam `Solicitacao` e permanecem em `PathDps`. Documentos autorizados e
+respostas fiscais usam `DocumentoFiscal` e permanecem em `PathNFSe`. Payloads de comunicação
+usam `SolicitacaoTecnica`/`RespostaTecnica` em `PathEnvio`. A resolução desses diretórios pertence
+a `NFSeArquivoConfig.GetDocumentPath`; a criação dos arquivos é delegada ao DFe.Core.

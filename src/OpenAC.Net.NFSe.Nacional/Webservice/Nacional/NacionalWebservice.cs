@@ -29,6 +29,7 @@
 // <summary></summary>
 // ***********************************************************************
 
+using OpenAC.Net.DFe.Core.Http;
 using System;
 using System.Linq;
 using System.Net;
@@ -64,7 +65,7 @@ public class NacionalWebservice : NFSeWebserviceBase
 
     /// <summary>Inicializa o provedor com um transporte HTTP fornecido pelo host.</summary>
     public NacionalWebservice(ConfiguracaoNFSe configuracaoNFSe, NFSeServiceInfo serviceInfo,
-        INFSeHttpTransport httpTransport) : base(configuracaoNFSe, serviceInfo, httpTransport)
+        IDFeHttpTransport httpTransport) : base(configuracaoNFSe, serviceInfo, httpTransport)
     {
     }
 

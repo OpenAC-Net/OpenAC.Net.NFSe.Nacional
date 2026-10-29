@@ -29,6 +29,7 @@
 // <summary></summary>
 // ***********************************************************************
 
+using OpenAC.Net.DFe.Core.Http;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -69,7 +70,7 @@ public class ISSNetWebService : NacionalWebservice
 
     /// <summary>Inicializa o provedor com um transporte HTTP fornecido pelo host.</summary>
     public ISSNetWebService(ConfiguracaoNFSe configuracaoNFSe, NFSeServiceInfo serviceInfo,
-        INFSeHttpTransport httpTransport) : base(configuracaoNFSe, serviceInfo, httpTransport)
+        IDFeHttpTransport httpTransport) : base(configuracaoNFSe, serviceInfo, httpTransport)
     {
     }
 

@@ -2,10 +2,14 @@ using System.Diagnostics;
 using System.Diagnostics.Metrics;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using OpenAC.Net.DFe.Core.Http;
 using OpenAC.Net.NFSe.Nacional.Common;
 using OpenAC.Net.NFSe.Nacional.Common.Model;
-using OpenAC.Net.NFSe.Nacional.Storage;
+using OpenAC.Net.DFe.Core.Storage;
 using OpenAC.Net.NFSe.Nacional.Web.Configuration;
+using OpenAC.Net.NFSe.Nacional.Web.Common;
+using OpenAC.Net.NFSe.Nacional.Web.Provider;
+using OpenAC.Net.NFSe.Nacional.Web.Transport;
 using OpenAC.Net.NFSe.Nacional.Web.Exception;
 using OpenAC.Net.NFSe.Nacional.Webservice;
 
@@ -13,8 +17,8 @@ namespace OpenAC.Net.NFSe.Nacional.Web.Client;
 
 internal sealed class OpenNFSeNacionalWebClient(
     ConfiguracaoNFSe configuracao,
-    INFSeHttpTransport transport,
-    INFSeDocumentStore documentStore,
+    IDFeHttpTransport transport,
+    IDFeDocumentStore documentStore,
     ILogger<OpenNFSeNacionalWebClient> logger,
     IOptions<OpenNFSeNacionalWebOptions> options,
     string? tenantId = null)
@@ -30,8 +34,12 @@ internal sealed class OpenNFSeNacionalWebClient(
 
     private readonly OpenNFSeNacionalWebOptions options = options.Value;
 
+    private readonly IDFeHttpTransport tenantTransport =
+        new NFSeTenantHttpTransport(transport, tenantId ?? NFSeTenant.Padrao);
+
     private NFSeWebserviceBase Provider() =>
-        NFSeServiceManager.Instance.GetProvider(configuracao, transport, documentStore);
+        NFSeServiceManager.Instance.GetProvider(configuracao, tenantTransport, documentStore,
+            () => NFSeWebCertificateResolver.Resolve(configuracao.Certificados));
 
     private async Task<T> ExecuteAsync<T>(string operation, CancellationToken cancellationToken,
         Func<NFSeWebserviceBase, CancellationToken, Task<T>> action)

@@ -35,6 +35,7 @@ using System;
 using System.IO;
 using System.Reflection;
 using OpenAC.Net.DFe.Core.Extensions;
+using OpenAC.Net.DFe.Core.Storage;
 
 namespace OpenAC.Net.NFSe.Nacional.Common;
 
@@ -104,6 +105,23 @@ public sealed class NFSeArquivoConfig : DFeArquivosConfigBase<SchemaNFSe>
     #endregion Properties
 
     #region Methods
+
+    /// <summary>Resolve os diretórios de solicitações fiscais, documentos autorizados e payloads técnicos.</summary>
+    public override string GetDocumentPath(DFeDocument document)
+    {
+        if (document == null) throw new ArgumentNullException(nameof(document));
+        // GetPath inicializa a ordenação; sincroniza o acesso à configuração compartilhada.
+        lock (OrdenacaoPath)
+        {
+            var taxpayer = document.DocumentoContribuinte ?? string.Empty;
+            return document.Tipo switch
+            {
+                DFeTipoDocumento.Solicitacao => GetPathDps(document.Data, taxpayer),
+                DFeTipoDocumento.DocumentoFiscal => GetPathNFSe(document.Data, taxpayer),
+                _ => GetPathEnvio(document.Data, taxpayer)
+            };
+        }
+    }
 
 
     /// <summary>

@@ -1,6 +1,7 @@
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Http;
 using Microsoft.Extensions.Options;
+using OpenAC.Net.DFe.Core.Http;
 using OpenAC.Net.NFSe.Nacional.Common;
 using OpenAC.Net.NFSe.Nacional.Web.Accessor;
 using OpenAC.Net.NFSe.Nacional.Web.Client;
@@ -99,9 +100,9 @@ public static class OpenNFSeNacionalServiceCollectionExtensions
             serviceProvider.GetRequiredService<NFSeHttpClientRegistry>());
         services.TryAddEnumerable(ServiceDescriptor.Singleton<IConfigureOptions<HttpClientFactoryOptions>,
             NFSeHttpClientOptions>());
-        services.TryAddSingleton<OpenAC.Net.NFSe.Nacional.Storage.INFSeDocumentStore,
+        services.TryAddSingleton<OpenAC.Net.DFe.Core.Storage.IDFeDocumentStore,
             FileSystemNFSeDocumentStore>();
-        services.TryAddSingleton<INFSeHttpTransport, NFSeHttpTransport>();
+        services.TryAddSingleton<IDFeHttpTransport, NFSeHttpTransport>();
         services.TryAddScoped<OpenAC.Net.NFSe.Nacional.IOpenNFSeNacionalClient,
             OpenNFSeNacionalWebClient>();
     }
