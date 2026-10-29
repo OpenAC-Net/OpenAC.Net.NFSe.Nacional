@@ -79,14 +79,14 @@ internal static class SilTecnologiaSoap
     /// ao elemento raiz do documento.
     /// </summary>
     /// <param name="xml">Documento a ser assinado.</param>
-    /// <param name="elementoAssinado">Nome local do elemento referenciado pela assinatura (ex.: <c>infNFSe</c>).</param>
+    /// <param name="elementoAssinado">Nome local do elemento referenciado pela assinatura (ex.: <c>infNFSe</c>) ou <c>null</c> para o documento inteiro.</param>
     /// <param name="certificado">Certificado com chave privada.</param>
     /// <returns>Documento assinado em uma única linha, sem prólogo.</returns>
     /// <remarks>
     /// O validador da SIL usa canonicalização exclusiva (mesma configuração adotada pela Unimake para
     /// os municípios da SIL). Assinaturas existentes no documento são removidas antes de assinar.
     /// </remarks>
-    public static string Assinar(string xml, string elementoAssinado, X509Certificate2 certificado)
+    public static string Assinar(string xml, string? elementoAssinado, X509Certificate2 certificado)
     {
         var documento = new XmlDocument { PreserveWhitespace = true };
         documento.LoadXml(RemoverProlog(xml));
@@ -95,12 +95,18 @@ internal static class SilTecnologiaSoap
                      .OfType<XmlElement>().ToList())
             assinatura.ParentNode?.RemoveChild(assinatura);
 
-        var elemento = documento
-            .GetElementsByTagName(elementoAssinado, NsSped)
-            .OfType<XmlElement>()
-            .FirstOrDefault() ?? throw new InvalidOperationException($"Elemento {elementoAssinado} não encontrado.");
-        var id = elemento.GetAttribute("Id");
-        if (id.IsEmpty()) throw new InvalidOperationException($"O elemento {elementoAssinado} não possui o atributo Id.");
+        // Sem elemento (ex.: ConsultarNFE, que não tem Id), a assinatura referencia o documento inteiro (URI="").
+        var uri = string.Empty;
+        if (elementoAssinado != null)
+        {
+            var elemento = documento
+                .GetElementsByTagName(elementoAssinado, NsSped)
+                .OfType<XmlElement>()
+                .FirstOrDefault() ?? throw new InvalidOperationException($"Elemento {elementoAssinado} não encontrado.");
+            var id = elemento.GetAttribute("Id");
+            if (id.IsEmpty()) throw new InvalidOperationException($"O elemento {elementoAssinado} não possui o atributo Id.");
+            uri = $"#{id}";
+        }
 
         using var chavePrivada = certificado.GetRSAPrivateKey()
             ?? throw new InvalidOperationException("O certificado não possui uma chave privada RSA.");
@@ -115,7 +121,7 @@ internal static class SilTecnologiaSoap
 
         var referencia = new Reference
         {
-            Uri = $"#{id}",
+            Uri = uri,
             DigestMethod = SignedXml.XmlDsigSHA1Url
         };
         referencia.AddTransform(new XmlDsigEnvelopedSignatureTransform());
@@ -126,6 +132,53 @@ internal static class SilTecnologiaSoap
         documento.DocumentElement!.AppendChild(documento.ImportNode(signedXml.GetXml(), true));
         return documento.OuterXml.TrimEnd();
     }
+
+    /// <summary>
+    /// Monta o <c>evento</c> (sem assinatura) que a SIL recebe no cancelamento e na substituição:
+    /// <c>infEvento</c> com o <c>pedRegEvento</c> dentro, conforme os modelos da SIL.
+    /// </summary>
+    /// <param name="pedidoXml">Pedido de registro de evento serializado.</param>
+    /// <param name="chave">Chave de acesso da NFS-e.</param>
+    /// <param name="codigoEvento">Código do evento (ex.: 101101).</param>
+    /// <param name="versao">Versão do layout (atributo <c>versao</c>).</param>
+    /// <param name="dataProcessamento">Data/hora informada em <c>dhProc</c>.</param>
+    /// <returns>XML do evento sem prólogo.</returns>
+    public static string Evento(string pedidoXml, string chave, string codigoEvento, string versao, DateTimeOffset dataProcessamento)
+    {
+        // O pedido vai sem assinatura própria: a SIL assina só infEvento.
+        var pedido = XElement.Parse(RemoverProlog(pedidoXml));
+        pedido.Descendants().Where(x => x.Name.LocalName == "Signature").ToList().ForEach(x => x.Remove());
+
+        XNamespace ns = NsSped;
+        var verAplic = pedido.Descendants(ns + "verAplic").FirstOrDefault();
+        if (verAplic != null) verAplic.Value = SilTecnologiaNFSe.VersaoAplicacao;
+
+        var evento = new XElement(ns + "evento",
+            new XAttribute("versao", versao),
+            new XElement(ns + "infEvento",
+                new XAttribute("Id", $"EVT{chave}{codigoEvento}001"),
+                new XElement(ns + "verAplic", SilTecnologiaNFSe.VersaoAplicacao),
+                new XElement(ns + "ambGer", "1"),
+                new XElement(ns + "nSeqEvento", "1"),
+                new XElement(ns + "dhProc", dataProcessamento.ToString("yyyy-MM-dd'T'HH:mm:sszzz")),
+                new XElement(ns + "nDFSe", "0"),
+                pedido));
+
+        return evento.ToString(SaveOptions.DisableFormatting);
+    }
+
+    /// <summary>
+    /// Monta o <c>ConsultarNFE</c> (sem assinatura) da operação <c>NotaFiscalNacionalConsultar</c>.
+    /// </summary>
+    /// <param name="cnpj">CNPJ (ou CPF) do prestador, tomador ou intermediário da nota.</param>
+    /// <param name="chaveAcesso">Chave de acesso da NFS-e (ou vazio).</param>
+    /// <param name="idDps">Id da DPS enviada na emissão (ou vazio).</param>
+    /// <returns>XML da consulta.</returns>
+    public static string Consulta(string cnpj, string? chaveAcesso, string? idDps) =>
+        new XElement("ConsultarNFE",
+            new XElement("consul", new XElement("CNPJ", cnpj)),
+            new XElement("chaveAcesso", chaveAcesso ?? string.Empty),
+            new XElement("DPS", idDps ?? string.Empty)).ToString(SaveOptions.DisableFormatting);
 
     #endregion Build
 
@@ -231,14 +284,16 @@ internal static class SilTecnologiaSoap
     }
 
     /// <summary>
-    /// Retorna o XML (sem formatação) do elemento <c>NFSe</c> presente no retorno, se houver.
+    /// Retorna o XML (sem formatação) do primeiro elemento com o nome informado no retorno
+    /// (ex.: <c>NFSe</c> ou <c>evento</c>), se houver.
     /// </summary>
     /// <param name="root">Elemento de retorno.</param>
-    /// <returns>XML da NFS-e ou string vazia.</returns>
-    public static string NotaXml(XElement? root)
+    /// <param name="nomeLocal">Nome local do elemento.</param>
+    /// <returns>XML do elemento ou string vazia.</returns>
+    public static string ElementoXml(XElement? root, string nomeLocal)
     {
-        var nfse = root?.DescendantsAndSelf().FirstOrDefault(x => x.Name.LocalName == "NFSe" && x.HasElements);
-        return nfse?.ToString(SaveOptions.DisableFormatting) ?? string.Empty;
+        var elemento = root?.DescendantsAndSelf().FirstOrDefault(x => x.Name.LocalName == nomeLocal && x.HasElements);
+        return elemento?.ToString(SaveOptions.DisableFormatting) ?? string.Empty;
     }
 
     private static XDocument? TentarCarregar(string xml)

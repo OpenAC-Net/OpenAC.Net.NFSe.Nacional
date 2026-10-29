@@ -28,6 +28,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Text.Json;
@@ -40,6 +41,7 @@ using OpenAC.Net.DFe.Core.Extensions;
 using OpenAC.Net.NFSe.Nacional.Common;
 using OpenAC.Net.NFSe.Nacional.Common.Model;
 using OpenAC.Net.NFSe.Nacional.Common.Types;
+using OpenAC.Net.NFSe.Nacional.Webservice.Nacional;
 
 namespace OpenAC.Net.NFSe.Nacional.Webservice.SilTecnologia;
 
@@ -50,8 +52,9 @@ namespace OpenAC.Net.NFSe.Nacional.Webservice.SilTecnologia;
 /// <remarks>
 /// Diferente do provedor Nacional, a SIL recebe a NFS-e completa (<c>infNFSe</c> com a DPS dentro),
 /// assinada em <c>infNFSe</c>, e não a DPS. A montagem da NFS-e a partir da DPS fica em
-/// <see cref="SilTecnologiaNFSe"/>. Implementa apenas a emissão (<c>NotaFiscalNacionalGerar</c>);
-/// as demais operações lançam <see cref="NotSupportedException"/>.
+/// <see cref="SilTecnologiaNFSe"/>. Emissão, cancelamento, substituição e consulta por DPS usam o webservice
+/// da SIL; distribuição por NSU/chave, DANFSe e os demais eventos usam o provedor Nacional (Sefin/ADN),
+/// com o qual a SIL compartilha as NFS-e.
 /// </remarks>
 public class SilTecnologiaWebService : NFSeWebserviceBase
 {
@@ -92,11 +95,34 @@ public class SilTecnologiaWebService : NFSeWebserviceBase
     /// <param name="dps">DPS com o nome e o endereço do prestador preenchidos (usados no grupo <c>emit</c>).</param>
     /// <param name="cancellationToken">Token para cancelar a operação assíncrona.</param>
     /// <returns>Resposta do envio.</returns>
-    /// <remarks>
-    /// Os nomes dos municípios (<c>xLocEmi</c>, <c>xLocPrestacao</c>, <c>xLocIncid</c>) vêm do cadastro do
-    /// município do provedor ou, para outros códigos, da API de localidades do IBGE.
-    /// </remarks>
-    public override async Task<NFSeResponse<RespostaEnvioDps>> EnviarAsync(Dps dps, CancellationToken cancellationToken = default)
+    public override Task<NFSeResponse<RespostaEnvioDps>> EnviarAsync(Dps dps, CancellationToken cancellationToken = default) =>
+        EnviarAsync(dps, null, cancellationToken);
+
+    /// <summary>
+    /// Monta a NFS-e a partir da DPS informando a alíquota do ISSQN usada em <c>infNFSe/valores</c> e envia
+    /// pela operação <c>NotaFiscalNacionalGerar</c>.
+    /// </summary>
+    /// <param name="dps">DPS com o nome e o endereço do prestador preenchidos (usados no grupo <c>emit</c>).</param>
+    /// <param name="aliquotaISSQN">Alíquota do ISSQN (%) usada quando a DPS não informa <c>pAliq</c>. A DPS não é alterada.</param>
+    /// <param name="cancellationToken">Token para cancelar a operação assíncrona.</param>
+    /// <returns>Resposta do envio.</returns>
+    public async Task<NFSeResponse<RespostaEnvioDps>> EnviarAsync(Dps dps, decimal? aliquotaISSQN,
+        CancellationToken cancellationToken = default)
+    {
+        var nfse = await MontarNFSeAsync(dps, aliquotaISSQN, cancellationToken);
+        return await EnviarAsync(nfse, cancellationToken);
+    }
+
+    /// <summary>
+    /// Monta a NFS-e a partir da DPS, resolvendo os nomes dos municípios (<c>xLocEmi</c>, <c>xLocPrestacao</c>,
+    /// <c>xLocIncid</c>) pelo cadastro do município do provedor ou pela API de localidades do IBGE.
+    /// </summary>
+    /// <param name="dps">DPS de origem. Não é alterada.</param>
+    /// <param name="aliquotaISSQN">Alíquota do ISSQN (%) usada quando a DPS não informa <c>pAliq</c>.</param>
+    /// <param name="cancellationToken">Token para cancelar a operação assíncrona.</param>
+    /// <returns>NFS-e pronta para <see cref="EnviarAsync(NotaFiscalServico, CancellationToken)"/>.</returns>
+    public async Task<NotaFiscalServico> MontarNFSeAsync(Dps dps, decimal? aliquotaISSQN = null,
+        CancellationToken cancellationToken = default)
     {
         var inf = dps.Informacoes;
         var nomes = new Dictionary<string, string>();
@@ -107,21 +133,19 @@ public class SilTecnologiaWebService : NFSeWebserviceBase
         }
 
         var dataProcessamento = DateTimeOffset.Now.ToOffset(inf.DhEmissao.Offset);
-        var nfse = SilTecnologiaNFSe.Montar(dps, codigo => nomes[codigo], dataProcessamento);
-        return await EnviarAsync(nfse, cancellationToken);
+        return SilTecnologiaNFSe.Montar(dps, codigo => nomes[codigo], dataProcessamento, aliquotaISSQN);
     }
 
     /// <summary>
     /// Assina a NFS-e em <c>infNFSe</c> e envia pela operação <c>NotaFiscalNacionalGerar</c>.
     /// </summary>
-    /// <param name="nfse">NFS-e montada (ex.: por <see cref="SilTecnologiaNFSe.Montar"/>).</param>
+    /// <param name="nfse">NFS-e montada (ex.: por <see cref="MontarNFSeAsync"/>).</param>
     /// <param name="cancellationToken">Token para cancelar a operação assíncrona.</param>
     /// <returns>Resposta do envio.</returns>
     public async Task<NFSeResponse<RespostaEnvioDps>> EnviarAsync(NotaFiscalServico nfse, CancellationToken cancellationToken = default)
     {
         var dps = nfse.Informacoes.Dps;
-        var options = DFeSaveOptions.DisableFormatting;
-        if (Configuracao.Geral.RetirarAcentos) options |= DFeSaveOptions.RemoveAccents;
+        var options = OpcoesXml();
 
         // Valida apenas a DPS: o NFSe_v1.01.xsd exige nNFSe >= 1, mas a SIL exige nNFSe = 0.
         ValidarSchema(SchemaNFSe.DPS, dps.GetXml(options), dps.Versao);
@@ -141,7 +165,7 @@ public class SilTecnologiaWebService : NFSeWebserviceBase
         {
             IdDps = dps.Informacoes.Id,
             ChaveAcesso = SilTecnologiaSoap.ChaveAcesso(retorno),
-            XmlNFSe = SilTecnologiaSoap.NotaXml(retorno),
+            XmlNFSe = SilTecnologiaSoap.ElementoXml(retorno, "NFSe"),
             Erros = SilTecnologiaSoap.Erros(retorno)
         };
 
@@ -158,37 +182,149 @@ public class SilTecnologiaWebService : NFSeWebserviceBase
 
     #endregion NFS-e
 
-    #region Não suportadas
+    #region Eventos
 
-    /// <summary>Não implementado para a SIL Tecnologia.</summary>
-    public override Task<NFSeResponse<RespostaEnvioEvento>> EnviarEventoAsync(PedidoRegistroEvento evento,
-        CancellationToken cancellationToken = default) =>
-        throw OperacaoNaoSuportada(nameof(EnviarEventoAsync));
+    /// <summary>
+    /// Cancelamento (101101) e cancelamento por substituição (105102) vão para a SIL pelas operações
+    /// <c>NotaFiscalNacionalCancelar</c> e <c>NotaFiscalNacionalSubstituir</c>. Os demais eventos
+    /// (confirmação, rejeição etc.) vão para a Sefin Nacional.
+    /// </summary>
+    /// <param name="evento">Pedido de registro de evento.</param>
+    /// <param name="cancellationToken">Token para cancelar a operação assíncrona.</param>
+    /// <returns>Resposta do envio do evento.</returns>
+    /// <remarks>
+    /// A SIL recebe o <c>evento</c> completo (<c>infEvento</c> com o <c>pedRegEvento</c> dentro), assinado em
+    /// <c>infEvento</c>. Quando o retorno não traz o XML do evento, <see cref="RespostaEnvioEvento.XmlEvento"/>
+    /// recebe o evento enviado.
+    /// </remarks>
+    public override async Task<NFSeResponse<RespostaEnvioEvento>> EnviarEventoAsync(PedidoRegistroEvento evento,
+        CancellationToken cancellationToken = default)
+    {
+        var (operacao, codigoEvento) = evento.Informacoes.Evento switch
+        {
+            EventoCancelamento => ("NotaFiscalNacionalCancelar", TipoEventoCod.Cancelamento),
+            EventoCancelamentoPorSubstituicao => ("NotaFiscalNacionalSubstituir", TipoEventoCod.CancelamentoPorSubstituicao),
+            _ => (null, null)
+        };
+        if (operacao == null || codigoEvento == null) return await Nacional().EnviarEventoAsync(evento, cancellationToken);
 
-    /// <summary>Não implementado para a SIL Tecnologia.</summary>
-    public override Task<NFSeResponse<RespostaConsultaChaveDps>> ConsultaChaveDpsAsync(string id,
-        CancellationToken cancellationToken = default) =>
-        throw OperacaoNaoSuportada(nameof(ConsultaChaveDpsAsync));
+        var inf = evento.Informacoes;
+        var dataProcessamento = DateTimeOffset.Now.ToOffset(inf.DhEvento.Offset);
+        var eventoXml = SilTecnologiaSoap.Evento(evento.GetXml(OpcoesXml()), inf.ChNFSe, codigoEvento,
+            evento.Versao.GetDFeValue(), dataProcessamento);
+        var xml = SilTecnologiaSoap.Assinar(eventoXml, "infEvento", Configuracao.Certificados.ObterCertificado());
 
-    /// <summary>Não implementado para a SIL Tecnologia.</summary>
-    public override Task<bool> ConsultaExisteDpsAsync(string id, CancellationToken cancellationToken = default) =>
-        throw OperacaoNaoSuportada(nameof(ConsultaExisteDpsAsync));
+        var documento = inf.CPFAutor ?? inf.CNPJAutor;
+        await GravarDpsEmDiscoAsync(xml, $"{inf.ChNFSe}{codigoEvento}_evento.xml", documento,
+            inf.DhEvento.DateTime, true, cancellationToken);
 
-    /// <summary>Não suportado pela SIL Tecnologia.</summary>
-    public override Task<byte[]> DownloadDANFSeAsync(string chave, CancellationToken cancellationToken = default) =>
-        throw OperacaoNaoSuportada(nameof(DownloadDANFSeAsync));
+        var envelope = SilTecnologiaSoap.Envelope(operacao, xml);
+        var (sucessoHttp, resposta) = await EnviarSoapAsync(operacao, envelope,
+            $"Evento-{inf.ChNFSe}{codigoEvento}", documento, cancellationToken);
 
-    /// <summary>Não suportado pela SIL Tecnologia (não há distribuição por NSU no WSDL).</summary>
+        var retorno = SilTecnologiaSoap.Retorno(resposta);
+        var xmlEvento = SilTecnologiaSoap.ElementoXml(retorno, "evento");
+        var resultado = new RespostaEnvioEvento
+        {
+            XmlEvento = xmlEvento.IsEmpty() ? xml : xmlEvento,
+            DataHoraProcessamento = dataProcessamento,
+            Erros = SilTecnologiaSoap.Erros(retorno)
+        };
+
+        var sucesso = sucessoHttp && retorno != null && resultado.Erros.Count == 0;
+        return NFSeResponse<RespostaEnvioEvento>.Create(envelope, resposta, sucesso, resultado);
+    }
+
+    /// <summary>Consulta o evento na Sefin Nacional.</summary>
+    public override Task<NFSeResponse<RespostaConsultaEvento>> ConsultaEventoAsync(string chaveAcesso, string tipoEvento,
+        int numSeqEvento, CancellationToken cancellationToken = default) =>
+        Nacional().ConsultaEventoAsync(chaveAcesso, tipoEvento, numSeqEvento, cancellationToken);
+
+    #endregion Eventos
+
+    #region Consultas
+
+    /// <summary>
+    /// Retorna a chave de acesso da NFS-e a partir do Id da DPS (operação <c>NotaFiscalNacionalConsultar</c>).
+    /// </summary>
+    /// <param name="id">Id da DPS com 45 posições (<c>DPS</c> + município + tipo de inscrição + inscrição + série + número).</param>
+    /// <param name="cancellationToken">Token para cancelar a operação assíncrona.</param>
+    /// <returns>Resposta da consulta contendo a chave de acesso.</returns>
+    public override async Task<NFSeResponse<RespostaConsultaChaveDps>> ConsultaChaveDpsAsync(string id,
+        CancellationToken cancellationToken = default)
+    {
+        if (id.Length != 45 || !id.StartsWith("DPS", StringComparison.Ordinal))
+            throw new ArgumentException("Id da DPS inválido: esperado DPS + 42 posições.", nameof(id));
+
+        // Posição 10: 1 = CPF (inscrição com 3 zeros à esquerda), 2 = CNPJ.
+        var inscricao = id.Substring(11, 14);
+        var documento = id[10] == '1' ? inscricao.Substring(3) : inscricao;
+
+        var xml = SilTecnologiaSoap.Assinar(SilTecnologiaSoap.Consulta(documento, null, id), null,
+            Configuracao.Certificados.ObterCertificado());
+        var envelope = SilTecnologiaSoap.Envelope("NotaFiscalNacionalConsultar", xml);
+        var (sucessoHttp, resposta) = await EnviarSoapAsync("NotaFiscalNacionalConsultar", envelope,
+            $"ConsultarDps-{id}", documento, cancellationToken);
+
+        var retorno = SilTecnologiaSoap.Retorno(resposta);
+        var resultado = new RespostaConsultaChaveDps
+        {
+            IdDps = id,
+            Chave = SilTecnologiaSoap.ChaveAcesso(retorno),
+            Erros = SilTecnologiaSoap.Erros(retorno)
+        };
+
+        var sucesso = sucessoHttp && retorno != null && resultado.Erros.Count == 0 && !resultado.Chave.IsEmpty();
+        return NFSeResponse<RespostaConsultaChaveDps>.Create(envelope, resposta, sucesso, resultado);
+    }
+
+    /// <summary>
+    /// Verifica se uma NFS-e foi emitida a partir do Id da DPS (via <see cref="ConsultaChaveDpsAsync"/>).
+    /// </summary>
+    /// <param name="id">Id da DPS com 45 posições.</param>
+    /// <param name="cancellationToken">Token para cancelar a operação assíncrona.</param>
+    /// <returns>True se existir, caso contrário false.</returns>
+    public override async Task<bool> ConsultaExisteDpsAsync(string id, CancellationToken cancellationToken = default)
+    {
+        var consulta = await ConsultaChaveDpsAsync(id, cancellationToken);
+        return consulta.Sucesso;
+    }
+
+    /// <summary>
+    /// Distribui os DF-e por NSU pelo ADN. A SIL compartilha as NFS-e com o ADN, então a distribuição
+    /// é a mesma do provedor Nacional.
+    /// </summary>
     public override Task<NFSeResponse<RespostaConsultaDFe>> ConsultaNsuAsync(int nsu, CancellationToken cancellationToken = default) =>
-        throw OperacaoNaoSuportada(nameof(ConsultaNsuAsync));
+        Nacional().ConsultaNsuAsync(nsu, cancellationToken);
 
-    /// <summary>Não suportado pela SIL Tecnologia (não há distribuição por chave no WSDL).</summary>
+    /// <summary>Distribui os DF-e vinculados à chave pelo ADN.</summary>
     public override Task<NFSeResponse<RespostaConsultaDFe>> ConsultaChaveAsync(string chave, CancellationToken cancellationToken = default) =>
-        throw OperacaoNaoSuportada(nameof(ConsultaChaveAsync));
+        Nacional().ConsultaChaveAsync(chave, cancellationToken);
 
-    #endregion Não suportadas
+    /// <summary>Baixa o DANFSe pelo ADN.</summary>
+    public override Task<byte[]> DownloadDANFSeAsync(string chave, CancellationToken cancellationToken = default) =>
+        Nacional().DownloadDANFSeAsync(chave, cancellationToken);
+
+    #endregion Consultas
 
     #region Helpers
+
+    /// <summary>
+    /// Cria o provedor Nacional (Sefin/ADN) com a mesma configuração, transporte e armazenamento.
+    /// </summary>
+    /// <returns>Provedor Nacional.</returns>
+    /// <exception cref="InvalidOperationException">Quando o serviço Nacional não está cadastrado.</exception>
+    private NacionalWebservice Nacional()
+    {
+        var servico = NFSeServiceManager.Instance.Services.Webservices.FirstOrDefault(x => x.Provider == NFSeProvider.Nacional)
+                      ?? throw new InvalidOperationException("Serviço do provedor Nacional não cadastrado.");
+        return new NacionalWebservice(Configuracao, servico, HttpTransport) { DocumentStore = DocumentStore };
+    }
+
+    private DFeSaveOptions OpcoesXml() =>
+        Configuracao.Geral.RetirarAcentos
+            ? DFeSaveOptions.DisableFormatting | DFeSaveOptions.RemoveAccents
+            : DFeSaveOptions.DisableFormatting;
 
     /// <summary>
     /// Retorna o nome do município: do cadastro do provedor quando for o próprio município, ou da
