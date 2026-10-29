@@ -238,6 +238,12 @@ public enum NFSeProvider : sbyte
     SigISSWeb = 30,
 
     /// <summary>
+    /// Provedor SIL Tecnologia (webservice NotaFiscalNacional, layout nacional).
+    /// </summary>
+    [Description("SIL Tecnologia")]
+    SilTecnologia = 55,
+
+    /// <summary>
     /// Provedor SimplISS.
     /// </summary>
     SimplISS = 24,
