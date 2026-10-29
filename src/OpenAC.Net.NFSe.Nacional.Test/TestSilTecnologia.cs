@@ -170,6 +170,145 @@ public class TestSilTecnologia
             .IsEqualTo("https://tributario.bauru.sp.gov.br/services/NotaFiscalNacional");
     }
 
+    [Test]
+    public async Task Montar_SemAliquotaNaDps_UsaAliquotaInformada()
+    {
+        var dps = MontarDps();
+        dps.Informacoes.Valores.Tributos.Municipal.Aliquota = null;
+
+        var nfse = SilTecnologiaNFSe.Montar(dps, _ => "Bauru", DateTimeOffset.Now, 3m);
+
+        await Assert.That(nfse.Informacoes.Valores.Aliquota).IsEqualTo(3m);
+        await Assert.That(nfse.Informacoes.Valores.ValorISSQN).IsEqualTo(30m);
+        await Assert.That(nfse.Informacoes.Dps.Informacoes.Valores.Tributos.Municipal.Aliquota).IsNull();
+    }
+
+    [Test]
+    public async Task Cancelamento_EnviaEventoAssinadoParaSil()
+    {
+        var (provedor, transporte, certificado) = CriarProvedor(RetornoSoap("<Retorno><Status>SUCESSO</Status></Retorno>"));
+
+        var retorno = await provedor.EnviarEventoAsync(MontarPedido(new EventoCancelamento
+        {
+            CodMotivo = MotivoCancelamento.ErroEmissao,
+            Motivo = "Erro na emissao da nota"
+        }));
+
+        var operacao = XDocument.Parse(transporte.UltimoEnvio!).Descendants()
+            .Single(x => x.Name.LocalName == "NotaFiscalNacionalCancelar");
+        var xml = operacao.Element("xml")!.Value;
+        var documento = new XmlDocument { PreserveWhitespace = true };
+        documento.LoadXml(xml);
+        var assinaturas = documento.GetElementsByTagName("Signature", SignedXml.XmlDsigNamespaceUrl);
+        var signedXml = new SignedXml(documento);
+        signedXml.LoadXml((XmlElement)assinaturas[0]!);
+        var infEvento = (XmlElement)documento.GetElementsByTagName("infEvento", "http://www.sped.fazenda.gov.br/nfse")[0]!;
+
+        await Assert.That(retorno.Sucesso).IsTrue();
+        await Assert.That(retorno.Resultado!.XmlEvento).IsEqualTo(xml);
+        await Assert.That(transporte.UltimaUrl).IsEqualTo(UrlHomologacao);
+        await Assert.That(documento.DocumentElement!.LocalName).IsEqualTo("evento");
+        await Assert.That(infEvento.GetAttribute("Id")).IsEqualTo($"EVT{ChaveNFSe}101101001");
+        await Assert.That(assinaturas.Count).IsEqualTo(1);
+        await Assert.That(assinaturas[0]!.ParentNode!.LocalName).IsEqualTo("evento");
+        await Assert.That(signedXml.CheckSignature(certificado, true)).IsTrue();
+
+        XmlSchemaValidation.ValidarXml(xml, Path.Combine(AppContext.BaseDirectory, "Schemas", "1.01", "evento_v1.01.xsd"),
+            out var erros, out _);
+        await Assert.That(string.Join(" | ", erros)).IsEmpty();
+    }
+
+    [Test]
+    public async Task Substituicao_UsaOperacaoSubstituir()
+    {
+        var (provedor, transporte, _) = CriarProvedor(RetornoSoap("<Retorno><Status>SUCESSO</Status></Retorno>"));
+
+        await provedor.EnviarEventoAsync(MontarPedido(new EventoCancelamentoPorSubstituicao
+        {
+            CodMotivo = JustificativaSubstituicao.Outros,
+            Motivo = "Substituida por outra nota",
+            ChaveSubstituta = "35060032212345678000195000000000000226104123456789"
+        }));
+
+        await Assert.That(transporte.UltimoEnvio).Contains("NotaFiscalNacionalSubstituir");
+        await Assert.That(transporte.UltimoEnvio).Contains($"EVT{ChaveNFSe}105102001");
+    }
+
+    [Test]
+    public async Task EventoDeConfirmacao_VaiParaSefinNacional()
+    {
+        var (provedor, transporte, _) = CriarProvedor("{}");
+
+        try
+        {
+            await provedor.EnviarEventoAsync(MontarPedido(new EventoConfirmacaoPrestador()));
+        }
+        catch (Exception)
+        {
+            // O retorno simulado não é um retorno válido da Sefin; interessa só o destino da requisição.
+        }
+
+        await Assert.That(transporte.UltimaUrl).Contains("sefin");
+    }
+
+    [Test]
+    public async Task ConsultaNsu_VaiParaAdn()
+    {
+        var (provedor, transporte, _) = CriarProvedor("{}");
+
+        try
+        {
+            await provedor.ConsultaNsuAsync(1);
+        }
+        catch (Exception)
+        {
+            // O retorno simulado não é um retorno válido do ADN; interessa só o destino da requisição.
+        }
+
+        await Assert.That(transporte.UltimaUrl).Contains("adn");
+    }
+
+    [Test]
+    public async Task ConsultaChaveDps_ConsultaNaSilPeloIdDaDps()
+    {
+        var (provedor, transporte, _) = CriarProvedor(RetornoSoap(
+            $"<Retorno><Status>SUCESSO</Status><ChaveAcesso>{ChaveNFSe}</ChaveAcesso></Retorno>"));
+        var idDps = MontarDps().Informacoes.Id;
+
+        var retorno = await provedor.ConsultaChaveDpsAsync(idDps);
+
+        var xml = XDocument.Parse(transporte.UltimoEnvio!).Descendants()
+            .Single(x => x.Name.LocalName == "NotaFiscalNacionalConsultar").Element("xml")!.Value;
+        var consulta = XElement.Parse(xml);
+
+        await Assert.That(retorno.Sucesso).IsTrue();
+        await Assert.That(retorno.Resultado!.Chave).IsEqualTo(ChaveNFSe);
+        await Assert.That(consulta.Element("consul")!.Element("CNPJ")!.Value).IsEqualTo(CnpjPrestador);
+        await Assert.That(consulta.Element("DPS")!.Value).IsEqualTo(idDps);
+        await Assert.That(xml).Contains("<Signature");
+    }
+
+    private const string ChaveNFSe = "35060032212345678000195000000000000126104123456789";
+
+    private static PedidoRegistroEvento MontarPedido(IEventoNFSe evento) => new()
+    {
+        Versao = VersaoNFSe.Ve101,
+        Informacoes = new InfPedReg
+        {
+            Id = "PRE" + ChaveNFSe + evento switch
+            {
+                EventoCancelamento => TipoEventoCod.Cancelamento,
+                EventoCancelamentoPorSubstituicao => TipoEventoCod.CancelamentoPorSubstituicao,
+                _ => TipoEventoCod.ConfirmacaoPrestador
+            },
+            TipoAmbiente = DFeTipoAmbiente.Homologacao,
+            DhEvento = DateTimeOffset.Now,
+            CNPJAutor = CnpjPrestador,
+            ChNFSe = ChaveNFSe,
+            Evento = evento
+        }
+    };
+
     private static (SilTecnologiaWebService provedor, TransporteFalso transporte, X509Certificate2 certificado)
         CriarProvedor(string resposta)
     {
