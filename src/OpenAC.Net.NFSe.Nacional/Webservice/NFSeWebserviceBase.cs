@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Security.Cryptography.X509Certificates;
@@ -8,12 +9,14 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Xml.Schema;
 using OpenAC.Net.DFe.Core.Http;
+using OpenAC.Net.DFe.Core.Service;
 using OpenAC.Net.Core.Logging;
 using OpenAC.Net.DFe.Core;
 using OpenAC.Net.NFSe.Nacional.Common;
 using OpenAC.Net.NFSe.Nacional.Common.Model;
 using OpenAC.Net.NFSe.Nacional.Common.Types;
 using OpenAC.Net.DFe.Core.Storage;
+using OpenAC.Net.NFSe.Nacional.Storage;
 
 namespace OpenAC.Net.NFSe.Nacional.Webservice;
 
@@ -23,7 +26,7 @@ namespace OpenAC.Net.NFSe.Nacional.Webservice;
 /// validação de XML via schema e gravação de arquivos em disco.
 /// Implementa <see cref="IOpenLog"/> para integração com o sistema de logging.
 /// </summary>
-public abstract class NFSeWebserviceBase : IOpenLog
+public abstract class NFSeWebserviceBase : DFeHttpServiceClient, IOpenLog
 {
     #region Internal Types
 
@@ -247,13 +250,26 @@ public abstract class NFSeWebserviceBase : IOpenLog
 
         request.Content = content;
 
-        using var operation = CancellationTokenSource.CreateLinkedTokenSource(
-            cancellationToken, Configuracao.OperationToken.Value);
-        operation.Token.ThrowIfCancellationRequested();
-        using var certificate = ObterCertificado();
-        var options = new DFeHttpTransportOptions(Configuracao.WebServices, certificate);
-        return await HttpTransport.SendAsync(request, options, operation.Token).ConfigureAwait(false);
+        return await EnviarRequisicaoAsync(request, cancellationToken).ConfigureAwait(false);
     }
+
+    /// <inheritdoc />
+    protected override IDFeHttpTransport TransporteHttp => HttpTransport;
+
+    /// <inheritdoc />
+    protected override CancellationToken TokenOperacao => Configuracao.OperationToken.Value;
+
+    /// <inheritdoc />
+    protected override bool DescartarCertificadoAposEnvio => true;
+
+    /// <inheritdoc />
+    protected override DFeHttpTransportOptions CriarOpcoesHttp() => new(Configuracao.WebServices, ObterCertificado())
+    {
+        UseCookies = true,
+        AutomaticDecompression = DecompressionMethods.None,
+        TimeoutPerAttempt = true,
+        BufferRequestContent = true
+    };
 
     /// <summary>Carrega uma instância de certificado pertencente ao envio atual.</summary>
     protected virtual X509Certificate2? ObterCertificado() => CertificateLoader == null
@@ -314,14 +330,15 @@ public abstract class NFSeWebserviceBase : IOpenLog
     /// <param name="nomeArquivo">Nome do arquivo.</param>
     /// <param name="documento">Documento do prestador.</param>
     /// <param name="data">Data de emissão.</param>
-    /// <param name="incrementarNome">Indica se o nome do arquivo deve ser incrementado caso já exista.</param>
+    /// <param name="arquivoExiste">Comportamento quando o arquivo de destino já existe.</param>
     /// <param name="cancellationToken">Token para cancelar a gravação.</param>
     protected virtual Task GravarDpsEmDiscoAsync(string conteudoArquivo, string nomeArquivo, string? documento,
-        DateTime data, bool incrementarNome = false, CancellationToken cancellationToken = default)
+        DateTime data, DFeArquivoExiste arquivoExiste = DFeArquivoExiste.AdicionarSufixo, CancellationToken cancellationToken = default)
     {
         if (!Configuracao.Arquivos.Salvar) return Task.CompletedTask;
-        return DocumentStore.SaveAsync(new DFeDocument(DFeTipoDocumento.Solicitacao, conteudoArquivo, nomeArquivo,
-            documento, data, incrementarNome), Configuracao.Arquivos, cancellationToken);
+        cancellationToken.ThrowIfCancellationRequested();
+        return DocumentStore.SaveAsync(new NFSeDocument(Configuracao.Arquivos, NFSeCategorias.Dps,
+            conteudoArquivo, nomeArquivo, documento, data, arquivoExiste), cancellationToken);
     }
 
     /// <summary>
@@ -331,14 +348,15 @@ public abstract class NFSeWebserviceBase : IOpenLog
     /// <param name="nomeArquivo">Nome do arquivo.</param>
     /// <param name="documento">Documento do prestador.</param>
     /// <param name="data">Data de emissão.</param>
-    /// <param name="incrementarNome">Indica se o nome do arquivo deve ser incrementado caso já exista.</param>
+    /// <param name="arquivoExiste">Comportamento quando o arquivo de destino já existe.</param>
     /// <param name="cancellationToken">Token para cancelar a gravação.</param>
     protected virtual Task GravarNFSeEmDiscoAsync(string conteudoArquivo, string nomeArquivo, string? documento,
-        DateTime data, bool incrementarNome = false, CancellationToken cancellationToken = default)
+        DateTime data, DFeArquivoExiste arquivoExiste = DFeArquivoExiste.AdicionarSufixo, CancellationToken cancellationToken = default)
     {
         if (!Configuracao.Arquivos.Salvar) return Task.CompletedTask;
-        return DocumentStore.SaveAsync(new DFeDocument(DFeTipoDocumento.DocumentoFiscal, conteudoArquivo, nomeArquivo,
-            documento, data, incrementarNome), Configuracao.Arquivos, cancellationToken);
+        cancellationToken.ThrowIfCancellationRequested();
+        return DocumentStore.SaveAsync(new NFSeDocument(Configuracao.Arquivos, NFSeCategorias.NFSe,
+            conteudoArquivo, nomeArquivo, documento, data, arquivoExiste), cancellationToken);
     }
 
     /// <summary>
@@ -353,11 +371,12 @@ public abstract class NFSeWebserviceBase : IOpenLog
     {
         if (!Configuracao.Geral.Salvar) return Task.CompletedTask;
         
-        var tipo = nomeArquivo.Contains("-resp.", StringComparison.OrdinalIgnoreCase)
-            ? DFeTipoDocumento.RespostaTecnica
-            : DFeTipoDocumento.SolicitacaoTecnica;
-        return DocumentStore.SaveAsync(new DFeDocument(tipo, conteudoArquivo, nomeArquivo, documento,
-            DateTime.Today), Configuracao.Arquivos, cancellationToken);
+        cancellationToken.ThrowIfCancellationRequested();
+        var categoria = nomeArquivo.Contains("-resp.", StringComparison.OrdinalIgnoreCase)
+            ? DFeCategorias.RespostaTecnica
+            : DFeCategorias.SolicitacaoTecnica;
+        return DocumentStore.SaveAsync(new NFSeDocument(Configuracao.Arquivos, categoria,
+            conteudoArquivo, nomeArquivo, documento, DateTime.Today), cancellationToken);
     }
 
     #endregion Methods

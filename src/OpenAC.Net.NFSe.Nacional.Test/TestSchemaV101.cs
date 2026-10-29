@@ -55,9 +55,9 @@ public class TestSchemaV101
 
         await Assert.That(File.Exists(CaminhoSchemaDps)).IsTrue();
 
-        var valido = XmlSchemaValidation.ValidarXml(xml, CaminhoSchemaDps, out var erros, out _);
+        var valido = XmlSchemaValidation.ValidarXml(XmlSemAssinatura(xml), CaminhoSchemaDps, out var erros, out _);
 
-        await Assert.That(valido).IsTrue();
+        await Assert.That(valido).IsTrue().Because(string.Join(" | ", erros));
     }
 
     [Test]
@@ -67,7 +67,7 @@ public class TestSchemaV101
         // TCInfoDedRed é um xs:choice: pDR, vDR ou documentos - preencher apenas um.
         dps.Informacoes.Valores.ValoresDeducaoReducao = new ValoresDeducaoReducao
         {
-            Documentos =
+            Documentos = new()
             {
                 new DocumentoDeducaoReducao
                 {
@@ -86,9 +86,9 @@ public class TestSchemaV101
         await Assert.That(xml).Contains("<chNFe>");
         await Assert.That(xml).Contains("<tpDedRed>");
 
-        var valido = XmlSchemaValidation.ValidarXml(xml, CaminhoSchemaDps, out var erros, out _);
+        var valido = XmlSchemaValidation.ValidarXml(XmlSemAssinatura(xml), CaminhoSchemaDps, out var erros, out _);
 
-        await Assert.That(valido).IsTrue();
+        await Assert.That(valido).IsTrue().Because(string.Join(" | ", erros));
     }
 
     [Test]
@@ -118,15 +118,11 @@ public class TestSchemaV101
         var ordem = string.Join(",", tribMun.Elements().Select(e => e.Name.LocalName));
         await Assert.That(ordem).IsEqualTo("tribISSQN,tpImunidade,exigSusp,tpRetISSQN");
 
-        // A DPS não assinada sai com um ds:Signature vazio, que não passa no xmldsig (problema pré-existente,
-        // alheio ao exigSusp). ds:Signature é minOccurs="0" em TCDPS, então valida-se o documento sem ele.
-        var documento = XElement.Parse(xml);
-        documento.Descendants().Where(e => e.Name.LocalName == "Signature").Remove();
-        var valido = XmlSchemaValidation.ValidarXml(documento.ToString(), CaminhoSchemaDps, out var erros, out _);
+        var valido = XmlSchemaValidation.ValidarXml(XmlSemAssinatura(xml), CaminhoSchemaDps, out var erros, out _);
         await Assert.That(valido).IsTrue().Because(string.Join(" | ", erros));
 
         var lida = Dps.ReadFromXml(XElement.Parse(xml));
-        var suspensao = lida.Informacoes.Valores.Tributos.Municipal.Suspensao;
+        var suspensao = lida?.Informacoes.Valores.Tributos?.Municipal.Suspensao;
         await Assert.That(suspensao).IsNotNull();
         await Assert.That(suspensao!.TipoSuspensao).IsEqualTo(TipoSuspensao.PorDecisaoJudicial);
         await Assert.That(suspensao.NumeroProcesso).IsEqualTo(numeroProcesso);
@@ -219,6 +215,14 @@ public class TestSchemaV101
     /// <summary>
     /// Monta uma DPS v1.01 mínima e completa o suficiente para passar no schema.
     /// </summary>
+    private static string XmlSemAssinatura(string xml)
+    {
+        // As amostras são não assinadas. TCDPS permite omitir ds:Signature, mas não uma assinatura vazia.
+        var documento = XElement.Parse(xml);
+        documento.Elements(XName.Get("Signature", "http://www.w3.org/2000/09/xmldsig#")).Remove();
+        return documento.ToString();
+    }
+
     private static Dps MontarDps() => new()
     {
         Versao = VersaoNFSe.Ve101,

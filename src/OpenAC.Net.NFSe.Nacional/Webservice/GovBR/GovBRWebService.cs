@@ -177,7 +177,7 @@ public class GovBRWebService : NFSeWebserviceBase
     {
         var url = $"{ObterUrlBase()}/NotaNacional/ConsultarEventos/{Uri.EscapeDataString(chaveAcesso)}";
         using var httpResponse = await SendAsync(null, HttpMethod.Get, url, cancellationToken: cancellationToken);
-        var strResposta = await httpResponse.Content.ReadAsStringAsync();
+        var strResposta = await LerRespostaAsync(httpResponse, cancellationToken);
 
         await GravarArquivoEmDiscoAsync(strResposta, $"ConsultarEventos-{chaveAcesso}-resp.json", null, cancellationToken);
 
@@ -272,7 +272,7 @@ public class GovBRWebService : NFSeWebserviceBase
         var url = $"{ObterUrlBase()}/NotaNacional/ConsultarProtocolo/{Uri.EscapeDataString(filtro.Protocolo)}";
 
         using var httpResponse = await SendAsync(null, HttpMethod.Get, url, cancellationToken: cancellationToken);
-        var strResposta = await httpResponse.Content.ReadAsStringAsync();
+        var strResposta = await LerRespostaAsync(httpResponse, cancellationToken);
         await GravarArquivoEmDiscoAsync(strResposta, $"ConsultarProtocolo-{filtro.Protocolo}-resp.json", documento, cancellationToken);
 
         var retorno = TryDeserialize<RetornoLoteDto>(strResposta);
@@ -318,7 +318,7 @@ public class GovBRWebService : NFSeWebserviceBase
         }
 
         using var httpResponse = await SendAsync(null, HttpMethod.Get, url, cancellationToken: cancellationToken);
-        var strResposta = await httpResponse.Content.ReadAsStringAsync();
+        var strResposta = await LerRespostaAsync(httpResponse, cancellationToken);
         await GravarArquivoEmDiscoAsync(strResposta, $"ConsultarNFSe-{identificador}-resp.json", filtro.CNPJ ?? filtro.CPF, cancellationToken);
 
         var retorno = TryDeserialize<RetornoConsultaDto>(strResposta);
@@ -340,7 +340,7 @@ public class GovBRWebService : NFSeWebserviceBase
         var url = $"{ObterUrlBase()}/NotaNacional/ConsultarDPS/{documento}/{serie}/{numero}";
 
         using var httpResponse = await SendAsync(null, HttpMethod.Get, url, cancellationToken: cancellationToken);
-        var strResposta = await httpResponse.Content.ReadAsStringAsync();
+        var strResposta = await LerRespostaAsync(httpResponse, cancellationToken);
         await GravarArquivoEmDiscoAsync(strResposta, $"ConsultaChaveDps-{id}-resp.json", documento, cancellationToken);
 
         var retorno = TryDeserialize<RetornoConsultaDto>(strResposta);
@@ -374,7 +374,7 @@ public class GovBRWebService : NFSeWebserviceBase
         using var httpResponse = await SendAsync(null, HttpMethod.Get, url, cancellationToken: cancellationToken);
         httpResponse.EnsureSuccessStatusCode();
 
-        var strResposta = await httpResponse.Content.ReadAsStringAsync();
+        var strResposta = await LerRespostaAsync(httpResponse, cancellationToken);
         var retorno = TryDeserialize<RetornoPdfDto>(strResposta) ??
             throw new InvalidOperationException("Resposta inválida ao baixar o DANFSe do provedor GovernancaBrasil.");
 
@@ -425,7 +425,7 @@ public class GovBRWebService : NFSeWebserviceBase
 
         var url = $"{ObterUrlBase()}/NotaNacional/{operacao}";
         using var httpResponse = await SendAsync(content, HttpMethod.Post, url, cancellationToken: cancellationToken);
-        var strResposta = await httpResponse.Content.ReadAsStringAsync();
+        var strResposta = await LerRespostaAsync(httpResponse, cancellationToken);
 
         this.Log().Debug($"GovBR: [{operacao}][Resposta] - {strResposta}");
         await GravarArquivoEmDiscoAsync(strResposta, $"{nomeArquivo}-resp.json", documento, cancellationToken);

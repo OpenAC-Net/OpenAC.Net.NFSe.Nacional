@@ -469,7 +469,7 @@ public class ISSNetWebService : NacionalWebservice
         var url = ServiceInfo[Configuracao.WebServices.Ambiente][TipoUrl.Enviar] ?? throw new InvalidOperationException("URL de envio não encontrada na configuração do serviço.");
         using var httpResponse = await SendAsync(content, HttpMethod.Post, $"{url}/nfse.asmx", cancellationToken: cancellationToken);
 
-        var strResponse = await httpResponse.Content.ReadAsStringAsync();
+        var strResponse = await LerRespostaAsync(httpResponse, cancellationToken);
 
         this.Log().Debug($"ISSNet: [{operacao}][Resposta] - {strResponse}");
 

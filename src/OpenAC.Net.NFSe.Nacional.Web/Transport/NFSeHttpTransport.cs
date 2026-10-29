@@ -6,22 +6,22 @@ namespace OpenAC.Net.NFSe.Nacional.Web.Transport;
 
 /// <summary>Adapta o contrato HTTP do DFe.Core ao IHttpClientFactory do host.</summary>
 internal sealed class NFSeHttpTransport(IHttpClientFactory httpClientFactory, NFSeHttpClientRegistry registry,
-    ILogger<NFSeHttpTransport> logger) : IDFeHttpTransport
+    ILogger<NFSeHttpTransport> logger) : DFeHttpTransportBase
 {
     internal static readonly HttpRequestOptionsKey<string> TenantKey = new("OpenAC.Net.NFSe.Nacional.Tenant");
 
-    public async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, DFeHttpTransportOptions options,
+    protected override bool ManageRetries => false;
+
+    protected override async Task<HttpResponseMessage> SendCoreAsync(HttpRequestMessage request, DFeHttpTransportOptions options,
         CancellationToken cancellationToken = default)
     {
         var endpoint = request.RequestUri ?? throw new InvalidOperationException("A requisição não possui endpoint.");
         logger.LogDebug("Enviando {Method} ao host {Host} pelo IHttpClientFactory", request.Method, endpoint.Authority);
         var tenant = request.Options.TryGetValue(TenantKey, out var identity) ? identity : NFSeTenant.Padrao;
         var name = registry.Register(tenant, options, endpoint);
-        using var timeout = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
-        timeout.CancelAfter(options.Timeout);
         using var client = httpClientFactory.CreateClient(name);
-        // O contrato do Core exige bufferizar o corpo antes de liberar cliente e timeout.
-        return await client.SendAsync(request, HttpCompletionOption.ResponseContentRead, timeout.Token)
+        // A base do Core conclui a leitura do corpo dentro do timeout da operação.
+        return await client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, cancellationToken)
             .ConfigureAwait(false);
     }
 }

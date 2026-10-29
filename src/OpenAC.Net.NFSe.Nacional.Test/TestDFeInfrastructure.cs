@@ -1,8 +1,8 @@
 using System.Net;
 using System.Security.Cryptography.X509Certificates;
-using OpenAC.Net.DFe.Core.Common;
 using OpenAC.Net.DFe.Core.Http;
 using OpenAC.Net.DFe.Core.Storage;
+using OpenAC.Net.NFSe.Nacional.Storage;
 using OpenAC.Net.NFSe.Nacional.Common;
 using OpenAC.Net.NFSe.Nacional.Webservice;
 using OpenAC.Net.NFSe.Nacional.Webservice.Nacional;
@@ -25,6 +25,10 @@ public class TestDFeInfrastructure
         await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.BadRequest);
         await Assert.That(await response.Content.ReadAsStringAsync()).IsEqualTo("rejeição fiscal");
         await Assert.That(transport.Options!.Attempts).IsEqualTo(1);
+        await Assert.That(transport.Options.UseCookies).IsTrue();
+        await Assert.That(transport.Options.AutomaticDecompression).IsEqualTo(DecompressionMethods.None);
+        await Assert.That(transport.Options.TimeoutPerAttempt).IsTrue();
+        await Assert.That(transport.Options.BufferRequestContent).IsTrue();
         await Assert.That(transport.Options.Proxy).IsEqualTo("http://proxy.test:8080");
         await Assert.That(transport.Options.Timeout).IsEqualTo(TimeSpan.FromMilliseconds(1750));
         await Assert.That(transport.Calls).IsEqualTo(1);
@@ -54,24 +58,65 @@ public class TestDFeInfrastructure
         await provider.SaveRequest();
         await provider.SaveFiscal();
         await provider.SaveTechnical();
-        await Assert.That(store.Documents.Select(document => document.Tipo).ToArray()).IsEquivalentTo(new[]
+        await Assert.That(store.Documents.Cast<NFSeDocument>().Select(document => document.Categoria).ToArray()).IsEquivalentTo(new[]
         {
-            DFeTipoDocumento.Solicitacao, DFeTipoDocumento.DocumentoFiscal, DFeTipoDocumento.RespostaTecnica
+            NFSeCategorias.Dps, NFSeCategorias.NFSe, DFeCategorias.RespostaTecnica
         });
-        await Assert.That(store.Configurations.All(configuration => ReferenceEquals(configuration, config.Arquivos))).IsTrue();
+        await Assert.That(store.Documents.Cast<NFSeDocument>().All(document => ReferenceEquals(document.Arquivos, config.Arquivos))).IsTrue();
+    }
+
+    [Test]
+    [Arguments(DFeArquivoExiste.AdicionarSufixo)]
+    [Arguments(DFeArquivoExiste.LancarErro)]
+    [Arguments(DFeArquivoExiste.Sobrescrever)]
+    public async Task Provider_EncaminhaComportamentoDeColisaoAoStore(DFeArquivoExiste comportamento)
+    {
+        var config = new ConfiguracaoNFSe();
+        var store = new RecordingStore();
+        config.DocumentStore = store;
+        var provider = new TestProvider(config);
+        await provider.SaveRequest(comportamento);
+        await Assert.That(store.Documents.Single().ArquivoExiste).IsEqualTo(comportamento);
+    }
+
+    [Test]
+    [Arguments(false)]
+    [Arguments(true)]
+    public async Task Provider_UsaDecodificacaoCompartilhadaParaCharsetIncorretoOuAusente(bool latin1)
+    {
+        var config = new ConfiguracaoNFSe();
+        config.HttpTransport = new RecordingTransport
+        {
+            ContentFactory = () =>
+            {
+                var bytes = (latin1 ? System.Text.Encoding.Latin1 : System.Text.Encoding.UTF8).GetBytes("ação e emissão");
+                var content = new ByteArrayContent(bytes);
+                if (!latin1) content.Headers.TryAddWithoutValidation("Content-Type", "text/xml; charset=ISO-8859-1");
+                return content;
+            }
+        };
+        var provider = new TestProvider(config);
+        await Assert.That(await provider.ReadText()).IsEqualTo("ação e emissão");
     }
 
     private sealed class TestProvider(ConfiguracaoNFSe config) : NacionalWebservice(config, new NFSeServiceInfo())
     {
         protected override X509Certificate2? ObterCertificado() => null;
+        internal async Task<string> ReadText()
+        {
+            using var response = await Send();
+            return await LerRespostaAsync(response);
+        }
         internal Task<HttpResponseMessage> Send() => SendAsync(new StringContent("consulta"), HttpMethod.Post, "https://servico.test/");
-        internal Task SaveRequest() => GravarDpsEmDiscoAsync("evento enviado", "evento.xml", "12345678000190", DateTime.Today);
+        internal Task SaveRequest(DFeArquivoExiste comportamento = DFeArquivoExiste.AdicionarSufixo) =>
+            GravarDpsEmDiscoAsync("evento enviado", "evento.xml", "12345678000190", DateTime.Today, comportamento);
         internal Task SaveFiscal() => GravarNFSeEmDiscoAsync("evento autorizado", "evento.xml", "12345678000190", DateTime.Today);
         internal Task SaveTechnical() => GravarArquivoEmDiscoAsync("resposta", "evento-resp.json", null);
     }
 
     private sealed class RecordingTransport : IDFeHttpTransport
     {
+        internal Func<HttpContent> ContentFactory { get; init; } = () => new StringContent("rejeição fiscal");
         internal int Calls { get; private set; }
         internal DFeHttpTransportOptions? Options { get; private set; }
         public Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, DFeHttpTransportOptions options,
@@ -79,19 +124,17 @@ public class TestDFeInfrastructure
         {
             Calls++;
             Options = options;
-            return Task.FromResult(new HttpResponseMessage(HttpStatusCode.BadRequest) { Content = new StringContent("rejeição fiscal") });
+            return Task.FromResult(new HttpResponseMessage(HttpStatusCode.BadRequest) { Content = ContentFactory() });
         }
     }
 
     private sealed class RecordingStore : IDFeDocumentStore
     {
-        internal List<DFeDocument> Documents { get; } = new();
-        internal List<DFeArquivosConfigBase> Configurations { get; } = new();
-        public Task SaveAsync(DFeDocument document, DFeArquivosConfigBase configuration,
+        internal List<IDFeDocument> Documents { get; } = new();
+        public Task SaveAsync(IDFeDocument document,
             CancellationToken cancellationToken = default)
         {
             Documents.Add(document);
-            Configurations.Add(configuration);
             return Task.CompletedTask;
         }
     }

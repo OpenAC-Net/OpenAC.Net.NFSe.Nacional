@@ -279,17 +279,36 @@ rejeição fiscal sem depender da mensagem textual da exceção.
 
 ## Infraestrutura compartilhada do DFe.Core
 
-Os contratos HTTP e de persistência pertencem ao `OpenAC.Net.DFe.Core` (1.8.0-beta.1).
+Os contratos HTTP e de persistência pertencem ao `OpenAC.Net.DFe.Core` (1.8.0-beta.4).
 Provedores e extensões usam `IDFeHttpTransport`, `DFeHttpTransportOptions`, `IDFeDocumentStore`,
-`DFeDocument` e `DFeTipoDocumento`. As implementações desktop e o pool locais foram removidos.
+`IDFeDocument` e `DFeCategorias`. As implementações desktop e o pool locais foram removidos.
 No desktop, `Configuracoes.HttpTransport` e `Configuracoes.DocumentStore` podem ser substituídos;
 no host, registre implementações dos contratos compartilhados no container de DI.
 
 O adaptador web preserva `IHttpClientFactory`, resiliência e isolamento por empresa/endpoint,
-considerando também certificado, TLS, proxy e validação do servidor. O corpo é bufferizado antes
-de devolver a resposta e o timeout inclui sua leitura. Cookies não são compartilhados.
+considerando também certificado, TLS, proxy e validação do servidor. Mantém os timeouts por operação/tentativa do host e os cookies no handler isolado
+por empresa. O adaptador herda `DFeHttpTransportBase`, que conclui a leitura do corpo antes de
+encerrar o timeout. Os provedores herdam `DFeHttpServiceClient` e usam `DFeHttpResponse` para
+BOM, UTF-8 válido e fallback de charset. Essa proteção de leitura substitui o retorno em streaming.
 
-DPS e eventos enviados usam `Solicitacao` e permanecem em `PathDps`. Documentos autorizados e
-respostas fiscais usam `DocumentoFiscal` e permanecem em `PathNFSe`. Payloads de comunicação
+No desktop, preserva os padrões anteriores: cookies habilitados, ausência de descompactação
+automática, corpo da requisição bufferizado antes do envio e timeout aplicado por tentativa.
+GET, HEAD, OPTIONS e TRACE podem repetir falhas transitórias; POST, PUT, PATCH e DELETE são
+enviados uma única vez. O corpo, os cabeçalhos e as respostas HTTP de erro continuam disponíveis
+para interpretação pelo provedor fiscal.
+
+DPS e eventos enviados usam `NFSeCategorias.Dps` e permanecem em `PathDps`. Documentos autorizados e
+respostas fiscais usam `NFSeCategorias.NFSe` e permanecem em `PathNFSe`. Payloads de comunicação
 usam `SolicitacaoTecnica`/`RespostaTecnica` em `PathEnvio`. A resolução desses diretórios pertence
 a `NFSeArquivoConfig.GetDocumentPath`; a criação dos arquivos é delegada ao DFe.Core.
+
+`NFSeDocument` implementa `IDFeDocument` com `Caminho`, `Conteudo` e `ArquivoExiste`.
+Também mantém categoria, contribuinte, data e configuração de arquivos, usados pelo adaptador
+web para resolver a raiz da empresa sem alterar a configuração original. O caminho desktop
+é resolvido apenas quando consultado, evitando criar pastas locais no host web.
+`SaveAsync` recebe somente o documento e o token de cancelamento.
+
+Os métodos de gravação fiscal recebem `DFeArquivoExiste`: `AdicionarSufixo` (padrão),
+`LancarErro` ou `Sobrescrever`. O adaptador web mantém o comportamento escolhido ao delegar
+a gravação ao Core. O store web padrão requer `NFSeDocument` para identificar a empresa e as regras fiscais;
+para outros formatos de documento, registre seu próprio `IDFeDocumentStore`.

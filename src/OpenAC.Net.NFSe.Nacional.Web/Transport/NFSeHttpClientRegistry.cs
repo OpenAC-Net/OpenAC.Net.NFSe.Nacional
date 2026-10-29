@@ -20,7 +20,7 @@ using Polly;
 namespace OpenAC.Net.NFSe.Nacional.Web.Transport;
 
 internal sealed record NFSeHttpClientRegistration(X509Certificate2? Certificate, SslProtocols Protocols,
-    string Proxy, bool ValidateServerCertificate, int Tentativas, TimeSpan IntervaloTentativas);
+    string Proxy, bool ValidateServerCertificate, bool UseCookies, int Tentativas, TimeSpan IntervaloTentativas);
 
 internal sealed class NFSeHttpClientRegistry : INFSeTenantContextAccessor, IDisposable
 {
@@ -44,13 +44,13 @@ internal sealed class NFSeHttpClientRegistry : INFSeTenantContextAccessor, IDisp
 
     public string Register(string tenant, DFeHttpTransportOptions options, Uri endpoint)
     {
-        var identity = $"{tenant}|{options.Certificate?.Thumbprint}|{(int)options.Protocols}|{endpoint.GetLeftPart(UriPartial.Authority)}|{options.Proxy}|{options.ValidateServerCertificate}|{options.Attempts}|{options.RetryDelay.Ticks}";
+        var identity = $"{tenant}|{options.Certificate?.Thumbprint}|{(int)options.Protocols}|{endpoint.GetLeftPart(UriPartial.Authority)}|{options.Proxy}|{options.ValidateServerCertificate}|{options.UseCookies}|{options.Attempts}|{options.RetryDelay.Ticks}";
         var name = Prefix + Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(identity)));
         if (!registrations.ContainsKey(name))
         {
             var owned = options.Certificate == null ? null : new X509Certificate2(options.Certificate);
             if (!registrations.TryAdd(name, new(owned, options.Protocols, options.Proxy,
-                    options.ValidateServerCertificate, options.Attempts, options.RetryDelay)))
+                    options.ValidateServerCertificate, options.UseCookies, options.Attempts, options.RetryDelay)))
                 owned?.Dispose();
         }
         return name;
@@ -86,7 +86,7 @@ internal sealed class NFSeHttpClientOptions(NFSeHttpClientRegistry registry, IOp
             if (!registration.ValidateServerCertificate) ssl.RemoteCertificateValidationCallback = (_, _, _, _) => true;
             builder.PrimaryHandler = new CertificateHandler(certificate, new SocketsHttpHandler
             {
-                UseCookies = false,
+                UseCookies = registration.UseCookies,
                 AutomaticDecompression = DecompressionMethods.All,
                 PooledConnectionLifetime = options.Value.TempoVidaConexaoPool,
                 Proxy = string.IsNullOrWhiteSpace(registration.Proxy) ? null : new WebProxy(registration.Proxy, true),
@@ -106,9 +106,9 @@ internal sealed class NFSeHttpClientOptions(NFSeHttpClientRegistry registry, IOp
                 retry.DisableForUnsafeHttpMethods();
                 pipeline.AddRetry(retry);
             }
+            pipeline.AddTimeout(options.Value.TimeoutTentativa);
             if (options.Value.CircuitBreakerHabilitado)
                 pipeline.AddCircuitBreaker(new HttpCircuitBreakerStrategyOptions());
-            pipeline.AddTimeout(options.Value.TimeoutTentativa);
             builder.AdditionalHandlers.Add(new ResilienceHandler(pipeline.Build()));
         });
     }

@@ -40,17 +40,20 @@ public class TestMultiTenantWeb
         await Assert.That(httpClients.Names.Distinct().Count()).IsEqualTo(2);
         await Assert.That(httpClients.Names.Count).IsEqualTo(20);
         var handlers = serviceProvider.GetRequiredService<IHttpMessageHandlerFactory>();
+        var cookieContainers = new List<System.Net.CookieContainer>();
         foreach (var name in httpClients.Names.Distinct())
         {
             var handler = handlers.CreateHandler(name);
             while (handler is DelegatingHandler delegating) handler = delegating.InnerHandler!;
             await Assert.That(handler is SocketsHttpHandler).IsTrue();
             var sockets = (SocketsHttpHandler)handler;
-            await Assert.That(sockets.UseCookies).IsFalse();
+            await Assert.That(sockets.UseCookies).IsTrue();
+            cookieContainers.Add(sockets.CookieContainer);
             await Assert.That(sockets.SslOptions.ClientCertificates!.Count).IsEqualTo(1);
             await Assert.That(((X509Certificate2)sockets.SslOptions.ClientCertificates[0]).HasPrivateKey).IsTrue();
             await Assert.That(((System.Net.WebProxy)sockets.Proxy!).Address!.Host).IsEqualTo("proxy.test");
         }
+        await Assert.That(cookieContainers.Distinct().Count()).IsEqualTo(2);
         foreach (var tenant in new[] { "empresa-0", "empresa-1" })
         {
             var hash = Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(tenant)));

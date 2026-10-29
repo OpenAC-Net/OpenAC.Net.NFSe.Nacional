@@ -1,4 +1,4 @@
-﻿// ***********************************************************************
+// ***********************************************************************
 // Assembly         : OpenAC.Net.NFSe.Nacional
 // Author           : RGG
 // Created          : 14-01-2026
@@ -105,7 +105,7 @@ public class TiplanWebService : NacionalWebservice
         using var httpResponse = await SendAsync(content, HttpMethod.Post, $"{url}/adn/dps/recepcao",
             cancellationToken: cancellationToken);
 
-        var strResponse = await httpResponse.Content.ReadAsStringAsync();
+        var strResponse = await LerRespostaAsync(httpResponse, cancellationToken);
 
         this.Log().Debug($"Tiplan: [Enviar][Resposta] - {strResponse}");
 
@@ -149,7 +149,7 @@ public class TiplanWebService : NacionalWebservice
         using var httpResponse = await SendAsync(content, HttpMethod.Post, $"{url}/adn/dps/evento",
             cancellationToken: cancellationToken);
 
-        var strResponse = await httpResponse.Content.ReadAsStringAsync();
+        var strResponse = await LerRespostaAsync(httpResponse, cancellationToken);
 
         this.Log().Debug($"Tiplan: [Evento][Resposta] - {strResponse}");
 

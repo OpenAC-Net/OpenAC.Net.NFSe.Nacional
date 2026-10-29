@@ -25,6 +25,7 @@
 // <summary></summary>
 // ***********************************************************************
 
+using OpenAC.Net.DFe.Core.Storage;
 using OpenAC.Net.DFe.Core.Http;
 using System;
 using System.Collections.Generic;
@@ -314,7 +315,7 @@ public class FiorilliWebService : NFSeWebserviceBase
         ValidarSchema(SchemaNFSe.Evento, eventoAssinado, evento.Versao);
 
         await GravarDpsEmDiscoAsync(eventoAssinado, $"{evento.Informacoes.ChNFSe}{evento.Informacoes.Evento}_evento.xml",
-            documento, evento.Informacoes.DhEvento.DateTime, true, cancellationToken);
+            documento, evento.Informacoes.DhEvento.DateTime, DFeArquivoExiste.LancarErro, cancellationToken);
 
         var corpo = $"<CancelarNFSeEnvio xmlns=\"{FiorilliSoap.NsFiorilli}\">" +
                     FiorilliSoap.Elemento("IM", inscricaoMunicipal) +
@@ -443,7 +444,7 @@ public class FiorilliWebService : NFSeWebserviceBase
         var headers = new[] { new KeyValuePair<string, string>("SOAPAction", $"\"{soapAction}\"") };
 
         using var httpResponse = await SendAsync(content, HttpMethod.Post, url, headers, cancellationToken: cancellationToken);
-        var resposta = await httpResponse.Content.ReadAsStringAsync();
+        var resposta = await LerRespostaAsync(httpResponse, cancellationToken);
 
         this.Log().Debug($"Fiorilli: [{soapAction}][Resposta] - {resposta}");
         await GravarArquivoEmDiscoAsync(resposta, $"{nomeArquivo}-resp.xml", documento);

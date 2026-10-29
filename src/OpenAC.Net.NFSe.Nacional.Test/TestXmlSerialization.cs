@@ -286,7 +286,7 @@ public class TestXmlSerialization
                     ValoresServico = new ValoresServico { Valor = 5000m },
                     ValoresDeducaoReducao = new ValoresDeducaoReducao
                     {
-                        Documentos =
+                        Documentos = new()
                         {
                             new DocumentoDeducaoReducao
                             {
@@ -322,7 +322,8 @@ public class TestXmlSerialization
         var dpsLida = Dps.ReadFromXml(element);
 
         await Assert.That(dpsLida).IsNotNull();
-        var docs = dpsLida!.Informacoes.Valores.ValoresDeducaoReducao!.Documentos;
+        var docs = dpsLida!.Informacoes.Valores.ValoresDeducaoReducao!.Documentos
+            ?? throw new InvalidOperationException("Documentos de dedução não foram desserializados.");
         await Assert.That(docs.Count).IsEqualTo(2);
         await Assert.That(docs[0].TipoDeducaoReducao).IsEqualTo(TipoDeducaoReducao.Materiais);
         await Assert.That(docs[0].ChaveNFe).IsEqualTo("35260812345678000199550010000001231000000010");

@@ -107,22 +107,23 @@ public sealed class NFSeArquivoConfig : DFeArquivosConfigBase<SchemaNFSe>
     #region Methods
 
     /// <summary>Resolve os diretórios de solicitações fiscais, documentos autorizados e payloads técnicos.</summary>
-    public override string GetDocumentPath(DFeDocument document)
+    public override string GetDocumentPath(string categoria, string? documentoContribuinte = null, DateTime? data = null)
     {
-        if (document == null) throw new ArgumentNullException(nameof(document));
         // GetPath inicializa a ordenação; sincroniza o acesso à configuração compartilhada.
         lock (OrdenacaoPath)
         {
-            var taxpayer = document.DocumentoContribuinte ?? string.Empty;
-            return document.Tipo switch
+            var taxpayer = documentoContribuinte ?? string.Empty;
+            var date = data ?? DateTime.Now;
+            return categoria switch
             {
-                DFeTipoDocumento.Solicitacao => GetPathDps(document.Data, taxpayer),
-                DFeTipoDocumento.DocumentoFiscal => GetPathNFSe(document.Data, taxpayer),
-                _ => GetPathEnvio(document.Data, taxpayer)
+                NFSeCategorias.Dps => GetPathDps(date, taxpayer),
+                NFSeCategorias.NFSe => GetPathNFSe(date, taxpayer),
+                DFeCategorias.Solicitacao or DFeCategorias.Resposta or
+                    DFeCategorias.SolicitacaoTecnica or DFeCategorias.RespostaTecnica => GetPathEnvio(date, taxpayer),
+                _ => base.GetDocumentPath(categoria, documentoContribuinte, data)
             };
         }
     }
-
 
     /// <summary>
     /// Obtém o caminho para arquivos NFSe com base na data e CNPJ especificados.
