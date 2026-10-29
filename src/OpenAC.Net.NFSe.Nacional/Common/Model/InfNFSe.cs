@@ -88,13 +88,13 @@ public sealed partial class InfNFSe
     /// <summary>
     /// Descrição do tributo municipal.
     /// </summary>
-    [DFeElement(TipoCampo.Str, "xTribMun", Min = 1, Max = 600, Ocorrencia = Ocorrencia.Obrigatoria)]
+    [DFeElement(TipoCampo.Str, "xTribMun", Min = 1, Max = 600, Ocorrencia = Ocorrencia.NaoObrigatoria)]
     public string? DescricaoTributoMunicipal { get; set; }
     
     /// <summary>
     /// Descrição do código NBS.
     /// </summary>
-    [DFeElement(TipoCampo.Str, "xNBS", Min = 1, Max = 600, Ocorrencia = Ocorrencia.Obrigatoria)]
+    [DFeElement(TipoCampo.Str, "xNBS", Min = 1, Max = 600, Ocorrencia = Ocorrencia.NaoObrigatoria)]
     public string? DescricaoCodNBS { get; set; }
     
     /// <summary>

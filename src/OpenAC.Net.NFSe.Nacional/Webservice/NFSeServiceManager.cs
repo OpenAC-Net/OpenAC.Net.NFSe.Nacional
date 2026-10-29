@@ -78,6 +78,13 @@ public sealed partial class NFSeServiceManager
                     { VersaoNFSe.Ve100, typeof(GovBR.GovBRWebService) },
                     { VersaoNFSe.Ve101, typeof(GovBR.GovBRWebService) }
                 }
+            },
+            {
+                NFSeProvider.SilTecnologia, new Dictionary<VersaoNFSe, Type>
+                {
+                    { VersaoNFSe.Ve100, typeof(SilTecnologia.SilTecnologiaWebService) },
+                    { VersaoNFSe.Ve101, typeof(SilTecnologia.SilTecnologiaWebService) }
+                }
             }
         };
 
