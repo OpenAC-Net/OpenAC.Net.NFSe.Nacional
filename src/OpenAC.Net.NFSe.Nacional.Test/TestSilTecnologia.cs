@@ -88,15 +88,28 @@ public class TestSilTecnologia
     }
 
     [Test]
-    [Arguments("070201", true)]
-    [Arguments("120101", true)]
-    [Arguments("121301", false)]
-    [Arguments("160101", true)]
-    [Arguments("010101", false)]
-    [Arguments("170101", false)]
-    public async Task IncideNoLocalDaPrestacao_SegueArt3DaLC116(string codigo, bool esperado)
+    public async Task Montar_SemMunicipioIncidencia_UsaMunicipioDoEmitente()
     {
-        await Assert.That(SilTecnologiaNFSe.IncideNoLocalDaPrestacao(codigo)).IsEqualTo(esperado);
+        var dps = MontarDps();
+        dps.Informacoes.Servico.Localidade.CodMunicipioPrestacao = "3550308";
+
+        var nfse = SilTecnologiaNFSe.Montar(dps, codigo => codigo == CodBauru ? "Bauru" : "São Paulo", DateTimeOffset.Now);
+
+        await Assert.That(nfse.Informacoes.CodLocalIncidencia).IsEqualTo(CodBauru);
+        await Assert.That(nfse.Informacoes.LocalIncidencia).IsEqualTo("Bauru");
+    }
+
+    [Test]
+    public async Task Montar_ComMunicipioIncidencia_UsaMunicipioInformado()
+    {
+        var dps = MontarDps();
+        dps.Informacoes.Servico.Localidade.CodMunicipioPrestacao = "3550308";
+
+        var nfse = SilTecnologiaNFSe.Montar(dps, codigo => codigo == CodBauru ? "Bauru" : "São Paulo",
+            DateTimeOffset.Now, "3550308");
+
+        await Assert.That(nfse.Informacoes.CodLocalIncidencia).IsEqualTo("3550308");
+        await Assert.That(nfse.Informacoes.LocalIncidencia).IsEqualTo("São Paulo");
     }
 
     [Test]
