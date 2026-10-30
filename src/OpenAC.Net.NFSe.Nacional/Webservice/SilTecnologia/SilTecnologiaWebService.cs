@@ -94,7 +94,8 @@ public class SilTecnologiaWebService : NFSeWebserviceBase
     /// </summary>
     /// <param name="dps">
     /// DPS com o nome e o endereço do prestador (usados no grupo <c>emit</c>) e a alíquota do ISSQN em
-    /// <c>tribMun/pAliq</c> (usada em <c>infNFSe/valores</c>) preenchidos.
+    /// <c>tribMun/pAliq</c> (usada em <c>infNFSe/valores</c>) preenchidos. O município de incidência do ISSQN
+    /// vem de <see cref="NFSeWebserviceConfig.CodigoMunicipioIncidencia"/>.
     /// </param>
     /// <param name="cancellationToken">Token para cancelar a operação assíncrona.</param>
     /// <returns>Resposta do envio.</returns>
@@ -107,6 +108,7 @@ public class SilTecnologiaWebService : NFSeWebserviceBase
     /// <summary>
     /// Monta a NFS-e a partir da DPS, resolvendo os nomes dos municípios (<c>xLocEmi</c>, <c>xLocPrestacao</c>,
     /// <c>xLocIncid</c>) pelo cadastro do município do provedor ou pela API de localidades do IBGE.
+    /// O município de incidência vem de <see cref="NFSeWebserviceConfig.CodigoMunicipioIncidencia"/>.
     /// </summary>
     /// <param name="dps">DPS de origem. Não é alterada.</param>
     /// <param name="cancellationToken">Token para cancelar a operação assíncrona.</param>
@@ -114,15 +116,16 @@ public class SilTecnologiaWebService : NFSeWebserviceBase
     public async Task<NotaFiscalServico> MontarNFSeAsync(Dps dps, CancellationToken cancellationToken = default)
     {
         var inf = dps.Informacoes;
+        var codIncidencia = Configuracao.WebServices.CodigoMunicipioIncidencia;
         var nomes = new Dictionary<string, string>();
-        foreach (var codigo in new[] { inf.LocalidadeEmitente, inf.Servico.Localidade.CodMunicipioPrestacao })
+        foreach (var codigo in new[] { inf.LocalidadeEmitente, inf.Servico.Localidade.CodMunicipioPrestacao, codIncidencia })
         {
             if (string.IsNullOrEmpty(codigo) || nomes.ContainsKey(codigo!)) continue;
             nomes[codigo!] = await ObterNomeMunicipioAsync(codigo!, cancellationToken);
         }
 
         var dataProcessamento = DateTimeOffset.Now.ToOffset(inf.DhEmissao.Offset);
-        return SilTecnologiaNFSe.Montar(dps, codigo => nomes[codigo], dataProcessamento);
+        return SilTecnologiaNFSe.Montar(dps, codigo => nomes[codigo], dataProcessamento, codIncidencia);
     }
 
     /// <summary>

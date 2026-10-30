@@ -8,7 +8,6 @@
 // ***********************************************************************
 
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using OpenAC.Net.Core.Extensions;
 using OpenAC.Net.DFe.Core.Common;
@@ -35,16 +34,6 @@ public static class SilTecnologiaNFSe
     /// <summary>Versão do aplicativo exigida pela SIL em <c>infNFSe/verAplic</c> e <c>infDPS/verAplic</c>.</summary>
     public const string VersaoAplicacao = "SilTecnologia_v1.00";
 
-    /// <summary>
-    /// Subitens da LC 116/2003 (art. 3º, incisos II a XX) cujo ISSQN é devido no local da prestação.
-    /// Itens inteiros (12, exceto 12.13; 16; 20) são tratados em <see cref="IncideNoLocalDaPrestacao"/>.
-    /// </summary>
-    private static readonly HashSet<string> SubitensLocalPrestacao =
-    [
-        "0305", "0702", "0704", "0705", "0709", "0710", "0711", "0712", "0716", "0717", "0718", "0719",
-        "1101", "1102", "1104", "1705", "1710"
-    ];
-
     #endregion Constants
 
     #region Methods
@@ -55,6 +44,9 @@ public static class SilTecnologiaNFSe
     /// <param name="dps">DPS de origem. Não é alterada; a NFS-e recebe uma cópia.</param>
     /// <param name="nomeMunicipio">Retorna o nome do município a partir do código IBGE (7 dígitos).</param>
     /// <param name="dataProcessamento">Data/hora informada em <c>dhProc</c>.</param>
+    /// <param name="codMunicipioIncidencia">
+    /// Código IBGE do município de incidência do ISSQN (<c>cLocIncid</c>). Quando vazio, usa o município do emitente.
+    /// </param>
     /// <returns>NFS-e pronta para assinatura.</returns>
     /// <remarks>
     /// <list type="bullet">
@@ -63,14 +55,15 @@ public static class SilTecnologiaNFSe
     /// <item><c>pAliqAplic</c> usa a alíquota informada em <c>tribMun/pAliq</c> da DPS. Quando o ISSQN não é
     /// retido, a alíquota é retirada da cópia da DPS embutida (os modelos da SIL não trazem <c>pAliq</c> nesse caso).</item>
     /// <item><c>xTribNac</c> recebe a descrição do serviço (<c>cServ/xDescServ</c>), limitada a 600 caracteres.</item>
-    /// <item><c>cLocIncid</c> é o local da prestação para os serviços do art. 3º da LC 116/2003 e o
-    /// município do emitente nos demais casos.</item>
+    /// <item><c>cLocIncid</c> recebe o município informado em <paramref name="codMunicipioIncidencia"/>. A regra
+    /// de incidência (LC 116/2003, art. 3º) fica com quem emite.</item>
     /// <item>Valores calculados conforme a seção 10 da documentação da SIL.</item>
     /// </list>
     /// Para outro preenchimento, ajuste a NFS-e retornada e envie com
     /// <see cref="SilTecnologiaWebService.EnviarAsync(NotaFiscalServico, System.Threading.CancellationToken)"/>.
     /// </remarks>
-    public static NotaFiscalServico Montar(Dps dps, Func<string, string> nomeMunicipio, DateTimeOffset dataProcessamento)
+    public static NotaFiscalServico Montar(Dps dps, Func<string, string> nomeMunicipio, DateTimeOffset dataProcessamento,
+        string? codMunicipioIncidencia = null)
     {
         // A DPS vai sem assinatura própria: a SIL assina só infNFSe.
         var copia = Dps.Load(dps.GetXml());
@@ -114,8 +107,7 @@ public static class SilTecnologiaNFSe
                 "Prestação no exterior (cPaisPrestacao) não é montada automaticamente para a SIL Tecnologia. " +
                 "Monte a NotaFiscalServico e envie com SilTecnologiaWebService.EnviarAsync(NotaFiscalServico).");
 
-        var codTribNac = inf.Servico.Informacoes.CodTributacaoNacional;
-        var codIncidencia = IncideNoLocalDaPrestacao(codTribNac) ? codLocalPrestacao! : inf.LocalidadeEmitente;
+        var codIncidencia = string.IsNullOrEmpty(codMunicipioIncidencia) ? inf.LocalidadeEmitente : codMunicipioIncidencia!;
         var descricao = inf.Servico.Informacoes.Descricao;
 
         var valores = CalcularValores(inf.Valores);
@@ -188,24 +180,6 @@ public static class SilTecnologiaNFSe
             TotalRetido = totalRetido,
             ValorLiquido = Arredondar(valorServico - descontoCondicionado - descontoIncondicionado - totalRetido)
         };
-    }
-
-    /// <summary>
-    /// Indica se o ISSQN do serviço é devido no local da prestação (LC 116/2003, art. 3º, II a XX).
-    /// </summary>
-    /// <param name="codTributacaoNacional">Código de tributação nacional (6 dígitos: item, subitem e desdobro).</param>
-    /// <returns><c>true</c> quando o imposto é devido no local da prestação.</returns>
-    public static bool IncideNoLocalDaPrestacao(string codTributacaoNacional)
-    {
-        var codigo = new string(codTributacaoNacional.Where(char.IsDigit).ToArray());
-        if (codigo.Length < 4) return false;
-
-        var item = codigo.Substring(0, 2);
-        var subitem = codigo.Substring(0, 4);
-        return SubitensLocalPrestacao.Contains(subitem) ||
-               (item == "12" && subitem != "1213") ||
-               item == "16" ||
-               item == "20";
     }
 
     private static decimal ValorDeducao(ValoresDeducaoReducao? deducao, decimal valorServico)
