@@ -171,16 +171,30 @@ public class TestSilTecnologia
     }
 
     [Test]
-    public async Task Montar_SemAliquotaNaDps_UsaAliquotaInformada()
+    public async Task Montar_IssNaoRetido_UsaAliquotaDaDpsERetiraDaDpsEmbutida()
     {
         var dps = MontarDps();
-        dps.Informacoes.Valores.Tributos.Municipal.Aliquota = null;
+        dps.Informacoes.Valores.Tributos.Municipal.Aliquota = 3m;
 
-        var nfse = SilTecnologiaNFSe.Montar(dps, _ => "Bauru", DateTimeOffset.Now, 3m);
+        var nfse = SilTecnologiaNFSe.Montar(dps, _ => "Bauru", DateTimeOffset.Now);
 
         await Assert.That(nfse.Informacoes.Valores.Aliquota).IsEqualTo(3m);
         await Assert.That(nfse.Informacoes.Valores.ValorISSQN).IsEqualTo(30m);
         await Assert.That(nfse.Informacoes.Dps.Informacoes.Valores.Tributos.Municipal.Aliquota).IsNull();
+        await Assert.That(dps.Informacoes.Valores.Tributos.Municipal.Aliquota).IsEqualTo(3m);
+    }
+
+    [Test]
+    public async Task Montar_IssRetido_MantemAliquotaNaDpsEmbutida()
+    {
+        var dps = MontarDps();
+        dps.Informacoes.Valores.Tributos.Municipal.Aliquota = 3m;
+        dps.Informacoes.Valores.Tributos.Municipal.TipoRetencaoISSQN = TipoRetencaoISSQN.RetidoTomador;
+
+        var nfse = SilTecnologiaNFSe.Montar(dps, _ => "Bauru", DateTimeOffset.Now);
+
+        await Assert.That(nfse.Informacoes.Valores.TotalRetido).IsEqualTo(30m);
+        await Assert.That(nfse.Informacoes.Dps.Informacoes.Valores.Tributos.Municipal.Aliquota).IsEqualTo(3m);
     }
 
     [Test]
