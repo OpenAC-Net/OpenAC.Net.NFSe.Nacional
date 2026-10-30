@@ -172,6 +172,36 @@ public class TestSilTecnologia
     }
 
     [Test]
+    public async Task Enviar_RetornoSoComChave_ConsultaXmlDaNFSeNaSil()
+    {
+        var nfse = SilTecnologiaNFSe.Montar(MontarDps(), _ => "Bauru", DateTimeOffset.Now).GetXml();
+        var (provedor, transporte, _) = CriarProvedor(
+            RetornoSoap($"<Retorno><Status>SUCESSO</Status><ChaveAcesso>{ChaveNFSe}</ChaveAcesso></Retorno>"),
+            RetornoSoap($"<Retorno><Status>SUCESSO</Status><XML>{System.Security.SecurityElement.Escape(nfse)}</XML></Retorno>"));
+
+        var retorno = await provedor.EnviarAsync(MontarDps());
+
+        var consulta = XElement.Parse(XDocument.Parse(transporte.UltimoEnvio!).Descendants()
+            .Single(x => x.Name.LocalName == "NotaFiscalNacionalConsultar").Element("xml")!.Value);
+
+        await Assert.That(retorno.Sucesso).IsTrue();
+        await Assert.That(transporte.Envios.Count).IsEqualTo(2);
+        await Assert.That(consulta.Element("chaveAcesso")!.Value).IsEqualTo(ChaveNFSe);
+        await Assert.That(retorno.Resultado!.NFSe).IsNotNull();
+        await Assert.That(retorno.Resultado.NFSe!.Informacoes.Dps.Informacoes.NumeroDps).IsEqualTo("7");
+    }
+
+    [Test]
+    public async Task Enviar_PreencheAmbienteDaConfiguracao()
+    {
+        var (provedor, _, _) = CriarProvedor(RetornoSoap("<Retorno><Status>ERRO</Status><MensagemErro>Erro</MensagemErro></Retorno>"));
+
+        var retorno = await provedor.EnviarAsync(MontarDps());
+
+        await Assert.That(retorno.Resultado!.Ambiente).IsEqualTo(DFeTipoAmbiente.Homologacao);
+    }
+
+    [Test]
     public async Task Bauru_EstaCadastradoComProvedorSilTecnologia()
     {
         var servico = NFSeServiceManager.Instance.Services[int.Parse(CodBauru)];
@@ -337,7 +367,7 @@ public class TestSilTecnologia
     };
 
     private static (SilTecnologiaWebService provedor, TransporteFalso transporte, X509Certificate2 certificado)
-        CriarProvedor(string resposta)
+        CriarProvedor(params string[] respostas)
     {
         using var rsa = RSA.Create(2048);
         var requisicao = new CertificateRequest($"CN=PRESTADOR DE TESTE:{CnpjPrestador}", rsa,
@@ -370,7 +400,7 @@ public class TestSilTecnologia
             }
         };
 
-        var transporte = new TransporteFalso(resposta);
+        var transporte = new TransporteFalso(respostas);
         var certificado = X509CertificateLoader.LoadPkcs12(pfx, "1234");
         return (new SilTecnologiaWebService(configuracao, servico, transporte), transporte, certificado);
     }
@@ -463,9 +493,12 @@ public class TestSilTecnologia
         return dps;
     }
 
-    private sealed class TransporteFalso(string resposta) : INFSeHttpTransport
+    /// <summary>Devolve as respostas na ordem das requisições; a última se repete.</summary>
+    private sealed class TransporteFalso(string[] respostas) : INFSeHttpTransport
     {
-        public string? UltimoEnvio { get; private set; }
+        public List<string?> Envios { get; } = [];
+
+        public string? UltimoEnvio => Envios.LastOrDefault();
 
         public string? UltimaUrl { get; private set; }
 
@@ -473,7 +506,8 @@ public class TestSilTecnologia
             CancellationToken cancellationToken = default)
         {
             UltimaUrl = request.RequestUri?.ToString();
-            UltimoEnvio = request.Content == null ? null : await request.Content.ReadAsStringAsync(cancellationToken);
+            Envios.Add(request.Content == null ? null : await request.Content.ReadAsStringAsync(cancellationToken));
+            var resposta = respostas[Math.Min(Envios.Count, respostas.Length) - 1];
             return new HttpResponseMessage(HttpStatusCode.OK) { Content = new StringContent(resposta) };
         }
     }

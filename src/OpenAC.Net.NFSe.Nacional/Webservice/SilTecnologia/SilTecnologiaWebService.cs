@@ -155,11 +155,21 @@ public class SilTecnologiaWebService : NFSeWebserviceBase
         var retorno = SilTecnologiaSoap.Retorno(resposta);
         var resultado = new RespostaEnvioDps
         {
+            Ambiente = Configuracao.WebServices.Ambiente,
             IdDps = dps.Informacoes.Id,
             ChaveAcesso = SilTecnologiaSoap.ChaveAcesso(retorno),
             XmlNFSe = SilTecnologiaSoap.ElementoXml(retorno, "NFSe"),
             Erros = SilTecnologiaSoap.Erros(retorno)
         };
+
+        var sucesso = sucessoHttp && retorno != null && resultado.Erros.Count == 0;
+
+        // O retorno do Gerar pode trazer só a chave; o XML da NFS-e vem da operação de consulta.
+        if (sucesso && resultado.XmlNFSe.IsEmpty() && !resultado.ChaveAcesso.IsEmpty())
+            resultado.XmlNFSe = await ConsultarXmlNFSeAsync(resultado.ChaveAcesso, documento!, cancellationToken);
+
+        if (resultado.ChaveAcesso.IsEmpty() && resultado.NFSe != null)
+            resultado.ChaveAcesso = resultado.NFSe.Informacoes.Id.Substring(3);
 
         if (!resultado.XmlNFSe.IsEmpty())
         {
@@ -168,8 +178,25 @@ public class SilTecnologiaWebService : NFSeWebserviceBase
                 dps.Informacoes.DhEmissao.DateTime, cancellationToken: cancellationToken);
         }
 
-        var sucesso = sucessoHttp && retorno != null && resultado.Erros.Count == 0;
         return NFSeResponse<RespostaEnvioDps>.Create(envelope, resposta, sucesso, resultado);
+    }
+
+    /// <summary>
+    /// Obtém o XML da NFS-e pela chave de acesso (operação <c>NotaFiscalNacionalConsultar</c>).
+    /// </summary>
+    /// <param name="chaveAcesso">Chave de acesso da NFS-e.</param>
+    /// <param name="documento">CNPJ ou CPF do prestador.</param>
+    /// <param name="cancellationToken">Token para cancelar a operação assíncrona.</param>
+    /// <returns>XML da NFS-e ou string vazia quando a consulta não o devolver.</returns>
+    private async Task<string> ConsultarXmlNFSeAsync(string chaveAcesso, string documento, CancellationToken cancellationToken)
+    {
+        var xml = SilTecnologiaSoap.Assinar(SilTecnologiaSoap.Consulta(documento, chaveAcesso, null), null,
+            Configuracao.Certificados.ObterCertificado());
+        var envelope = SilTecnologiaSoap.Envelope("NotaFiscalNacionalConsultar", xml);
+        var (sucessoHttp, resposta) = await EnviarSoapAsync("NotaFiscalNacionalConsultar", envelope,
+            $"ConsultarNFSe-{chaveAcesso}", documento, cancellationToken);
+
+        return sucessoHttp ? SilTecnologiaSoap.ElementoXml(SilTecnologiaSoap.Retorno(resposta), "NFSe") : string.Empty;
     }
 
     #endregion NFS-e
@@ -218,6 +245,7 @@ public class SilTecnologiaWebService : NFSeWebserviceBase
         var xmlEvento = SilTecnologiaSoap.ElementoXml(retorno, "evento");
         var resultado = new RespostaEnvioEvento
         {
+            Ambiente = Configuracao.WebServices.Ambiente,
             XmlEvento = xmlEvento.IsEmpty() ? xml : xmlEvento,
             DataHoraProcessamento = dataProcessamento,
             Erros = SilTecnologiaSoap.Erros(retorno)
@@ -261,6 +289,7 @@ public class SilTecnologiaWebService : NFSeWebserviceBase
         var retorno = SilTecnologiaSoap.Retorno(resposta);
         var resultado = new RespostaConsultaChaveDps
         {
+            Ambiente = Configuracao.WebServices.Ambiente,
             IdDps = id,
             Chave = SilTecnologiaSoap.ChaveAcesso(retorno),
             Erros = SilTecnologiaSoap.Erros(retorno)

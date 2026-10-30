@@ -292,8 +292,22 @@ internal static class SilTecnologiaSoap
     /// <returns>XML do elemento ou string vazia.</returns>
     public static string ElementoXml(XElement? root, string nomeLocal)
     {
-        var elemento = root?.DescendantsAndSelf().FirstOrDefault(x => x.Name.LocalName == nomeLocal && x.HasElements);
-        return elemento?.ToString(SaveOptions.DisableFormatting) ?? string.Empty;
+        if (root == null) return string.Empty;
+
+        var elemento = root.DescendantsAndSelf().FirstOrDefault(x => x.Name.LocalName == nomeLocal && x.HasElements);
+        if (elemento != null) return elemento.ToString(SaveOptions.DisableFormatting);
+
+        // XML devolvido como texto (escapado ou em CDATA) dentro de um elemento do retorno.
+        foreach (var texto in root.DescendantsAndSelf().Where(x => !x.HasElements).Select(x => x.Value.Trim()))
+        {
+            if (!texto.StartsWith("<", StringComparison.Ordinal)) continue;
+
+            var interno = TentarCarregar(texto)?.Root?.DescendantsAndSelf()
+                .FirstOrDefault(x => x.Name.LocalName == nomeLocal && x.HasElements);
+            if (interno != null) return interno.ToString(SaveOptions.DisableFormatting);
+        }
+
+        return string.Empty;
     }
 
     private static XDocument? TentarCarregar(string xml)
