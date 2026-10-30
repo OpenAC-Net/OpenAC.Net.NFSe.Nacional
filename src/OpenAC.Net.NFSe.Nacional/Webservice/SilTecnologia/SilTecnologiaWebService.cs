@@ -92,24 +92,15 @@ public class SilTecnologiaWebService : NFSeWebserviceBase
     /// Monta a NFS-e a partir da DPS (<see cref="SilTecnologiaNFSe.Montar"/>) e envia pela operação
     /// <c>NotaFiscalNacionalGerar</c>.
     /// </summary>
-    /// <param name="dps">DPS com o nome e o endereço do prestador preenchidos (usados no grupo <c>emit</c>).</param>
+    /// <param name="dps">
+    /// DPS com o nome e o endereço do prestador (usados no grupo <c>emit</c>) e a alíquota do ISSQN em
+    /// <c>tribMun/pAliq</c> (usada em <c>infNFSe/valores</c>) preenchidos.
+    /// </param>
     /// <param name="cancellationToken">Token para cancelar a operação assíncrona.</param>
     /// <returns>Resposta do envio.</returns>
-    public override Task<NFSeResponse<RespostaEnvioDps>> EnviarAsync(Dps dps, CancellationToken cancellationToken = default) =>
-        EnviarAsync(dps, null, cancellationToken);
-
-    /// <summary>
-    /// Monta a NFS-e a partir da DPS informando a alíquota do ISSQN usada em <c>infNFSe/valores</c> e envia
-    /// pela operação <c>NotaFiscalNacionalGerar</c>.
-    /// </summary>
-    /// <param name="dps">DPS com o nome e o endereço do prestador preenchidos (usados no grupo <c>emit</c>).</param>
-    /// <param name="aliquotaISSQN">Alíquota do ISSQN (%) usada quando a DPS não informa <c>pAliq</c>. A DPS não é alterada.</param>
-    /// <param name="cancellationToken">Token para cancelar a operação assíncrona.</param>
-    /// <returns>Resposta do envio.</returns>
-    public async Task<NFSeResponse<RespostaEnvioDps>> EnviarAsync(Dps dps, decimal? aliquotaISSQN,
-        CancellationToken cancellationToken = default)
+    public override async Task<NFSeResponse<RespostaEnvioDps>> EnviarAsync(Dps dps, CancellationToken cancellationToken = default)
     {
-        var nfse = await MontarNFSeAsync(dps, aliquotaISSQN, cancellationToken);
+        var nfse = await MontarNFSeAsync(dps, cancellationToken);
         return await EnviarAsync(nfse, cancellationToken);
     }
 
@@ -118,11 +109,9 @@ public class SilTecnologiaWebService : NFSeWebserviceBase
     /// <c>xLocIncid</c>) pelo cadastro do município do provedor ou pela API de localidades do IBGE.
     /// </summary>
     /// <param name="dps">DPS de origem. Não é alterada.</param>
-    /// <param name="aliquotaISSQN">Alíquota do ISSQN (%) usada quando a DPS não informa <c>pAliq</c>.</param>
     /// <param name="cancellationToken">Token para cancelar a operação assíncrona.</param>
     /// <returns>NFS-e pronta para <see cref="EnviarAsync(NotaFiscalServico, CancellationToken)"/>.</returns>
-    public async Task<NotaFiscalServico> MontarNFSeAsync(Dps dps, decimal? aliquotaISSQN = null,
-        CancellationToken cancellationToken = default)
+    public async Task<NotaFiscalServico> MontarNFSeAsync(Dps dps, CancellationToken cancellationToken = default)
     {
         var inf = dps.Informacoes;
         var nomes = new Dictionary<string, string>();
@@ -133,7 +122,7 @@ public class SilTecnologiaWebService : NFSeWebserviceBase
         }
 
         var dataProcessamento = DateTimeOffset.Now.ToOffset(inf.DhEmissao.Offset);
-        return SilTecnologiaNFSe.Montar(dps, codigo => nomes[codigo], dataProcessamento, aliquotaISSQN);
+        return SilTecnologiaNFSe.Montar(dps, codigo => nomes[codigo], dataProcessamento);
     }
 
     /// <summary>

@@ -55,12 +55,13 @@ public static class SilTecnologiaNFSe
     /// <param name="dps">DPS de origem. Não é alterada; a NFS-e recebe uma cópia.</param>
     /// <param name="nomeMunicipio">Retorna o nome do município a partir do código IBGE (7 dígitos).</param>
     /// <param name="dataProcessamento">Data/hora informada em <c>dhProc</c>.</param>
-    /// <param name="aliquotaISSQN">Alíquota do ISSQN (%) usada em <c>pAliqAplic</c> quando a DPS não informa <c>pAliq</c>.</param>
     /// <returns>NFS-e pronta para assinatura.</returns>
     /// <remarks>
     /// <list type="bullet">
     /// <item><c>emit</c> usa o nome e o endereço informados em <c>prest</c> da DPS, que são retirados da
     /// cópia da DPS embutida (os modelos da SIL não trazem <c>xNome</c>/<c>end</c> no prestador).</item>
+    /// <item><c>pAliqAplic</c> usa a alíquota informada em <c>tribMun/pAliq</c> da DPS. Quando o ISSQN não é
+    /// retido, a alíquota é retirada da cópia da DPS embutida (os modelos da SIL não trazem <c>pAliq</c> nesse caso).</item>
     /// <item><c>xTribNac</c> recebe a descrição do serviço (<c>cServ/xDescServ</c>), limitada a 600 caracteres.</item>
     /// <item><c>cLocIncid</c> é o local da prestação para os serviços do art. 3º da LC 116/2003 e o
     /// município do emitente nos demais casos.</item>
@@ -69,8 +70,7 @@ public static class SilTecnologiaNFSe
     /// Para outro preenchimento, ajuste a NFS-e retornada e envie com
     /// <see cref="SilTecnologiaWebService.EnviarAsync(NotaFiscalServico, System.Threading.CancellationToken)"/>.
     /// </remarks>
-    public static NotaFiscalServico Montar(Dps dps, Func<string, string> nomeMunicipio, DateTimeOffset dataProcessamento,
-        decimal? aliquotaISSQN = null)
+    public static NotaFiscalServico Montar(Dps dps, Func<string, string> nomeMunicipio, DateTimeOffset dataProcessamento)
     {
         // A DPS vai sem assinatura própria: a SIL assina só infNFSe.
         var copia = Dps.Load(dps.GetXml());
@@ -118,6 +118,11 @@ public static class SilTecnologiaNFSe
         var codIncidencia = IncideNoLocalDaPrestacao(codTribNac) ? codLocalPrestacao! : inf.LocalidadeEmitente;
         var descricao = inf.Servico.Informacoes.Descricao;
 
+        var valores = CalcularValores(inf.Valores);
+        var municipal = inf.Valores.Tributos.Municipal;
+        if (municipal.TipoRetencaoISSQN is null or TipoRetencaoISSQN.NaoRetido)
+            municipal.Aliquota = null;
+
         return new NotaFiscalServico
         {
             Versao = copia.Versao.GetDFeValue(),
@@ -138,7 +143,7 @@ public static class SilTecnologiaNFSe
                 DhProcessamento = dataProcessamento,
                 NumeroDFSe = int.TryParse(inf.NumeroDps, out var numeroDps) ? numeroDps : 0,
                 Emitente = emitente,
-                Valores = CalcularValores(inf.Valores, aliquotaISSQN),
+                Valores = valores,
                 Dps = copia
             }
         };
@@ -148,18 +153,17 @@ public static class SilTecnologiaNFSe
     /// Calcula o grupo <c>infNFSe/valores</c> conforme a seção 10 da documentação da SIL.
     /// </summary>
     /// <param name="valores">Valores da DPS.</param>
-    /// <param name="aliquotaISSQN">Alíquota do ISSQN (%) usada quando a DPS não informa <c>pAliq</c>.</param>
     /// <returns>Valores da NFS-e.</returns>
     /// <remarks>
     /// <list type="bullet">
     /// <item><c>vBC</c> = vServ - vDR - vDescIncond.</item>
-    /// <item><c>pAliqAplic</c> = pAliq da DPS ou, sem ela, <paramref name="aliquotaISSQN"/> (0 quando nenhuma for informada).</item>
+    /// <item><c>pAliqAplic</c> = pAliq da DPS (0 quando não informada).</item>
     /// <item><c>vISSQN</c> = vBC x pAliqAplic / 100, somente quando <c>tribISSQN</c> = 1.</item>
     /// <item><c>vTotalRet</c> = vRetCP + vRetIRRF + vRetCSLL + vISSQN (quando retido).</item>
     /// <item><c>vLiq</c> = vServ - vDescCond - vDescIncond - vTotalRet.</item>
     /// </list>
     /// </remarks>
-    public static ValoresNFSe CalcularValores(ValoresDps valores, decimal? aliquotaISSQN = null)
+    public static ValoresNFSe CalcularValores(ValoresDps valores)
     {
         var valorServico = valores.ValoresServico.Valor;
         var descontoIncondicionado = valores.ValoresDesconto?.ValorIncodicional ?? 0;
@@ -168,7 +172,7 @@ public static class SilTecnologiaNFSe
 
         var municipal = valores.Tributos.Municipal;
         var baseCalculo = Arredondar(valorServico - deducao - descontoIncondicionado);
-        var aliquota = municipal.Aliquota ?? aliquotaISSQN ?? 0;
+        var aliquota = municipal.Aliquota ?? 0;
         var valorIss = municipal.ISSQN == TributoISSQN.OperacaoTributavel ? Arredondar(baseCalculo * aliquota / 100) : 0;
         var issRetido = municipal.TipoRetencaoISSQN is TipoRetencaoISSQN.RetidoTomador or TipoRetencaoISSQN.RetidoIntermediario;
 
