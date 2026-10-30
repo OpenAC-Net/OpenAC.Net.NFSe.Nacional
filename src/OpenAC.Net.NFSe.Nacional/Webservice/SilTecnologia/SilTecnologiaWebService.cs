@@ -234,8 +234,9 @@ public class SilTecnologiaWebService : NFSeWebserviceBase
         var xml = SilTecnologiaSoap.Assinar(eventoXml, "infEvento", Configuracao.Certificados.ObterCertificado());
 
         var documento = inf.CPFAutor ?? inf.CNPJAutor;
+        // Nova tentativa do mesmo evento gera arquivo com sufixo (_1, _2...) em vez de falhar.
         await GravarDpsEmDiscoAsync(xml, $"{inf.ChNFSe}{codigoEvento}_evento.xml", documento,
-            inf.DhEvento.DateTime, true, cancellationToken);
+            inf.DhEvento.DateTime, cancellationToken: cancellationToken);
 
         var envelope = SilTecnologiaSoap.Envelope(operacao, xml);
         var (sucessoHttp, resposta) = await EnviarSoapAsync(operacao, envelope,
