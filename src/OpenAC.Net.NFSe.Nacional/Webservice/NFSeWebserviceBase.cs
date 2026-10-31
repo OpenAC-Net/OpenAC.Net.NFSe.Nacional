@@ -157,7 +157,8 @@ public abstract class NFSeWebserviceBase : DFeHttpServiceClient, IOpenLog
     /// <param name="dps">DPS a ser enviada.</param>
     /// <param name="cancellationToken">Token para cancelar a operação assíncrona.</param>
     /// <returns>Resposta do envio da DPS.</returns>
-    public abstract Task<NFSeResponse<RespostaEnvioDps>> EnviarAsync(Dps dps, CancellationToken cancellationToken = default);
+    public abstract Task<NFSeResponse<RespostaEnvioDps>> EnviarAsync(Dps dps,
+        CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Recepciona um lote de DPS de forma assíncrona, retornando o protocolo para acompanhamento.
@@ -267,13 +268,14 @@ public abstract class NFSeWebserviceBase : DFeHttpServiceClient, IOpenLog
     {
         UseCookies = true,
         AutomaticDecompression = DecompressionMethods.None,
-        TimeoutPerAttempt = true,
+        MargemValidadeCertificado = Configuracao.Certificados.MargemValidadeCertificado,
         BufferRequestContent = true
     };
 
     /// <summary>Carrega uma instância de certificado pertencente ao envio atual.</summary>
     protected virtual X509Certificate2? ObterCertificado() => CertificateLoader == null
-        ? Configuracao.Certificados.ObterCertificado() : CertificateLoader();
+        ? Configuracao.Certificados.ObterCertificado()
+        : CertificateLoader();
 
     /// <summary>
     /// Valida o XML de acordo com o schema.
@@ -333,7 +335,8 @@ public abstract class NFSeWebserviceBase : DFeHttpServiceClient, IOpenLog
     /// <param name="arquivoExiste">Comportamento quando o arquivo de destino já existe.</param>
     /// <param name="cancellationToken">Token para cancelar a gravação.</param>
     protected virtual Task GravarDpsEmDiscoAsync(string conteudoArquivo, string nomeArquivo, string? documento,
-        DateTime data, DFeArquivoExiste arquivoExiste = DFeArquivoExiste.AdicionarSufixo, CancellationToken cancellationToken = default)
+        DateTime data, DFeArquivoExiste arquivoExiste = DFeArquivoExiste.AdicionarSufixo,
+        CancellationToken cancellationToken = default)
     {
         if (!Configuracao.Arquivos.Salvar) return Task.CompletedTask;
         cancellationToken.ThrowIfCancellationRequested();
@@ -351,7 +354,8 @@ public abstract class NFSeWebserviceBase : DFeHttpServiceClient, IOpenLog
     /// <param name="arquivoExiste">Comportamento quando o arquivo de destino já existe.</param>
     /// <param name="cancellationToken">Token para cancelar a gravação.</param>
     protected virtual Task GravarNFSeEmDiscoAsync(string conteudoArquivo, string nomeArquivo, string? documento,
-        DateTime data, DFeArquivoExiste arquivoExiste = DFeArquivoExiste.AdicionarSufixo, CancellationToken cancellationToken = default)
+        DateTime data, DFeArquivoExiste arquivoExiste = DFeArquivoExiste.AdicionarSufixo,
+        CancellationToken cancellationToken = default)
     {
         if (!Configuracao.Arquivos.Salvar) return Task.CompletedTask;
         cancellationToken.ThrowIfCancellationRequested();
@@ -369,8 +373,8 @@ public abstract class NFSeWebserviceBase : DFeHttpServiceClient, IOpenLog
     protected virtual Task GravarArquivoEmDiscoAsync(string conteudoArquivo, string nomeArquivo, string? documento,
         CancellationToken cancellationToken = default)
     {
-        if (!Configuracao.Geral.Salvar) return Task.CompletedTask;
-        
+        if (!Configuracao.WebServices.Salvar) return Task.CompletedTask;
+
         cancellationToken.ThrowIfCancellationRequested();
         var categoria = nomeArquivo.Contains("-resp.", StringComparison.OrdinalIgnoreCase)
             ? DFeCategorias.RespostaTecnica

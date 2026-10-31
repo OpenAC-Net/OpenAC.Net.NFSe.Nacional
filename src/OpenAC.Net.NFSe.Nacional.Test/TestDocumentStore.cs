@@ -24,7 +24,8 @@ public class TestDocumentStore
                     PathEnvio = root
                 }
             };
-            var document = new NFSeDocument(configuration.Arquivos, DFeCategorias.SolicitacaoTecnica, "payload", "envio.json",
+            var document = new NFSeDocument(configuration.Arquivos, DFeCategorias.SolicitacaoTecnica, "payload",
+                "envio.json",
                 null, DateTime.Today);
 
             await Task.WhenAll(Enumerable.Range(0, 20).Select(_ =>
@@ -38,6 +39,7 @@ public class TestDocumentStore
             if (Directory.Exists(root)) Directory.Delete(root, true);
         }
     }
+
     [Test]
     [Arguments(NFSeCategorias.Dps, "DPS")]
     [Arguments(NFSeCategorias.NFSe, "NFSe")]
@@ -52,7 +54,8 @@ public class TestDocumentStore
             configuration.Arquivos.PathDps = Path.Combine(root, "DPS");
             configuration.Arquivos.PathNFSe = Path.Combine(root, "NFSe");
             configuration.Arquivos.PathEnvio = Path.Combine(root, "Technical");
-            var document = new NFSeDocument(configuration.Arquivos, type, "conteúdo", "evento.xml", null, DateTime.Today);
+            var document = new NFSeDocument(configuration.Arquivos, type, "conteúdo", "evento.xml", null,
+                DateTime.Today);
             await configuration.DocumentStore.SaveAsync(document);
             await Assert.That(File.Exists(Path.Combine(root, category, "evento.xml"))).IsTrue();
         }
@@ -71,10 +74,17 @@ public class TestDocumentStore
             var services = new ServiceCollection();
             services.AddLogging();
             services.AddSingleton<IHostEnvironment>(new TestHostEnvironment(root));
-            services.AddOpenNFSeNacionalWeb(_ => { }, options => options.PersistenciaHabilitada = true);
+            services.AddNFSeNacional(config =>
+            {
+                config.Arquivos.Salvar = config.WebServices.Salvar = true;
+                config.Arquivos.PathDps = Path.Combine(root, "Fiscal/DPS");
+                config.Arquivos.PathNFSe = Path.Combine(root, "Fiscal/NFSe");
+                config.Arquivos.PathEnvio = Path.Combine(root, "Technical");
+            });
             await using var provider = services.BuildServiceProvider(validateScopes: true);
             var store = provider.GetRequiredService<IDFeDocumentStore>();
-            var tenants = provider.GetRequiredService<OpenAC.Net.NFSe.Nacional.Web.Accessor.INFSeTenantContextAccessor>();
+            var tenants =
+                provider.GetRequiredService<OpenAC.Net.NFSe.Nacional.Web.Accessor.INFSeTenantContextAccessor>();
             await using var firstScope = provider.CreateAsyncScope();
             await using var secondScope = provider.CreateAsyncScope();
             var configurations = new[]
@@ -85,18 +95,26 @@ public class TestDocumentStore
             // As configurações padrão têm a mesma empresa; ainda assim, sua identidade de arquivos deve estar vinculada.
             foreach (var configuration in configurations)
             {
-                await Assert.That(tenants.GetTenant(configuration.Arquivos)).IsEqualTo(tenants.GetTenant(configuration));
-                var originalPaths = (configuration.Arquivos.PathDps, configuration.Arquivos.PathNFSe, configuration.Arquivos.PathEnvio);
-                await Task.WhenAll(new[] { NFSeCategorias.Dps, NFSeCategorias.NFSe,
-                    DFeCategorias.RespostaTecnica }.Select(type => store.SaveAsync(
-                        new NFSeDocument(configuration.Arquivos, type, "conteúdo", "evento.xml", null, DateTime.Today))));
-                await Assert.That((configuration.Arquivos.PathDps, configuration.Arquivos.PathNFSe, configuration.Arquivos.PathEnvio))
+                await Assert.That(tenants.GetTenant(configuration.Arquivos))
+                    .IsEqualTo(tenants.GetTenant(configuration));
+                var originalPaths = (configuration.Arquivos.PathDps, configuration.Arquivos.PathNFSe,
+                    configuration.Arquivos.PathEnvio);
+                await Task.WhenAll(new[]
+                {
+                    NFSeCategorias.Dps, NFSeCategorias.NFSe,
+                    DFeCategorias.RespostaTecnica
+                }.Select(type => store.SaveAsync(
+                    new NFSeDocument(configuration.Arquivos, type, "conteúdo", "evento.xml", null, DateTime.Today))));
+                await Assert.That((configuration.Arquivos.PathDps, configuration.Arquivos.PathNFSe,
+                        configuration.Arquivos.PathEnvio))
                     .IsEqualTo(originalPaths);
             }
-            var tenantHash = Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(tenants.GetTenant(configurations[0]))));
-            var tenantRoot = Path.Combine(root, "App_Data/NFSe", "Tenants", tenantHash);
+
+            var tenantHash =
+                Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(tenants.GetTenant(configurations[0]))));
             foreach (var category in new[] { "Fiscal/DPS", "Fiscal/NFSe", "Technical" })
-                await Assert.That(Directory.GetFiles(Path.Combine(tenantRoot, category), "evento*.xml").Length).IsEqualTo(2);
+                await Assert.That(Directory.GetFiles(Path.Combine(root, category, tenantHash), "evento*.xml").Length)
+                    .IsEqualTo(2);
         }
         finally
         {
@@ -116,7 +134,7 @@ public class TestDocumentStore
             var services = new ServiceCollection();
             services.AddLogging();
             services.AddSingleton<IHostEnvironment>(new TestHostEnvironment(root));
-            services.AddOpenNFSeNacionalWeb(_ => { }, options => options.PersistenciaHabilitada = true);
+            services.AddNFSeNacional(config => config.Arquivos.PathNFSe = root);
             await using var provider = services.BuildServiceProvider(validateScopes: true);
             await using var scope = provider.CreateAsyncScope();
             var configuration = scope.ServiceProvider.GetRequiredService<ConfiguracaoNFSe>();
@@ -151,11 +169,14 @@ public class TestDocumentStore
             var services = new ServiceCollection();
             services.AddLogging();
             services.AddSingleton<IHostEnvironment>(new TestHostEnvironment(root));
-            services.AddOpenNFSeNacionalWeb(_ => { });
+            services.AddNFSeNacional(_ => { });
             await using var provider = services.BuildServiceProvider(validateScopes: true);
-            var files = new NFSeArquivoConfig { PathDps = Path.Combine(root, "desktop") };
-            var document = new NFSeDocument(files, NFSeCategorias.Dps, "xml", "dps.xml", null, DateTime.Today);
-            await provider.GetRequiredService<IDFeDocumentStore>().SaveAsync(document);
+            var configuration = new ConfiguracaoNFSe();
+            configuration.Arquivos.PathDps = Path.Combine(root, "desktop");
+            configuration.Arquivos.Salvar = false;
+            configuration.DocumentStore = provider.GetRequiredService<IDFeDocumentStore>();
+            var fiscal = new PersistenceProbe(configuration);
+            await fiscal.SaveAsync();
             await Assert.That(Directory.Exists(root)).IsFalse();
         }
         finally
@@ -181,7 +202,7 @@ public class TestDocumentStore
             var services = new ServiceCollection();
             services.AddLogging();
             services.AddSingleton<IHostEnvironment>(new TestHostEnvironment(root));
-            services.AddOpenNFSeNacionalWeb(_ => { }, options => options.PersistenciaHabilitada = true);
+            services.AddNFSeNacional(_ => { });
             await using var provider = services.BuildServiceProvider(validateScopes: true);
             var document = new DFeDocument(Path.Combine(root, "fora-da-empresa.xml"), "xml");
             await Assert.That(async () => await provider.GetRequiredService<IDFeDocumentStore>().SaveAsync(document))
@@ -204,7 +225,8 @@ public class TestDocumentStore
             var document = new NFSeDocument(files, NFSeCategorias.Dps, "xml", "nota.xml", null, DateTime.Today);
             using var cancellation = new CancellationTokenSource();
             cancellation.Cancel();
-            await Assert.That(async () => await DFeFileSystemDocumentStore.Instance.SaveAsync(document, cancellation.Token))
+            await Assert.That(async () =>
+                    await DFeFileSystemDocumentStore.Instance.SaveAsync(document, cancellation.Token))
                 .Throws<OperationCanceledException>();
             await Assert.That(Directory.Exists(root)).IsFalse();
         }
@@ -212,6 +234,13 @@ public class TestDocumentStore
         {
             if (Directory.Exists(root)) Directory.Delete(root, true);
         }
+    }
+
+    private sealed class PersistenceProbe(ConfiguracaoNFSe configuration)
+        : OpenAC.Net.NFSe.Nacional.Webservice.Nacional.NacionalWebservice(configuration,
+            new OpenAC.Net.NFSe.Nacional.Webservice.NFSeServiceInfo())
+    {
+        internal Task SaveAsync() => GravarDpsEmDiscoAsync("xml", "dps.xml", null, DateTime.Today);
     }
 
     private sealed class TestHostEnvironment(string root) : IHostEnvironment

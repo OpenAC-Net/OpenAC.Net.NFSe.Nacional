@@ -10,7 +10,6 @@ using OpenAC.Net.NFSe.Nacional.Web.Configuration;
 using OpenAC.Net.NFSe.Nacional.Web.Provider;
 using OpenAC.Net.NFSe.Nacional.Web.Store;
 using OpenAC.Net.NFSe.Nacional.Web.Transport;
-using OpenAC.Net.NFSe.Nacional.Webservice;
 
 // ReSharper disable once CheckNamespace
 namespace Microsoft.Extensions.DependencyInjection;
@@ -23,7 +22,7 @@ public static class OpenNFSeNacionalServiceCollectionExtensions
     /// <param name="configure">Ação que cria a configuração fiscal e de certificado de cada escopo.</param>
     /// <param name="configureInfrastructure">Ação opcional que configura transporte, resiliência e persistência.</param>
     /// <returns>A mesma coleção de serviços, permitindo encadeamento de chamadas.</returns>
-    public static IServiceCollection AddOpenNFSeNacionalWeb(this IServiceCollection services,
+    public static IServiceCollection AddNFSeNacional(this IServiceCollection services,
         Action<ConfiguracaoNFSe> configure,
         Action<OpenNFSeNacionalWebOptions>? configureInfrastructure = null)
     {
@@ -35,16 +34,8 @@ public static class OpenNFSeNacionalServiceCollectionExtensions
         services.AddOptions<OpenNFSeNacionalWebOptions>()
             .Configure(options =>
             {
-                options.TimeoutOperacao = infrastructure.TimeoutOperacao;
-                options.TimeoutTentativa = infrastructure.TimeoutTentativa;
-                options.TempoVidaHandler = infrastructure.TempoVidaHandler;
-                options.TempoVidaConexaoPool = infrastructure.TempoVidaConexaoPool;
-                options.PersistenciaHabilitada = infrastructure.PersistenciaHabilitada;
-                options.CaminhoDocumentos = infrastructure.CaminhoDocumentos;
-                options.CircuitBreakerHabilitado = infrastructure.CircuitBreakerHabilitado;
                 foreach (var item in infrastructure.TimeoutsPorOperacao)
                     options.TimeoutsPorOperacao[item.Key] = item.Value;
-                options.MargemExpiracaoCertificado = infrastructure.MargemExpiracaoCertificado;
             });
 
         services.AddScoped(serviceProvider =>
@@ -72,7 +63,7 @@ public static class OpenNFSeNacionalServiceCollectionExtensions
     /// <param name="services">Coleção de serviços da aplicação.</param>
     /// <param name="configureInfrastructure">Ação opcional que configura transporte, resiliência e persistência.</param>
     /// <returns>A mesma coleção de serviços, permitindo encadeamento de chamadas.</returns>
-    public static IServiceCollection AddOpenNFSeNacionalWebMultiTenant<TConfigurationProvider, TCertificateProvider>(
+    public static IServiceCollection AddNFSeNacional<TConfigurationProvider, TCertificateProvider>(
         this IServiceCollection services,
         Action<OpenNFSeNacionalWebOptions>? configureInfrastructure = null)
         where TConfigurationProvider : class, INFSeConfigurationProvider<ConfiguracaoNFSe>
@@ -110,15 +101,7 @@ public static class OpenNFSeNacionalServiceCollectionExtensions
     private static void Copy(OpenNFSeNacionalWebOptions source,
         OpenNFSeNacionalWebOptions target)
     {
-        target.TimeoutOperacao = source.TimeoutOperacao;
-        target.TimeoutTentativa = source.TimeoutTentativa;
-        target.TempoVidaHandler = source.TempoVidaHandler;
-        target.TempoVidaConexaoPool = source.TempoVidaConexaoPool;
-        target.PersistenciaHabilitada = source.PersistenciaHabilitada;
-        target.CaminhoDocumentos = source.CaminhoDocumentos;
-        target.CircuitBreakerHabilitado = source.CircuitBreakerHabilitado;
         foreach (var item in source.TimeoutsPorOperacao)
             target.TimeoutsPorOperacao[item.Key] = item.Value;
-        target.MargemExpiracaoCertificado = source.MargemExpiracaoCertificado;
     }
 }

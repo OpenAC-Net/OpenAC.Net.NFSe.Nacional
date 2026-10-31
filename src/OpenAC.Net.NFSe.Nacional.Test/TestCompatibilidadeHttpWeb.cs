@@ -14,7 +14,7 @@ public class TestCompatibilidadeHttpWeb
         var services = new ServiceCollection();
         services.AddLogging();
         services.AddSingleton<IHttpClientFactory>(new RecordingFactory(content));
-        services.AddOpenNFSeNacionalWeb(_ => { });
+        services.AddNFSeNacional(_ => { });
         await using var provider = services.BuildServiceProvider();
         var transport = provider.GetRequiredService<IDFeHttpTransport>();
         var configuration = new ConfiguracaoNFSe();

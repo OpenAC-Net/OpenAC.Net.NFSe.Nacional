@@ -3,7 +3,6 @@ using System.Security.Cryptography.X509Certificates;
 using System.Xml;
 using OpenAC.Net.DFe.Core;
 using OpenAC.Net.DFe.Core.Common;
-using OpenAC.Net.DFe.Core.Extensions;
 using OpenAC.Net.NFSe.Nacional.Common.Model;
 using OpenAC.Net.NFSe.Nacional.Common.Types;
 using OpenAC.Net.NFSe.Nacional.Webservice.ISSNet;
@@ -18,7 +17,8 @@ public class TestEmissaoISSNet
     private const string CodMunicipioPrestacao = "3513108";
 
     private static string CaminhoSchemaISSNet =>
-        Path.Combine(AppContext.BaseDirectory, "Schemas", ISSNetDps.PastaSchema, ISSNetDps.VersaoSchema, ISSNetDps.ArquivoSchema);
+        Path.Combine(AppContext.BaseDirectory, "Schemas", ISSNetDps.PastaSchema, ISSNetDps.VersaoSchema,
+            ISSNetDps.ArquivoSchema);
 
     [Test]
     public async Task ObraComCep_UsaEndNacComMunicipioDePrestacao_EValidaNoSchemaISSNet()
@@ -26,8 +26,10 @@ public class TestEmissaoISSNet
         var dps = MontarDps();
         var xml = ISSNetDps.Adequar(Xml(dps), dps, () => throw new InvalidOperationException());
 
-        await Assert.That(xml).Contains($"<obra><end><endNac><cMun>{CodMunicipioPrestacao}</cMun><CEP>14140000</CEP></endNac><xLgr>");
-        await Assert.That(ValidarSchemaISSNet(xml, out var erros)).IsTrue().Because(string.Join(Environment.NewLine, erros));
+        await Assert.That(xml)
+            .Contains($"<obra><end><endNac><cMun>{CodMunicipioPrestacao}</cMun><CEP>14140000</CEP></endNac><xLgr>");
+        await Assert.That(ValidarSchemaISSNet(xml, out var erros)).IsTrue()
+            .Because(string.Join(Environment.NewLine, erros));
     }
 
     [Test]
@@ -63,8 +65,10 @@ public class TestEmissaoISSNet
         await Assert.That(nacional).Contains("<cObra>CNO123</cObra>");
         await Assert.That(nacional).DoesNotContain("nProcessoObra");
         await Assert.That(xml).DoesNotContain("cObra");
-        await Assert.That(xml).Contains("<obra><inscImobFisc>123</inscImobFisc><nProcessoObra>2026000123</nProcessoObra><end>");
-        await Assert.That(ValidarSchemaISSNet(xml, out var erros)).IsTrue().Because(string.Join(Environment.NewLine, erros));
+        await Assert.That(xml)
+            .Contains("<obra><inscImobFisc>123</inscImobFisc><nProcessoObra>2026000123</nProcessoObra><end>");
+        await Assert.That(ValidarSchemaISSNet(xml, out var erros)).IsTrue()
+            .Because(string.Join(Environment.NewLine, erros));
     }
 
     [Test]
@@ -84,7 +88,8 @@ public class TestEmissaoISSNet
         var xml = ISSNetDps.Adequar(Xml(dps), dps, () => throw new InvalidOperationException());
 
         await Assert.That(xml).Contains("<end><endExt><cPais>US</cPais><cEndPost>10001</cEndPost>");
-        await Assert.That(ValidarSchemaISSNet(xml, out var erros)).IsTrue().Because(string.Join(Environment.NewLine, erros));
+        await Assert.That(ValidarSchemaISSNet(xml, out var erros)).IsTrue()
+            .Because(string.Join(Environment.NewLine, erros));
     }
 
     [Test]
@@ -135,7 +140,8 @@ public class TestEmissaoISSNet
         using var certificado = CriarCertificado();
         var dps = MontarDps();
         dps.GerarId();
-        var assinado = XmlSigning.AssinarXml(Xml(dps), "DPS", "infDPS", certificado, false, false, false, SignDigest.SHA1);
+        var assinado =
+            XmlSigning.AssinarXml(Xml(dps), "DPS", "infDPS", certificado, false, false, false, SignDigest.SHA1);
 
         var xml = ISSNetDps.Adequar(assinado, dps, () => certificado);
 
@@ -143,10 +149,12 @@ public class TestEmissaoISSNet
         documento.LoadXml(xml);
 
         await Assert.That(xml).IsNotEqualTo(assinado);
-        await Assert.That(documento.GetElementsByTagName("Signature", "http://www.w3.org/2000/09/xmldsig#").Count).IsEqualTo(1);
+        await Assert.That(documento.GetElementsByTagName("Signature", "http://www.w3.org/2000/09/xmldsig#").Count)
+            .IsEqualTo(1);
         await Assert.That(xml).Contains("<endNac>");
         await Assert.That(XmlSigning.ValidarAssinatura(documento)).IsTrue();
-        await Assert.That(ValidarSchemaISSNet(xml, out var erros)).IsTrue().Because(string.Join(Environment.NewLine, erros));
+        await Assert.That(ValidarSchemaISSNet(xml, out var erros)).IsTrue()
+            .Because(string.Join(Environment.NewLine, erros));
     }
 
     /// <summary>Serializa a DPS com as mesmas opções usadas no envio para a ISSNet.</summary>
@@ -164,11 +172,14 @@ public class TestEmissaoISSNet
     {
         var documento = new XmlDocument { PreserveWhitespace = true };
         documento.LoadXml(xmlDps);
-        var assinatura = documento.GetElementsByTagName("Signature", "http://www.w3.org/2000/09/xmldsig#").OfType<XmlElement>().SingleOrDefault();
-        if (assinatura != null && string.IsNullOrEmpty(assinatura["SignatureValue", assinatura.NamespaceURI]?.InnerText))
+        var assinatura = documento.GetElementsByTagName("Signature", "http://www.w3.org/2000/09/xmldsig#")
+            .OfType<XmlElement>().SingleOrDefault();
+        if (assinatura != null &&
+            string.IsNullOrEmpty(assinatura["SignatureValue", assinatura.NamespaceURI]?.InnerText))
             assinatura.ParentNode!.RemoveChild(assinatura);
 
-        var valido = XmlSchemaValidation.ValidarXml(ISSNetDps.EnvelopeValidacao(documento.OuterXml), CaminhoSchemaISSNet, out var errosSchema, out _);
+        var valido = XmlSchemaValidation.ValidarXml(ISSNetDps.EnvelopeValidacao(documento.OuterXml),
+            CaminhoSchemaISSNet, out var errosSchema, out _);
         erros = errosSchema.ToArray();
         return valido;
     }
@@ -176,9 +187,12 @@ public class TestEmissaoISSNet
     private static X509Certificate2 CriarCertificado()
     {
         using var rsa = RSA.Create(2048);
-        var requisicao = new CertificateRequest($"CN=TESTE ISSNET:{SetupOpenNFSeNacional.InscricaoFederal}", rsa, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
-        using var certificado = requisicao.CreateSelfSigned(DateTimeOffset.Now.AddDays(-1), DateTimeOffset.Now.AddDays(1));
-        return X509CertificateLoader.LoadPkcs12(certificado.Export(X509ContentType.Pfx), null, X509KeyStorageFlags.Exportable);
+        var requisicao = new CertificateRequest($"CN=TESTE ISSNET:{SetupOpenNFSeNacional.InscricaoFederal}", rsa,
+            HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
+        using var certificado =
+            requisicao.CreateSelfSigned(DateTimeOffset.Now.AddDays(-1), DateTimeOffset.Now.AddDays(1));
+        return X509CertificateLoader.LoadPkcs12(certificado.Export(X509ContentType.Pfx), null,
+            X509KeyStorageFlags.Exportable);
     }
 
     /// <summary>

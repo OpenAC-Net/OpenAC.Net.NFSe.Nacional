@@ -30,7 +30,6 @@
 // ***********************************************************************
 
 using System;
-using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using OpenAC.Net.Core.Logging;
@@ -65,7 +64,7 @@ public sealed class OpenNFSeNacional : IOpenNFSeNacionalClient, IOpenLog
     public Task<NFSeResponse<RespostaEnvioDps>> EnviarAsync(Dps dps, CancellationToken cancellationToken = default)
     {
         var provider = NFSeServiceManager.Instance.GetProvider(Configuracoes);
-        
+
         try
         {
             return provider.EnviarAsync(dps, cancellationToken);
@@ -83,10 +82,11 @@ public sealed class OpenNFSeNacional : IOpenNFSeNacionalClient, IOpenLog
     /// <param name="evento">Objeto <see cref="PedidoRegistroEvento"/> representando o evento.</param>
     /// <returns>Resposta do envio do evento.</returns>
     /// <param name="cancellationToken">Token para cancelar a operação assíncrona.</param>
-    public Task<NFSeResponse<RespostaEnvioEvento>> EnviarEventoAsync(PedidoRegistroEvento evento, CancellationToken cancellationToken = default)
+    public Task<NFSeResponse<RespostaEnvioEvento>> EnviarEventoAsync(PedidoRegistroEvento evento,
+        CancellationToken cancellationToken = default)
     {
         var provider = NFSeServiceManager.Instance.GetProvider(Configuracoes);
-        
+
         try
         {
             return provider.EnviarEventoAsync(evento, cancellationToken);
@@ -104,10 +104,11 @@ public sealed class OpenNFSeNacional : IOpenNFSeNacionalClient, IOpenLog
     /// <param name="nsu">Número do NSU.</param>
     /// <returns>Dados da consulta dos DF-e.</returns>
     /// <param name="cancellationToken">Token para cancelar a operação assíncrona.</param>
-    public Task<NFSeResponse<RespostaConsultaDFe>> ConsultaNsuAsync(int nsu, CancellationToken cancellationToken = default)
+    public Task<NFSeResponse<RespostaConsultaDFe>> ConsultaNsuAsync(int nsu,
+        CancellationToken cancellationToken = default)
     {
         var provider = NFSeServiceManager.Instance.GetProvider(Configuracoes);
-        
+
         try
         {
             return provider.ConsultaNsuAsync(nsu, cancellationToken);
@@ -125,10 +126,11 @@ public sealed class OpenNFSeNacional : IOpenNFSeNacionalClient, IOpenLog
     /// <param name="chave">Chave de acesso da NFS-e.</param>
     /// <returns>Dados da consulta dos DF-e.</returns>
     /// <param name="cancellationToken">Token para cancelar a operação assíncrona.</param>
-    public Task<NFSeResponse<RespostaConsultaDFe>> ConsultaChaveAsync(string chave, CancellationToken cancellationToken = default)
+    public Task<NFSeResponse<RespostaConsultaDFe>> ConsultaChaveAsync(string chave,
+        CancellationToken cancellationToken = default)
     {
         var provider = NFSeServiceManager.Instance.GetProvider(Configuracoes);
-        
+
         try
         {
             return provider.ConsultaChaveAsync(chave, cancellationToken);
@@ -149,7 +151,7 @@ public sealed class OpenNFSeNacional : IOpenNFSeNacionalClient, IOpenLog
     public Task<byte[]> DownloadDANFSeAsync(string chave, CancellationToken cancellationToken = default)
     {
         var provider = NFSeServiceManager.Instance.GetProvider(Configuracoes);
-        
+
         try
         {
             return provider.DownloadDANFSeAsync(chave, cancellationToken);
@@ -171,10 +173,11 @@ public sealed class OpenNFSeNacional : IOpenNFSeNacionalClient, IOpenLog
     /// </param>
     /// <returns>Dados da consulta da chave de acesso.</returns>
     /// <param name="cancellationToken">Token para cancelar a operação assíncrona.</param>
-    public Task<NFSeResponse<RespostaConsultaChaveDps>> ConsultaChaveDpsAsync(string id, CancellationToken cancellationToken = default)
+    public Task<NFSeResponse<RespostaConsultaChaveDps>> ConsultaChaveDpsAsync(string id,
+        CancellationToken cancellationToken = default)
     {
         var provider = NFSeServiceManager.Instance.GetProvider(Configuracoes);
-        
+
         try
         {
             return provider.ConsultaChaveDpsAsync(id, cancellationToken);
@@ -195,7 +198,7 @@ public sealed class OpenNFSeNacional : IOpenNFSeNacionalClient, IOpenLog
     public Task<bool> ConsultaExisteDpsAsync(string id, CancellationToken cancellationToken = default)
     {
         var provider = NFSeServiceManager.Instance.GetProvider(Configuracoes);
-        
+
         try
         {
             return provider.ConsultaExisteDpsAsync(id, cancellationToken);
@@ -214,7 +217,8 @@ public sealed class OpenNFSeNacional : IOpenNFSeNacionalClient, IOpenLog
     /// <returns>Resposta contendo o protocolo do lote.</returns>
     /// <remarks>Suportado apenas por provedores que expõem envio em lote (ex.: Fiorilli).</remarks>
     /// <param name="cancellationToken">Token para cancelar a operação assíncrona.</param>
-    public Task<NFSeResponse<RespostaRecepcaoLote>> EnviarLoteAsync(LoteDps lote, CancellationToken cancellationToken = default)
+    public Task<NFSeResponse<RespostaRecepcaoLote>> EnviarLoteAsync(LoteDps lote,
+        CancellationToken cancellationToken = default)
     {
         var provider = NFSeServiceManager.Instance.GetProvider(Configuracoes);
 
@@ -236,7 +240,8 @@ public sealed class OpenNFSeNacional : IOpenNFSeNacionalClient, IOpenLog
     /// <returns>Resposta contendo o protocolo e as NFS-e geradas.</returns>
     /// <remarks>Suportado apenas por provedores que expõem envio em lote síncrono (ex.: Fiorilli).</remarks>
     /// <param name="cancellationToken">Token para cancelar a operação assíncrona.</param>
-    public Task<NFSeResponse<RespostaRecepcaoLoteSincrono>> EnviarLoteSincronoAsync(LoteDps lote, CancellationToken cancellationToken = default)
+    public Task<NFSeResponse<RespostaRecepcaoLoteSincrono>> EnviarLoteSincronoAsync(LoteDps lote,
+        CancellationToken cancellationToken = default)
     {
         var provider = NFSeServiceManager.Instance.GetProvider(Configuracoes);
 
@@ -258,7 +263,8 @@ public sealed class OpenNFSeNacional : IOpenNFSeNacionalClient, IOpenLog
     /// <returns>Resposta contendo a situação e as NFS-e do lote.</returns>
     /// <remarks>Suportado apenas por provedores que expõem consulta de lote (ex.: Fiorilli).</remarks>
     /// <param name="cancellationToken">Token para cancelar a operação assíncrona.</param>
-    public Task<NFSeResponse<RespostaConsultaLote>> ConsultarLoteAsync(ConsultaLoteFiltro filtro, CancellationToken cancellationToken = default)
+    public Task<NFSeResponse<RespostaConsultaLote>> ConsultarLoteAsync(ConsultaLoteFiltro filtro,
+        CancellationToken cancellationToken = default)
     {
         var provider = NFSeServiceManager.Instance.GetProvider(Configuracoes);
 
@@ -280,7 +286,8 @@ public sealed class OpenNFSeNacional : IOpenNFSeNacionalClient, IOpenLog
     /// <returns>Resposta contendo as NFS-e encontradas.</returns>
     /// <remarks>Suportado apenas por provedores que expõem consulta de NFS-e (ex.: Fiorilli).</remarks>
     /// <param name="cancellationToken">Token para cancelar a operação assíncrona.</param>
-    public Task<NFSeResponse<RespostaConsultaNFSe>> ConsultarNFSeAsync(ConsultaNFSeFiltro filtro, CancellationToken cancellationToken = default)
+    public Task<NFSeResponse<RespostaConsultaNFSe>> ConsultarNFSeAsync(ConsultaNFSeFiltro filtro,
+        CancellationToken cancellationToken = default)
     {
         var provider = NFSeServiceManager.Instance.GetProvider(Configuracoes);
 
@@ -303,7 +310,8 @@ public sealed class OpenNFSeNacional : IOpenNFSeNacionalClient, IOpenLog
     /// <param name="numSeqEvento">Número sequencial do evento</param>
     /// <param name="cancellationToken">Token para cancelar a operação assíncrona.</param>
     /// <returns>Resposta da consulta contendo a chave de acesso.</returns>
-    public Task<NFSeResponse<RespostaConsultaEvento>> ConsultaEventoAsync(string chaveAcesso, string tipoEvento, int numSeqEvento,
+    public Task<NFSeResponse<RespostaConsultaEvento>> ConsultaEventoAsync(string chaveAcesso, string tipoEvento,
+        int numSeqEvento,
         CancellationToken cancellationToken = default)
     {
         var provider = NFSeServiceManager.Instance.GetProvider(Configuracoes);

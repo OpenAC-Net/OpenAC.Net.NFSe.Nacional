@@ -5,14 +5,16 @@ using OpenAC.Net.NFSe.Nacional.Web.Common;
 namespace OpenAC.Net.NFSe.Nacional.Web.Transport;
 
 /// <summary>Adapta o contrato HTTP do DFe.Core ao IHttpClientFactory do host.</summary>
-internal sealed class NFSeHttpTransport(IHttpClientFactory httpClientFactory, NFSeHttpClientRegistry registry,
+internal sealed class NFSeHttpTransport(
+    IHttpClientFactory httpClientFactory,
+    NFSeHttpClientRegistry registry,
     ILogger<NFSeHttpTransport> logger) : DFeHttpTransportBase
 {
     internal static readonly HttpRequestOptionsKey<string> TenantKey = new("OpenAC.Net.NFSe.Nacional.Tenant");
 
-    protected override bool ManageRetries => false;
 
-    protected override async Task<HttpResponseMessage> SendCoreAsync(HttpRequestMessage request, DFeHttpTransportOptions options,
+    protected override async Task<HttpResponseMessage> SendCoreAsync(HttpRequestMessage request,
+        DFeHttpTransportOptions options,
         CancellationToken cancellationToken = default)
     {
         var endpoint = request.RequestUri ?? throw new InvalidOperationException("A requisição não possui endpoint.");
@@ -21,7 +23,7 @@ internal sealed class NFSeHttpTransport(IHttpClientFactory httpClientFactory, NF
         var name = registry.Register(tenant, options, endpoint);
         using var client = httpClientFactory.CreateClient(name);
         // A base do Core conclui a leitura do corpo dentro do timeout da operação.
-        return await client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, cancellationToken)
+        return await client.SendAsync(request, HttpCompletionOption.ResponseContentRead, cancellationToken)
             .ConfigureAwait(false);
     }
 }

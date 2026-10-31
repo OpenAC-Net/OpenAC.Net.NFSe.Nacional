@@ -52,7 +52,7 @@ internal sealed class OpenNFSeNacionalWebClient(
         using var timeout = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
         timeout.CancelAfter(options.TimeoutsPorOperacao.TryGetValue(operation, out var operationTimeout)
             ? operationTimeout
-            : options.TimeoutOperacao);
+            : configuracao.WebServices.TimeoutOperacao);
         using var scope = logger.BeginScope(new Dictionary<string, object?>
         {
             ["NFSe.Operation"] = operation,
