@@ -93,6 +93,24 @@ public sealed partial class InfDps
     public EmitenteDps TipoEmitente { get; set; } = EmitenteDps.Prestador;
 
     /// <summary>
+    /// Motivo da Emissão da DPS pelo Tomador/Intermediário.
+    /// </summary>
+    [DFeElement(TipoCampo.Enum, "cMotivoEmisTI", Ocorrencia = Ocorrencia.NaoObrigatoria)]
+    public MotivoEmissaoTomadoIntermediario? MotivoEmissao { get; set; }
+
+    /// <summary>
+    ///  Indicador da finalidade da emissão de NFS-e.
+    /// </summary>
+    [DFeElement(TipoCampo.Enum, "finNFSe", Ocorrencia = Ocorrencia.Obrigatoria)]
+    public FinalidadeEmissaoNFSe FinalidadeNFSe { get; set; } = FinalidadeEmissaoNFSe.NFSeRegular;
+
+    /// <summary>
+    /// 
+    /// </summary>
+    [DFeElement(TipoCampo.Str, "chNFSeRej", Min = 50, Max = 50, Ocorrencia = Ocorrencia.NaoObrigatoria)]
+    public string? ChaveNFSeRejeitada { get; set; }
+
+    /// <summary>
     /// Código da localidade do emitente.
     /// </summary>
     [DFeElement(TipoCampo.Str, "cLocEmi", Min = 0, Max = 7, Ocorrencia = Ocorrencia.Obrigatoria)]
@@ -141,4 +159,13 @@ public sealed partial class InfDps
     public RTCInfoIBSCBS? IBSCBS { get; set; }
 
     #endregion Properties
+
+    #region Methods
+
+    internal bool ShouldSerializeFinalidadeNFSe()
+    {
+        return TipoAmbiente == DFeTipoAmbiente.Homologacao;
+    }
+
+    #endregion Methods
 }

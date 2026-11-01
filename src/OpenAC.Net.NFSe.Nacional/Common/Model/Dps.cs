@@ -45,18 +45,6 @@ namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 [DFeRoot("DPS", Namespace = "http://www.sped.fazenda.gov.br/nfse")]
 public sealed partial class Dps : DFeSignDocument<Dps>
 {
-    #region Constructors
-
-    /// <summary>
-    /// Inicializa uma nova instância da classe <see cref="Dps"/>.
-    /// </summary>
-    public Dps()
-    {
-        Signature = new DFeSignature();
-    }
-
-    #endregion Constructors
-
     #region Properties
 
     /// <summary>
