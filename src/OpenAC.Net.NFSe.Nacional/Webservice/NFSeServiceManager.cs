@@ -192,7 +192,9 @@ public sealed partial class NFSeServiceManager
     public NFSeWebserviceBase GetProvider(ConfiguracaoNFSe config, INFSeHttpTransport? httpTransport = null,
         INFSeDocumentStore? documentStore = null)
     {
-        var serviceInfo = Services[config.WebServices.CodigoMunicipio] ?? 
+        // -1 = entrada do Ambiente Nacional no Municipios.nfse
+        var codigo = config.WebServices.ForcarEmissaoAmbienteNacional ? -1 : config.WebServices.CodigoMunicipio;
+        var serviceInfo = Services[codigo] ??
                           throw new OpenException("Serviço não encontrado para o município informado!");
 
         var providerType = Providers[serviceInfo.Provider][config.Geral.Versao];
