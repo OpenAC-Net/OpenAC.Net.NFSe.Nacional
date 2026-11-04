@@ -62,38 +62,7 @@
 					</Enderecos>
 				</Ambiente>
 			</Ambientes>
-		</serviceInfo>
-		<serviceInfo Id="3543402">
-			<Tipo>ISSNet</Tipo>
-			<Nome>RIBEIRÃO PRETO</Nome>
-			<UF>SP</UF>
-			<Ambientes>
-				<Ambiente Tipo="2">
-					<Enderecos>
-						<Endereco Tipo="Enviar">https://nfse.issnetonline.com.br/wsnfsenacional/homologacao</Endereco>
-						<Endereco Tipo="EnviarEvento">https://nfse.issnetonline.com.br/wsnfsenacional/homologacao</Endereco>
-						<Endereco Tipo="ConsultarNsu">https://nfse.issnetonline.com.br/wsnfsenacional/homologacao</Endereco>
-						<Endereco Tipo="ConsultarChave">https://nfse.issnetonline.com.br/wsnfsenacional/homologacao</Endereco>
-						<Endereco Tipo="DownloadDanfse">https://nfse.issnetonline.com.br/wsnfsenacional/homologacao</Endereco>
-						<Endereco Tipo="ConsultarChaveDps">https://nfse.issnetonline.com.br/wsnfsenacional/homologacao</Endereco>
-						<Endereco Tipo="ConsultaExisteDps">https://nfse.issnetonline.com.br/wsnfsenacional/homologacao</Endereco>
-						<Endereco Tipo="ConsultarEvento">https://nfse.issnetonline.com.br/wsnfsenacional/homologacao</Endereco>
-					</Enderecos>
-				</Ambiente>
-				<Ambiente Tipo="1">
-					<Enderecos>
-						<Endereco Tipo="Enviar">https://nfse.issnetonline.com.br/wsnfsenacional/ribeiraopreto</Endereco>
-						<Endereco Tipo="EnviarEvento">https://nfse.issnetonline.com.br/wsnfsenacional/ribeiraopreto</Endereco>
-						<Endereco Tipo="ConsultarNsu">https://nfse.issnetonline.com.br/wsnfsenacional/ribeiraopreto</Endereco>
-						<Endereco Tipo="ConsultarChave">https://nfse.issnetonline.com.br/wsnfsenacional/ribeiraopreto</Endereco>
-						<Endereco Tipo="DownloadDanfse">https://nfse.issnetonline.com.br/wsnfsenacional/ribeiraopreto</Endereco>
-						<Endereco Tipo="ConsultarChaveDps">https://nfse.issnetonline.com.br/wsnfsenacional/ribeiraopreto</Endereco>
-						<Endereco Tipo="ConsultaExisteDps">https://nfse.issnetonline.com.br/wsnfsenacional/ribeiraopreto</Endereco>
-						<Endereco Tipo="ConsultarEvento">https://nfse.issnetonline.com.br/wsnfsenacional/ribeiraopreto</Endereco>
-					</Enderecos>
-				</Ambiente>
-			</Ambientes>
-		</serviceInfo>
+		</serviceInfo>		
 		<serviceInfo Id="5300108">
             <Tipo>ISSNet</Tipo>
             <Nome>BRASÍLIA</Nome>
