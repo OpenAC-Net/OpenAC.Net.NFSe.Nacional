@@ -68,5 +68,4 @@ public sealed partial class InformacoesServico
     /// </summary>
     [DFeElement(TipoCampo.Str, "xDescServ", Min = 1, Max = 2000, Ocorrencia = Ocorrencia.Obrigatoria)]
     public string Descricao { get; set; } = string.Empty;
-    
 }
