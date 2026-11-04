@@ -55,8 +55,9 @@ public class TestSchemaV101
 
         await Assert.That(File.Exists(CaminhoSchemaDps)).IsTrue();
 
-        var valido = XmlSchemaValidation.ValidarXml(xml, CaminhoSchemaDps, out var erros, out _);
+        var valido = XmlSchemaValidation.ValidarXml(SemAssinatura(xml), CaminhoSchemaDps, out var erros, out _);
 
+        await Assert.That(string.Join(" | ", erros)).IsEqualTo(string.Empty);
         await Assert.That(valido).IsTrue();
     }
 
@@ -86,7 +87,7 @@ public class TestSchemaV101
         await Assert.That(xml).Contains("<chNFe>");
         await Assert.That(xml).Contains("<tpDedRed>");
 
-        var valido = XmlSchemaValidation.ValidarXml(xml, CaminhoSchemaDps, out var erros, out _);
+        var valido = XmlSchemaValidation.ValidarXml(SemAssinatura(xml), CaminhoSchemaDps, out var erros, out _);
 
         await Assert.That(valido).IsTrue();
     }
@@ -215,6 +216,110 @@ public class TestSchemaV101
 
         await Assert.That(dps.Informacoes.Id).IsEqualTo(original);
     }
+
+    /// <summary>
+    /// Remove o <c>ds:Signature</c> vazio que a serialização gera em uma DPS ainda não assinada,
+    /// que não satisfaz o <c>xmldsig-core-schema.xsd</c>.
+    /// </summary>
+    private static string SemAssinatura(string xml)
+    {
+        var doc = XDocument.Parse(xml);
+        doc.Descendants().Where(e => e.Name.LocalName == "Signature").ToList().ForEach(e => e.Remove());
+        return doc.ToString(SaveOptions.DisableFormatting);
+    }
+
+    // ---- NT 009 v1.01: estrutura da DPS (finNFSe, CST/cClassTrib em trib, IBSCBS condicional) ----
+
+    [Test]
+    public async Task Nt009_FinNFSe_FicaEmInfDpsEntreTpEmitECLocEmi()
+    {
+        var dps = MontarDps();
+        dps.GerarId();
+
+        var xml = dps.GetXml();
+
+        await Assert.That(Regex.IsMatch(xml, @"</tpEmit>\s*<finNFSe>0</finNFSe>\s*<cLocEmi>")).IsTrue();
+    }
+
+    [Test]
+    public async Task Nt009_CServ_XDescServFicaPorUltimo()
+    {
+        var dps = MontarDps();
+        dps.GerarId();
+
+        var xml = dps.GetXml();
+
+        await Assert.That(Regex.IsMatch(xml, @"<cTribMun>[^<]*</cTribMun>\s*<xDescServ>")).IsTrue();
+        await Assert.That(xml.IndexOf("<xDescServ>")).IsGreaterThan(xml.IndexOf("<cTribNac>"));
+    }
+
+    [Test]
+    public async Task Nt009_IbsCbsComTributacao_CstEClassTribEmTribAntesDeGIBSCBS_ValidaNoSchema()
+    {
+        var dps = MontarDps();
+        dps.Informacoes.IBSCBS = MontarIbsCbs("000", "000001", "100301", comGrupo: true);
+        dps.GerarId();
+
+        var xml = dps.GetXml();
+        var trib = XDocument.Parse(xml).Descendants().First(e => e.Name.LocalName == "IBSCBS")
+            .Descendants().First(e => e.Name.LocalName == "trib");
+        var filhos = trib.Elements().Select(e => e.Name.LocalName).ToArray();
+
+        await Assert.That(filhos).IsEquivalentTo(new[] { "CST", "cClassTrib", "gIBSCBS" });
+        await Assert.That(trib.Element(trib.GetDefaultNamespace() + "gIBSCBS")!.Elements().Select(e => e.Name.LocalName))
+            .IsEmpty();
+        await Assert.That(xml).Contains("<cIndOp>100301</cIndOp>");
+        var valido = XmlSchemaValidation.ValidarXml(SemAssinatura(xml), CaminhoSchemaDps, out var erros, out _);
+        await Assert.That(string.Join(" | ", erros)).IsEqualTo(string.Empty);
+        await Assert.That(valido).IsTrue();
+    }
+
+    [Test]
+    public async Task Nt009_IbsCbsSemTributacao_OmiteCIndOpEGIBSCBS_ValidaNoSchema()
+    {
+        var dps = MontarDps();
+        dps.Informacoes.IBSCBS = MontarIbsCbs("410", "410999", null, comGrupo: false);
+        dps.GerarId();
+
+        var xml = dps.GetXml();
+
+        await Assert.That(xml).DoesNotContain("<cIndOp>");
+        await Assert.That(xml).DoesNotContain("<gIBSCBS>");
+        await Assert.That(xml).Contains("<CST>410</CST>");
+        var valido = XmlSchemaValidation.ValidarXml(SemAssinatura(xml), CaminhoSchemaDps, out var erros, out _);
+        await Assert.That(string.Join(" | ", erros)).IsEqualTo(string.Empty);
+        await Assert.That(valido).IsTrue();
+    }
+
+    [Test]
+    public async Task Nt009_IbsCbs_NaoTemFinNFSeNemCstDentroDeGIBSCBS()
+    {
+        var dps = MontarDps();
+        dps.Informacoes.IBSCBS = MontarIbsCbs("000", "000001", "100301", comGrupo: true);
+        dps.GerarId();
+
+        var ibscbs = XDocument.Parse(dps.GetXml()).Descendants().First(e => e.Name.LocalName == "IBSCBS");
+
+        await Assert.That(ibscbs.Elements().Any(e => e.Name.LocalName == "finNFSe")).IsFalse();
+        await Assert.That(ibscbs.Descendants().Where(e => e.Name.LocalName == "gIBSCBS")
+            .SelectMany(g => g.Elements()).Any(e => e.Name.LocalName is "CST" or "cClassTrib")).IsFalse();
+    }
+
+    private static RTCInfoIBSCBS MontarIbsCbs(string cst, string cClassTrib, string? cIndOp, bool comGrupo) => new()
+    {
+        IndicadorUsoFinal = RTCIndFinal.Nao,
+        CodigoIndicadorOperacao = cIndOp,
+        IndicadorDestinatario = RTCIndDest.ProprioTomador,
+        Valores = new RTCInfoValoresIBSCBS
+        {
+            Tributos = new RTCInfoTributosIBSCBS
+            {
+                CodigoSituacaoTributaria = cst,
+                CodigoClassificacaoTributaria = cClassTrib,
+                GrupoIBSCBS = comGrupo ? new RTCInfoTributosSitClas() : null
+            }
+        }
+    };
 
     /// <summary>
     /// Monta uma DPS v1.01 mínima e completa o suficiente para passar no schema.

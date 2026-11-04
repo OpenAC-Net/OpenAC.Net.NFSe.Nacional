@@ -93,6 +93,12 @@ public sealed partial class InfDps
     public EmitenteDps TipoEmitente { get; set; } = EmitenteDps.Prestador;
 
     /// <summary>
+    /// Indicador da finalidade da emissão de NFS-e (finNFSe). NT 009: informado em infDPS, após tpEmit.
+    /// </summary>
+    [DFeElement(TipoCampo.Enum, "finNFSe", Ocorrencia = Ocorrencia.Obrigatoria)]
+    public RTCFinNFSe FinalidadeNFSe { get; set; } = RTCFinNFSe.Regular;
+
+    /// <summary>
     /// Código da localidade do emitente.
     /// </summary>
     [DFeElement(TipoCampo.Str, "cLocEmi", Min = 0, Max = 7, Ocorrencia = Ocorrencia.Obrigatoria)]

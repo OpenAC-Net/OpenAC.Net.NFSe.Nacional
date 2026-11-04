@@ -43,8 +43,8 @@ public sealed partial class ValoresNFSe
     /// <summary>
     /// Valor da base de cálculo após redução/dedução.
     /// </summary>
-    [DFeElement(TipoCampo.De2, "vCalcDR", Min = 4, Max = 18, Ocorrencia = Ocorrencia.NaoObrigatoria)]
-    public decimal? ValorBcReducaoDeducao { get; set; }
+    [DFeElement(TipoCampo.De2, "vCalcAjusteBCISSQN", Min = 4, Max = 18, Ocorrencia = Ocorrencia.NaoObrigatoria)]
+    public decimal? ValorCalcAjusteBCISSQN { get; set; }
 
 
     /// <summary>

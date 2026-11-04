@@ -679,7 +679,7 @@ internal sealed class DANFSeNacionalReport
         var lineH = DANFSeConstantes.AlturaLinhaPadraoMm;
         var declarado = nota.Informacoes.Dps.Informacoes.IBSCBS;
         var calculado = nota.Informacoes.IBSCBS;
-        var classificacao = declarado?.Valores.Tributos.GrupoIBSCBS;
+        var classificacao = declarado?.Valores.Tributos;
         var valores = calculado?.Valores;
         var totalIbs = calculado?.Totais.TotalIBS;
         var totalCbs = calculado?.Totais.TotalCBS;
@@ -704,8 +704,8 @@ internal sealed class DANFSeNacionalReport
         yMm += lineH;
 
         // Linha 2
-        PdfDrawHelper.DesenharCampo(gfx, xMm + 0 * colW, yMm, colW, lineH, "Exclusões e Reduções da Base de Cálculo", FormatarMoedaOpcional(calculado == null ? null : valores!.ValorCalcReeRepRes));
-        PdfDrawHelper.DesenharCampo(gfx, xMm + 1 * colW, yMm, colW, lineH, "Base de Cálculo Após Exclusões e Reduções", FormatarMoedaOpcional(calculado == null ? null : valores!.ValorBaseCalculo));
+        PdfDrawHelper.DesenharCampo(gfx, xMm + 0 * colW, yMm, colW, lineH, "Exclusões e Reduções da Base de Cálculo", FormatarMoedaOpcional(calculado == null ? null : valores?.ValorCalcAjusteBCIBSCBS));
+        PdfDrawHelper.DesenharCampo(gfx, xMm + 1 * colW, yMm, colW, lineH, "Base de Cálculo Após Exclusões e Reduções", FormatarMoedaOpcional(calculado == null ? null : valores?.ValorBaseCalculo));
         PdfDrawHelper.DesenharCampo(gfx, xMm + 2 * colW, yMm, colW, lineH, "Red. Alíquota IBS / Red. Alíquota CBS",
             FormatarPercentuais(valores?.Estado.PercentualReducaoAliquotaUf, valores?.Municipio.PercentualReducaoAliquotaMunicipal,
                 valores?.Federal.PercentualReducaoAliquotaCBS));
@@ -1003,7 +1003,7 @@ internal sealed class DANFSeNacionalReport
         _ => nota.Informacoes.SituacaoNFSe.ToString()
     };
 
-    private string ObterFinalidade() => nota.Informacoes.Dps.Informacoes.IBSCBS?.FinalidadeNFSe switch
+    private string ObterFinalidade() => nota.Informacoes.Dps.Informacoes.FinalidadeNFSe switch
     {
         RTCFinNFSe.Regular => "NFS-e regular",
         _ => "-"

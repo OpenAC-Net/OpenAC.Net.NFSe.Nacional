@@ -23,18 +23,6 @@ namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 public sealed partial class RTCInfoTributosSitClas
 {
     /// <summary>
-    /// Código de Situação Tributária do IBS e da CBS.
-    /// </summary>
-    [DFeElement(TipoCampo.Str, "CST", Min = 3, Max = 3, Ocorrencia = Ocorrencia.Obrigatoria)]
-    public string CodigoSituacaoTributaria { get; set; } = string.Empty;
-
-    /// <summary>
-    /// Código de Classificação Tributária do IBS e da CBS.
-    /// </summary>
-    [DFeElement(TipoCampo.Str, "cClassTrib", Min = 6, Max = 6, Ocorrencia = Ocorrencia.Obrigatoria)]
-    public string CodigoClassificacaoTributaria { get; set; } = string.Empty;
-
-    /// <summary>
     /// Código e Classificação do Crédito Presumido: IBS e CBS.
     /// </summary>
     [DFeElement(TipoCampo.Str, "cCredPres", Min = 2, Max = 2, Ocorrencia = Ocorrencia.NaoObrigatoria)]

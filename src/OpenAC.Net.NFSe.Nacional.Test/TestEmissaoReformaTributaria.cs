@@ -74,7 +74,6 @@ public class TestEmissaoReformaTributaria
 
         var ibscbs = new RTCInfoIBSCBS
         {
-            FinalidadeNFSe = RTCFinNFSe.Regular,
             IndicadorUsoFinal = RTCIndFinal.Nao,
             CodigoIndicadorOperacao = "100301",
             IndicadorDestinatario = RTCIndDest.ProprioTomador,
@@ -82,11 +81,11 @@ public class TestEmissaoReformaTributaria
             {
                 Tributos = new RTCInfoTributosIBSCBS
                 {
+                    CodigoSituacaoTributaria = "200",
+                    CodigoClassificacaoTributaria = "200052",
                     GrupoIBSCBS = new RTCInfoTributosSitClas
                     {
 
-                        CodigoSituacaoTributaria = "200",
-                        CodigoClassificacaoTributaria = "200052"
                     }
                 }
             }
@@ -206,7 +205,6 @@ public class TestEmissaoReformaTributaria
                 Valores = valores,
                 IBSCBS = new RTCInfoIBSCBS
                 {
-                    FinalidadeNFSe = RTCFinNFSe.Regular,
                     IndicadorUsoFinal = RTCIndFinal.Nao,
                     CodigoIndicadorOperacao = "000001",
                     IndicadorDestinatario = RTCIndDest.ProprioTomador,
@@ -214,10 +212,10 @@ public class TestEmissaoReformaTributaria
                     {
                         Tributos = new RTCInfoTributosIBSCBS
                         {
+                            CodigoSituacaoTributaria = "101",
+                            CodigoClassificacaoTributaria = "000001",
                             GrupoIBSCBS = new RTCInfoTributosSitClas
                             {
-                                CodigoSituacaoTributaria = "101",
-                                CodigoClassificacaoTributaria = "000001"
                             }
                         }
                     }
@@ -312,7 +310,6 @@ public class TestEmissaoReformaTributaria
                 Valores = valores,
                 IBSCBS = new RTCInfoIBSCBS
                 {
-                    FinalidadeNFSe = RTCFinNFSe.Regular,
                     IndicadorUsoFinal = RTCIndFinal.Nao,
                     CodigoIndicadorOperacao = "000001",
                     IndicadorDestinatario = RTCIndDest.Outro,
@@ -322,10 +319,10 @@ public class TestEmissaoReformaTributaria
                     {
                         Tributos = new RTCInfoTributosIBSCBS
                         {
+                            CodigoSituacaoTributaria = "101",
+                            CodigoClassificacaoTributaria = "000001",
                             GrupoIBSCBS = new RTCInfoTributosSitClas
                             {
-                                CodigoSituacaoTributaria = "101",
-                                CodigoClassificacaoTributaria = "000001"
                             }
                         }
                     }

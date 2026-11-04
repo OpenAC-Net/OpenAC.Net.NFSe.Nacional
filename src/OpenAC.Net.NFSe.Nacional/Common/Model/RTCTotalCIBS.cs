@@ -47,14 +47,14 @@ public sealed partial class RTCTotalCIBS
     /// <summary>
     /// Grupo de valores referentes ao IBS.
     /// </summary>
-    [DFeElement("gIBS", Ocorrencia = Ocorrencia.Obrigatoria)]
-    public RTCTotalIBS TotalIBS { get; set; } = new();
+    [DFeElement("gIBS", Ocorrencia = Ocorrencia.NaoObrigatoria)]
+    public RTCTotalIBS? TotalIBS { get; set; }
     
     /// <summary>
     /// Grupo de valores referentes a CBS.
     /// </summary>
-    [DFeElement("gCBS", Ocorrencia = Ocorrencia.Obrigatoria)]
-    public RTCTotalCBS TotalCBS { get; set; } = new();
+    [DFeElement("gCBS", Ocorrencia = Ocorrencia.NaoObrigatoria)]
+    public RTCTotalCBS? TotalCBS { get; set; }
     
     /// <summary>
     /// Informacoes de tributacao regular.

@@ -44,7 +44,7 @@ public class TestDANFSePDF
             Valores = new RTCValoresIBSCBS
             {
                 ValorBaseCalculo = 1500m,
-                ValorCalcReeRepRes = 0m,
+                ValorCalcAjusteBCIBSCBS = 0m,
                 Estado = new RTCValoresIBSCBSUf
                 {
                     PercentualIBSUf = 0.10m,
@@ -77,15 +77,14 @@ public class TestDANFSePDF
 
         nota.Informacoes.Dps.Informacoes.IBSCBS = new RTCInfoIBSCBS
         {
-            FinalidadeNFSe = RTCFinNFSe.Regular,
             Valores = new RTCInfoValoresIBSCBS
             {
                 Tributos = new RTCInfoTributosIBSCBS
                 {
+                    CodigoSituacaoTributaria = "000",
+                    CodigoClassificacaoTributaria = "000001",
                     GrupoIBSCBS = new RTCInfoTributosSitClas
                     {
-                        CodigoSituacaoTributaria = "000",
-                        CodigoClassificacaoTributaria = "000001"
                     }
                 }
             }
@@ -200,7 +199,7 @@ public class TestDANFSePDF
             Valores = new RTCValoresIBSCBS
             {
                 ValorBaseCalculo = 1500m,
-                ValorCalcReeRepRes = 0m,
+                ValorCalcAjusteBCIBSCBS = 0m,
                 Estado = new RTCValoresIBSCBSUf
                 {
                     PercentualIBSUf = 0.10m,
@@ -226,15 +225,14 @@ public class TestDANFSePDF
         };
         notaRTC.Informacoes.Dps.Informacoes.IBSCBS = new RTCInfoIBSCBS
         {
-            FinalidadeNFSe = RTCFinNFSe.Regular,
             Valores = new RTCInfoValoresIBSCBS
             {
                 Tributos = new RTCInfoTributosIBSCBS
                 {
+                    CodigoSituacaoTributaria = "000",
+                    CodigoClassificacaoTributaria = "000001",
                     GrupoIBSCBS = new RTCInfoTributosSitClas
                     {
-                        CodigoSituacaoTributaria = "000",
-                        CodigoClassificacaoTributaria = "000001"
                     }
                 }
             }

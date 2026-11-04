@@ -41,14 +41,20 @@ public sealed partial class RTCValoresIBSCBS
     /// <summary>
     /// Base de calculo do IBS/CBS antes das reducoes.
     /// </summary>
-    [DFeElement(TipoCampo.De2, "vBC", Min = 4, Max = 18, Ocorrencia = Ocorrencia.Obrigatoria)]
-    public decimal ValorBaseCalculo { get; set; }
+    [DFeElement(TipoCampo.De2, "vBC", Min = 4, Max = 18, Ocorrencia = Ocorrencia.NaoObrigatoria)]
+    public decimal? ValorBaseCalculo { get; set; }
+
+    /// <summary>
+    /// Valor (R$) de ajuste da BC do IBS/CBS relativo à locação, cessão onerosa ou arrendamento de bens imóveis (subitens 99.03).
+    /// </summary>
+    [DFeElement(TipoCampo.De2, "vCalcAjusteBCLocImoveis", Min = 4, Max = 18, Ocorrencia = Ocorrencia.NaoObrigatoria)]
+    public decimal? ValorCalcAjusteBCLocImoveis { get; set; }
 
     /// <summary>
     /// Valor monetario relativo a reembolso, repasse ou ressarcimento.
     /// </summary>
-    [DFeElement(TipoCampo.De2, "vCalcReeRepRes", Min = 4, Max = 18, Ocorrencia = Ocorrencia.NaoObrigatoria)]
-    public decimal? ValorCalcReeRepRes { get; set; }
+    [DFeElement(TipoCampo.De2, "vCalcAjusteBCIBSCBS", Min = 4, Max = 18, Ocorrencia = Ocorrencia.NaoObrigatoria)]
+    public decimal? ValorCalcAjusteBCIBSCBS { get; set; }
 
     /// <summary>
     /// Detalhamento dos valores do IBS estadual.

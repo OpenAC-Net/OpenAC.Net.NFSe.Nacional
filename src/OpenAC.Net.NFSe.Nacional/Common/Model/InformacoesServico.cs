@@ -52,12 +52,6 @@ public sealed partial class InformacoesServico
     public string? CodTributacaoMunicipio { get; set; }
     
     /// <summary>
-    /// Descrição do serviço (xDescServ).
-    /// </summary>
-    [DFeElement(TipoCampo.Str, "xDescServ", Min = 1, Max = 2000, Ocorrencia = Ocorrencia.Obrigatoria)]
-    public string Descricao { get; set; } = string.Empty;
-    
-    /// <summary>
     /// Código NBS (cNBS).
     /// </summary>
     [DFeElement(TipoCampo.Str, "cNBS", Min = 9, Max = 9, Ocorrencia = Ocorrencia.NaoObrigatoria)]
@@ -68,4 +62,11 @@ public sealed partial class InformacoesServico
     /// </summary>
     [DFeElement(TipoCampo.Str, "cIntContrib", Min = 1, Max = 20, Ocorrencia = Ocorrencia.NaoObrigatoria)]
     public string? CodInterno { get; set; }
+
+    /// <summary>
+    /// Descrição do serviço (xDescServ).
+    /// </summary>
+    [DFeElement(TipoCampo.Str, "xDescServ", Min = 1, Max = 2000, Ocorrencia = Ocorrencia.Obrigatoria)]
+    public string Descricao { get; set; } = string.Empty;
+    
 }

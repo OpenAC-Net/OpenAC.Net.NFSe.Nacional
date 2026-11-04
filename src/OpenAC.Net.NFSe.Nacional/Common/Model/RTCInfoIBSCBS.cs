@@ -41,13 +41,6 @@ namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 public sealed partial class RTCInfoIBSCBS
 {
     /// <summary>
-    /// Indicador da finalidade da emissão de NFS-e (finNFSe).
-    /// TSRTCFinNFSe.
-    /// </summary>
-    [DFeElement(TipoCampo.Enum, "finNFSe", Ocorrencia = Ocorrencia.Obrigatoria)]
-    public RTCFinNFSe FinalidadeNFSe { get; set; }
-
-    /// <summary>
     /// Indica operação de uso ou consumo pessoal (art.57) (indFinal).
     /// TSRTCIndFinal.
     /// </summary>
@@ -58,8 +51,8 @@ public sealed partial class RTCInfoIBSCBS
     /// Código indicador da operação de fornecimento (cIndOp).
     /// TSRTCCodIndOp:6 dígitos numéricos.
     /// </summary>
-    [DFeElement(TipoCampo.StrNumber, "cIndOp", Min =6, Max =6, Ocorrencia = Ocorrencia.Obrigatoria)]
-    public string CodigoIndicadorOperacao { get; set; } = string.Empty;
+    [DFeElement(TipoCampo.StrNumber, "cIndOp", Min =6, Max =6, Ocorrencia = Ocorrencia.NaoObrigatoria)]
+    public string? CodigoIndicadorOperacao { get; set; }
 
     /// <summary>
     /// Tipo de Operação com Entes Governamentais ou outros serviços sobre bens imóveis (tpOper).

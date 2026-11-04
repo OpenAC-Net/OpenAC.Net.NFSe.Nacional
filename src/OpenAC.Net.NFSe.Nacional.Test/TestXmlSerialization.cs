@@ -221,17 +221,16 @@ public class TestXmlSerialization
                 },
                 IBSCBS = new RTCInfoIBSCBS
                 {
-                    FinalidadeNFSe = RTCFinNFSe.Regular,
                     IndicadorDestinatario = RTCIndDest.ProprioTomador,
                     CodigoIndicadorOperacao = "100001",
                     Valores = new RTCInfoValoresIBSCBS
                     {
                         Tributos = new RTCInfoTributosIBSCBS
                         {
+                            CodigoSituacaoTributaria = "001",
+                            CodigoClassificacaoTributaria = "000001",
                             GrupoIBSCBS = new RTCInfoTributosSitClas
                             {
-                                CodigoSituacaoTributaria = "001",
-                                CodigoClassificacaoTributaria = "000001"
                             }
                         }
                     }
@@ -253,10 +252,10 @@ public class TestXmlSerialization
 
         await Assert.That(dpsLida).IsNotNull();
         await Assert.That(dpsLida!.Informacoes.IBSCBS).IsNotNull();
-        await Assert.That(dpsLida.Informacoes.IBSCBS!.FinalidadeNFSe).IsEqualTo(RTCFinNFSe.Regular);
+        await Assert.That(dpsLida.Informacoes.FinalidadeNFSe).IsEqualTo(RTCFinNFSe.Regular);
         await Assert.That(dpsLida.Informacoes.IBSCBS.CodigoIndicadorOperacao).IsEqualTo("100001");
-        await Assert.That(dpsLida.Informacoes.IBSCBS.Valores.Tributos.GrupoIBSCBS.CodigoSituacaoTributaria).IsEqualTo("001");
-        await Assert.That(dpsLida.Informacoes.IBSCBS.Valores.Tributos.GrupoIBSCBS.CodigoClassificacaoTributaria).IsEqualTo("000001");
+        await Assert.That(dpsLida.Informacoes.IBSCBS.Valores.Tributos.CodigoSituacaoTributaria).IsEqualTo("001");
+        await Assert.That(dpsLida.Informacoes.IBSCBS.Valores.Tributos.CodigoClassificacaoTributaria).IsEqualTo("000001");
     }
 
     [Test]
