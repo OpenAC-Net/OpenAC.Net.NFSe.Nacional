@@ -258,5 +258,34 @@
 				</Ambiente>
 			</Ambientes>
 		</serviceInfo>
+		<serviceInfo Id="3552205">
+			<Tipo>DSF</Tipo>
+			<Nome>SOROCABA</Nome>
+			<UF>SP</UF>
+			<Ambientes>
+				<Ambiente Tipo="2">
+					<Enderecos>
+						<Endereco Tipo="Enviar">https://nfse2-sod.dsfweb.com.br/notafiscal-ws</Endereco>
+						<Endereco Tipo="EnviarEvento">https://nfse2-sod.dsfweb.com.br/notafiscal-ws</Endereco>
+						<Endereco Tipo="ConsultarNsu">https://adn.producaorestrita.nfse.gov.br/contribuintes</Endereco>
+						<Endereco Tipo="ConsultarChave">https://adn.producaorestrita.nfse.gov.br/contribuintes</Endereco>
+						<Endereco Tipo="DownloadDanfse">https://adn.producaorestrita.nfse.gov.br</Endereco>
+						<Endereco Tipo="ConsultarChaveDps">https://nfse2-sod.dsfweb.com.br/notafiscal-ws/nfse</Endereco>
+						<Endereco Tipo="ConsultaExisteDps">https://nfse2-sod.dsfweb.com.br/notafiscal-ws/nfse</Endereco>
+					</Enderecos>
+				</Ambiente>
+				<Ambiente Tipo="1">
+					<Enderecos>
+						<Endereco Tipo="Enviar">https://nfseapi.sorocaba.sp.gov.br/notafiscal-ws</Endereco>
+						<Endereco Tipo="EnviarEvento">https://nfseapi.sorocaba.sp.gov.br/notafiscal-ws</Endereco>
+						<Endereco Tipo="ConsultarNsu">https://adn.nfse.gov.br/contribuintes</Endereco>
+						<Endereco Tipo="ConsultarChave">https://adn.nfse.gov.br/contribuintes</Endereco>
+						<Endereco Tipo="DownloadDanfse">https://adn.nfse.gov.br</Endereco>
+						<Endereco Tipo="ConsultarChaveDps">https://nfseapi.sorocaba.sp.gov.br/notafiscal-ws/nfse</Endereco>
+						<Endereco Tipo="ConsultaExisteDps">https://nfseapi.sorocaba.sp.gov.br/notafiscal-ws/nfse</Endereco>
+					</Enderecos>
+				</Ambiente>
+			</Ambientes>
+		</serviceInfo>
 	</Services>
 </NFSeServices>

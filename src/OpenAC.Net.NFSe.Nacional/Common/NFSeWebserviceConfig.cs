@@ -85,4 +85,11 @@ public sealed class NFSeWebserviceConfig : DFeWebserviceConfigBase
     /// Define se a aplicação deve validar o XML contra os schemas XSD antes do envio.
     /// </summary>
     public bool ValidarSchemas { get; set; }  = true;
+
+    /// <summary>
+    /// Quando <c>true</c>, ignora o provedor do município e envia todas as operações
+    /// diretamente para o Ambiente Nacional (SEFIN/ADN).
+    /// Útil, p.ex., para optantes do Simples Nacional a partir da competência 11/2026.
+    /// </summary>
+    public bool ForcarEmissaoAmbienteNacional { get; set; }
 }

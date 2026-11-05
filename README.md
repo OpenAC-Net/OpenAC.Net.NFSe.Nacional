@@ -49,6 +49,7 @@ Desenvolvida pelo time **OpenAC .Net**, a biblioteca adere às especificações 
 A biblioteca abstrai a comunicação com diferentes provedores e sistemas de integração da NFS-e Nacional:
 
 - **Nacional** (Ambiente Nacional / API REST & ADN)
+- **DSF**
 - **Fiorilli**
 - **ISSNet**
 - **SimplISS**
