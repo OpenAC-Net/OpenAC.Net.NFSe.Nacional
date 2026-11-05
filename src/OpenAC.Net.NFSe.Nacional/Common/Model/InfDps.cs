@@ -31,6 +31,7 @@
 
 using System;
 using OpenAC.Net.DFe.Core.Attributes;
+using OpenAC.Net.DFe.Core.Collection;
 using OpenAC.Net.DFe.Core.Common;
 using OpenAC.Net.DFe.Core.Serializer;
 using OpenAC.Net.NFSe.Nacional.Common.Types;
@@ -40,9 +41,47 @@ namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 /// <summary>
 /// Representa as informações principais da DPS (Documento de Prestação de Serviço).
 /// </summary>
-public sealed partial class InfDps
+public sealed partial class InfDps : DFeParentItem<InfDps, Dps>
 {
+    #region Constants
+
+    /// <summary>
+    /// Data em que o layout 1.01 de Produção passa a ser idêntico ao de Homologação (01/12/2026).
+    /// </summary>
+    public static readonly DateTime DataUnificacaoLayout101 = new(2026, 12, 1);
+
+    #endregion Constants
+
+    #region Fields
+
+    private RTCFinNFSe finalidadeNFSe = RTCFinNFSe.Regular;
+    private ServicoNFSe servico = null!;
+    private RTCInfoIBSCBS? ibscbs;
+
+    #endregion Fields
+
+    #region Constructors
+
+    /// <summary>
+    /// Inicializa uma nova instância da classe <see cref="InfDps"/>.
+    /// </summary>
+    public InfDps()
+    {
+        Servico = new ServicoNFSe();
+    }
+
+    #endregion Constructors
+
     #region Properties
+
+    /// <summary>
+    /// Indica se deve utilizar o novo layout 1.01 (Homologação ou Produção a partir de 01/12/2026).
+    /// </summary>
+    [DFeIgnore]
+    internal bool UsarLayoutNovo101 =>
+        (Parent?.Versao ?? VersaoNFSe.Ve100) == VersaoNFSe.Ve101 &&
+        (TipoAmbiente == DFeTipoAmbiente.Homologacao ||
+         (DhEmissao != default ? DhEmissao.Date : DateTime.Today) >= DataUnificacaoLayout101);
 
     /// <summary>
     /// Identificador único da DPS.
@@ -99,13 +138,22 @@ public sealed partial class InfDps
     public MotivoEmissaoTomadoIntermediario? MotivoEmissao { get; set; }
 
     /// <summary>
-    ///  Indicador da finalidade da emissão de NFS-e.
+    /// Indicador da finalidade da emissão de NFS-e.
     /// </summary>
     [DFeElement(TipoCampo.Enum, "finNFSe", Ocorrencia = Ocorrencia.Obrigatoria)]
-    public FinalidadeEmissaoNFSe FinalidadeNFSe { get; set; } = FinalidadeEmissaoNFSe.NFSeRegular;
+    public RTCFinNFSe FinalidadeNFSe
+    {
+        get => ibscbs is { FinalidadeNFSeInformada: true } ? ibscbs.FinalidadeNFSe : finalidadeNFSe;
+        set
+        {
+            finalidadeNFSe = value;
+            if (ibscbs != null)
+                ibscbs.FinalidadeNFSe = value;
+        }
+    }
 
     /// <summary>
-    /// 
+    /// Chave de Acesso da NFS-e rejeitada pelo Tomador/Intermediário.
     /// </summary>
     [DFeElement(TipoCampo.Str, "chNFSeRej", Min = 50, Max = 50, Ocorrencia = Ocorrencia.NaoObrigatoria)]
     public string? ChaveNFSeRejeitada { get; set; }
@@ -144,7 +192,17 @@ public sealed partial class InfDps
     /// Informações do serviço prestado.
     /// </summary>
     [DFeElement("serv", Ocorrencia = Ocorrencia.Obrigatoria)]
-    public ServicoNFSe Servico { get; set; } = new();
+    public ServicoNFSe Servico
+    {
+        get => servico;
+        set
+        {
+            if (servico == value) return;
+            servico = value;
+            if (servico != null && servico.Parent != this)
+                servico.Parent = this;
+        }
+    }
 
     /// <summary>
     /// Valores da DPS.
@@ -156,16 +214,30 @@ public sealed partial class InfDps
     /// Grupo de informações declaradas pelo emitente referentes ao IBS e à CBS
     /// </summary>
     [DFeElement("IBSCBS", Ocorrencia = Ocorrencia.NaoObrigatoria)]
-    public RTCInfoIBSCBS? IBSCBS { get; set; }
+    public RTCInfoIBSCBS? IBSCBS
+    {
+        get => ibscbs;
+        set
+        {
+            if (ibscbs == value) return;
+            ibscbs = value;
+            if (ibscbs != null)
+            {
+                if (ibscbs.Parent != this)
+                    ibscbs.Parent = this;
+                if (ibscbs.FinalidadeNFSeInformada)
+                    finalidadeNFSe = ibscbs.FinalidadeNFSe;
+                else
+                    ibscbs.FinalidadeNFSe = finalidadeNFSe;
+            }
+        }
+    }
 
     #endregion Properties
 
     #region Methods
 
-    internal bool ShouldSerializeFinalidadeNFSe()
-    {
-        return TipoAmbiente == DFeTipoAmbiente.Homologacao;
-    }
+    internal bool ShouldSerializeFinalidadeNFSe() => UsarLayoutNovo101;
 
     #endregion Methods
 }

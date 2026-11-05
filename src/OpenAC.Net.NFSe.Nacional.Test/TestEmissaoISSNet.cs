@@ -126,6 +126,8 @@ public class TestEmissaoISSNet
     public async Task DpsSemObra_RetornaXmlInalterado()
     {
         var dps = MontarDps();
+        dps.Informacoes.TipoAmbiente = DFeTipoAmbiente.Producao;
+        dps.Informacoes.DhEmissao = new DateTimeOffset(2026, 10, 1, 12, 0, 0, TimeSpan.FromHours(-3));
         dps.Informacoes.Servico.Obra = null;
         var nacional = Xml(dps);
 
@@ -212,8 +214,12 @@ public class TestEmissaoISSNet
             TipoEmitente = EmitenteDps.Prestador,
             Prestador = new PrestadorDps
             {
-                CNPJ = SetupOpenNFSeNacional.InscricaoFederal,
-                InscricaoMunicipal = SetupOpenNFSeNacional.InscricaoMunicipal,
+                CNPJ = string.IsNullOrWhiteSpace(SetupOpenNFSeNacional.InscricaoFederal)
+                    ? "11222333000181"
+                    : SetupOpenNFSeNacional.InscricaoFederal,
+                InscricaoMunicipal = string.IsNullOrWhiteSpace(SetupOpenNFSeNacional.InscricaoMunicipal)
+                    ? "12345"
+                    : SetupOpenNFSeNacional.InscricaoMunicipal,
                 Regime = new RegimeTributario
                 {
                     OptanteSimplesNacional = OptanteSimplesNacional.NaoOptante,

@@ -1041,8 +1041,8 @@ public class TestXmlSerialization
         await Assert.That(ibsCbsLido).IsNotNull();
         await Assert.That(ibsCbsLido!.CodigoLocalidadeIncidencia).IsEqualTo("3550308");
         await Assert.That(ibsCbsLido.PercentualRedutor).IsEqualTo(20m);
-        await Assert.That(ibsCbsLido.Valores.ValorBaseCalculo).IsEqualTo(2000m);
-        await Assert.That(ibsCbsLido.Totais.TotalCBS.ValorCBS).IsEqualTo(18.00m);
+        await Assert.That(ibsCbsLido.Valores!.ValorBaseCalculo).IsEqualTo(2000m);
+        await Assert.That(ibsCbsLido.Totais.TotalCBS!.ValorCBS).IsEqualTo(18.00m);
     }
 
     #endregion Modelos Isolados Tests

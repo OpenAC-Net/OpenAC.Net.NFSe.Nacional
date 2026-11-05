@@ -1,4 +1,4 @@
-﻿// ***********************************************************************
+// ***********************************************************************
 // Assembly         : OpenAC.Net.NFSe.Nacional
 // Author           : RFTD
 // Created          : 09-09-2023
@@ -85,6 +85,12 @@ public enum TipoDeducaoReducao
     /// </summary>
     [DFeEnum("8")]
     SubempreitadaMaoObra,
+
+    /// <summary>
+    /// Profissional parceiro.
+    /// </summary>
+    [DFeEnum("9")]
+    ProfissionalParceiro,
 
     /// <summary>
     /// Outras deduções.

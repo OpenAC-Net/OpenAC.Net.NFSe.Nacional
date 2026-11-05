@@ -13,9 +13,9 @@
   <ItemGroup>
     <AvaloniaResource Include="Assets/**" />
     <InternalsVisibleTo Include="OpenAC.Net.NFSe.Nacional.Demo.Tests" />
-    <PackageReference Include="Avalonia.Desktop" Version="12.1.4" />
-    <PackageReference Include="Avalonia.Themes.Fluent" Version="12.1.4" />
-    <PackageReference Include="Avalonia.Fonts.Inter" Version="12.1.4" />
+    <PackageReference Include="Avalonia.Desktop" Version="12.1.5" />
+    <PackageReference Include="Avalonia.Themes.Fluent" Version="12.1.5" />
+    <PackageReference Include="Avalonia.Fonts.Inter" Version="12.1.5" />
     <PackageReference Include="NLog" Version="6.2.2" />
   </ItemGroup>
   <ItemGroup>

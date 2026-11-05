@@ -31,7 +31,10 @@ public class TestSchemaV101
         new(@"^DPS[0-9]{7}(1[0-9]{14}|2[0-9A-Z]{14})[0-9]{20}$", RegexOptions.CultureInvariant);
 
     private static string CaminhoSchemaDps =>
-        Path.Combine(AppContext.BaseDirectory, "Schemas", VersaoNFSe.Ve101.GetDFeValue(), "DPS_v1.01.xsd");
+        Path.Combine(AppContext.BaseDirectory, "Schemas", VersaoNFSe.Ve101.GetDFeValue(), "Homologacao", "DPS_v1.01.xsd");
+
+    private static string CaminhoSchemaDpsProducao =>
+        Path.Combine(AppContext.BaseDirectory, "Schemas", VersaoNFSe.Ve101.GetDFeValue(), "Producao", "DPS_v1.01.xsd");
 
     [Test]
     public async Task DpsComCnpjAlfanumerico_PreservaLetrasNoXml()
@@ -64,6 +67,8 @@ public class TestSchemaV101
     public async Task DocDedRed_UsaNomesDeElementoDoTCDocDedRed()
     {
         var dps = MontarDps();
+        dps.Informacoes.TipoAmbiente = DFeTipoAmbiente.Producao;
+        dps.Informacoes.DhEmissao = new DateTimeOffset(2026, 10, 1, 12, 0, 0, TimeSpan.FromHours(-3));
         // TCInfoDedRed é um xs:choice: pDR, vDR ou documentos - preencher apenas um.
         dps.Informacoes.Valores.ValoresDeducaoReducao = new ValoresDeducaoReducao
         {
@@ -86,7 +91,7 @@ public class TestSchemaV101
         await Assert.That(xml).Contains("<chNFe>");
         await Assert.That(xml).Contains("<tpDedRed>");
 
-        var valido = XmlSchemaValidation.ValidarXml(XmlSemAssinatura(xml), CaminhoSchemaDps, out var erros, out _);
+        var valido = XmlSchemaValidation.ValidarXml(XmlSemAssinatura(xml), CaminhoSchemaDpsProducao, out var erros, out _);
 
         await Assert.That(valido).IsTrue().Because(string.Join(" | ", erros));
     }
@@ -210,6 +215,197 @@ public class TestSchemaV101
         dps.GerarId();
 
         await Assert.That(dps.Informacoes.Id).IsEqualTo(original);
+    }
+
+    [Test]
+    public async Task DocAjusteBC_UsaNomesDeElementoDoTCDocAjusteBC_EValidaNoSchemaHomologacao()
+    {
+        var dps = MontarDps();
+        dps.Informacoes.Valores.ValoresAjusteBC = new ValoresAjusteBC
+        {
+            Documentos = new()
+            {
+                new DocumentoAjusteBC
+                {
+                    TipoAjusteBC = RTCTpAjusteBC.ProfissionalParceiro,
+                    ValorTotalDocumento = 150.00m,
+                    ValorAjusteAplicado = 100.00m,
+                    DataEmissaoDocumento = DateTime.Today,
+                    DocumentoFeNacional = new RTCListaDocDFe
+                    {
+                        TipoChaveDFe = RTCTipoChaveDFe.NFe,
+                        ChaveDFe = new string('1', 6) + CnpjAlfanumericoTomador + new string('2', 24)
+                    }
+                }
+            }
+        };
+        dps.GerarId();
+
+        var xml = dps.GetXml();
+
+        await Assert.That(xml).Contains("<vAjusteBC>");
+        await Assert.That(xml).Contains("<docAjusteBC>");
+        await Assert.That(xml).Contains("<tpAjusteBC>9</tpAjusteBC>");
+        await Assert.That(xml).Contains("<vTotDoc>150.00</vTotDoc>");
+        await Assert.That(xml).Contains("<vAjusteAplic>100.00</vAjusteAplic>");
+
+        var valido = XmlSchemaValidation.ValidarXml(XmlSemAssinatura(xml), CaminhoSchemaDps, out var erros, out _);
+        await Assert.That(valido).IsTrue().Because(string.Join(" | ", erros));
+
+        var lida = Dps.ReadFromXml(XElement.Parse(xml));
+        var doc = lida?.Informacoes.Valores.ValoresAjusteBC?.Documentos?.SingleOrDefault();
+        await Assert.That(doc).IsNotNull();
+        await Assert.That(doc!.TipoAjusteBC).IsEqualTo(RTCTpAjusteBC.ProfissionalParceiro);
+        await Assert.That(doc.ValorTotalDocumento).IsEqualTo(150.00m);
+        await Assert.That(doc.ValorAjusteAplicado).IsEqualTo(100.00m);
+    }
+
+    [Test]
+    public async Task DpsProducao_AntesEAPartirDe01Dez2026_AlternaLayoutAutomaticamente()
+    {
+        // 1. Produção antes de 01/12/2026 -> Layout Produção (xDescServ antes de cNBS, sem finNFSe em infDPS, gIBSCBS em trib)
+        var dpsAntes = MontarDps();
+        dpsAntes.Informacoes.TipoAmbiente = DFeTipoAmbiente.Producao;
+        dpsAntes.Informacoes.DhEmissao = new DateTimeOffset(2026, 11, 30, 10, 0, 0, TimeSpan.FromHours(-3));
+        dpsAntes.Informacoes.Servico.Informacoes.CodNBS = "101010000";
+        dpsAntes.Informacoes.Servico.Informacoes.CodInterno = "INT01";
+        dpsAntes.Informacoes.IBSCBS = new RTCInfoIBSCBS
+        {
+            FinalidadeNFSe = RTCFinNFSe.Regular,
+            IndicadorUsoFinal = RTCIndFinal.Nao,
+            CodigoIndicadorOperacao = "100001",
+            IndicadorDestinatario = RTCIndDest.ProprioTomador,
+            Valores = new RTCInfoValoresIBSCBS
+            {
+                Tributos = new RTCInfoTributosIBSCBS
+                {
+                    CodigoSituacaoTributaria = "001",
+                    CodigoClassificacaoTributaria = "000001"
+                }
+            }
+        };
+        dpsAntes.GerarId();
+
+        var xmlAntes = dpsAntes.GetXml();
+        var cServAntes = XElement.Parse(xmlAntes).Descendants().Single(e => e.Name.LocalName == "cServ");
+        var ordemAntes = string.Join(",", cServAntes.Elements().Select(e => e.Name.LocalName));
+        await Assert.That(ordemAntes).IsEqualTo("cTribNac,cTribMun,xDescServ,cNBS,cIntContrib");
+        await Assert.That(xmlAntes).Contains("<gIBSCBS>");
+
+        var validoProducao = XmlSchemaValidation.ValidarXml(XmlSemAssinatura(xmlAntes), CaminhoSchemaDpsProducao, out var errosProd, out _);
+        await Assert.That(validoProducao).IsTrue().Because(string.Join(" | ", errosProd));
+
+        // 2. Produção a partir de 01/12/2026 -> Layout unificado com Homologação (xDescServ no fim de cServ, finNFSe em infDPS, CST/cClassTrib direto em trib)
+        var dpsDepois = MontarDps();
+        dpsDepois.Informacoes.TipoAmbiente = DFeTipoAmbiente.Producao;
+        dpsDepois.Informacoes.DhEmissao = new DateTimeOffset(2026, 12, 1, 0, 0, 0, TimeSpan.FromHours(-3));
+        dpsDepois.Informacoes.Servico.Informacoes.CodNBS = "101010000";
+        dpsDepois.Informacoes.Servico.Informacoes.CodInterno = "INT01";
+        dpsDepois.Informacoes.IBSCBS = new RTCInfoIBSCBS
+        {
+            FinalidadeNFSe = RTCFinNFSe.Regular,
+            IndicadorUsoFinal = RTCIndFinal.Nao,
+            CodigoIndicadorOperacao = "100001",
+            IndicadorDestinatario = RTCIndDest.ProprioTomador,
+            Valores = new RTCInfoValoresIBSCBS
+            {
+                Tributos = new RTCInfoTributosIBSCBS
+                {
+                    CodigoSituacaoTributaria = "001",
+                    CodigoClassificacaoTributaria = "000001"
+                }
+            }
+        };
+        dpsDepois.GerarId();
+
+        var xmlDepois = dpsDepois.GetXml();
+        var cServDepois = XElement.Parse(xmlDepois).Descendants().Single(e => e.Name.LocalName == "cServ");
+        var ordemDepois = string.Join(",", cServDepois.Elements().Select(e => e.Name.LocalName));
+        await Assert.That(ordemDepois).IsEqualTo("cTribNac,cTribMun,cNBS,cIntContrib,xDescServ");
+        await Assert.That(xmlDepois).DoesNotContain("<gIBSCBS>");
+
+        var validoHomolog = XmlSchemaValidation.ValidarXml(XmlSemAssinatura(xmlDepois), CaminhoSchemaDps, out var errosHomolog, out _);
+        await Assert.That(validoHomolog).IsTrue().Because(string.Join(" | ", errosHomolog));
+    }
+
+    [Test]
+    public async Task IBSCBS_ComLocacaoImovel_UnidadesImobiliarias_EBensMoveis_ValidaNoSchemaHomologacao()
+    {
+        var dps = MontarDps();
+        dps.Informacoes.IBSCBS = new RTCInfoIBSCBS
+        {
+            IndicadorUsoFinal = RTCIndFinal.Nao,
+            CodigoIndicadorOperacao = "100001",
+            IndicadorDestinatario = RTCIndDest.ProprioTomador,
+            Imovel = new RTCInfoImovel
+            {
+                CodigoMunicipio = CodMunicipio,
+                Locacao = new RTCLocacaoImovel
+                {
+                    PercentualCopropriedade = 100.00m,
+                    ValorTotalOperacao = 2000.00m,
+                    DataVencimentoOriginal = new DateTime(2026, 11, 10)
+                },
+                UnidadesImobiliarias = new()
+                {
+                    new RTCUnidadesImobiliarias
+                    {
+                        InscricaoImobiliariaFiscal = "INSC001",
+                        Endereco = new EnderecoImovel
+                        {
+                            CEP = "01310100",
+                            Logradouro = "Avenida Paulista",
+                            Numero = "1000",
+                            Bairro = "Bela Vista"
+                        },
+                        AjustesBCLocImoveis = new()
+                        {
+                            new RTCValoresBCImoveis
+                            {
+                                TipoAjusteBCLocImoveis = AjusteBCLocImoveis.TributosInclusosAluguel,
+                                ValorAjusteBCLocImoveis = 50.00m
+                            }
+                        }
+                    }
+                }
+            },
+            BensMoveis = new()
+            {
+                new RTCInfoBensMoveis
+                {
+                    CodigoNCMBemMovel = "84713012",
+                    DescricaoNCMBemMovel = "Notebook corporativo",
+                    QuantidadeNCMBemMovel = 2
+                }
+            },
+            Valores = new RTCInfoValoresIBSCBS
+            {
+                Tributos = new RTCInfoTributosIBSCBS
+                {
+                    CodigoSituacaoTributaria = "001",
+                    CodigoClassificacaoTributaria = "000001"
+                }
+            }
+        };
+        dps.GerarId();
+
+        var xml = dps.GetXml();
+
+        var valido = XmlSchemaValidation.ValidarXml(XmlSemAssinatura(xml), CaminhoSchemaDps, out var erros, out _);
+        await Assert.That(valido).IsTrue().Because(string.Join(" | ", erros));
+
+        var lida = Dps.ReadFromXml(XElement.Parse(xml));
+        var imovel = lida?.Informacoes.IBSCBS?.Imovel;
+        await Assert.That(imovel).IsNotNull();
+        await Assert.That(imovel!.CodigoMunicipio).IsEqualTo(CodMunicipio);
+        await Assert.That(imovel.Locacao).IsNotNull();
+        await Assert.That(imovel.Locacao!.PercentualCopropriedade).IsEqualTo(100.00m);
+        await Assert.That(imovel.UnidadesImobiliarias).IsNotNull();
+        await Assert.That(imovel.UnidadesImobiliarias!.Count).IsEqualTo(1);
+        await Assert.That(imovel.UnidadesImobiliarias[0].InscricaoImobiliariaFiscal).IsEqualTo("INSC001");
+        await Assert.That(imovel.UnidadesImobiliarias[0].AjustesBCLocImoveis!.Count).IsEqualTo(1);
+        await Assert.That(lida!.Informacoes.IBSCBS!.BensMoveis!.Count).IsEqualTo(1);
+        await Assert.That(lida.Informacoes.IBSCBS.BensMoveis[0].CodigoNCMBemMovel).IsEqualTo("84713012");
     }
 
     /// <summary>

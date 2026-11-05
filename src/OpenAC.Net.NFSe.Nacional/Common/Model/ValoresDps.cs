@@ -1,4 +1,4 @@
-﻿// ***********************************************************************
+// ***********************************************************************
 // Assembly         : OpenAC.Net.NFSe.Nacional
 // Author           : RFTD
 // Created          : 09-09-2023
@@ -51,10 +51,16 @@ public sealed partial class ValoresDps
     public ValoresDesconto? ValoresDesconto { get; set; }
 
     /// <summary>
-    /// Valores de dedução ou redução.
+    /// Valores de dedução ou redução (layout anterior).
     /// </summary>
     [DFeElement("vDedRed", Ocorrencia = Ocorrencia.NaoObrigatoria)]
     public ValoresDeducaoReducao? ValoresDeducaoReducao { get; set; }
+
+    /// <summary>
+    /// Grupo de informações relativas aos valores para ajuste dos valores de base de cálculo (vAjusteBC).
+    /// </summary>
+    [DFeElement("vAjusteBC", Ocorrencia = Ocorrencia.NaoObrigatoria)]
+    public ValoresAjusteBC? ValoresAjusteBC { get; set; }
 
     /// <summary>
     /// Tributos incidentes na operação.

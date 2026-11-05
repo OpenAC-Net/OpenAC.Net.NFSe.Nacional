@@ -1,4 +1,4 @@
-﻿// ***********************************************************************
+// ***********************************************************************
 // Assembly         : OpenAC.Net.NFSe.Nacional
 // Author           : RFTD
 // Created          : 09-09-2023
@@ -30,6 +30,7 @@
 // ***********************************************************************
 
 using OpenAC.Net.DFe.Core.Attributes;
+using OpenAC.Net.DFe.Core.Collection;
 using OpenAC.Net.DFe.Core.Serializer;
 
 namespace OpenAC.Net.NFSe.Nacional.Common.Model;
@@ -37,35 +38,49 @@ namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 /// <summary>
 /// Representa as informações do serviço para a NFSe.
 /// </summary>
-public sealed partial class InformacoesServico
+public sealed partial class InformacoesServico : DFeParentItem<InformacoesServico, InfDps>
 {
     /// <summary>
     /// Código de Tributação Nacional (cTribNac).
     /// </summary>
-    [DFeElement(TipoCampo.StrNumberFill, "cTribNac", Min = 6, Max = 6, Ocorrencia = Ocorrencia.Obrigatoria)]
+    [DFeElement(TipoCampo.StrNumberFill, "cTribNac", Min = 6, Max = 6, Ocorrencia = Ocorrencia.Obrigatoria, Ordem = 1)]
     public string CodTributacaoNacional { get; set; } = string.Empty;
     
     /// <summary>
     /// Código de Tributação do Município (cTribMun).
     /// </summary>
-    [DFeElement(TipoCampo.Str, "cTribMun", Min = 3, Max = 3, Ocorrencia = Ocorrencia.NaoObrigatoria)]
+    [DFeElement(TipoCampo.Str, "cTribMun", Min = 3, Max = 3, Ocorrencia = Ocorrencia.NaoObrigatoria, Ordem = 2)]
     public string? CodTributacaoMunicipio { get; set; }
-    
+
     /// <summary>
-    /// Descrição do serviço (xDescServ).
+    /// Projeta <see cref="Descricao"/> na posição anterior a <c>cNBS</c> quando o layout anterior (1.00 ou Produção 1.01 antes de 01/12/2026) estiver ativo.
     /// </summary>
-    [DFeElement(TipoCampo.Str, "xDescServ", Min = 1, Max = 2000, Ocorrencia = Ocorrencia.Obrigatoria)]
-    public string Descricao { get; set; } = string.Empty;
+    [DFeElement(TipoCampo.Str, "xDescServ", Min = 1, Max = 2000, Ocorrencia = Ocorrencia.Obrigatoria, Ordem = 3)]
+    internal string DescricaoLayoutAnterior
+    {
+        get => Descricao;
+        set => Descricao = value;
+    }
     
     /// <summary>
     /// Código NBS (cNBS).
     /// </summary>
-    [DFeElement(TipoCampo.Str, "cNBS", Min = 9, Max = 9, Ocorrencia = Ocorrencia.NaoObrigatoria)]
+    [DFeElement(TipoCampo.Str, "cNBS", Min = 9, Max = 9, Ocorrencia = Ocorrencia.NaoObrigatoria, Ordem = 4)]
     public string? CodNBS { get; set; }
     
     /// <summary>
     /// Código Interno do Contribuinte (cIntContrib).
     /// </summary>
-    [DFeElement(TipoCampo.Str, "cIntContrib", Min = 1, Max = 20, Ocorrencia = Ocorrencia.NaoObrigatoria)]
+    [DFeElement(TipoCampo.Str, "cIntContrib", Min = 1, Max = 20, Ocorrencia = Ocorrencia.NaoObrigatoria, Ordem = 5)]
     public string? CodInterno { get; set; }
+
+    /// <summary>
+    /// Descrição do serviço (xDescServ).
+    /// </summary>
+    [DFeElement(TipoCampo.Str, "xDescServ", Min = 1, Max = 2000, Ocorrencia = Ocorrencia.Obrigatoria, Ordem = 6)]
+    public string Descricao { get; set; } = string.Empty;
+
+    internal bool ShouldSerializeDescricaoLayoutAnterior() => !(Parent?.UsarLayoutNovo101 ?? false);
+
+    internal bool ShouldSerializeDescricao() => Parent?.UsarLayoutNovo101 ?? false;
 }

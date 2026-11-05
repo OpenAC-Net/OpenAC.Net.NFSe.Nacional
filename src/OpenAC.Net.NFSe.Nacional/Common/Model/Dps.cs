@@ -45,6 +45,24 @@ namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 [DFeRoot("DPS", Namespace = "http://www.sped.fazenda.gov.br/nfse")]
 public sealed partial class Dps : DFeSignDocument<Dps>
 {
+    #region Fields
+
+    private InfDps informacoes = null!;
+
+    #endregion Fields
+
+    #region Constructors
+
+    /// <summary>
+    /// Inicializa uma nova instância da classe <see cref="Dps"/>.
+    /// </summary>
+    public Dps()
+    {
+        Informacoes = new InfDps();
+    }
+
+    #endregion Constructors
+
     #region Properties
 
     /// <summary>
@@ -57,7 +75,17 @@ public sealed partial class Dps : DFeSignDocument<Dps>
     /// Obtém ou define as informações do DPS.
     /// </summary>
     [DFeElement("infDPS", Ocorrencia = Ocorrencia.Obrigatoria)]
-    public InfDps Informacoes { get; set; } = new();
+    public InfDps Informacoes
+    {
+        get => informacoes;
+        set
+        {
+            if (informacoes == value) return;
+            informacoes = value;
+            if (informacoes != null && informacoes.Parent != this)
+                informacoes.Parent = this;
+        }
+    }
 
     #endregion Properties
 
