@@ -47,8 +47,9 @@ public sealed partial class ExigibilidadeSuspensa
     public TipoSuspensao TipoSuspensao { get; set; }
     
     /// <summary>
-    /// Número do processo relacionado à suspensão.
+    /// Número do processo judicial ou administrativo de suspensão da exigibilidade.
+    /// Serializado com 30 dígitos, completado com zeros à esquerda (TSNumProcExigSuspensa: [0-9]{30}).
     /// </summary>
-    [DFeElement(TipoCampo.StrNumber, "nProcesso", Min = 1, Max = 30, Ocorrencia = Ocorrencia.Obrigatoria)]
+    [DFeElement(TipoCampo.StrNumberFill, "nProcesso", Min = 30, Max = 30, Ocorrencia = Ocorrencia.Obrigatoria)]
     public string? NumeroProcesso { get; set; }
 }

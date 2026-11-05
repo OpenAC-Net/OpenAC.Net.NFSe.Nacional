@@ -10,9 +10,9 @@
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageId>OpenAC.Net.NFSe.Nacional.DANFSe.PDFSharp.Web</PackageId>
-    <AssemblyVersion>1.5.0.3</AssemblyVersion>
-    <FileVersion>1.5.0.3</FileVersion>
-    <Version>1.5.0.3</Version>
+    <AssemblyVersion>1.6.0</AssemblyVersion>
+    <FileVersion>1.6.0</FileVersion>
+    <Version>1.6.0</Version>
     <Authors>Projeto OpenAC .Net</Authors>
     <Company>OpenAC .Net - Automação Comercial em .Net</Company>
     <Copyright>Copyright © Projeto OpenAC .Net 2014 - 2026</Copyright>
@@ -44,6 +44,10 @@
     <None Include="..\..\LICENSE" Pack="true" PackagePath="/" />
     <None Include="..\..\nuget.png" Pack="true" PackagePath="/" Link="nuget.png" />
     <None Include="README.md" Pack="true" PackagePath="/" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="OpenAC.Net.DFe.Core" Version="1.7.1" />
   </ItemGroup>
 
 </Project>

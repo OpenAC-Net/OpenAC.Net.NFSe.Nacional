@@ -1,4 +1,5 @@
 using System.Text.RegularExpressions;
+using System.Xml.Linq;
 using OpenAC.Net.DFe.Core;
 using OpenAC.Net.DFe.Core.Common;
 using OpenAC.Net.DFe.Core.Extensions;
@@ -88,6 +89,69 @@ public class TestSchemaV101
         var valido = XmlSchemaValidation.ValidarXml(xml, CaminhoSchemaDps, out var erros, out _);
 
         await Assert.That(valido).IsTrue();
+    }
+
+    [Test]
+    public async Task ExigSusp_SerializaNaOrdemDoTCTribMunicipalEValidaNoSchema()
+    {
+        // TSNumProcExigSuspensa: exatamente 30 dígitos.
+        const string numeroProcesso = "012345678901234567890123456789";
+
+        var dps = MontarDps();
+        dps.Informacoes.Valores.Tributos.Municipal.ISSQN = TributoISSQN.Imunidade;
+        dps.Informacoes.Valores.Tributos.Municipal.TipoImunidade = TipoImunidade.CF88Art150VIb;
+        dps.Informacoes.Valores.Tributos.Municipal.Suspensao = new ExigibilidadeSuspensa
+        {
+            TipoSuspensao = TipoSuspensao.PorDecisaoJudicial,
+            NumeroProcesso = numeroProcesso
+        };
+        dps.GerarId();
+
+        var xml = dps.GetXml();
+
+        await Assert.That(xml).Contains("<exigSusp>");
+        await Assert.That(xml).Contains("<tpSusp>1</tpSusp>");
+        await Assert.That(xml).Contains($"<nProcesso>{numeroProcesso}</nProcesso>");
+
+        // Ordem dos filhos conforme TCTribMunicipal: tribISSQN, cPaisResult?, tpImunidade?, exigSusp?, BM?, tpRetISSQN, pAliq?
+        var tribMun = XElement.Parse(xml).Descendants().Single(e => e.Name.LocalName == "tribMun");
+        var ordem = string.Join(",", tribMun.Elements().Select(e => e.Name.LocalName));
+        await Assert.That(ordem).IsEqualTo("tribISSQN,tpImunidade,exigSusp,tpRetISSQN");
+
+        // A DPS não assinada sai com um ds:Signature vazio, que não passa no xmldsig (problema pré-existente,
+        // alheio ao exigSusp). ds:Signature é minOccurs="0" em TCDPS, então valida-se o documento sem ele.
+        var documento = XElement.Parse(xml);
+        documento.Descendants().Where(e => e.Name.LocalName == "Signature").Remove();
+        var valido = XmlSchemaValidation.ValidarXml(documento.ToString(), CaminhoSchemaDps, out var erros, out _);
+        await Assert.That(valido).IsTrue().Because(string.Join(" | ", erros));
+
+        var lida = Dps.ReadFromXml(XElement.Parse(xml));
+        var suspensao = lida.Informacoes.Valores.Tributos.Municipal.Suspensao;
+        await Assert.That(suspensao).IsNotNull();
+        await Assert.That(suspensao!.TipoSuspensao).IsEqualTo(TipoSuspensao.PorDecisaoJudicial);
+        await Assert.That(suspensao.NumeroProcesso).IsEqualTo(numeroProcesso);
+    }
+
+    [Test]
+    public async Task ExigSusp_NProcessoCurto_CompletaComZerosAEsquerdaEValidaNoSchema()
+    {
+        var dps = MontarDps();
+        dps.Informacoes.Valores.Tributos.Municipal.Suspensao = new ExigibilidadeSuspensa
+        {
+            TipoSuspensao = TipoSuspensao.PorProcessoAdministrativo,
+            NumeroProcesso = "12345"
+        };
+        dps.GerarId();
+
+        var xml = dps.GetXml();
+
+        await Assert.That(xml).Contains("<tpSusp>2</tpSusp>");
+        await Assert.That(xml).Contains($"<nProcesso>{new string('0', 25)}12345</nProcesso>");
+
+        var documento = XElement.Parse(xml);
+        documento.Descendants().Where(e => e.Name.LocalName == "Signature").Remove();
+        var valido = XmlSchemaValidation.ValidarXml(documento.ToString(), CaminhoSchemaDps, out var erros, out _);
+        await Assert.That(valido).IsTrue().Because(string.Join(" | ", erros));
     }
 
     [Test]

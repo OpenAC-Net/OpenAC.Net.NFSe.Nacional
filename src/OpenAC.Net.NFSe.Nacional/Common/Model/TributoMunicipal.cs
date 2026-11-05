@@ -53,23 +53,22 @@ public sealed partial class TributoMunicipal
     public string? CodPais { get; set; }
 
     /// <summary>
-    /// Benefício municipal (opcional).
-    /// </summary>
-    [DFeElement("BM", Ocorrencia = Ocorrencia.NaoObrigatoria)]
-    public BeneficioMunicipal? Beneficio { get; set; }
-
-    /// <summary>
-    /// Suspensão de exigibilidade (opcional).
-    /// </summary>
-    [DFeElement("tribMun", Ocorrencia = Ocorrencia.NaoObrigatoria)]
-    public ExigibilidadeSuspensa? Suspensao { get; set; }
-
-    /// <summary>
     /// Tipo de imunidade (opcional).
     /// </summary>
     [DFeElement(TipoCampo.Enum, "tpImunidade", Ocorrencia = Ocorrencia.NaoObrigatoria)]
     public TipoImunidade? TipoImunidade { get; set; }
 
+    /// <summary>
+    /// Informações para a suspensão da exigibilidade do ISSQN (opcional).
+    /// </summary>
+    [DFeElement("exigSusp", Ocorrencia = Ocorrencia.NaoObrigatoria)]
+    public ExigibilidadeSuspensa? Suspensao { get; set; }
+
+    /// <summary>
+    /// Benefício municipal (opcional).
+    /// </summary>
+    [DFeElement("BM", Ocorrencia = Ocorrencia.NaoObrigatoria)]
+    public BeneficioMunicipal? Beneficio { get; set; }
 
     /// <summary>
     /// Tipo de retenção do ISSQN (opcional).

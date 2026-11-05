@@ -17,7 +17,8 @@ public interface IOpenNFSeNacionalClient
     /// <param name="evento">Pedido de evento, como cancelamento ou substituição.</param>
     /// <param name="cancellationToken">Token para cancelar a operação.</param>
     /// <returns>Resposta fiscal do processamento do evento.</returns>
-    Task<NFSeResponse<RespostaEnvioEvento>> EnviarEventoAsync(PedidoRegistroEvento evento, CancellationToken cancellationToken = default);
+    Task<NFSeResponse<RespostaEnvioEvento>> EnviarEventoAsync(PedidoRegistroEvento evento,
+        CancellationToken cancellationToken = default);
 
     /// <summary>Consulta documentos fiscais distribuídos a partir de um NSU.</summary>
     /// <param name="nsu">Número Sequencial Único inicial da consulta.</param>
@@ -29,7 +30,8 @@ public interface IOpenNFSeNacionalClient
     /// <param name="chave">Chave de acesso da NFS-e.</param>
     /// <param name="cancellationToken">Token para cancelar a operação.</param>
     /// <returns>Documento fiscal e informações retornadas pela distribuição.</returns>
-    Task<NFSeResponse<RespostaConsultaDFe>> ConsultaChaveAsync(string chave, CancellationToken cancellationToken = default);
+    Task<NFSeResponse<RespostaConsultaDFe>> ConsultaChaveAsync(string chave,
+        CancellationToken cancellationToken = default);
 
     /// <summary>Baixa o Documento Auxiliar da NFS-e.</summary>
     /// <param name="chave">Chave de acesso da NFS-e.</param>
@@ -41,7 +43,8 @@ public interface IOpenNFSeNacionalClient
     /// <param name="id">Identificador da DPS.</param>
     /// <param name="cancellationToken">Token para cancelar a operação.</param>
     /// <returns>Resposta contendo a chave encontrada.</returns>
-    Task<NFSeResponse<RespostaConsultaChaveDps>> ConsultaChaveDpsAsync(string id, CancellationToken cancellationToken = default);
+    Task<NFSeResponse<RespostaConsultaChaveDps>> ConsultaChaveDpsAsync(string id,
+        CancellationToken cancellationToken = default);
 
     /// <summary>Verifica se existe NFS-e emitida para uma DPS.</summary>
     /// <param name="id">Identificador da DPS.</param>
@@ -53,25 +56,29 @@ public interface IOpenNFSeNacionalClient
     /// <param name="lote">Lote que será transmitido.</param>
     /// <param name="cancellationToken">Token para cancelar a operação.</param>
     /// <returns>Resposta de recepção e protocolo do lote.</returns>
-    Task<NFSeResponse<RespostaRecepcaoLote>> EnviarLoteAsync(LoteDps lote, CancellationToken cancellationToken = default);
+    Task<NFSeResponse<RespostaRecepcaoLote>> EnviarLoteAsync(LoteDps lote,
+        CancellationToken cancellationToken = default);
 
     /// <summary>Envia um lote síncrono de DPS.</summary>
     /// <param name="lote">Lote que será transmitido.</param>
     /// <param name="cancellationToken">Token para cancelar a operação.</param>
     /// <returns>Resposta do processamento síncrono do lote.</returns>
-    Task<NFSeResponse<RespostaRecepcaoLoteSincrono>> EnviarLoteSincronoAsync(LoteDps lote, CancellationToken cancellationToken = default);
+    Task<NFSeResponse<RespostaRecepcaoLoteSincrono>> EnviarLoteSincronoAsync(LoteDps lote,
+        CancellationToken cancellationToken = default);
 
     /// <summary>Consulta o processamento de um lote anteriormente enviado.</summary>
     /// <param name="filtro">Critérios de identificação do lote.</param>
     /// <param name="cancellationToken">Token para cancelar a operação.</param>
     /// <returns>Situação e documentos resultantes do lote.</returns>
-    Task<NFSeResponse<RespostaConsultaLote>> ConsultarLoteAsync(ConsultaLoteFiltro filtro, CancellationToken cancellationToken = default);
+    Task<NFSeResponse<RespostaConsultaLote>> ConsultarLoteAsync(ConsultaLoteFiltro filtro,
+        CancellationToken cancellationToken = default);
 
     /// <summary>Consulta NFS-e conforme os critérios suportados pelo provedor.</summary>
     /// <param name="filtro">Critérios da consulta de NFS-e.</param>
     /// <param name="cancellationToken">Token para cancelar a operação.</param>
     /// <returns>Notas fiscais encontradas pelo provedor.</returns>
-    Task<NFSeResponse<RespostaConsultaNFSe>> ConsultarNFSeAsync(ConsultaNFSeFiltro filtro, CancellationToken cancellationToken = default);
+    Task<NFSeResponse<RespostaConsultaNFSe>> ConsultarNFSeAsync(ConsultaNFSeFiltro filtro,
+        CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Consulta eventos por chave de acesso, tipo de evento e número sequencial do evento
