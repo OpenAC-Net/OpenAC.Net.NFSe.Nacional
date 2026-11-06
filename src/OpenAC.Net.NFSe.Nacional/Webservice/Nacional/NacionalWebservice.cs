@@ -101,14 +101,27 @@ public class NacionalWebservice : NFSeWebserviceBase
     /// Distribui os DF-e para contribuintes relacionados à NFS-e.
     /// </summary>
     /// <param name="nsu">Número NSU.</param>
+    /// <param name="cnpjCpf">CNPJ (14 dígitos) ou CPF (11 dígitos) a ser consultado. Enviado como cnpjConsulta ou cpfConsulta.</param>
     /// <returns>Resposta da consulta contendo os DF-e.</returns>
     /// <param name="cancellationToken">Token para cancelar a operação assíncrona.</param>
-    public override async Task<NFSeResponse<RespostaConsultaDFe>> ConsultaNsuAsync(int nsu, CancellationToken cancellationToken = default)
+    public override async Task<NFSeResponse<RespostaConsultaDFe>> ConsultaNsuAsync(int nsu, string? cnpjCpf = null, CancellationToken cancellationToken = default)
     {
-        this.Log().Debug($"Webservice: [ConsultaNsu][Envio] - {nsu}");
+        this.Log().Debug($"Webservice: [ConsultaNsu][Envio] - {nsu} {cnpjCpf}");
 
         var url = ServiceInfo[Configuracao.WebServices.Ambiente][TipoUrl.ConsultarNsu];
-        using var httpResponse = await SendAsync(null, HttpMethod.Get, $"{url}/DFe/{nsu}", cancellationToken: cancellationToken);
+        var query = "";
+        if (!string.IsNullOrWhiteSpace(cnpjCpf))
+        {
+            var documento = new string(cnpjCpf!.Where(char.IsDigit).ToArray());
+            query = documento.Length switch
+            {
+                14 => $"?cnpjConsulta={documento}",
+                11 => $"?cpfConsulta={documento}",
+                _ => throw new ArgumentException("Informe um CNPJ com 14 dígitos ou um CPF com 11 dígitos.", nameof(cnpjCpf))
+            };
+        }
+
+        using var httpResponse = await SendAsync(null, HttpMethod.Get, $"{url}/DFe/{nsu}{query}", cancellationToken: cancellationToken);
 
         var strResponse = await httpResponse.Content.ReadAsStringAsync();
 

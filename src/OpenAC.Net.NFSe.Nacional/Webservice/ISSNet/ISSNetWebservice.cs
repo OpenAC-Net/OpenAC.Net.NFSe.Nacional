@@ -92,7 +92,7 @@ public class ISSNetWebService : NacionalWebservice
     /// A ISSNet não possui distribuição de DF-e por NSU.
     /// </summary>
     /// <exception cref="NotSupportedException">Sempre.</exception>
-    public override Task<NFSeResponse<RespostaConsultaDFe>> ConsultaNsuAsync(int nsu, CancellationToken cancellationToken = default) =>
+    public override Task<NFSeResponse<RespostaConsultaDFe>> ConsultaNsuAsync(int nsu, string? cnpjCpf = null, CancellationToken cancellationToken = default) =>
         throw OperacaoNaoSuportada(nameof(ConsultaNsuAsync));
 
     /// <summary>

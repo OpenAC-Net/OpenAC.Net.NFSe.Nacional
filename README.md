@@ -210,6 +210,9 @@ await File.WriteAllBytesAsync(@"C:\NFSe\Danfse.pdf", pdfBytes);
 
 // Consulta por NSU
 var respostaNsu = await nfse.ConsultaNsuAsync(1234);
+
+// Consulta por NSU informando o CNPJ/CPF consultado (cnpjConsulta/cpfConsulta)
+var respostaNsuCnpj = await nfse.ConsultaNsuAsync(1234, "12345678000195");
 ```
 
 ---
