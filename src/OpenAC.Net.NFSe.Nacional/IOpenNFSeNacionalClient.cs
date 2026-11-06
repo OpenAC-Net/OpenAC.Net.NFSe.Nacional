@@ -22,9 +22,10 @@ public interface IOpenNFSeNacionalClient
 
     /// <summary>Consulta documentos fiscais distribuídos a partir de um NSU.</summary>
     /// <param name="nsu">Número Sequencial Único inicial da consulta.</param>
+    /// <param name="cnpjCpf">CNPJ (14 dígitos) ou CPF (11 dígitos) a ser consultado. Opcional.</param>
     /// <param name="cancellationToken">Token para cancelar a operação.</param>
     /// <returns>Documentos fiscais encontrados e informações da distribuição.</returns>
-    Task<NFSeResponse<RespostaConsultaDFe>> ConsultaNsuAsync(int nsu, CancellationToken cancellationToken = default);
+    Task<NFSeResponse<RespostaConsultaDFe>> ConsultaNsuAsync(int nsu, string? cnpjCpf = null, CancellationToken cancellationToken = default);
 
     /// <summary>Consulta a distribuição de um documento pela chave de acesso.</summary>
     /// <param name="chave">Chave de acesso da NFS-e.</param>

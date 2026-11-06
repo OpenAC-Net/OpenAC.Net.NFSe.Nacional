@@ -102,15 +102,16 @@ public sealed class OpenNFSeNacional : IOpenNFSeNacionalClient, IOpenLog
     /// Distribui os DF-e para contribuintes relacionados à NFS-e.
     /// </summary>
     /// <param name="nsu">Número do NSU.</param>
+    /// <param name="cnpjCpf">CNPJ (14 dígitos) ou CPF (11 dígitos) a ser consultado. Opcional.</param>
     /// <returns>Dados da consulta dos DF-e.</returns>
     /// <param name="cancellationToken">Token para cancelar a operação assíncrona.</param>
-    public Task<NFSeResponse<RespostaConsultaDFe>> ConsultaNsuAsync(int nsu, CancellationToken cancellationToken = default)
+    public Task<NFSeResponse<RespostaConsultaDFe>> ConsultaNsuAsync(int nsu, string? cnpjCpf = null, CancellationToken cancellationToken = default)
     {
         var provider = NFSeServiceManager.Instance.GetProvider(Configuracoes);
         
         try
         {
-            return provider.ConsultaNsuAsync(nsu, cancellationToken);
+            return provider.ConsultaNsuAsync(nsu, cnpjCpf, cancellationToken);
         }
         catch (Exception exception)
         {

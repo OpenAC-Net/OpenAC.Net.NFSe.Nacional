@@ -385,7 +385,7 @@ public class GovBRWebService : NFSeWebserviceBase
     #region Não suportadas
 
     /// <summary>Não suportado - a API não expõe distribuição de DF-e por NSU.</summary>
-    public override Task<NFSeResponse<RespostaConsultaDFe>> ConsultaNsuAsync(int nsu, CancellationToken cancellationToken = default) =>
+    public override Task<NFSeResponse<RespostaConsultaDFe>> ConsultaNsuAsync(int nsu, string? cnpjCpf = null, CancellationToken cancellationToken = default) =>
         throw OperacaoNaoSuportada(nameof(ConsultaNsuAsync));
 
     /// <summary>Não suportado - a API não expõe distribuição de DF-e por chave de acesso.</summary>

@@ -352,7 +352,7 @@ public class FiorilliWebService : NFSeWebserviceBase
     /// <summary>
     /// Não suportado pela Fiorilli (não há distribuição por NSU no WSDL).
     /// </summary>
-    public override Task<NFSeResponse<RespostaConsultaDFe>> ConsultaNsuAsync(int nsu, CancellationToken cancellationToken = default) =>
+    public override Task<NFSeResponse<RespostaConsultaDFe>> ConsultaNsuAsync(int nsu, string? cnpjCpf = null, CancellationToken cancellationToken = default) =>
         throw OperacaoNaoSuportada(nameof(ConsultaNsuAsync));
 
     /// <summary>

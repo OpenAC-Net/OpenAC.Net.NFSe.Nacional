@@ -100,9 +100,9 @@ internal sealed class OpenNFSeNacionalWebClient(
         CancellationToken cancellationToken = default) =>
         ExecuteAsync(nameof(EnviarEventoAsync), cancellationToken, (p, ct) => p.EnviarEventoAsync(evento, ct));
 
-    public Task<NFSeResponse<RespostaConsultaDFe>> ConsultaNsuAsync(int nsu,
+    public Task<NFSeResponse<RespostaConsultaDFe>> ConsultaNsuAsync(int nsu, string? cnpjCpf = null,
         CancellationToken cancellationToken = default) =>
-        ExecuteAsync(nameof(ConsultaNsuAsync), cancellationToken, (p, ct) => p.ConsultaNsuAsync(nsu, ct));
+        ExecuteAsync(nameof(ConsultaNsuAsync), cancellationToken, (p, ct) => p.ConsultaNsuAsync(nsu, cnpjCpf, ct));
 
     public Task<NFSeResponse<RespostaConsultaDFe>> ConsultaChaveAsync(string chave,
         CancellationToken cancellationToken = default) =>

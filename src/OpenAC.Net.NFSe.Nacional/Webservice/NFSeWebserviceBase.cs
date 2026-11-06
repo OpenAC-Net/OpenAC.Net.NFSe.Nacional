@@ -104,9 +104,10 @@ public abstract class NFSeWebserviceBase : IOpenLog
     /// Distribui os DF-e para contribuintes relacionados à NFS-e.
     /// </summary>
     /// <param name="nsu">Número NSU.</param>
+    /// <param name="cnpjCpf">CNPJ (14 dígitos) ou CPF (11 dígitos) a ser consultado. Opcional.</param>
     /// <param name="cancellationToken">Token para cancelar a operação assíncrona.</param>
     /// <returns>Resposta da consulta contendo os DF-e.</returns>
-    public abstract Task<NFSeResponse<RespostaConsultaDFe>> ConsultaNsuAsync(int nsu,
+    public abstract Task<NFSeResponse<RespostaConsultaDFe>> ConsultaNsuAsync(int nsu, string? cnpjCpf = null,
         CancellationToken cancellationToken = default);
 
     /// <summary>
