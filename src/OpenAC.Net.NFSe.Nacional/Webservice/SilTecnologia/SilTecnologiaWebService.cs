@@ -38,6 +38,7 @@ using OpenAC.Net.Core.Extensions;
 using OpenAC.Net.Core.Logging;
 using OpenAC.Net.DFe.Core.Common;
 using OpenAC.Net.DFe.Core.Extensions;
+using OpenAC.Net.DFe.Core.Http;
 using OpenAC.Net.NFSe.Nacional.Common;
 using OpenAC.Net.NFSe.Nacional.Common.Model;
 using OpenAC.Net.NFSe.Nacional.Common.Types;
@@ -80,7 +81,7 @@ public class SilTecnologiaWebService : NFSeWebserviceBase
 
     /// <summary>Inicializa o provedor com um transporte HTTP fornecido pelo host.</summary>
     public SilTecnologiaWebService(ConfiguracaoNFSe configuracaoNFSe, NFSeServiceInfo serviceInfo,
-        INFSeHttpTransport httpTransport) : base(configuracaoNFSe, serviceInfo, httpTransport)
+        IDFeHttpTransport httpTransport) : base(configuracaoNFSe, serviceInfo, httpTransport)
     {
     }
 

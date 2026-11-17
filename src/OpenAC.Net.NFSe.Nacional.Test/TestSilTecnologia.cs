@@ -7,6 +7,7 @@ using System.Xml.Linq;
 using OpenAC.Net.DFe.Core;
 using OpenAC.Net.DFe.Core.Collection;
 using OpenAC.Net.DFe.Core.Common;
+using OpenAC.Net.DFe.Core.Http;
 using OpenAC.Net.NFSe.Nacional.Common;
 using OpenAC.Net.NFSe.Nacional.Common.Model;
 using OpenAC.Net.NFSe.Nacional.Common.Types;
@@ -27,7 +28,7 @@ public class TestSilTecnologia
 
     private const string UrlHomologacao = "https://homologacao.siltecnologia.com.br/tbbauru/services/NotaFiscalNacional";
 
-    private static string CaminhoSchemaNFSe => Path.Combine(AppContext.BaseDirectory, "Schemas", "1.01", "NFSe_v1.01.xsd");
+    private static string CaminhoSchemaNFSe => Path.Combine(AppContext.BaseDirectory, "Schemas", "1.01", "Homologacao", "NFSe_v1.01.xsd");
 
     [Test]
     public async Task Montar_PreencheCamposFixosEEmitente()
@@ -270,7 +271,7 @@ public class TestSilTecnologia
         await Assert.That(assinaturas[0]!.ParentNode!.LocalName).IsEqualTo("evento");
         await Assert.That(signedXml.CheckSignature(certificado, true)).IsTrue();
 
-        XmlSchemaValidation.ValidarXml(xml, Path.Combine(AppContext.BaseDirectory, "Schemas", "1.01", "evento_v1.01.xsd"),
+        XmlSchemaValidation.ValidarXml(xml, Path.Combine(AppContext.BaseDirectory, "Schemas", "1.01", "Homologacao", "evento_v1.01.xsd"),
             out var erros, out _);
         await Assert.That(string.Join(" | ", erros)).IsEmpty();
     }
@@ -379,7 +380,7 @@ public class TestSilTecnologia
         configuracao.Geral.Versao = VersaoNFSe.Ve101;
         configuracao.Geral.Salvar = false;
         configuracao.Arquivos.Salvar = false;
-        configuracao.Arquivos.PathSchemas = Path.Combine(AppContext.BaseDirectory, "Schemas", "1.01");
+        configuracao.Arquivos.PathSchemas = Path.Combine(AppContext.BaseDirectory, "Schemas", "1.01", "Homologacao");
         configuracao.Certificados.CertificadoBytes = pfx;
         configuracao.Certificados.Senha = "1234";
         configuracao.WebServices.Ambiente = DFeTipoAmbiente.Homologacao;
@@ -494,7 +495,7 @@ public class TestSilTecnologia
     }
 
     /// <summary>Devolve as respostas na ordem das requisições; a última se repete.</summary>
-    private sealed class TransporteFalso(string[] respostas) : INFSeHttpTransport
+    private sealed class TransporteFalso(string[] respostas) : IDFeHttpTransport
     {
         public List<string?> Envios { get; } = [];
 
@@ -502,7 +503,7 @@ public class TestSilTecnologia
 
         public string? UltimaUrl { get; private set; }
 
-        public async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, ConfiguracaoNFSe configuracao,
+        public async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, DFeHttpTransportOptions options,
             CancellationToken cancellationToken = default)
         {
             UltimaUrl = request.RequestUri?.ToString();
