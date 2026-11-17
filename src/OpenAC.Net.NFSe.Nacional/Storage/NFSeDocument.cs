@@ -1,43 +1,63 @@
 using System;
+using System.IO;
+using OpenAC.Net.DFe.Core.Storage;
+using OpenAC.Net.NFSe.Nacional.Common;
 
 namespace OpenAC.Net.NFSe.Nacional.Storage;
 
-/// <summary>Documento produzido durante uma operação de NFS-e.</summary>
-public sealed class NFSeDocument
+/// <summary>Arquivo da NFS-e com os metadados necessários à organização fiscal e ao isolamento no host web.</summary>
+public sealed class NFSeDocument : IDFeDocument
 {
-    /// <summary>Inicializa um documento produzido durante uma operação de NFS-e.</summary>
-    /// <param name="tipo">Classificação do payload ou documento fiscal.</param>
-    /// <param name="conteudo">Conteúdo textual que será persistido.</param>
-    /// <param name="nomeArquivo">Nome sugerido para o arquivo, incluindo sua extensão.</param>
-    /// <param name="documentoContribuinte">CPF ou CNPJ usado na organização dos diretórios.</param>
-    /// <param name="data">Data de referência usada na organização dos diretórios.</param>
-    /// <param name="preservarNomeArquivo">Indica se uma colisão de nome deve impedir a criação de um arquivo com sufixo.</param>
-    public NFSeDocument(NFSeTipoDocumento tipo, string conteudo, string nomeArquivo,
-        string? documentoContribuinte, DateTime data, bool preservarNomeArquivo = false)
+    /// <summary>Cria um documento com as regras de arquivos e os metadados da operação.</summary>
+    /// <param name="arquivos">Configuração de arquivos associada à empresa.</param>
+    /// <param name="categoria">Categoria fiscal ou de comunicação.</param>
+    /// <param name="conteudo">Conteúdo textual a persistir.</param>
+    /// <param name="nomeArquivo">Nome do arquivo, incluindo a extensão, sem diretórios.</param>
+    /// <param name="documentoContribuinte">CPF ou CNPJ usado para organizar diretórios.</param>
+    /// <param name="data">Data de referência do documento.</param>
+    /// <param name="arquivoExiste">Comportamento quando o destino já existe.</param>
+    public NFSeDocument(NFSeArquivoConfig arquivos, string categoria, string conteudo, string nomeArquivo,
+        string? documentoContribuinte, DateTime data, DFeArquivoExiste arquivoExiste = DFeArquivoExiste.AdicionarSufixo)
     {
-        Tipo = tipo;
-        Conteudo = conteudo;
+        Arquivos = arquivos ?? throw new ArgumentNullException(nameof(arquivos));
+        if (string.IsNullOrWhiteSpace(categoria) || categoria == "." || categoria == ".." ||
+            categoria.IndexOfAny(['/', '\\', ':']) >= 0 || categoria.IndexOfAny(Path.GetInvalidFileNameChars()) >= 0)
+            throw new ArgumentException("Informe uma categoria válida, sem diretórios.", nameof(categoria));
+        if (string.IsNullOrWhiteSpace(nomeArquivo) || nomeArquivo == "." || nomeArquivo == ".." ||
+            nomeArquivo.IndexOfAny(['/', '\\', ':']) >= 0 || nomeArquivo.IndexOfAny(Path.GetInvalidFileNameChars()) >= 0)
+            throw new ArgumentException("Informe apenas o nome do arquivo, sem diretórios.", nameof(nomeArquivo));
+        if (!Enum.IsDefined(typeof(DFeArquivoExiste), arquivoExiste))
+            throw new ArgumentOutOfRangeException(nameof(arquivoExiste));
+        Categoria = categoria;
+        Conteudo = conteudo ?? throw new ArgumentNullException(nameof(conteudo));
         NomeArquivo = nomeArquivo;
         DocumentoContribuinte = documentoContribuinte;
         Data = data;
-        PreservarNomeArquivo = preservarNomeArquivo;
+        ArquivoExiste = arquivoExiste;
     }
 
-    /// <summary>Tipo do documento ou payload.</summary>
-    public NFSeTipoDocumento Tipo { get; }
+    /// <summary>Configuração de arquivos que identifica as regras e a empresa do documento.</summary>
+    public NFSeArquivoConfig Arquivos { get; }
 
-    /// <summary>Conteúdo que será armazenado.</summary>
-    public string Conteudo { get; }
+    /// <summary>Categoria fiscal ou de comunicação.</summary>
+    public string Categoria { get; }
 
-    /// <summary>Obtém o nome sugerido para o arquivo, incluindo sua extensão.</summary>
+    /// <summary>Nome do arquivo, incluindo a extensão.</summary>
     public string NomeArquivo { get; }
 
-    /// <summary>CPF ou CNPJ usado na organização dos arquivos.</summary>
+    /// <summary>CPF ou CNPJ usado na organização dos diretórios.</summary>
     public string? DocumentoContribuinte { get; }
 
-    /// <summary>Data usada na organização dos arquivos.</summary>
+    /// <summary>Data de referência do documento.</summary>
     public DateTime Data { get; }
 
-    /// <summary>Obtém um valor que indica se o nome informado deve ser preservado em caso de colisão.</summary>
-    public bool PreservarNomeArquivo { get; }
+    /// <summary>Caminho completo resolvido pelas regras do componente quando consultado.</summary>
+    public string Caminho => Path.GetFullPath(Path.Combine(
+        Arquivos.GetDocumentPath(Categoria, DocumentoContribuinte, Data), NomeArquivo));
+
+    /// <inheritdoc />
+    public string Conteudo { get; }
+
+    /// <inheritdoc />
+    public DFeArquivoExiste ArquivoExiste { get; }
 }

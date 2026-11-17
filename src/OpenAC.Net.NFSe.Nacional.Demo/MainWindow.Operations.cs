@@ -2,9 +2,7 @@ using System.Globalization;
 using System.Xml.Linq;
 using Avalonia.Platform.Storage;
 using OpenAC.Net.DFe.Core;
-using OpenAC.Net.DFe.Core.Common;
 using OpenAC.Net.NFSe.Nacional.Common.Model;
-using OpenAC.Net.NFSe.Nacional.Common.Types;
 using OpenAC.Net.NFSe.Nacional.DANFSe.PDFSharp;
 
 namespace OpenAC.Net.NFSe.Nacional.Demo;

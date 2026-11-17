@@ -41,13 +41,13 @@ public sealed partial class RTCIBSCBS
     /// <summary>
     /// Codigo IBGE da localidade de incidencia do IBS/CBS.
     /// </summary>
-    [DFeElement(TipoCampo.StrNumber, "cLocalidadeIncid", Min = 0, Max = 7, Ocorrencia = Ocorrencia.Obrigatoria)]
+    [DFeElement(TipoCampo.StrNumber, "cLocalidadeIncid", Min = 0, Max = 7, Ocorrencia = Ocorrencia.NaoObrigatoria)]
     public string CodigoLocalidadeIncidencia { get; set; } = string.Empty;
 
     /// <summary>
     /// Nome da localidade de incidencia do IBS/CBS.
     /// </summary>
-    [DFeElement(TipoCampo.Str, "xLocalidadeIncid", Min = 1, Max = 600, Ocorrencia = Ocorrencia.Obrigatoria)]
+    [DFeElement(TipoCampo.Str, "xLocalidadeIncid", Min = 1, Max = 600, Ocorrencia = Ocorrencia.NaoObrigatoria)]
     public string DescricaoLocalidadeIncidencia { get; set; } = string.Empty;
 
     /// <summary>
@@ -59,8 +59,8 @@ public sealed partial class RTCIBSCBS
     /// <summary>
     /// Valores brutos referentes ao IBS/CBS.
     /// </summary>
-    [DFeElement("valores", Ocorrencia = Ocorrencia.Obrigatoria)]
-    public RTCValoresIBSCBS Valores { get; set; } = new();
+    [DFeElement("valores", Ocorrencia = Ocorrencia.NaoObrigatoria)]
+    public RTCValoresIBSCBS? Valores { get; set; } = new();
     
     /// <summary>
     /// Grupo de totalizadores do IBS/CBS.

@@ -12,23 +12,22 @@ var certificadoPath = ResolverCaminho(builder.Environment.ContentRootPath,
 var certificadoBytes = LerArquivoOpcional(certificadoPath);
 var senhaCertificado = builder.Configuration["NFSe:Certificado:Senha"] ?? string.Empty;
 
-builder.Services.AddOpenNFSeNacionalWeb(
-    configuracao =>
-    {
-        configuracao.WebServices.CodigoMunicipio = codigoMunicipio;
-        configuracao.WebServices.ValidarSchemas = validarSchemas;
-        configuracao.WebServices.Tentativas = 3;
-        configuracao.WebServices.IntervaloTentativas = 1000;
-        configuracao.Certificados.CertificadoBytes = certificadoBytes ?? [];
-        configuracao.Certificados.Senha = senhaCertificado;
-    },
-    infraestrutura =>
-    {
-        infraestrutura.TimeoutOperacao = TimeSpan.FromSeconds(60);
-        infraestrutura.TimeoutTentativa = TimeSpan.FromSeconds(15);
-        infraestrutura.PersistenciaHabilitada = true;
-        infraestrutura.CaminhoDocumentos = "App_Data/NFSe";
-    });
+builder.Services.AddNFSeNacional(configuracao =>
+{
+    configuracao.WebServices.CodigoMunicipio = codigoMunicipio;
+    configuracao.WebServices.ValidarSchemas = validarSchemas;
+    configuracao.WebServices.Tentativas = 3;
+    configuracao.WebServices.IntervaloTentativas = 1000;
+    configuracao.Certificados.CertificadoBytes = certificadoBytes ?? [];
+    configuracao.Certificados.Senha = senhaCertificado;
+    configuracao.WebServices.TimeoutOperacao = TimeSpan.FromSeconds(60);
+    configuracao.WebServices.TimeoutTentativa = TimeSpan.FromSeconds(15);
+    configuracao.Arquivos.Salvar = configuracao.WebServices.Salvar = true;
+    var root = Path.Combine(builder.Environment.ContentRootPath, "App_Data/NFSe");
+    configuracao.Arquivos.PathEnvio = Path.Combine(root, "Technical");
+    configuracao.Arquivos.PathDps = Path.Combine(root, "Fiscal/DPS");
+    configuracao.Arquivos.PathNFSe = Path.Combine(root, "Fiscal/NFSe");
+});
 
 builder.Services.AddOpenDANFSeNacionalWeb();
 
@@ -73,32 +72,32 @@ app.MapPost("/nfse/emissoes/pdf", async (
 });
 
 app.MapPost("/danfse/pdf", async (
-    NotaFiscalServico nota,
-    IOpenDANFSeNacionalWeb danfse,
-    CancellationToken cancellationToken) =>
+        NotaFiscalServico nota,
+        IOpenDANFSeNacionalWeb danfse,
+        CancellationToken cancellationToken) =>
     await danfse.GerarResultadoAsync(nota, cancellationToken: cancellationToken));
 
 app.MapPost("/danfse/pdf/lote", async (
-    NotaFiscalServico[] notas,
-    IOpenDANFSeNacionalWeb danfse,
-    CancellationToken cancellationToken) =>
+        NotaFiscalServico[] notas,
+        IOpenDANFSeNacionalWeb danfse,
+        CancellationToken cancellationToken) =>
     await danfse.GerarResultadoAsync(notas, cancellationToken: cancellationToken));
 
 app.MapPost("/empresas/{empresaId}/danfse/pdf", async (
-    string empresaId,
-    NotaFiscalServico nota,
-    IOpenDANFSeNacionalWeb danfse,
-    CancellationToken cancellationToken) =>
+        string empresaId,
+        NotaFiscalServico nota,
+        IOpenDANFSeNacionalWeb danfse,
+        CancellationToken cancellationToken) =>
     await danfse.GerarResultadoAsync(
         nota,
         tenantId: empresaId,
         cancellationToken: cancellationToken));
 
 app.MapPost("/empresas/{empresaId}/danfse/pdf/lote", async (
-    string empresaId,
-    NotaFiscalServico[] notas,
-    IOpenDANFSeNacionalWeb danfse,
-    CancellationToken cancellationToken) =>
+        string empresaId,
+        NotaFiscalServico[] notas,
+        IOpenDANFSeNacionalWeb danfse,
+        CancellationToken cancellationToken) =>
     await danfse.GerarResultadoAsync(
         notas,
         tenantId: empresaId,

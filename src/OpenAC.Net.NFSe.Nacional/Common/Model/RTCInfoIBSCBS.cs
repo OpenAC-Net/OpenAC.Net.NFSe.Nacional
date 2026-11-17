@@ -1,4 +1,4 @@
-﻿// ***********************************************************************
+// ***********************************************************************
 // Assembly : OpenAC.Net.NFSe.Nacional
 // Author : RGG
 // Created :14-11-2025
@@ -29,7 +29,9 @@
 // <summary></summary>
 // ***********************************************************************
 
+using System.Collections.Generic;
 using OpenAC.Net.DFe.Core.Attributes;
+using OpenAC.Net.DFe.Core.Collection;
 using OpenAC.Net.DFe.Core.Serializer;
 using OpenAC.Net.NFSe.Nacional.Common.Types;
 
@@ -38,71 +40,135 @@ namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 /// <summary>
 /// Grupo de informações declaradas pelo emitente referentes ao IBS e à CBS.
 /// </summary>
-public sealed partial class RTCInfoIBSCBS
+public sealed partial class RTCInfoIBSCBS : DFeParentItem<RTCInfoIBSCBS, InfDps>
 {
+    private RTCInfoImovel? imovel;
+    private RTCInfoValoresIBSCBS valores = null!;
+
     /// <summary>
-    /// Indicador da finalidade da emissão de NFS-e (finNFSe).
+    /// Inicializa uma nova instância da classe <see cref="RTCInfoIBSCBS"/>.
+    /// </summary>
+    public RTCInfoIBSCBS()
+    {
+        Valores = new RTCInfoValoresIBSCBS();
+    }
+
+    [DFeIgnore]
+    internal bool FinalidadeNFSeInformada { get; private set; }
+
+    /// <summary>
+    /// Indicador da finalidade da emissão de NFS-e (finNFSe - layout anterior a 01/12/2026 em Produção).
     /// TSRTCFinNFSe.
     /// </summary>
-    [DFeElement(TipoCampo.Enum, "finNFSe", Ocorrencia = Ocorrencia.Obrigatoria)]
-    public RTCFinNFSe FinalidadeNFSe { get; set; }
+    [DFeElement(TipoCampo.Enum, "finNFSe", Ocorrencia = Ocorrencia.Obrigatoria, Ordem = 1)]
+    public RTCFinNFSe FinalidadeNFSe
+    {
+        get;
+        set
+        {
+            field = value;
+            FinalidadeNFSeInformada = true;
+        }
+    }
 
     /// <summary>
     /// Indica operação de uso ou consumo pessoal (art.57) (indFinal).
     /// TSRTCIndFinal.
     /// </summary>
-    [DFeElement(TipoCampo.Enum, "indFinal", Ocorrencia = Ocorrencia.NaoObrigatoria)]
+    [DFeElement(TipoCampo.Enum, "indFinal", Ocorrencia = Ocorrencia.NaoObrigatoria, Ordem = 2)]
     public RTCIndFinal IndicadorUsoFinal { get; set; }
 
     /// <summary>
     /// Código indicador da operação de fornecimento (cIndOp).
-    /// TSRTCCodIndOp:6 dígitos numéricos.
+    /// TSRTCCodIndOp: 6 dígitos numéricos.
     /// </summary>
-    [DFeElement(TipoCampo.StrNumber, "cIndOp", Min =6, Max =6, Ocorrencia = Ocorrencia.Obrigatoria)]
+    [DFeElement(TipoCampo.StrNumber, "cIndOp", Min = 6, Max = 6, Ocorrencia = Ocorrencia.NaoObrigatoria, Ordem = 3)]
     public string CodigoIndicadorOperacao { get; set; } = string.Empty;
 
     /// <summary>
     /// Tipo de Operação com Entes Governamentais ou outros serviços sobre bens imóveis (tpOper).
     /// TSRTCTpOper.
     /// </summary>
-    [DFeElement(TipoCampo.Enum, "tpOper", Ocorrencia = Ocorrencia.NaoObrigatoria)]
+    [DFeElement(TipoCampo.Enum, "tpOper", Ocorrencia = Ocorrencia.NaoObrigatoria, Ordem = 4)]
     public RTCTpOper? TipoOperacao { get; set; }
 
     /// <summary>
     /// Grupo de NFS-e referenciadas (gRefNFSe).
     /// </summary>
-    [DFeElement("gRefNFSe", Ocorrencia = Ocorrencia.NaoObrigatoria)]
+    [DFeElement("gRefNFSe", Ocorrencia = Ocorrencia.NaoObrigatoria, Ordem = 5)]
     public InfoRefNFSe? ReferenciasNFSe { get; set; }
 
     /// <summary>
     /// Tipo de ente governamental (tpEnteGov).
     /// TSRTCTpEnteGov.
     /// </summary>
-    [DFeElement(TipoCampo.Enum, "tpEnteGov", Ocorrencia = Ocorrencia.NaoObrigatoria)]
+    [DFeElement(TipoCampo.Enum, "tpEnteGov", Ocorrencia = Ocorrencia.NaoObrigatoria, Ordem = 6)]
     public RTCTpEnteGov? TipoEnteGovernamental { get; set; }
 
     /// <summary>
     /// A respeito do Destinatário dos serviços (indDest).
     /// TSRTCIndDest.
     /// </summary>
-    [DFeElement(TipoCampo.Enum, "indDest", Ocorrencia = Ocorrencia.Obrigatoria)]
+    [DFeElement(TipoCampo.Enum, "indDest", Ocorrencia = Ocorrencia.Obrigatoria, Ordem = 7)]
     public RTCIndDest IndicadorDestinatario { get; set; }
 
     /// <summary>
     /// Grupo de informações relativas ao Destinatário (dest).
     /// </summary>
-    [DFeElement("dest", Ocorrencia = Ocorrencia.NaoObrigatoria)]
+    [DFeElement("dest", Ocorrencia = Ocorrencia.NaoObrigatoria, Ordem = 8)]
     public RTCInfoDest? Destinatario { get; set; }
 
     /// <summary>
     /// Grupo de informações de operações relacionadas a bens imóveis, exceto obras (imovel).
     /// </summary>
-    [DFeElement("imovel", Ocorrencia = Ocorrencia.NaoObrigatoria)]
-    public RTCInfoImovel? Imovel { get; set; }
+    [DFeElement("imovel", Ocorrencia = Ocorrencia.NaoObrigatoria, Ordem = 9)]
+    public RTCInfoImovel? Imovel
+    {
+        get => imovel;
+        set
+        {
+            if (imovel == value) return;
+            imovel = value;
+            if (imovel != null && imovel.Parent != Parent)
+                imovel.Parent = Parent;
+        }
+    }
+
+    /// <summary>
+    /// Grupo de informações relativas aos bens móveis objetos de locação (bensMoveis).
+    /// </summary>
+    [DFeCollection("bensMoveis", MinSize = 0, MaxSize = 1000, Ocorrencia = Ocorrencia.NaoObrigatoria, Ordem = 10)]
+    public List<RTCInfoBensMoveis> BensMoveis { get; set; } = new();
 
     /// <summary>
     /// Grupo de informações relativas aos valores do serviço prestado para IBS e CBS (valores).
     /// </summary>
-    [DFeElement("valores", Ocorrencia = Ocorrencia.Obrigatoria)]
-    public RTCInfoValoresIBSCBS Valores { get; set; } = new();
+    [DFeElement("valores", Ocorrencia = Ocorrencia.Obrigatoria, Ordem = 11)]
+    public RTCInfoValoresIBSCBS Valores
+    {
+        get => valores;
+        set
+        {
+            if (valores == value) return;
+            valores = value ?? new RTCInfoValoresIBSCBS();
+            if (valores.Parent != Parent)
+                valores.Parent = Parent;
+        }
+    }
+
+    /// <inheritdoc />
+    protected override void OnParentChanged()
+    {
+        if (imovel != null && imovel.Parent != Parent)
+            imovel.Parent = Parent;
+        if (valores != null && valores.Parent != Parent)
+            valores.Parent = Parent;
+    }
+
+    internal bool ShouldSerializeFinalidadeNFSe() => !(Parent?.UsarLayoutNovo101 ?? true);
+
+    /// <summary>
+    /// Indica se a lista de bens móveis deve ser serializada.
+    /// </summary>
+    public bool ShouldSerializeBensMoveis() => (Parent?.UsarLayoutNovo101 ?? true) && BensMoveis is { Count: > 0 };
 }

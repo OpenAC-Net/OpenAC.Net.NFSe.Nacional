@@ -109,11 +109,39 @@ public static class ISSNetDps
     private static bool Adequar(XmlDocument documento, Dps dps)
     {
         var infDps = Filho(documento.DocumentElement, "infDPS");
+        if (infDps == null) return false;
+
         var servico = dps.Informacoes.Servico;
         var local = servico.Localidade;
         var alterado = false;
 
+        var finNfse = Filho(infDps, "finNFSe");
+        if (finNfse != null)
+        {
+            infDps.RemoveChild(finNfse);
+            var ibscbs = Filho(infDps, "IBSCBS");
+            if (ibscbs != null && Filho(ibscbs, "finNFSe") == null)
+                ibscbs.PrependChild(finNfse);
+            alterado = true;
+        }
+
         var serv = Filho(infDps, "serv");
+        var cServ = Filho(serv, "cServ");
+        if (cServ != null)
+        {
+            var xDescServ = Filho(cServ, "xDescServ");
+            var cNbs = Filho(cServ, "cNBS") ?? Filho(cServ, "cIntContrib");
+            if (xDescServ != null && cNbs != null)
+            {
+                var filhos = cServ.ChildNodes.OfType<XmlElement>().ToList();
+                if (filhos.IndexOf(xDescServ) > filhos.IndexOf(cNbs))
+                {
+                    cServ.InsertBefore(xDescServ, cNbs);
+                    alterado = true;
+                }
+            }
+        }
+
         var obra = Filho(serv, "obra");
         if (obra != null)
         {

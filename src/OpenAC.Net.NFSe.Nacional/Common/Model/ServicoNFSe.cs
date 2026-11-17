@@ -30,14 +30,25 @@
 // ***********************************************************************
 
 using OpenAC.Net.DFe.Core.Attributes;
+using OpenAC.Net.DFe.Core.Collection;
 
 namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 
 /// <summary>
 /// Representa o serviço da NFSe, contendo informações obrigatórias e opcionais conforme o layout nacional.
 /// </summary>
-public sealed partial class ServicoNFSe
+public sealed partial class ServicoNFSe : DFeParentItem<ServicoNFSe, InfDps>
 {
+    private InformacoesServico informacoes = null!;
+
+    /// <summary>
+    /// Inicializa uma nova instância da classe <see cref="ServicoNFSe"/>.
+    /// </summary>
+    public ServicoNFSe()
+    {
+        Informacoes = new InformacoesServico();
+    }
+
     /// <summary>
     /// Localidade da prestação do serviço.
     /// </summary>
@@ -48,7 +59,17 @@ public sealed partial class ServicoNFSe
     /// Informações do serviço prestado.
     /// </summary>
     [DFeElement("cServ", Ocorrencia = Ocorrencia.Obrigatoria)]
-    public InformacoesServico Informacoes { get; set; } = new();
+    public InformacoesServico Informacoes
+    {
+        get => informacoes;
+        set
+        {
+            if (informacoes == value) return;
+            informacoes = value;
+            if (informacoes != null && informacoes.Parent != Parent)
+                informacoes.Parent = Parent;
+        }
+    }
     
     /// <summary>
     /// Informações sobre serviço prestado no exterior.
@@ -85,4 +106,11 @@ public sealed partial class ServicoNFSe
     /// </summary>
     [DFeElement("infoCompl", Ocorrencia = Ocorrencia.NaoObrigatoria)]
     public InformacoesComplementares? InformacoesComplementares { get; set; }
+
+    /// <inheritdoc />
+    protected override void OnParentChanged()
+    {
+        if (informacoes != null && informacoes.Parent != Parent)
+            informacoes.Parent = Parent;
+    }
 }

@@ -626,7 +626,8 @@ internal sealed class DANFSeNacionalReport
         PdfDrawHelper.DesenharCampo(gfx, xMm + 0 * colW, yMm, colW, lineH, "Benefício Municipal",
             ObterDescricaoBeneficioMunicipal(vNfse.TipoBeneficioMunicipal));
         PdfDrawHelper.DesenharCampo(gfx, xMm + 1 * colW, yMm, colW, lineH, "Cálculo do BM", FormatarMoedaOpcional(vNfse.ValorBcBeneficioMunicipal));
-        PdfDrawHelper.DesenharCampo(gfx, xMm + 2 * colW, yMm, colW, lineH, "Total Deduções / Reduções", FormatarMoedaOpcional(vDps.ValoresDeducaoReducao?.Valor));
+        PdfDrawHelper.DesenharCampo(gfx, xMm + 2 * colW, yMm, colW, lineH, "Total Deduções / Reduções",
+            FormatarMoedaOpcional(vDps.ValoresAjusteBC?.ValorAjusteBCISSQN ?? vDps.ValoresDeducaoReducao?.Valor ?? vNfse.ValorCalcAjusteBCISSQN ?? vNfse.ValorBcReducaoDeducao));
         PdfDrawHelper.DesenharCampo(gfx, xMm + 3 * colW, yMm, colW, lineH, "Desconto Incondicionado", FormatarMoedaOpcional(vDps.ValoresDesconto?.ValorIncodicional));
 
         yMm += lineH;
@@ -679,14 +680,20 @@ internal sealed class DANFSeNacionalReport
         var lineH = DANFSeConstantes.AlturaLinhaPadraoMm;
         var declarado = nota.Informacoes.Dps.Informacoes.IBSCBS;
         var calculado = nota.Informacoes.IBSCBS;
-        var classificacao = declarado?.Valores.Tributos.GrupoIBSCBS;
+        var tributos = declarado?.Valores.Tributos;
+        var cst = !string.IsNullOrWhiteSpace(tributos?.CodigoSituacaoTributaria)
+            ? tributos.CodigoSituacaoTributaria
+            : tributos?.GrupoIBSCBS.CodigoSituacaoTributaria;
+        var cClassTrib = !string.IsNullOrWhiteSpace(tributos?.CodigoClassificacaoTributaria)
+            ? tributos.CodigoClassificacaoTributaria
+            : tributos?.GrupoIBSCBS.CodigoClassificacaoTributaria;
         var valores = calculado?.Valores;
         var totalIbs = calculado?.Totais.TotalIBS;
         var totalCbs = calculado?.Totais.TotalCBS;
 
-        var cstTexto = classificacao == null
+        var cstTexto = tributos == null
             ? "- / -"
-            : $"{ValorOuTraco(classificacao.CodigoSituacaoTributaria)} / {ValorOuTraco(classificacao.CodigoClassificacaoTributaria)}";
+            : $"{ValorOuTraco(cst)} / {ValorOuTraco(cClassTrib)}";
         var municipioIncidencia = calculado == null ||
                                   (string.IsNullOrWhiteSpace(calculado.CodigoLocalidadeIncidencia) &&
                                    string.IsNullOrWhiteSpace(calculado.DescricaoLocalidadeIncidencia))
@@ -704,24 +711,24 @@ internal sealed class DANFSeNacionalReport
         yMm += lineH;
 
         // Linha 2
-        PdfDrawHelper.DesenharCampo(gfx, xMm + 0 * colW, yMm, colW, lineH, "Exclusões e Reduções da Base de Cálculo", FormatarMoedaOpcional(calculado == null ? null : valores!.ValorCalcReeRepRes));
-        PdfDrawHelper.DesenharCampo(gfx, xMm + 1 * colW, yMm, colW, lineH, "Base de Cálculo Após Exclusões e Reduções", FormatarMoedaOpcional(calculado == null ? null : valores!.ValorBaseCalculo));
+        var valorExclusoesReducoes = valores?.ValorCalcAjusteBCIBSCBS ?? valores?.ValorCalcAjusteBCLocImoveis ?? valores?.ValorCalcReeRepRes;
+        PdfDrawHelper.DesenharCampo(gfx, xMm + 0 * colW, yMm, colW, lineH, "Exclusões e Reduções da Base de Cálculo", FormatarMoedaOpcional(valorExclusoesReducoes));
+        PdfDrawHelper.DesenharCampo(gfx, xMm + 1 * colW, yMm, colW, lineH, "Base de Cálculo Após Exclusões e Reduções", FormatarMoedaOpcional(valores?.ValorBaseCalculo));
         PdfDrawHelper.DesenharCampo(gfx, xMm + 2 * colW, yMm, colW, lineH, "Red. Alíquota IBS / Red. Alíquota CBS",
             FormatarPercentuais(valores?.Estado.PercentualReducaoAliquotaUf, valores?.Municipio.PercentualReducaoAliquotaMunicipal,
                 valores?.Federal.PercentualReducaoAliquotaCBS));
         PdfDrawHelper.DesenharCampo(gfx, xMm + 3 * colW, yMm, colW, lineH, "Alíquota - IBS UF / IBS Mun",
-            FormatarPercentuais(calculado == null ? null : valores!.Estado.PercentualIBSUf,
-                calculado == null ? null : valores!.Municipio.PercentualIBSMunicipal));
+            FormatarPercentuais(valores?.Estado.PercentualIBSUf, valores?.Municipio.PercentualIBSMunicipal));
 
         yMm += lineH;
 
         // Linha 3
         PdfDrawHelper.DesenharCampo(gfx, xMm + 0 * colW, yMm, colW, lineH, "Alíq. Efetiva Municipal - IBS",
-            FormatarPercentualOpcional(calculado == null ? null : valores!.Municipio.PercentualAliquotaEfetivaMunicipal));
+            FormatarPercentualOpcional(valores?.Municipio.PercentualAliquotaEfetivaMunicipal));
         PdfDrawHelper.DesenharCampo(gfx, xMm + 1 * colW, yMm, colW, lineH, "Valor Apurado Municipal - IBS",
             FormatarMoedaOpcional(totalIbs == null ? null : totalIbs.TotalMunicipal.ValorIBSMunicipal));
         PdfDrawHelper.DesenharCampo(gfx, xMm + 2 * colW, yMm, colW, lineH, "Alíq. Efetiva Estadual - IBS",
-            FormatarPercentualOpcional(calculado == null ? null : valores!.Estado.PercentualAliquotaEfetivaUf));
+            FormatarPercentualOpcional(valores?.Estado.PercentualAliquotaEfetivaUf));
         PdfDrawHelper.DesenharCampo(gfx, xMm + 3 * colW, yMm, colW, lineH, "Valor Apurado Estadual - IBS",
             FormatarMoedaOpcional(totalIbs == null ? null : totalIbs.TotalEstadual.ValorIBSUF));
 
@@ -731,9 +738,9 @@ internal sealed class DANFSeNacionalReport
         PdfDrawHelper.DesenharCampo(gfx, xMm + 0 * colW, yMm, colW, lineH, "Valor Total Apurado - IBS",
             FormatarMoedaOpcional(totalIbs == null ? null : totalIbs.ValorTotalIBS));
         PdfDrawHelper.DesenharCampo(gfx, xMm + 1 * colW, yMm, colW, lineH, "Alíquota - CBS",
-            FormatarPercentualOpcional(calculado == null ? null : valores!.Federal.PercentualCBS));
+            FormatarPercentualOpcional(valores?.Federal.PercentualCBS));
         PdfDrawHelper.DesenharCampo(gfx, xMm + 2 * colW, yMm, colW, lineH, "Alíquota Efetiva - CBS",
-            FormatarPercentualOpcional(calculado == null ? null : valores!.Federal.PercentualAliquotaEfetivaCBS));
+            FormatarPercentualOpcional(valores?.Federal.PercentualAliquotaEfetivaCBS));
         PdfDrawHelper.DesenharCampo(gfx, xMm + 3 * colW, yMm, colW, lineH, "Valor Total Apurado - CBS",
             FormatarMoedaOpcional(totalCbs == null ? null : totalCbs.ValorCBS));
 
@@ -752,9 +759,9 @@ internal sealed class DANFSeNacionalReport
         var vDescIncond = vDps.ValoresDesconto?.ValorIncodicional;
         var vDescCond = vDps.ValoresDesconto?.ValorCondicional;
         var totaisIBSCBS = nota.Informacoes.IBSCBS?.Totais;
-        decimal? totalIBSCBS = totaisIBSCBS == null
+        decimal? totalIBSCBS = totaisIBSCBS == null || (totaisIBSCBS.TotalIBS == null && totaisIBSCBS.TotalCBS == null)
             ? null
-            : totaisIBSCBS.TotalIBS.ValorTotalIBS + totaisIBSCBS.TotalCBS.ValorCBS;
+            : (totaisIBSCBS.TotalIBS?.ValorTotalIBS ?? 0m) + (totaisIBSCBS.TotalCBS?.ValorCBS ?? 0m);
         var valorTotalNF = totaisIBSCBS?.ValorTotalNF;
 
         // Linha 1
@@ -1003,11 +1010,13 @@ internal sealed class DANFSeNacionalReport
         _ => nota.Informacoes.SituacaoNFSe.ToString()
     };
 
-    private string ObterFinalidade() => nota.Informacoes.Dps.Informacoes.IBSCBS?.FinalidadeNFSe switch
-    {
-        RTCFinNFSe.Regular => "NFS-e regular",
-        _ => "-"
-    };
+    private string ObterFinalidade() =>
+        (nota.Informacoes.Dps.Informacoes.IBSCBS?.FinalidadeNFSe ??
+         (nota.Informacoes.Dps.Versao == VersaoNFSe.Ve101 ? nota.Informacoes.Dps.Informacoes.FinalidadeNFSe : null)) switch
+        {
+            RTCFinNFSe.Regular => "NFS-e regular",
+            _ => "-"
+        };
 
     private static string ObterDescricaoEmitente(EmitenteDps emitente) => emitente switch
     {

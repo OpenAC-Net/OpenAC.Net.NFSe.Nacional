@@ -14,7 +14,7 @@ public class TestWebServiceRegistration
         var services = new ServiceCollection();
         services.AddLogging();
         services.AddSingleton<IHostEnvironment>(new TestHostEnvironment());
-        services.AddOpenNFSeNacionalWeb(config => config.WebServices.CodigoMunicipio = 5002704);
+        services.AddNFSeNacional(config => config.WebServices.CodigoMunicipio = 5002704);
         await using var provider = services.BuildServiceProvider(validateScopes: true);
 
         await using var firstScope = provider.CreateAsyncScope();

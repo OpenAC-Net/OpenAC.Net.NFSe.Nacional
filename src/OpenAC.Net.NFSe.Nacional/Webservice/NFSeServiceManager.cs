@@ -3,13 +3,15 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Security.Cryptography.X509Certificates;
+using OpenAC.Net.DFe.Core.Http;
 using OpenAC.Net.Core;
 using OpenAC.Net.Core.Extensions;
 using OpenAC.Net.DFe.Core.Common;
 using OpenAC.Net.NFSe.Nacional.Common;
 using OpenAC.Net.NFSe.Nacional.Common.Types;
 using OpenAC.Net.NFSe.Nacional.Webservice.Nacional;
-using OpenAC.Net.NFSe.Nacional.Storage;
+using OpenAC.Net.DFe.Core.Storage;
 
 namespace OpenAC.Net.NFSe.Nacional.Webservice;
 
@@ -188,9 +190,13 @@ public sealed partial class NFSeServiceManager
         Services = NFSeServices.Load(stream);
     }
 
-    /// <summary>Retorna um provedor configurado com o transporte HTTP informado.</summary>
-    public NFSeWebserviceBase GetProvider(ConfiguracaoNFSe config, INFSeHttpTransport? httpTransport = null,
-        INFSeDocumentStore? documentStore = null)
+    /// <summary>Retorna um provedor com transporte, armazenamento e carregamento de certificado configuráveis.</summary>
+    /// <param name="config">Configuração fiscal.</param>
+    /// <param name="httpTransport">Transporte HTTP ou nulo para usar a configuração.</param>
+    /// <param name="documentStore">Store ou nulo para usar a configuração.</param>
+    /// <param name="certificateLoader">Carrega uma nova instância de certificado, descartada ao concluir cada envio.</param>
+    public NFSeWebserviceBase GetProvider(ConfiguracaoNFSe config, IDFeHttpTransport? httpTransport = null,
+        IDFeDocumentStore? documentStore = null, Func<X509Certificate2?>? certificateLoader = null)
     {
         var serviceInfo = Services[config.WebServices.CodigoMunicipio] ?? 
                           throw new OpenException("Serviço não encontrado para o município informado!");
@@ -206,6 +212,7 @@ public sealed partial class NFSeServiceManager
         var provider = (NFSeWebserviceBase?)Activator.CreateInstance(providerType, arguments) ??
                        throw new InvalidOperationException();
         if (documentStore != null) provider.DocumentStore = documentStore;
+        if (certificateLoader != null) provider.CertificateLoader = certificateLoader;
         return provider;
     }
 

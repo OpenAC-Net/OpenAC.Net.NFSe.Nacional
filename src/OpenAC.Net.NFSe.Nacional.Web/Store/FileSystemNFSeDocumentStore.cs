@@ -1,46 +1,56 @@
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Options;
+using OpenAC.Net.DFe.Core.Storage;
 using OpenAC.Net.NFSe.Nacional.Common;
 using OpenAC.Net.NFSe.Nacional.Storage;
 using OpenAC.Net.NFSe.Nacional.Web.Accessor;
-using OpenAC.Net.NFSe.Nacional.Web.Configuration;
 
 namespace OpenAC.Net.NFSe.Nacional.Web.Store;
 
-/// <summary>Persiste payloads técnicos e documentos fiscais no sistema de arquivos do host ASP.NET Core.</summary>
-/// <remarks>
-/// A raiz é resolvida a partir de <see cref="IHostEnvironment.ContentRootPath"/>. Os documentos são
-/// separados por empresa e categoria, e colisões de nome são tratadas pelo armazenamento desktop.
-/// </remarks>
-public sealed class FileSystemNFSeDocumentStore : INFSeDocumentStore
+/// <summary>Resolve diretórios por empresa e delega a persistência ao DFe.Core.</summary>
+public sealed class FileSystemNFSeDocumentStore : IDFeDocumentStore
 {
-    private readonly string root;
-    private readonly bool enabled;
     private readonly INFSeTenantContextAccessor tenantContext;
 
-    /// <summary>Cria o armazenamento usando a raiz do host e as opções registradas.</summary>
-    /// <param name="environment">Ambiente do host usado para resolver o diretório raiz da aplicação.</param>
-    /// <param name="options">Opções que controlam a persistência e o caminho relativo dos documentos.</param>
-    /// <param name="tenantContext">Contexto usado para isolar os documentos por empresa.</param>
-    public FileSystemNFSeDocumentStore(IHostEnvironment environment, IOptions<OpenNFSeNacionalWebOptions> options,
-        INFSeTenantContextAccessor tenantContext)
+    /// <summary>Cria o armazenamento relativo à raiz do host, isolado por empresa.</summary>
+    public FileSystemNFSeDocumentStore(INFSeTenantContextAccessor tenantContext)
     {
-        enabled = options.Value.PersistenciaHabilitada;
-        root = Path.GetFullPath(Path.Combine(environment.ContentRootPath, options.Value.CaminhoDocumentos));
         this.tenantContext = tenantContext;
     }
 
     /// <inheritdoc />
-    public Task SaveAsync(NFSeDocument document, ConfiguracaoNFSe configuration,
+    public Task SaveAsync(IDFeDocument document,
         CancellationToken cancellationToken = default)
     {
-        if (!enabled) return Task.CompletedTask;
+        ArgumentNullException.ThrowIfNull(document);
+        cancellationToken.ThrowIfCancellationRequested();
+        if (document is not NFSeDocument nfse)
+            throw new ArgumentException(
+                "O armazenamento web requer NFSeDocument para identificar a empresa e as regras fiscais.",
+                nameof(document));
+        var tenant = tenantContext.GetTenant(nfse.Arquivos);
         var tenantHash = Convert.ToHexString(System.Security.Cryptography.SHA256.HashData(
-            System.Text.Encoding.UTF8.GetBytes(tenantContext.GetTenant(configuration))));
-        var tenantRoot = Path.Combine(root, "Tenants", tenantHash);
-        configuration.Arquivos.PathEnvio = Path.Combine(tenantRoot, "Technical");
-        configuration.Arquivos.PathDps = Path.Combine(tenantRoot, "Fiscal", "DPS");
-        configuration.Arquivos.PathNFSe = Path.Combine(tenantRoot, "Fiscal", "NFSe");
-        return DesktopNFSeDocumentStore.Instancia.SaveAsync(document, configuration, cancellationToken);
+            System.Text.Encoding.UTF8.GetBytes(tenant)));
+        var source = nfse.Arquivos;
+        // Resolve a raiz do host sem alterar os caminhos da configuração compartilhada.
+        var files = new NFSeArquivoConfig
+        {
+            PathSalvar = Isolate(source.PathSalvar, source.PathSalvar, tenantHash),
+            PathEnvio = Isolate(source.PathEnvio, source.PathSalvar, tenantHash),
+            PathDps = Isolate(source.PathDps, source.PathSalvar, tenantHash),
+            PathNFSe = Isolate(source.PathNFSe, source.PathSalvar, tenantHash),
+            AdicionarLiteral = source.AdicionarLiteral,
+            SepararPorCNPJ = source.SepararPorCNPJ,
+            SepararPorModelo = source.SepararPorModelo,
+            SepararPorAno = source.SepararPorAno,
+            SepararPorMes = source.SepararPorMes,
+            SepararPorDia = source.SepararPorDia
+        };
+        lock (source.OrdenacaoPath) files.OrdenacaoPath.AddRange(source.OrdenacaoPath);
+        var directory = files.GetDocumentPath(nfse.Categoria, nfse.DocumentoContribuinte, nfse.Data);
+        var nomeArquivo = nfse.NomeArquivo;
+        var destino = new DFeDocument(Path.Combine(directory, nomeArquivo), document.Conteudo, document.ArquivoExiste);
+        return DFeFileSystemDocumentStore.Instance.SaveAsync(destino, cancellationToken);
     }
+
+    private static string Isolate(string path, string fallback, string tenant) =>
+        Path.Combine(Path.GetFullPath(string.IsNullOrWhiteSpace(path) ? fallback : path), tenant);
 }
