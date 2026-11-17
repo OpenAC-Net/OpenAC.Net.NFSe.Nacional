@@ -258,5 +258,22 @@
 				</Ambiente>
 			</Ambientes>
 		</serviceInfo>
+		<serviceInfo Id="3506003">
+			<Tipo>SilTecnologia</Tipo>
+			<Nome>Bauru</Nome>
+			<UF>SP</UF>
+			<Ambientes>
+				<Ambiente Tipo="2">
+					<Enderecos>
+                            <Endereco Tipo="Enviar">https://homologacao.siltecnologia.com.br/tbbauru/services/NotaFiscalNacional</Endereco>
+					</Enderecos>
+				</Ambiente>
+				<Ambiente Tipo="1">
+					<Enderecos>
+						<Endereco Tipo="Enviar">https://tributario.bauru.sp.gov.br/services/NotaFiscalNacional</Endereco>
+					</Enderecos>
+				</Ambiente>
+			</Ambientes>
+		</serviceInfo>
 	</Services>
 </NFSeServices>

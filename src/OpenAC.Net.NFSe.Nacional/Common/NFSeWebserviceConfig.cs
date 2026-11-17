@@ -82,6 +82,13 @@ public sealed class NFSeWebserviceConfig : DFeWebserviceConfigBase
     public string? InscricaoMunicipal { get; set; }
 
     /// <summary>
+    /// Código IBGE do município de incidência do ISSQN (<c>infNFSe/cLocIncid</c>). Usado por provedores que
+    /// recebem a NFS-e montada pelo contribuinte (ex.: SIL Tecnologia); quando vazio, usa o município do emitente.
+    /// Ignorado pelo provedor Nacional, em que o município de incidência é definido pela Sefin.
+    /// </summary>
+    public string? CodigoMunicipioIncidencia { get; set; }
+
+    /// <summary>
     /// Define se a aplicação deve validar o XML contra os schemas XSD antes do envio.
     /// </summary>
     public bool ValidarSchemas { get; set; }  = true;
