@@ -94,7 +94,7 @@ public class SimplISSWebService : NacionalWebservice
 
         await GravarArquivoEmDiscoAsync(strResponse, $"Enviar-{dps.Informacoes.NumeroDps:000000}-resp.json", documento);
   
-        return NFSeResponse<RespostaEnvioDps>.Create(dps.Xml, strEnvio, strResponse, httpResponse.IsSuccessStatusCode, JsonOptions);
+        return NFSeResponse<RespostaEnvioDps>.Create(dps.Xml, strEnvio, strResponse, httpResponse.IsSuccessStatusCode, httpResponse.StatusCode, JsonOptions);
     }
 
     /// <inheritdoc />
@@ -125,7 +125,7 @@ public class SimplISSWebService : NacionalWebservice
 
         await GravarArquivoEmDiscoAsync(strResponse, $"Evento-{evento.Informacoes.ChNFSe}{evento.Informacoes.Evento}-resp.json", documento, cancellationToken);
 
-        return NFSeResponse<RespostaEnvioEvento>.Create(evento.Xml, strEnvio, strResponse, httpResponse.IsSuccessStatusCode, JsonOptions);
+        return NFSeResponse<RespostaEnvioEvento>.Create(evento.Xml, strEnvio, strResponse, httpResponse.IsSuccessStatusCode, httpResponse.StatusCode, JsonOptions);
     }
 
 }

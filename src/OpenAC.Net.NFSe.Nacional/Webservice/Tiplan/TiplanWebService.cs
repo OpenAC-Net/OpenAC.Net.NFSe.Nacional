@@ -113,7 +113,7 @@ public class TiplanWebService : NacionalWebservice
             cancellationToken);
 
         return NFSeResponse<RespostaEnvioDps>.Create(dps.Xml, strEnvio, strResponse, httpResponse.IsSuccessStatusCode,
-            JsonOptions);
+            httpResponse.StatusCode, JsonOptions);
     }
 
     /// <summary>
@@ -157,6 +157,6 @@ public class TiplanWebService : NacionalWebservice
             $"Evento-{evento.Informacoes.ChNFSe}{evento.Informacoes.Evento}-resp.json", documento, cancellationToken);
 
         return NFSeResponse<RespostaEnvioEvento>.Create(evento.Xml, strEnvio, strResponse,
-            httpResponse.IsSuccessStatusCode, JsonOptions);
+            httpResponse.IsSuccessStatusCode, httpResponse.StatusCode, JsonOptions);
     }
 }
