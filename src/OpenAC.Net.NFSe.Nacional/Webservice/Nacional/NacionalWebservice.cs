@@ -293,11 +293,11 @@ public class NacionalWebservice : NFSeWebserviceBase
     {
         if (Configuracao.Geral.AssinarXml)
         {
-            Console.WriteLine("Assinando DPS");
+            this.Log().Debug("Webservice: [Enviar] - Assinando DPS");
             dps.Assinar(Configuracao);
         }
         else
-            Console.WriteLine("SKIP assinatura DPS");
+            this.Log().Debug("Webservice: [Enviar] - Assinatura da DPS desativada (AssinarXml = false)");
 
         ValidarSchema(SchemaNFSe.DPS, dps.Xml, dps.Versao);
 

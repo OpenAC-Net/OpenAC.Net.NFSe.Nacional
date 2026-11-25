@@ -88,6 +88,36 @@ public class TestRespostaHttpNacional
         await Assert.That(xml.StatusHttp).IsNull();
     }
 
+    [Test]
+    [NotInParallel(nameof(Console))]
+    [Arguments(true)]
+    [Arguments(false)]
+    public async Task EnviarDps_NaoEscreveNoConsole(bool assinarXml)
+    {
+        var (provedor, _, _) = CriarProvedor(HttpStatusCode.BadRequest, RetornoRejeicao, assinarXml);
+        var dps = MontarDps();
+        if (!assinarXml)
+        {
+            // Com AssinarXml desligado o chamador entrega a DPS já assinada.
+            var (_, _, configuracao) = CriarProvedor(HttpStatusCode.OK, "{}");
+            dps.Assinar(configuracao);
+        }
+
+        var saidaOriginal = Console.Out;
+        using var saida = new StringWriter();
+        Console.SetOut(saida);
+        try
+        {
+            await provedor.EnviarAsync(dps);
+        }
+        finally
+        {
+            Console.SetOut(saidaOriginal);
+        }
+
+        await Assert.That(saida.ToString()).IsEmpty();
+    }
+
     private static (NacionalWebservice provedor, TransporteFalso transporte, ConfiguracaoNFSe configuracao) CriarProvedor(HttpStatusCode status,
         string corpo, bool assinarXml = true)
     {
