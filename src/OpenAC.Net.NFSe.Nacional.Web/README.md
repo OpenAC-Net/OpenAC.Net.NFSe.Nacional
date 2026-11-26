@@ -1,275 +1,202 @@
 # OpenAC.Net.NFSe.Nacional.Web
 
-Integração da `OpenAC.Net.NFSe.Nacional` com ASP.NET Core, preparada para aplicações Web, APIs,
-workers e cenários multiempresa.
+[![NuGet Version](https://img.shields.io/nuget/v/OpenAC.Net.NFSe.Nacional.Web.svg)](https://www.nuget.org/packages/OpenAC.Net.NFSe.Nacional.Web/)
+[![NuGet Downloads](https://img.shields.io/nuget/dt/OpenAC.Net.NFSe.Nacional.Web.svg)](https://www.nuget.org/packages/OpenAC.Net.NFSe.Nacional.Web/)
+[![Discord](https://img.shields.io/badge/Chat%20on-Discord-purple.svg)](https://discord.com/invite/brdmJ7Yv6w)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+[![Target Frameworks](https://img.shields.io/badge/.NET-net8.0%20%7C%20net9.0%20%7C%20net10.0%20%7C%20net11.0-blue.svg)](https://dotnet.microsoft.com/)
 
-A biblioteca usa os serviços nativos do ASP.NET Core para gerenciar HTTP, injeção de dependência,
-logs, resiliência, certificados, persistência e observabilidade. Ela não cria um `HttpClient` por
-requisição e não altera configurações globais do `ServicePointManager`.
+Biblioteca .NET para integração da **NFS-e (Nota Fiscal de Serviço Eletrônica) Padrão Nacional** com aplicações **ASP.NET Core**.
 
-## Recursos
+Desenvolvida pelo time **OpenAC .Net**, a biblioteca estende a `OpenAC.Net.NFSe.Nacional` com injeção de dependências, transporte HTTP, configuração por empresa e observabilidade.
 
-- `IHttpClientFactory` com reaproveitamento seguro de conexões e handlers.
-- Certificado cliente configurado no handler HTTP.
-- Propagação de `CancellationToken` em todas as operações.
-- Timeout geral e timeout específico por operação.
-- Retry somente para métodos HTTP seguros.
-- Circuit breaker opcional e isolado por endpoint.
-- Suporte a configuração única ou multiempresa.
-- Provider genérico de configuração compartilhado com outras integrações Web do projeto.
-- Isolamento do pool por empresa, certificado, protocolo TLS e endpoint.
-- Persistência assíncrona e concorrente de payloads e documentos fiscais.
-- Instrumentação com `ActivitySource`, `Meter` e `ILogger`.
+---
 
-## Requisitos
+## 🚀 Funcionalidades
 
-- ASP.NET Core 8 ou superior.
-- Certificado digital compatível com o webservice utilizado.
-- Configuração válida da NFS-e para o município e provedor.
+- **Integração com ASP.NET Core**:
+  - Registro dos serviços com `AddNFSeNacional`.
+  - Cliente `IOpenNFSeNacionalClient` disponível por injeção de dependências.
+- **Emissão, Eventos e Consultas**:
+  - Envio de DPS, lotes e eventos conforme o suporte do provedor.
+  - Consulta por chave de acesso, NSU e Id da DPS.
+  - Download do DANFSe oficial em PDF via webservice.
+- **Configuração Multiempresa**:
+  - Configuração fiscal e certificado digital por empresa.
+  - Criação de clientes com `IOpenNFSeNacionalClientFactory`.
+  - Isolamento do transporte HTTP por empresa.
+- **Transporte e Resiliência**:
+  - Integração com `IHttpClientFactory`.
+  - Configuração de tentativas, intervalos e timeouts.
+  - Propagação de `CancellationToken`.
+- **Persistência e Observabilidade**:
+  - Gravação de DPS, NFS-e e arquivos de comunicação.
+  - Logging estruturado, métricas e rastreamento com `ActivitySource`.
+- **Compatibilidade**:
+  - .NET **8**, **9**, **10** e **11**.
 
-## Configuração para uma empresa
+---
 
-Registre a integração no `Program.cs`:
+## 📦 Instalação
 
-```csharp
-using OpenAC.Net.NFSe.Nacional;
+Adicione o pacote via NuGet Package Manager ou CLI:
 
-builder.Services.AddOpenNFSeNacionalWeb(
-    configuracao =>
-    {
-        configuracao.WebServices.CodigoMunicipio = 5002704;
-        configuracao.WebServices.ValidarSchemas = true;
-        configuracao.WebServices.Tentativas = 3;
-        configuracao.WebServices.IntervaloTentativas = 1000;
+### .NET CLI:
 
-        configuracao.Certificados.CertificadoBytes =
-            File.ReadAllBytes(builder.Configuration["NFSe:Certificado:Caminho"]!);
-        configuracao.Certificados.Senha =
-            builder.Configuration["NFSe:Certificado:Senha"]!;
-    },
-    infraestrutura =>
-    {
-        infraestrutura.TimeoutOperacao = TimeSpan.FromSeconds(60);
-        infraestrutura.TimeoutTentativa = TimeSpan.FromSeconds(15);
-        infraestrutura.CircuitBreakerHabilitado = true;
-
-        infraestrutura.PersistenciaHabilitada = true;
-        infraestrutura.CaminhoDocumentos = "App_Data/NFSe";
-
-        infraestrutura.TimeoutsPorOperacao[nameof(IOpenNFSeNacionalClient.EnviarAsync)] =
-            TimeSpan.FromSeconds(90);
-    });
+```bash
+dotnet add package OpenAC.Net.NFSe.Nacional.Web
 ```
 
-O `IOpenNFSeNacionalClient` é registrado como `scoped` e pode ser injetado em controllers,
-Minimal APIs, serviços de aplicação ou handlers.
+### Package Manager Console:
 
-Nesse registro, a biblioteca adiciona automaticamente um
-`DefaultNFSeConfigurationProvider<ConfiguracaoNFSe>`. Ele cria uma configuração independente
-para cada cliente usando a ação passada a `AddOpenNFSeNacionalWeb`. O identificador interno desse
-cenário é `default`; portanto, aplicações com uma única empresa não precisam implementar um
-provider próprio.
+```powershell
+Install-Package OpenAC.Net.NFSe.Nacional.Web
+```
 
-### Exemplo com Minimal API
+### PackageReference:
+
+```xml
+<PackageReference Include="OpenAC.Net.NFSe.Nacional.Web" Version="1.7.0" />
+```
+
+---
+
+## 🛠️ Como Usar
+
+### 1. Registrando e Configurando os Serviços
+
+No `Program.cs` da aplicação ASP.NET Core:
 
 ```csharp
-app.MapPost("/nfse", async (
+using OpenAC.Net.DFe.Core.Common;
+using OpenAC.Net.NFSe.Nacional;
+using OpenAC.Net.NFSe.Nacional.Common.Model;
+using OpenAC.Net.NFSe.Nacional.Common.Types;
+
+var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddNFSeNacional(configuracao =>
+{
+    configuracao.Geral.Versao = VersaoNFSe.Ve101;
+    configuracao.WebServices.Ambiente = DFeTipoAmbiente.Homologacao;
+    configuracao.WebServices.CodigoMunicipio = 3550308;
+    configuracao.WebServices.ValidarSchemas = true;
+    configuracao.WebServices.TimeoutOperacao = TimeSpan.FromSeconds(60);
+    configuracao.WebServices.TimeoutTentativa = TimeSpan.FromSeconds(15);
+    configuracao.WebServices.Tentativas = 3;
+    configuracao.WebServices.IntervaloTentativas = 1000;
+
+    configuracao.Arquivos.PathSchemas = Path.Combine(
+        builder.Environment.ContentRootPath, "Schemas", "1.01", "Homologacao");
+    configuracao.Certificados.CertificadoBytes = File.ReadAllBytes(
+        builder.Configuration["NFSe:Certificado:Caminho"]!);
+    configuracao.Certificados.Senha = builder.Configuration["NFSe:Certificado:Senha"]!;
+});
+
+var app = builder.Build();
+
+app.MapPost("/nfse/emissoes", async (
     Dps dps,
     IOpenNFSeNacionalClient nfse,
     CancellationToken cancellationToken) =>
 {
     var resposta = await nfse.EnviarAsync(dps, cancellationToken);
-    return Results.Ok(resposta);
+    return resposta.Sucesso ? Results.Ok(resposta) : Results.BadRequest(resposta);
 });
+
+app.Run();
 ```
 
-O token recebido pelo ASP.NET Core é propagado até o transporte HTTP e para a persistência dos
-documentos.
+A DPS recebida deve conter os dados fiscais exigidos pelo layout e pelo provedor. Os arquivos XSD devem estar disponíveis na pasta configurada em `PathSchemas`.
 
-## Opções de infraestrutura
+---
 
-| Opção | Padrão | Finalidade |
-| --- | ---: | --- |
-| `PersistenciaHabilitada` | `false` | Habilita a gravação de payloads e documentos fiscais. |
-| `CaminhoDocumentos` | `App_Data/NFSe` | Caminho relativo ao `ContentRootPath`. |
-| `TimeoutOperacao` | 100 segundos | Limite total da operação. |
-| `TimeoutTentativa` | 10 segundos | Limite de cada tentativa HTTP. |
-| `CircuitBreakerHabilitado` | `true` | Habilita o circuit breaker por endpoint. |
-| `TempoVidaConexaoPool` | 10 minutos | Tempo máximo de uma conexão no pool. |
-| `TempoVidaHandler` | 5 minutos | Tempo de vida do handler administrado pelo factory. |
-| `TimeoutsPorOperacao` | vazio | Sobrescreve o timeout de uma operação. |
-| `MargemExpiracaoCertificado` | 5 minutos | Recusa certificados expirados ou próximos do vencimento. |
+### 2. Consultas e Download do DANFSe
 
-## Resiliência e idempotência
-
-O pipeline HTTP possui timeout por tentativa, retry e circuit breaker. O retry é desabilitado para
-métodos HTTP inseguros, incluindo `POST`, evitando o reenvio automático de emissões, eventos ou
-lotes.
-
-O total de tentativas e o intervalo fixo entre elas são definidos por
-`ConfiguracaoNFSe.WebServices.Tentativas` e `IntervaloTentativas`. A tentativa inicial faz parte do
-total; portanto, `Tentativas = 3` permite no máximo duas repetições. As mesmas propriedades são
-respeitadas no desktop e na integração Web.
-
-A matriz semântica pode ser consultada por `NFSeOperationPolicies.IsIdempotent`. Operações de
-consulta são classificadas como idempotentes; emissões e eventos não são.
-
-O circuit breaker é separado pela autoridade do endpoint. A indisponibilidade de um provedor não
-abre automaticamente o circuito de outro endpoint.
-
-## Persistência de documentos
-
-A persistência fica desabilitada por padrão. Quando habilitada, o `FileSystemNFSeDocumentStore`
-resolve a raiz através do `IHostEnvironment.ContentRootPath`.
-
-```text
-App_Data/NFSe/
-└── Tenants/{identificador-hash}/
-    ├── Technical/
-    └── Fiscal/
-        ├── DPS/
-        └── NFSe/
-```
-
-As gravações são assíncronas. Arquivos concorrentes com o mesmo nome recebem um sufixo, evitando
-sobrescrita. Para substituir o armazenamento padrão, registre uma implementação de
-`INFSeDocumentStore` antes de chamar `AddOpenNFSeNacionalWeb`:
+Adicione as rotas antes de `app.Run()`:
 
 ```csharp
-builder.Services.AddSingleton<INFSeDocumentStore, MeuArmazenamentoNFSe>();
-builder.Services.AddOpenNFSeNacionalWeb(configuracao =>
-{
-    // Configuração fiscal.
-});
-```
-
-## Multiempresa
-
-O contrato `INFSeConfigurationProvider<TConfiguration>` pertence a esta biblioteca Web e pode ser
-reutilizado por integrações que precisam resolver configurações single-tenant ou multiempresa,
-como `OpenAC.Net.NFSe.Nacional.DANFSe.PDFSharp.Web`.
-
-Implemente os contratos:
-
-- `INFSeConfigurationProvider<ConfiguracaoNFSe>`: retorna uma nova configuração para a empresa.
-- `INFSeCertificateProvider`: carrega ou renova o certificado da empresa.
-
-```csharp
-public sealed class ConfiguracaoNFSePorEmpresa : INFSeConfigurationProvider<ConfiguracaoNFSe>
-{
-    public async ValueTask<ConfiguracaoNFSe> GetConfigurationAsync(
-        string tenantId,
-        CancellationToken cancellationToken = default)
-    {
-        var empresa = await CarregarEmpresaAsync(tenantId, cancellationToken);
-        var configuracao = new ConfiguracaoNFSe();
-        configuracao.WebServices.CodigoMunicipio = empresa.CodigoMunicipio;
-        return configuracao;
-    }
-}
-
-public sealed class CertificadoNFSePorEmpresa : INFSeCertificateProvider
-{
-    public async ValueTask ConfigureAsync(
-        string tenantId,
-        NFSeCertificadoConfig certificateConfiguration,
-        CancellationToken cancellationToken = default)
-    {
-        var certificado = await CarregarCertificadoAsync(tenantId, cancellationToken);
-        certificateConfiguration.CertificadoBytes = certificado.Conteudo;
-        certificateConfiguration.Senha = certificado.Senha;
-    }
-}
-```
-
-O provider deve devolver uma nova `ConfiguracaoNFSe` por chamada. A configuração é mutável durante
-a preparação do certificado e do cliente; por isso, não compartilhe a mesma instância entre
-empresas ou requisições concorrentes.
-
-Registre os providers:
-
-```csharp
-builder.Services
-    .AddOpenNFSeNacionalWebMultiTenant<
-        ConfiguracaoNFSePorEmpresa,
-        CertificadoNFSePorEmpresa>(opcoes =>
-    {
-        opcoes.TimeoutOperacao = TimeSpan.FromSeconds(60);
-        opcoes.PersistenciaHabilitada = true;
-    });
-```
-
-Injete a fábrica e informe a empresa:
-
-```csharp
-app.MapPost("/empresas/{empresaId}/nfse", async (
-    string empresaId,
-    Dps dps,
-    IOpenNFSeNacionalClientFactory fabrica,
+app.MapGet("/nfse/{chave}", async (
+    string chave,
+    IOpenNFSeNacionalClient nfse,
     CancellationToken cancellationToken) =>
 {
-    var cliente = await fabrica.CreateAsync(empresaId, cancellationToken);
-    var resposta = await cliente.EnviarAsync(dps, cancellationToken);
-    return Results.Ok(resposta);
+    var resposta = await nfse.ConsultaChaveAsync(chave, cancellationToken);
+    return resposta.Sucesso ? Results.Ok(resposta) : Results.BadRequest(resposta);
+});
+
+app.MapGet("/nfse/{chave}/danfse", async (
+    string chave,
+    IOpenNFSeNacionalClient nfse,
+    CancellationToken cancellationToken) =>
+{
+    var pdf = await nfse.DownloadDANFSeAsync(chave, cancellationToken);
+    return Results.File(pdf, "application/pdf", $"DANFSe-{chave}.pdf");
 });
 ```
 
-Cada criação consulta novamente o provider de certificado. Quando o certificado é renovado e seu
-thumbprint muda, um novo pool HTTP é criado. Certificados dentro da margem de expiração são
-rejeitados antes da chamada ao webservice.
+Para gerar o DANFSe localmente a partir do XML da NFS-e, utilize o pacote [OpenAC.Net.NFSe.Nacional.DANFSe.PDFSharp.Web](https://www.nuget.org/packages/OpenAC.Net.NFSe.Nacional.DANFSe.PDFSharp.Web/).
 
-## Provider genérico de configuração
+---
 
-O contrato é genérico para que cada integração mantenha seu próprio tipo de configuração:
+### 3. Configuração Multiempresa
+
+Implemente os contratos `INFSeConfigurationProvider<ConfiguracaoNFSe>` e `INFSeCertificateProvider`, disponíveis no namespace `OpenAC.Net.NFSe.Nacional.Web.Provider`, para obter a configuração fiscal e o certificado de cada empresa.
+
+Registre suas implementações pela sobrecarga genérica de `AddNFSeNacional`. No exemplo abaixo, `ConfiguracaoEmpresaProvider` e `CertificadoEmpresaProvider` são classes da aplicação que implementam esses contratos:
 
 ```csharp
-public interface INFSeConfigurationProvider<TConfiguration>
+builder.Services.AddNFSeNacional<ConfiguracaoEmpresaProvider, CertificadoEmpresaProvider>();
+```
+
+Utilize a fábrica para criar o cliente da empresa em cada operação:
+
+```csharp
+using OpenAC.Net.NFSe.Nacional.Web.Client;
+
+app.MapGet("/empresas/{empresaId}/nfse/{chave}", async (
+    string empresaId,
+    string chave,
+    IOpenNFSeNacionalClientFactory factory,
+    CancellationToken cancellationToken) =>
 {
-    ValueTask<TConfiguration> GetConfigurationAsync(
-        string tenantId = NFSeTenant.Padrao,
-        CancellationToken cancellationToken = default);
-}
+    var nfse = await factory.CreateAsync(empresaId, cancellationToken);
+    var resposta = await nfse.ConsultaChaveAsync(chave, cancellationToken);
+    return resposta.Sucesso ? Results.Ok(resposta) : Results.BadRequest(resposta);
+});
 ```
 
-O `tenantId` é opcional nas APIs públicas. Quando omitido, o valor
-`NFSeTenant.Padrao` é utilizado. Providers e componentes internos continuam recebendo uma
-identidade não nula e validada.
+Cada configuração retornada pelo provider deve ser independente, com os dados fiscais da empresa solicitada. O provider de certificado preenche a configuração com o certificado vigente dessa mesma empresa.
 
-Para criar integrações single-tenant manualmente, use o provider padrão:
+---
 
-```csharp
-var provider = new DefaultNFSeConfigurationProvider<MinhaConfiguracao>(() =>
-    new MinhaConfiguracao());
-```
+## 📚 Projeto de Exemplo
 
-A função é executada a cada consulta. Isso permite retornar configurações independentes e evita o
-compartilhamento acidental de estado mutável.
+O projeto [OpenAC.Net.NFSe.Nacional.Web.Exemplo](https://github.com/OpenAC-Net/OpenAC.Net.NFSe.Nacional/tree/main/src/OpenAC.Net.NFSe.Nacional.Web.Exemplo) demonstra o uso em uma Minimal API, incluindo emissão, download do DANFSe oficial e geração local de PDF.
 
-## Observabilidade
+---
 
-A biblioteca cria logs estruturados com operação, município, provedor e empresa. Também expõe:
+## 🤝 Como Contribuir
 
-- `ActivitySource`: `OpenAC.Net.NFSe.Nacional.Web`.
-- `Meter`: `OpenAC.Net.NFSe.Nacional.Web`.
-- Contador: `openac.nfse.operations`.
-- Histograma: `openac.nfse.operation.duration`.
+Contribuições são muito bem-vindas! Se você deseja relatar um problema, sugerir melhorias ou enviar uma contribuição:
 
-Exemplo com OpenTelemetry:
+1. Faça um Fork do repositório.
+2. Crie uma Branch para a sua feature (`git checkout -b feature/nova-funcionalidade`).
+3. Faça o commit das suas alterações (`git commit -m 'Adiciona melhoria na integração Web'`).
+4. Envie para o GitHub (`git push origin feature/nova-funcionalidade`).
+5. Abra um Pull Request.
 
-```csharp
-builder.Services.AddOpenTelemetry()
-    .WithTracing(tracing => tracing
-        .AddSource("OpenAC.Net.NFSe.Nacional.Web"))
-    .WithMetrics(metrics => metrics
-        .AddMeter("OpenAC.Net.NFSe.Nacional.Web"));
-```
+---
 
-## Tratamento de falhas
+## 💖 Ajude o Projeto OpenAC .Net
 
-- Falhas de transporte, timeout do pipeline e circuit breaker geram `NFSeTechnicalException`.
-- Cancelamentos continuam sendo representados por `OperationCanceledException`.
-- Rejeições fiscais são retornadas nos objetos `NFSeResponse` e não são tratadas como falha de
-  infraestrutura.
+Se o **OpenAC.Net.NFSe.Nacional.Web** é útil para o seu negócio ou projeto open source e você deseja apoiar o desenvolvimento contínuo, considere fazer uma contribuição:
 
-Assim, a aplicação consegue diferenciar indisponibilidade técnica, cancelamento da requisição e
-rejeição fiscal sem depender da mensagem textual da exceção.
+- Participe da nossa comunidade no [Discord](https://discord.com/invite/brdmJ7Yv6w).
+- Contribua com código, testes e documentação no [GitHub](https://github.com/OpenAC-Net/OpenAC.Net.NFSe.Nacional).
+
+---
+
+## 📄 Licença
+
+Este projeto é distribuído sob a licença **MIT**. Consulte o arquivo [LICENSE](https://github.com/OpenAC-Net/OpenAC.Net.NFSe.Nacional/blob/main/LICENSE) para mais detalhes.

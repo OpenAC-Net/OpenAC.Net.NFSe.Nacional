@@ -41,11 +41,23 @@ public sealed partial class RTCValoresIBSCBS
     /// <summary>
     /// Base de calculo do IBS/CBS antes das reducoes.
     /// </summary>
-    [DFeElement(TipoCampo.De2, "vBC", Min = 4, Max = 18, Ocorrencia = Ocorrencia.Obrigatoria)]
-    public decimal ValorBaseCalculo { get; set; }
+    [DFeElement(TipoCampo.De2, "vBC", Min = 4, Max = 18, Ocorrencia = Ocorrencia.NaoObrigatoria)]
+    public decimal? ValorBaseCalculo { get; set; }
 
     /// <summary>
-    /// Valor monetario relativo a reembolso, repasse ou ressarcimento.
+    /// Valor monetário relativo aos valores de ajuste (dedução/redução) da Base de Cálculo do IBS e da CBS referentes às operações de locação, cessão onerosa ou arrendamento de bens imóveis (vCalcAjusteBCLocImoveis).
+    /// </summary>
+    [DFeElement(TipoCampo.De2, "vCalcAjusteBCLocImoveis", Min = 4, Max = 18, Ocorrencia = Ocorrencia.NaoObrigatoria)]
+    public decimal? ValorCalcAjusteBCLocImoveis { get; set; }
+
+    /// <summary>
+    /// Valor monetário relativo a glosa de serviços de saúde ou a operações de terceiros, objeto de reembolso, repasse ou ressarcimento pelo recebedor (vCalcAjusteBCIBSCBS).
+    /// </summary>
+    [DFeElement(TipoCampo.De2, "vCalcAjusteBCIBSCBS", Min = 4, Max = 18, Ocorrencia = Ocorrencia.NaoObrigatoria)]
+    public decimal? ValorCalcAjusteBCIBSCBS { get; set; }
+
+    /// <summary>
+    /// Valor monetario relativo a reembolso, repasse ou ressarcimento (layout anterior).
     /// </summary>
     [DFeElement(TipoCampo.De2, "vCalcReeRepRes", Min = 4, Max = 18, Ocorrencia = Ocorrencia.NaoObrigatoria)]
     public decimal? ValorCalcReeRepRes { get; set; }

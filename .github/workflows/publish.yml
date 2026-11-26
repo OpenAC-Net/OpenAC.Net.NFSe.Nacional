@@ -23,7 +23,7 @@ jobs:
       with:
         fetch-depth: 0 # Get all history to allow automatic versioning using MinVer
         
-    # Install the .NET SDK indicated in the global.json file
+    # Install the .NET SDKs required by the solution
     - name: Setup .NET
       uses: actions/setup-dotnet@v6
       with:
@@ -31,6 +31,7 @@ jobs:
           8.x
           9.x
           10.x
+          11.x
 
     - name: Restore NuGet packages
       run: dotnet restore OpenAC.Net.NFSe.Nacional.slnx

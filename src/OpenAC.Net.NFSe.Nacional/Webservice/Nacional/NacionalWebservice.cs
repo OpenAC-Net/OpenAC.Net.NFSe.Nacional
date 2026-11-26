@@ -29,6 +29,8 @@
 // <summary></summary>
 // ***********************************************************************
 
+using OpenAC.Net.DFe.Core.Storage;
+using OpenAC.Net.DFe.Core.Http;
 using System;
 using System.Linq;
 using System.Net;
@@ -64,7 +66,7 @@ public class NacionalWebservice : NFSeWebserviceBase
 
     /// <summary>Inicializa o provedor com um transporte HTTP fornecido pelo host.</summary>
     public NacionalWebservice(ConfiguracaoNFSe configuracaoNFSe, NFSeServiceInfo serviceInfo,
-        INFSeHttpTransport httpTransport) : base(configuracaoNFSe, serviceInfo, httpTransport)
+        IDFeHttpTransport httpTransport) : base(configuracaoNFSe, serviceInfo, httpTransport)
     {
     }
 
@@ -90,7 +92,7 @@ public class NacionalWebservice : NFSeWebserviceBase
         this.Log().Debug($"Webservice: [DANFSe][Resposta] - {httpResponse.StatusCode}");
 
         httpResponse.EnsureSuccessStatusCode();
-        return await httpResponse.Content.ReadAsByteArrayAsync();
+        return await OpenAC.Net.DFe.Core.Http.DFeHttpResponse.ReadAsByteArrayAsync(httpResponse.Content, cancellationToken);
     }
 
     #endregion DANFSe
@@ -123,13 +125,13 @@ public class NacionalWebservice : NFSeWebserviceBase
 
         using var httpResponse = await SendAsync(null, HttpMethod.Get, $"{url}/DFe/{nsu}{query}", cancellationToken: cancellationToken);
 
-        var strResponse = await httpResponse.Content.ReadAsStringAsync();
+        var strResponse = await LerRespostaAsync(httpResponse, cancellationToken);
 
         this.Log().Debug($"Webservice: [ConsultaNsu][Resposta] - {strResponse}");
 
         await GravarArquivoEmDiscoAsync(strResponse, $"ConsultaNsu-{nsu:000000}-resp.json", "", cancellationToken);
 
-        return NFSeResponse<RespostaConsultaDFe>.Create("", "", strResponse, httpResponse.IsSuccessStatusCode);
+        return NFSeResponse<RespostaConsultaDFe>.Create("", "", strResponse, httpResponse.IsSuccessStatusCode, httpResponse.StatusCode);
     }
 
     /// <summary>
@@ -145,13 +147,13 @@ public class NacionalWebservice : NFSeWebserviceBase
         var url = ServiceInfo[Configuracao.WebServices.Ambiente][TipoUrl.ConsultarChave];
         using var httpResponse = await SendAsync(null, HttpMethod.Get, $"{url}/NFSe/{chave}/Eventos", cancellationToken: cancellationToken);
 
-        var strResponse = await httpResponse.Content.ReadAsStringAsync();
+        var strResponse = await LerRespostaAsync(httpResponse, cancellationToken);
 
         this.Log().Debug($"Webservice: [ConsultaChave][Resposta] - {strResponse}");
 
         await GravarArquivoEmDiscoAsync(strResponse, $"ConsultaChave-{chave}-resp.json", "", cancellationToken);
 
-        return NFSeResponse<RespostaConsultaDFe>.Create("", "", strResponse, httpResponse.IsSuccessStatusCode);
+        return NFSeResponse<RespostaConsultaDFe>.Create("", "", strResponse, httpResponse.IsSuccessStatusCode, httpResponse.StatusCode);
     }
 
     #endregion DFe
@@ -171,13 +173,13 @@ public class NacionalWebservice : NFSeWebserviceBase
         var url = ServiceInfo[Configuracao.WebServices.Ambiente][TipoUrl.ConsultarChaveDps];
         using var httpResponse = await SendAsync(null, HttpMethod.Get, $"{url}/dps/{id}", cancellationToken: cancellationToken);
 
-        var strResponse = await httpResponse.Content.ReadAsStringAsync();
+        var strResponse = await LerRespostaAsync(httpResponse, cancellationToken);
 
         this.Log().Debug($"Webservice: [ConsultaChaveDps][Resposta] - {strResponse}");
 
         await GravarArquivoEmDiscoAsync(strResponse, $"ConsultaChaveDps-{id}-resp.json", "", cancellationToken);
 
-        return NFSeResponse<RespostaConsultaChaveDps>.Create("", "", strResponse, httpResponse.IsSuccessStatusCode);
+        return NFSeResponse<RespostaConsultaChaveDps>.Create("", "", strResponse, httpResponse.IsSuccessStatusCode, httpResponse.StatusCode);
     }
 
     /// <summary>
@@ -193,7 +195,7 @@ public class NacionalWebservice : NFSeWebserviceBase
         var url = ServiceInfo[Configuracao.WebServices.Ambiente][TipoUrl.ConsultaExisteDps];
         using var httpResponse = await SendAsync(null, HttpMethod.Head, $"{url}/dps/{id}", cancellationToken: cancellationToken);
 
-        var strResponse = await httpResponse.Content.ReadAsStringAsync();
+        var strResponse = await LerRespostaAsync(httpResponse, cancellationToken);
 
         this.Log().Debug($"Webservice: [ConsultaExisteDps][Resposta] - {strResponse}");
 
@@ -226,7 +228,7 @@ public class NacionalWebservice : NFSeWebserviceBase
             : $"{evento.Informacoes.ChNFSe}{evento.Informacoes.Evento}";
 
         await GravarDpsEmDiscoAsync(evento.Xml, $"{prefixoNomeArquivoDps}_evento.xml",
-                documento, evento.Informacoes.DhEvento.DateTime, true, cancellationToken);
+                documento, evento.Informacoes.DhEvento.DateTime, DFeArquivoExiste.LancarErro, cancellationToken);
 
         var envio = new EventoEnvio
         {
@@ -244,7 +246,7 @@ public class NacionalWebservice : NFSeWebserviceBase
         var url = ServiceInfo[Configuracao.WebServices.Ambiente][TipoUrl.EnviarEvento];
         using var httpResponse = await SendAsync(content, HttpMethod.Post, $"{url}/nfse/{evento.Informacoes.ChNFSe}/eventos", cancellationToken: cancellationToken);
 
-        var strResponse = await httpResponse.Content.ReadAsStringAsync();
+        var strResponse = await LerRespostaAsync(httpResponse, cancellationToken);
 
         this.Log().Debug($"Webservice: [Evento][Resposta] - {strResponse}");
 
@@ -256,7 +258,7 @@ public class NacionalWebservice : NFSeWebserviceBase
             PropertyNameCaseInsensitive = true,
         };
 
-        var retorno = NFSeResponse<RespostaEnvioEvento>.Create(evento.Xml, strEnvio, strResponse, httpResponse.IsSuccessStatusCode, jsonOptions);
+        var retorno = NFSeResponse<RespostaEnvioEvento>.Create(evento.Xml, strEnvio, strResponse, httpResponse.IsSuccessStatusCode, httpResponse.StatusCode, jsonOptions);
 
         if (retorno is not { Sucesso: true, Resultado.XmlEvento: not null }) return retorno;
         
@@ -268,7 +270,7 @@ public class NacionalWebservice : NFSeWebserviceBase
             .Descendants()
             .FirstOrDefault(x => x.Name.LocalName == "nSeqEvento")?.Value ?? "00";
 
-        await GravarNFSeEmDiscoAsync(retorno.Resultado.XmlEvento, $"{prefixoNomeArquivoEventoNfse}_evento_{nSeqEvento}.xml", documento, evento.Informacoes.DhEvento.DateTime, true, cancellationToken);
+        await GravarNFSeEmDiscoAsync(retorno.Resultado.XmlEvento, $"{prefixoNomeArquivoEventoNfse}_evento_{nSeqEvento}.xml", documento, evento.Informacoes.DhEvento.DateTime, DFeArquivoExiste.LancarErro, cancellationToken);
 
         return retorno;
     }
@@ -281,13 +283,13 @@ public class NacionalWebservice : NFSeWebserviceBase
         var url = ServiceInfo[Configuracao.WebServices.Ambiente][TipoUrl.ConsultarEvento];
         var httpResponse = await SendAsync(null, HttpMethod.Get, $"{url}/nfse/{chaveAcesso}/eventos/{tipoEvento}/{numSeqEvento}", cancellationToken: cancellationToken);
 
-        var strResponse = await httpResponse.Content.ReadAsStringAsync();
+        var strResponse = await LerRespostaAsync(httpResponse, cancellationToken);
 
         this.Log().Debug($"Webservice: [ConsultaEvento][Resposta] - {strResponse}");
 
         await GravarArquivoEmDiscoAsync(strResponse, $"ConsultaEvento-{chaveAcesso}{tipoEvento}{numSeqEvento}-resp.json", "", cancellationToken);
 
-        return NFSeResponse<RespostaConsultaEvento>.Create("", "", strResponse, httpResponse.IsSuccessStatusCode);
+        return NFSeResponse<RespostaConsultaEvento>.Create("", "", strResponse, httpResponse.IsSuccessStatusCode, httpResponse.StatusCode);
     }
 
     #endregion Eventos
@@ -304,11 +306,11 @@ public class NacionalWebservice : NFSeWebserviceBase
     {
         if (Configuracao.Geral.AssinarXml)
         {
-            Console.WriteLine("Assinando DPS");
+            this.Log().Debug("Webservice: [Enviar] - Assinando DPS");
             dps.Assinar(Configuracao);
         }
         else
-            Console.WriteLine("SKIP assinatura DPS");
+            this.Log().Debug("Webservice: [Enviar] - Assinatura da DPS desativada (AssinarXml = false)");
 
         ValidarSchema(SchemaNFSe.DPS, dps.Xml, dps.Versao);
 
@@ -336,13 +338,13 @@ public class NacionalWebservice : NFSeWebserviceBase
         var url = ServiceInfo[Configuracao.WebServices.Ambiente][TipoUrl.Enviar];
         using var httpResponse = await SendAsync(content, HttpMethod.Post, $"{url}/nfse", cancellationToken: cancellationToken);
 
-        var strResponse = await httpResponse.Content.ReadAsStringAsync();
+        var strResponse = await LerRespostaAsync(httpResponse, cancellationToken);
 
         this.Log().Debug($"Webservice: [Enviar][Resposta] - {strResponse}");
 
         await GravarArquivoEmDiscoAsync(strResponse, $"Enviar-{prefixoNomeArquivoDps}-resp.json", documento, cancellationToken);
 
-        var retorno = NFSeResponse<RespostaEnvioDps>.Create(dps.Xml, strEnvio, strResponse, httpResponse.IsSuccessStatusCode);
+        var retorno = NFSeResponse<RespostaEnvioDps>.Create(dps.Xml, strEnvio, strResponse, httpResponse.IsSuccessStatusCode, httpResponse.StatusCode);
 
         if (retorno is not { Sucesso: true, Resultado.XmlNFSe: not null }) return retorno;
         

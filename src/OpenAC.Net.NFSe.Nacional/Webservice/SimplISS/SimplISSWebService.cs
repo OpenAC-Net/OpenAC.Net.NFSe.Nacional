@@ -29,6 +29,7 @@
 // <summary></summary>
 // ***********************************************************************
 
+using OpenAC.Net.DFe.Core.Http;
 using OpenAC.Net.Core.Logging;
 using OpenAC.Net.NFSe.Nacional.Common;
 using OpenAC.Net.NFSe.Nacional.Common.Model;
@@ -60,7 +61,7 @@ public class SimplISSWebService : NacionalWebservice
 
     /// <summary>Inicializa o provedor com um transporte HTTP fornecido pelo host.</summary>
     public SimplISSWebService(ConfiguracaoNFSe configuracaoNFSe, NFSeServiceInfo serviceInfo,
-        INFSeHttpTransport httpTransport) : base(configuracaoNFSe, serviceInfo, httpTransport)
+        IDFeHttpTransport httpTransport) : base(configuracaoNFSe, serviceInfo, httpTransport)
     {
     }
 
@@ -87,13 +88,13 @@ public class SimplISSWebService : NacionalWebservice
         var url = ServiceInfo[Configuracao.WebServices.Ambiente][TipoUrl.Enviar] ?? throw new InvalidOperationException("URL de envio não encontrada na configuração do serviço.");
         using var httpResponse = await SendAsync(content, HttpMethod.Post, $"{url}/nfse", cancellationToken: cancellationToken);
 
-        var strResponse = await httpResponse.Content.ReadAsStringAsync();
+        var strResponse = await LerRespostaAsync(httpResponse, cancellationToken);
 
         this.Log().Debug($"SimplISS: [Enviar][Resposta] - {strResponse}");
 
         await GravarArquivoEmDiscoAsync(strResponse, $"Enviar-{dps.Informacoes.NumeroDps:000000}-resp.json", documento);
   
-        return NFSeResponse<RespostaEnvioDps>.Create(dps.Xml, strEnvio, strResponse, httpResponse.IsSuccessStatusCode, JsonOptions);
+        return NFSeResponse<RespostaEnvioDps>.Create(dps.Xml, strEnvio, strResponse, httpResponse.IsSuccessStatusCode, httpResponse.StatusCode, JsonOptions);
     }
 
     /// <inheritdoc />
@@ -118,13 +119,13 @@ public class SimplISSWebService : NacionalWebservice
         var url = ServiceInfo[Configuracao.WebServices.Ambiente][TipoUrl.EnviarEvento] ?? throw new InvalidOperationException("URL de envio não encontrada na configuração do serviço.");
         using var httpResponse = await SendAsync(content, HttpMethod.Post, $"{url}/nfse/{evento.Informacoes.ChNFSe}/eventos", cancellationToken: cancellationToken);
 
-        var strResponse = await httpResponse.Content.ReadAsStringAsync();
+        var strResponse = await LerRespostaAsync(httpResponse, cancellationToken);
 
         this.Log().Debug($"SimplISS: [Evento][Resposta] - {strResponse}");
 
         await GravarArquivoEmDiscoAsync(strResponse, $"Evento-{evento.Informacoes.ChNFSe}{evento.Informacoes.Evento}-resp.json", documento, cancellationToken);
 
-        return NFSeResponse<RespostaEnvioEvento>.Create(evento.Xml, strEnvio, strResponse, httpResponse.IsSuccessStatusCode, JsonOptions);
+        return NFSeResponse<RespostaEnvioEvento>.Create(evento.Xml, strEnvio, strResponse, httpResponse.IsSuccessStatusCode, httpResponse.StatusCode, JsonOptions);
     }
 
 }

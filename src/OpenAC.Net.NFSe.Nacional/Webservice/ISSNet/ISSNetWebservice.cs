@@ -29,6 +29,7 @@
 // <summary></summary>
 // ***********************************************************************
 
+using OpenAC.Net.DFe.Core.Http;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -69,7 +70,7 @@ public class ISSNetWebService : NacionalWebservice
 
     /// <summary>Inicializa o provedor com um transporte HTTP fornecido pelo host.</summary>
     public ISSNetWebService(ConfiguracaoNFSe configuracaoNFSe, NFSeServiceInfo serviceInfo,
-        INFSeHttpTransport httpTransport) : base(configuracaoNFSe, serviceInfo, httpTransport)
+        IDFeHttpTransport httpTransport) : base(configuracaoNFSe, serviceInfo, httpTransport)
     {
     }
 
@@ -468,7 +469,7 @@ public class ISSNetWebService : NacionalWebservice
         var url = ServiceInfo[Configuracao.WebServices.Ambiente][TipoUrl.Enviar] ?? throw new InvalidOperationException("URL de envio não encontrada na configuração do serviço.");
         using var httpResponse = await SendAsync(content, HttpMethod.Post, $"{url}/nfse.asmx", cancellationToken: cancellationToken);
 
-        var strResponse = await httpResponse.Content.ReadAsStringAsync();
+        var strResponse = await LerRespostaAsync(httpResponse, cancellationToken);
 
         this.Log().Debug($"ISSNet: [{operacao}][Resposta] - {strResponse}");
 

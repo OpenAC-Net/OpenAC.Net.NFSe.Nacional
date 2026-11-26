@@ -1,19 +1,19 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using OpenAC.Net.NFSe.Nacional.Storage;
+using OpenAC.Net.DFe.Core.Http;
+using OpenAC.Net.DFe.Core.Storage;
 using OpenAC.Net.NFSe.Nacional.Web.Common;
 using OpenAC.Net.NFSe.Nacional.Web.Configuration;
 using OpenAC.Net.NFSe.Nacional.Web.Provider;
 using OpenAC.Net.NFSe.Nacional.Web.Transport;
-using OpenAC.Net.NFSe.Nacional.Webservice;
 
 namespace OpenAC.Net.NFSe.Nacional.Web.Client;
 
 internal sealed class OpenNFSeNacionalClientFactory(
     INFSeConfigurationProvider<Nacional.Common.ConfiguracaoNFSe> configurationProvider,
     INFSeCertificateProvider certificateProvider,
-    INFSeHttpTransport transport,
-    INFSeDocumentStore documentStore,
+    IDFeHttpTransport transport,
+    IDFeDocumentStore documentStore,
     ILoggerFactory loggerFactory,
     IOptions<OpenNFSeNacionalWebOptions> options,
     NFSeHttpClientRegistry registry)
@@ -27,9 +27,8 @@ internal sealed class OpenNFSeNacionalClientFactory(
             .ConfigureAwait(false);
         await certificateProvider.ConfigureAsync(tenantId, configuration.Certificados, cancellationToken)
             .ConfigureAwait(false);
-        var certificate = NFSeWebCertificateResolver.Resolve(configuration.Certificados);
-        if (certificate.NotAfter <= DateTime.Now.Add(options.Value.MargemExpiracaoCertificado))
-            throw new InvalidOperationException($"O certificado da empresa '{tenantId}' está expirado ou próximo do vencimento.");
+        using var certificate = NFSeWebCertificateResolver.Resolve(configuration.Certificados);
+        configuration.Certificados.ValidarCertificado(certificate);
         registry.Bind(configuration, tenantId);
         return new OpenNFSeNacionalWebClient(configuration, transport, documentStore,
             loggerFactory.CreateLogger<OpenNFSeNacionalWebClient>(), options, tenantId);

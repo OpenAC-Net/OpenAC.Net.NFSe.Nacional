@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net8.0;net9.0;net10.0</TargetFrameworks>
+    <TargetFrameworks>net8.0;net9.0;net10.0;net11.0</TargetFrameworks>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <LangVersion>latest</LangVersion>
@@ -10,9 +10,9 @@
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageId>OpenAC.Net.NFSe.Nacional.Web</PackageId>
-    <AssemblyVersion>1.6.0</AssemblyVersion>
-    <FileVersion>1.6.0</FileVersion>
-    <Version>1.6.0</Version>
+    <AssemblyVersion>1.7.0</AssemblyVersion>
+    <FileVersion>1.7.0</FileVersion>
+    <Version>1.7.0</Version>
     <Authors>Projeto OpenAC .Net</Authors>
     <Company>OpenAC .Net - Automação Comercial em .Net</Company>
     <Copyright>Copyright © Projeto OpenAC .Net 2014 - 2026</Copyright>
@@ -37,8 +37,8 @@
   <ItemGroup>
     <ProjectReference Include="..\OpenAC.Net.NFSe.Nacional\OpenAC.Net.NFSe.Nacional.csproj" />
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
-    <PackageReference Include="Microsoft.Extensions.Http.Resilience" Version="10.11.0" />
-    <PackageReference Include="OpenAC.Net.DFe.Core" Version="1.7.1" />
+    <PackageReference Include="Microsoft.Extensions.Http.Resilience" Version="11.0.0" />
+    <PackageReference Include="OpenAC.Net.DFe.Core" Version="1.8.0" />
   </ItemGroup>
 
   <ItemGroup>

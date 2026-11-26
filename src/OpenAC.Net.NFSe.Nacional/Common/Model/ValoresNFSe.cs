@@ -1,4 +1,4 @@
-﻿// ***********************************************************************
+// ***********************************************************************
 // Assembly         : OpenAC.Net.NFSe.Nacional
 // Author           : RFTD
 // Created          : 09-09-2023
@@ -41,10 +41,16 @@ namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 public sealed partial class ValoresNFSe
 {
     /// <summary>
-    /// Valor da base de cálculo após redução/dedução.
+    /// Valor da base de cálculo após redução/dedução (layout anterior).
     /// </summary>
     [DFeElement(TipoCampo.De2, "vCalcDR", Min = 4, Max = 18, Ocorrencia = Ocorrencia.NaoObrigatoria)]
     public decimal? ValorBcReducaoDeducao { get; set; }
+
+    /// <summary>
+    /// Valor monetário (R$) do ajuste (dedução/redução) da base de cálculo (BC) do ISSQN (vCalcAjusteBCISSQN).
+    /// </summary>
+    [DFeElement(TipoCampo.De2, "vCalcAjusteBCISSQN", Min = 4, Max = 18, Ocorrencia = Ocorrencia.NaoObrigatoria)]
+    public decimal? ValorCalcAjusteBCISSQN { get; set; }
 
 
     /// <summary>

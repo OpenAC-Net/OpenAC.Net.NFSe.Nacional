@@ -1,16 +1,21 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Security.Cryptography.X509Certificates;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Xml.Schema;
+using OpenAC.Net.DFe.Core.Http;
+using OpenAC.Net.DFe.Core.Service;
 using OpenAC.Net.Core.Logging;
 using OpenAC.Net.DFe.Core;
 using OpenAC.Net.NFSe.Nacional.Common;
 using OpenAC.Net.NFSe.Nacional.Common.Model;
 using OpenAC.Net.NFSe.Nacional.Common.Types;
+using OpenAC.Net.DFe.Core.Storage;
 using OpenAC.Net.NFSe.Nacional.Storage;
 
 namespace OpenAC.Net.NFSe.Nacional.Webservice;
@@ -21,7 +26,7 @@ namespace OpenAC.Net.NFSe.Nacional.Webservice;
 /// validação de XML via schema e gravação de arquivos em disco.
 /// Implementa <see cref="IOpenLog"/> para integração com o sistema de logging.
 /// </summary>
-public abstract class NFSeWebserviceBase : IOpenLog
+public abstract class NFSeWebserviceBase : DFeHttpServiceClient, IOpenLog
 {
     #region Internal Types
 
@@ -58,12 +63,12 @@ public abstract class NFSeWebserviceBase : IOpenLog
     /// <param name="httpTransport">Transporte HTTP fornecido pelo host ou <see langword="null"/> para usar o transporte desktop.</param>
     /// <param name="documentStore">Armazenamento de documentos fornecido pelo host ou <see langword="null"/> para usar o armazenamento desktop.</param>
     protected NFSeWebserviceBase(ConfiguracaoNFSe configuracaoNFSe, NFSeServiceInfo serviceInfo,
-        INFSeHttpTransport? httpTransport = null, INFSeDocumentStore? documentStore = null)
+        IDFeHttpTransport? httpTransport = null, IDFeDocumentStore? documentStore = null)
     {
         Configuracao = configuracaoNFSe;
         ServiceInfo = serviceInfo;
-        HttpTransport = httpTransport ?? DesktopNFSeHttpTransport.Instance;
-        DocumentStore = documentStore ?? DesktopNFSeDocumentStore.Instancia;
+        HttpTransport = httpTransport ?? configuracaoNFSe.HttpTransport;
+        DocumentStore = documentStore ?? configuracaoNFSe.DocumentStore;
     }
 
     #endregion Constructors
@@ -81,12 +86,14 @@ public abstract class NFSeWebserviceBase : IOpenLog
     public NFSeServiceInfo ServiceInfo { get; }
 
     /// <summary>
-    /// Transporte HTTP fornecido pelo host. Quando nulo, mantém o transporte legado para aplicações desktop.
+    /// Transporte HTTP compartilhado do DFe.Core ou fornecido pelo host.
     /// </summary>
-    protected INFSeHttpTransport HttpTransport { get; }
+    protected IDFeHttpTransport HttpTransport { get; }
 
     /// <summary>Obtém o armazenamento usado para persistir payloads técnicos e documentos fiscais.</summary>
-    protected internal INFSeDocumentStore DocumentStore { get; internal set; }
+    protected internal IDFeDocumentStore DocumentStore { get; internal set; }
+
+    internal Func<X509Certificate2?>? CertificateLoader { get; set; }
 
     #endregion Properties
 
@@ -151,7 +158,8 @@ public abstract class NFSeWebserviceBase : IOpenLog
     /// <param name="dps">DPS a ser enviada.</param>
     /// <param name="cancellationToken">Token para cancelar a operação assíncrona.</param>
     /// <returns>Resposta do envio da DPS.</returns>
-    public abstract Task<NFSeResponse<RespostaEnvioDps>> EnviarAsync(Dps dps, CancellationToken cancellationToken = default);
+    public abstract Task<NFSeResponse<RespostaEnvioDps>> EnviarAsync(Dps dps,
+        CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Recepciona um lote de DPS de forma assíncrona, retornando o protocolo para acompanhamento.
@@ -244,8 +252,31 @@ public abstract class NFSeWebserviceBase : IOpenLog
 
         request.Content = content;
 
-        return await HttpTransport.SendAsync(request, Configuracao, cancellationToken).ConfigureAwait(false);
+        return await EnviarRequisicaoAsync(request, cancellationToken).ConfigureAwait(false);
     }
+
+    /// <inheritdoc />
+    protected override IDFeHttpTransport TransporteHttp => HttpTransport;
+
+    /// <inheritdoc />
+    protected override CancellationToken TokenOperacao => Configuracao.OperationToken.Value;
+
+    /// <inheritdoc />
+    protected override bool DescartarCertificadoAposEnvio => true;
+
+    /// <inheritdoc />
+    protected override DFeHttpTransportOptions CriarOpcoesHttp() => new(Configuracao.WebServices, ObterCertificado())
+    {
+        UseCookies = true,
+        AutomaticDecompression = DecompressionMethods.None,
+        MargemValidadeCertificado = Configuracao.Certificados.MargemValidadeCertificado,
+        BufferRequestContent = true
+    };
+
+    /// <summary>Carrega uma instância de certificado pertencente ao envio atual.</summary>
+    protected virtual X509Certificate2? ObterCertificado() => CertificateLoader == null
+        ? Configuracao.Certificados.ObterCertificado()
+        : CertificateLoader();
 
     /// <summary>
     /// Valida o XML de acordo com o schema.
@@ -302,14 +333,16 @@ public abstract class NFSeWebserviceBase : IOpenLog
     /// <param name="nomeArquivo">Nome do arquivo.</param>
     /// <param name="documento">Documento do prestador.</param>
     /// <param name="data">Data de emissão.</param>
-    /// <param name="incrementarNome">Indica se o nome do arquivo deve ser incrementado caso já exista.</param>
+    /// <param name="arquivoExiste">Comportamento quando o arquivo de destino já existe.</param>
     /// <param name="cancellationToken">Token para cancelar a gravação.</param>
     protected virtual Task GravarDpsEmDiscoAsync(string conteudoArquivo, string nomeArquivo, string? documento,
-        DateTime data, bool incrementarNome = false, CancellationToken cancellationToken = default)
+        DateTime data, DFeArquivoExiste arquivoExiste = DFeArquivoExiste.AdicionarSufixo,
+        CancellationToken cancellationToken = default)
     {
         if (!Configuracao.Arquivos.Salvar) return Task.CompletedTask;
-        return DocumentStore.SaveAsync(new NFSeDocument(NFSeTipoDocumento.Dps, conteudoArquivo, nomeArquivo,
-            documento, data, incrementarNome), Configuracao, cancellationToken);
+        cancellationToken.ThrowIfCancellationRequested();
+        return DocumentStore.SaveAsync(new NFSeDocument(Configuracao.Arquivos, NFSeCategorias.Dps,
+            conteudoArquivo, nomeArquivo, documento, data, arquivoExiste), cancellationToken);
     }
 
     /// <summary>
@@ -319,14 +352,16 @@ public abstract class NFSeWebserviceBase : IOpenLog
     /// <param name="nomeArquivo">Nome do arquivo.</param>
     /// <param name="documento">Documento do prestador.</param>
     /// <param name="data">Data de emissão.</param>
-    /// <param name="incrementarNome">Indica se o nome do arquivo deve ser incrementado caso já exista.</param>
+    /// <param name="arquivoExiste">Comportamento quando o arquivo de destino já existe.</param>
     /// <param name="cancellationToken">Token para cancelar a gravação.</param>
     protected virtual Task GravarNFSeEmDiscoAsync(string conteudoArquivo, string nomeArquivo, string? documento,
-        DateTime data, bool incrementarNome = false, CancellationToken cancellationToken = default)
+        DateTime data, DFeArquivoExiste arquivoExiste = DFeArquivoExiste.AdicionarSufixo,
+        CancellationToken cancellationToken = default)
     {
         if (!Configuracao.Arquivos.Salvar) return Task.CompletedTask;
-        return DocumentStore.SaveAsync(new NFSeDocument(NFSeTipoDocumento.NFSe, conteudoArquivo, nomeArquivo,
-            documento, data, incrementarNome), Configuracao, cancellationToken);
+        cancellationToken.ThrowIfCancellationRequested();
+        return DocumentStore.SaveAsync(new NFSeDocument(Configuracao.Arquivos, NFSeCategorias.NFSe,
+            conteudoArquivo, nomeArquivo, documento, data, arquivoExiste), cancellationToken);
     }
 
     /// <summary>
@@ -339,13 +374,14 @@ public abstract class NFSeWebserviceBase : IOpenLog
     protected virtual Task GravarArquivoEmDiscoAsync(string conteudoArquivo, string nomeArquivo, string? documento,
         CancellationToken cancellationToken = default)
     {
-        if (!Configuracao.Geral.Salvar) return Task.CompletedTask;
-        
-        var tipo = nomeArquivo.Contains("-resp.", StringComparison.OrdinalIgnoreCase)
-            ? NFSeTipoDocumento.RespostaTecnica
-            : NFSeTipoDocumento.SolicitacaoTecnica;
-        return DocumentStore.SaveAsync(new NFSeDocument(tipo, conteudoArquivo, nomeArquivo, documento,
-            DateTime.Today), Configuracao, cancellationToken);
+        if (!Configuracao.WebServices.Salvar) return Task.CompletedTask;
+
+        cancellationToken.ThrowIfCancellationRequested();
+        var categoria = nomeArquivo.Contains("-resp.", StringComparison.OrdinalIgnoreCase)
+            ? DFeCategorias.RespostaTecnica
+            : DFeCategorias.SolicitacaoTecnica;
+        return DocumentStore.SaveAsync(new NFSeDocument(Configuracao.Arquivos, categoria,
+            conteudoArquivo, nomeArquivo, documento, DateTime.Today), cancellationToken);
     }
 
     #endregion Methods

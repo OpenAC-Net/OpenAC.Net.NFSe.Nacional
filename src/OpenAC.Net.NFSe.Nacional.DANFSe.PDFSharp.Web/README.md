@@ -17,7 +17,7 @@ operação.
 - Retorno em `byte[]`, `Stream` ou `IResult`.
 - Exibição no navegador ou download com nome configurável.
 - Propagação de `CancellationToken` ao provider de configuração.
-- Compatibilidade com .NET 8, 9 e 10.
+- Compatibilidade com .NET 8, 9, 10 e 11.
 
 ## Registro
 

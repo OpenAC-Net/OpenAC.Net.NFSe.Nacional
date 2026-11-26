@@ -35,11 +35,10 @@ public partial class MainWindow
         SignXmlCheck.IsChecked = configuration.Get("Assinar", true);
         ValidateSchemasCheck.IsChecked = configuration.Get("Validar", true);
         catalogPath = Path.Combine(DataDirectory, "Municipios.nfse");
-        if (File.Exists(catalogPath))
-        {
-            try { NFSeServiceManager.Instance.Load(catalogPath); }
-            catch (Exception exception) { ResultText.Text = "Não foi possível carregar o catálogo local: " + exception.Message; }
-        }
+        if (!File.Exists(catalogPath)) return;
+        
+        try { NFSeServiceManager.Instance.Load(catalogPath); }
+        catch (Exception exception) { ResultText.Text = "Não foi possível carregar o catálogo local: " + exception.Message; }
     }
 
     private void ConnectSettingsEvents()

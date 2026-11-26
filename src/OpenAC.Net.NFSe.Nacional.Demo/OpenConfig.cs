@@ -1,8 +1,6 @@
 using OpenAC.Net.Core.Extensions;
-using System;
 using System.Configuration;
 using System.Globalization;
-using System.IO;
 using System.Security.Cryptography;
 using System.Text;
 
@@ -76,7 +74,8 @@ public class OpenConfig
 
         // Mantém o formato legado, lendo todos os blocos em vez de um único CryptoStream.Read.
         using var cipher = TripleDES.Create();
-        var key = Rfc2898DeriveBytes.Pbkdf2(Key, Encoding.UTF8.GetBytes("aselrias38490a32"), 2, HashAlgorithmName.SHA1, 16);
+        var key = Rfc2898DeriveBytes.Pbkdf2(Key, Encoding.UTF8.GetBytes("aselrias38490a32"), 2, HashAlgorithmName.SHA1,
+            16);
         using var decryptor = cipher.CreateDecryptor(key, Encoding.UTF8.GetBytes("8947az34"));
         var encrypted = Convert.FromBase64String(value);
         return Encoding.UTF8.GetString(decryptor.TransformFinalBlock(encrypted, 0, encrypted.Length));

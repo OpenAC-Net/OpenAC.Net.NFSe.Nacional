@@ -5,100 +5,115 @@ using System.Runtime.CompilerServices;
 using System.Security.Authentication;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
+using System.Text;
 using Microsoft.Extensions.Http;
 using Microsoft.Extensions.Http.Resilience;
 using Microsoft.Extensions.Options;
+using OpenAC.Net.DFe.Core.Common;
+using OpenAC.Net.DFe.Core.Http;
 using OpenAC.Net.NFSe.Nacional.Common;
 using OpenAC.Net.NFSe.Nacional.Web.Accessor;
 using OpenAC.Net.NFSe.Nacional.Web.Common;
-using OpenAC.Net.NFSe.Nacional.Web.Configuration;
-using Polly;
 
 namespace OpenAC.Net.NFSe.Nacional.Web.Transport;
 
-internal sealed record NFSeHttpClientRegistration(X509Certificate2 Certificate, SslProtocols Protocols,
-    int Tentativas, TimeSpan IntervaloTentativas);
+internal sealed record NFSeHttpClientRegistration(
+    X509Certificate2? Certificate,
+    SslProtocols Protocols,
+    string Proxy,
+    bool ValidateServerCertificate,
+    bool UseCookies,
+    int Tentativas,
+    TimeSpan IntervaloTentativas,
+    DFeHttpTransportOptions Options);
 
-internal sealed class NFSeHttpClientRegistry : INFSeTenantContextAccessor
+internal sealed class NFSeHttpClientRegistry : INFSeTenantContextAccessor, IDisposable
 {
     internal const string Prefix = "OpenAC.Net.NFSe.Nacional:";
     private readonly ConcurrentDictionary<string, NFSeHttpClientRegistration> registrations = new();
     private readonly ConditionalWeakTable<ConfiguracaoNFSe, TenantIdentity> tenants = new();
+    private readonly ConditionalWeakTable<DFeArquivosConfigBase, TenantIdentity> files = new();
 
-    public void Bind(ConfiguracaoNFSe configuration, string tenantId) =>
-        tenants.AddOrUpdate(configuration, new TenantIdentity(tenantId));
+    public void Bind(ConfiguracaoNFSe configuration, string tenantId)
+    {
+        var identity = new TenantIdentity(tenantId);
+        tenants.AddOrUpdate(configuration, identity);
+        files.AddOrUpdate(configuration.Arquivos, identity);
+    }
 
     public string GetTenant(ConfiguracaoNFSe configuration) =>
         tenants.TryGetValue(configuration, out var tenant) ? tenant.Value : NFSeTenant.Padrao;
 
-    public string Register(ConfiguracaoNFSe configuration, X509Certificate2 certificate,
-        SslProtocols protocols, Uri endpoint)
+    public string GetTenant(DFeArquivosConfigBase configuration) =>
+        files.TryGetValue(configuration, out var tenant) ? tenant.Value : NFSeTenant.Padrao;
+
+    public string Register(string tenant, DFeHttpTransportOptions options, Uri endpoint)
     {
-        var identity = certificate.Thumbprint;
-        if (string.IsNullOrWhiteSpace(identity))
-            identity = Convert.ToHexString(SHA256.HashData(certificate.RawData));
-        var authority = Convert.ToHexString(SHA256.HashData(System.Text.Encoding.UTF8.GetBytes(endpoint.Authority)));
-        var tenant = GetTenant(configuration);
-        var tenantHash = Convert.ToHexString(SHA256.HashData(System.Text.Encoding.UTF8.GetBytes(tenant)));
-        var tentativas = Math.Max(1, configuration.WebServices.Tentativas);
-        var intervaloTentativas = TimeSpan.FromMilliseconds(
-            Math.Max(0, configuration.WebServices.IntervaloTentativas));
-        var name = $"{Prefix}{tenantHash}:{identity}:{(int)protocols}:{authority}:{tentativas}:{intervaloTentativas.TotalMilliseconds}";
-        registrations.TryAdd(name, new NFSeHttpClientRegistration(certificate, protocols, tentativas,
-            intervaloTentativas));
+        var identity = tenant + "|" + options.GetPoolKey(endpoint);
+        var name = Prefix + Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(identity)));
+        if (!registrations.ContainsKey(name))
+        {
+            var owned = options.Certificate == null ? null : new X509Certificate2(options.Certificate);
+            if (!registrations.TryAdd(name, new(owned, options.Protocols, options.Proxy,
+                    options.ValidateServerCertificate, options.UseCookies, options.Attempts, options.RetryDelay,
+                    options)))
+                owned?.Dispose();
+        }
+
         return name;
     }
 
     public bool TryGet(string name, out NFSeHttpClientRegistration registration) =>
         registrations.TryGetValue(name, out registration!);
-}
 
-internal sealed record TenantIdentity(string Value);
-
-internal sealed class NFSeHttpClientOptions : IConfigureNamedOptions<HttpClientFactoryOptions>
-{
-    private readonly NFSeHttpClientRegistry registry;
-    private readonly OpenNFSeNacionalWebOptions options;
-
-    public NFSeHttpClientOptions(NFSeHttpClientRegistry registry, IOptions<OpenNFSeNacionalWebOptions> options)
+    public void Dispose()
     {
-        this.registry = registry;
-        this.options = options.Value;
+        foreach (var entry in registrations.Values) entry.Certificate?.Dispose();
+        registrations.Clear();
     }
 
-    public void Configure(HttpClientFactoryOptions value) { }
+    private sealed record TenantIdentity(string Value);
+}
+
+internal sealed class NFSeHttpClientOptions(NFSeHttpClientRegistry registry)
+    : IConfigureNamedOptions<HttpClientFactoryOptions>
+{
+    public void Configure(HttpClientFactoryOptions value)
+    {
+    }
 
     public void Configure(string? name, HttpClientFactoryOptions value)
     {
         if (name is null || !registry.TryGet(name, out var registration)) return;
-        value.HandlerLifetime = options.TempoVidaHandler;
+        value.HandlerLifetime = registration.Options.TempoVidaHandler;
         value.HttpClientActions.Add(client => client.Timeout = Timeout.InfiniteTimeSpan);
         value.HttpMessageHandlerBuilderActions.Add(builder =>
         {
-            builder.PrimaryHandler = new SocketsHttpHandler
+            var certificate = registration.Certificate == null ? null : new X509Certificate2(registration.Certificate);
+            var ssl = new SslClientAuthenticationOptions { EnabledSslProtocols = registration.Protocols };
+            if (certificate != null) ssl.ClientCertificates = new X509CertificateCollection { certificate };
+            if (!registration.ValidateServerCertificate) ssl.RemoteCertificateValidationCallback = (_, _, _, _) => true;
+            builder.PrimaryHandler = new CertificateHandler(certificate, new SocketsHttpHandler
             {
-                AutomaticDecompression = DecompressionMethods.All,
-                PooledConnectionLifetime = options.TempoVidaConexaoPool,
-                SslOptions = new SslClientAuthenticationOptions
-                {
-                    EnabledSslProtocols = registration.Protocols,
-                    ClientCertificates = new X509CertificateCollection { registration.Certificate }
-                }
-            };
-            var retry = new HttpRetryStrategyOptions
-            {
-                MaxRetryAttempts = Math.Max(0, registration.Tentativas - 1),
-                Delay = registration.IntervaloTentativas,
-                BackoffType = DelayBackoffType.Constant,
-                UseJitter = false
-            };
-            retry.DisableForUnsafeHttpMethods();
-            var pipelineBuilder = new ResiliencePipelineBuilder<HttpResponseMessage>()
-                .AddRetry(retry)
-                .AddTimeout(options.TimeoutTentativa);
-            if (options.CircuitBreakerHabilitado)
-                pipelineBuilder.AddCircuitBreaker(new HttpCircuitBreakerStrategyOptions());
-            builder.AdditionalHandlers.Add(new ResilienceHandler(pipelineBuilder.Build()));
+                UseCookies = registration.UseCookies,
+                AllowAutoRedirect = registration.Options.AllowAutoRedirect,
+                AutomaticDecompression = registration.Options.AutomaticDecompression,
+                PooledConnectionLifetime = registration.Options.TempoVidaConexaoPool,
+                Proxy = string.IsNullOrWhiteSpace(registration.Proxy) ? null : new WebProxy(registration.Proxy, true),
+                SslOptions = ssl
+            });
+            builder.AdditionalHandlers.Add(
+                new ResilienceHandler(DFeHttpResilience.CreatePipeline(registration.Options)));
         });
+    }
+
+    private sealed class CertificateHandler(X509Certificate2? certificate, HttpMessageHandler inner)
+        : DelegatingHandler(inner)
+    {
+        protected override void Dispose(bool disposing)
+        {
+            base.Dispose(disposing);
+            if (disposing) certificate?.Dispose();
+        }
     }
 }

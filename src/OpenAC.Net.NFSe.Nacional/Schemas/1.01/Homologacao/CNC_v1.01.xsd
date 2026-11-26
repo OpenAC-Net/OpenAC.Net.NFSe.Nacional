@@ -5,7 +5,7 @@
            attributeFormDefault="unqualified"
            elementFormDefault="qualified">
   <xs:import namespace="http://www.w3.org/2000/09/xmldsig#" schemaLocation="xmldsig-core-schema.xsd"/>
-  <xs:include schemaLocation="tiposCnc_v1.00.xsd"/>
+  <xs:include schemaLocation="tiposCnc_v1.01.xsd"/>
   <xs:element name="CNC" type="TCNC">
     <xs:annotation>
       <xs:documentation>Schema XML Leiaute do arquivo para upload - CNC</xs:documentation>

@@ -107,6 +107,125 @@ public class TestDANFSePDF
     }
 
     [Test]
+    public async Task ReimpressaoXml_LayoutAntigoELayoutNovo101_CarregaEGeraPdfValido()
+    {
+        // 1. Nota no layout antigo 1.01 (Produção antes de 01/12/2026: vCalcDR, vCalcReeRepRes, finNFSe dentro de IBSCBS, gIBSCBS em trib)
+        var notaAntiga = CriarNotaExemplo();
+        notaAntiga.Versao = "1.01";
+        notaAntiga.Informacoes.Dps.Versao = VersaoNFSe.Ve101;
+        notaAntiga.Informacoes.Dps.Informacoes.TipoAmbiente = OpenAC.Net.DFe.Core.Common.DFeTipoAmbiente.Producao;
+        notaAntiga.Informacoes.Dps.Informacoes.DhEmissao = new DateTimeOffset(2026, 10, 15, 10, 0, 0, TimeSpan.FromHours(-3));
+        notaAntiga.Informacoes.Valores.ValorBcReducaoDeducao = 50.00m;
+        notaAntiga.Informacoes.IBSCBS = new RTCIBSCBS
+        {
+            CodigoLocalidadeIncidencia = "3550308",
+            DescricaoLocalidadeIncidencia = "São Paulo",
+            Valores = new RTCValoresIBSCBS
+            {
+                ValorCalcReeRepRes = 10.00m,
+                ValorBaseCalculo = 1440.00m,
+                Estado = new RTCValoresIBSCBSUf { PercentualIBSUf = 0.10m, PercentualAliquotaEfetivaUf = 0.10m },
+                Municipio = new RTCValoresIBSCBSMunicipio { PercentualIBSMunicipal = 0.05m, PercentualAliquotaEfetivaMunicipal = 0.05m },
+                Federal = new RTCValoresIBSCBSFederal { PercentualCBS = 0.90m, PercentualAliquotaEfetivaCBS = 0.90m }
+            },
+            Totais = new RTCTotalCIBS
+            {
+                ValorTotalNF = 1500.00m,
+                TotalIBS = new RTCTotalIBS { ValorTotalIBS = 2.16m },
+                TotalCBS = new RTCTotalCBS { ValorCBS = 12.96m }
+            }
+        };
+        notaAntiga.Informacoes.Dps.Informacoes.IBSCBS = new RTCInfoIBSCBS
+        {
+            FinalidadeNFSe = RTCFinNFSe.Regular,
+            IndicadorUsoFinal = RTCIndFinal.Nao,
+            CodigoIndicadorOperacao = "100001",
+            IndicadorDestinatario = RTCIndDest.ProprioTomador,
+            Valores = new RTCInfoValoresIBSCBS
+            {
+                Tributos = new RTCInfoTributosIBSCBS
+                {
+                    GrupoIBSCBS = new RTCInfoTributosSitClas
+                    {
+                        CodigoSituacaoTributaria = "000",
+                        CodigoClassificacaoTributaria = "000001"
+                    }
+                }
+            }
+        };
+
+        var xmlAntigo = notaAntiga.GetXml();
+        await Assert.That(xmlAntigo).Contains("<vCalcDR>50.00</vCalcDR>");
+        await Assert.That(xmlAntigo).Contains("<vCalcReeRepRes>10.00</vCalcReeRepRes>");
+        await Assert.That(xmlAntigo).Contains("<gIBSCBS>");
+
+        var notaAntigaRecarregada = NotaFiscalServico.ReadFromXml(System.Xml.Linq.XElement.Parse(xmlAntigo))!;
+        await Assert.That(notaAntigaRecarregada.Informacoes.Valores.ValorBcReducaoDeducao).IsEqualTo(50.00m);
+        await Assert.That(notaAntigaRecarregada.Informacoes.IBSCBS!.Valores!.ValorCalcReeRepRes).IsEqualTo(10.00m);
+        await Assert.That(notaAntigaRecarregada.Informacoes.Dps.Informacoes.FinalidadeNFSe).IsEqualTo(RTCFinNFSe.Regular);
+        await Assert.That(notaAntigaRecarregada.Informacoes.Dps.Informacoes.IBSCBS!.Valores!.Tributos.CodigoSituacaoTributaria).IsEqualTo("000");
+
+        var pdfAntigo = OpenDANFSeNacional.GerarPDF(notaAntigaRecarregada);
+        await Assert.That(Encoding.ASCII.GetString(pdfAntigo, 0, 4)).IsEqualTo("%PDF");
+
+        // 2. Nota no layout novo 1.01 (Homologação ou Produção a partir de 01/12/2026: vCalcAjusteBCISSQN, vCalcAjusteBCIBSCBS, finNFSe em infDPS, CST direto em trib)
+        var notaNova = CriarNotaExemplo();
+        notaNova.Versao = "1.01";
+        notaNova.Informacoes.Dps.Versao = VersaoNFSe.Ve101;
+        notaNova.Informacoes.Dps.Informacoes.TipoAmbiente = OpenAC.Net.DFe.Core.Common.DFeTipoAmbiente.Producao;
+        notaNova.Informacoes.Dps.Informacoes.DhEmissao = new DateTimeOffset(2026, 12, 1, 10, 0, 0, TimeSpan.FromHours(-3));
+        notaNova.Informacoes.Valores.ValorCalcAjusteBCISSQN = 50.00m;
+        notaNova.Informacoes.IBSCBS = new RTCIBSCBS
+        {
+            CodigoLocalidadeIncidencia = "3550308",
+            DescricaoLocalidadeIncidencia = "São Paulo",
+            Valores = new RTCValoresIBSCBS
+            {
+                ValorCalcAjusteBCIBSCBS = 10.00m,
+                ValorBaseCalculo = 1440.00m,
+                Estado = new RTCValoresIBSCBSUf { PercentualIBSUf = 0.10m, PercentualAliquotaEfetivaUf = 0.10m },
+                Municipio = new RTCValoresIBSCBSMunicipio { PercentualIBSMunicipal = 0.05m, PercentualAliquotaEfetivaMunicipal = 0.05m },
+                Federal = new RTCValoresIBSCBSFederal { PercentualCBS = 0.90m, PercentualAliquotaEfetivaCBS = 0.90m }
+            },
+            Totais = new RTCTotalCIBS
+            {
+                ValorTotalNF = 1500.00m,
+                TotalIBS = new RTCTotalIBS { ValorTotalIBS = 2.16m },
+                TotalCBS = new RTCTotalCBS { ValorCBS = 12.96m }
+            }
+        };
+        notaNova.Informacoes.Dps.Informacoes.FinalidadeNFSe = RTCFinNFSe.Regular;
+        notaNova.Informacoes.Dps.Informacoes.IBSCBS = new RTCInfoIBSCBS
+        {
+            IndicadorUsoFinal = RTCIndFinal.Nao,
+            CodigoIndicadorOperacao = "100001",
+            IndicadorDestinatario = RTCIndDest.ProprioTomador,
+            Valores = new RTCInfoValoresIBSCBS
+            {
+                Tributos = new RTCInfoTributosIBSCBS
+                {
+                    CodigoSituacaoTributaria = "000",
+                    CodigoClassificacaoTributaria = "000001"
+                }
+            }
+        };
+
+        var xmlNovo = notaNova.GetXml();
+        await Assert.That(xmlNovo).Contains("<vCalcAjusteBCISSQN>50.00</vCalcAjusteBCISSQN>");
+        await Assert.That(xmlNovo).Contains("<vCalcAjusteBCIBSCBS>10.00</vCalcAjusteBCIBSCBS>");
+        await Assert.That(xmlNovo).DoesNotContain("<gIBSCBS>");
+
+        var notaNovaRecarregada = NotaFiscalServico.ReadFromXml(System.Xml.Linq.XElement.Parse(xmlNovo))!;
+        await Assert.That(notaNovaRecarregada.Informacoes.Valores.ValorCalcAjusteBCISSQN).IsEqualTo(50.00m);
+        await Assert.That(notaNovaRecarregada.Informacoes.IBSCBS!.Valores!.ValorCalcAjusteBCIBSCBS).IsEqualTo(10.00m);
+        await Assert.That(notaNovaRecarregada.Informacoes.Dps.Informacoes.FinalidadeNFSe).IsEqualTo(RTCFinNFSe.Regular);
+        await Assert.That(notaNovaRecarregada.Informacoes.Dps.Informacoes.IBSCBS!.Valores!.Tributos.CodigoSituacaoTributaria).IsEqualTo("000");
+
+        var pdfNovo = OpenDANFSeNacional.GerarPDF(notaNovaRecarregada);
+        await Assert.That(Encoding.ASCII.GetString(pdfNovo, 0, 4)).IsEqualTo("%PDF");
+    }
+
+    [Test]
     public async Task GerarPDF_MultiplasNotas_GeraPdfComMultiplasPaginas()
     {
         var nota1 = CriarNotaExemplo();
