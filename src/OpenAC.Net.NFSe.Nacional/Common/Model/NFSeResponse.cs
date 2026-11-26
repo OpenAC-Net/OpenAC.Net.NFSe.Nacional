@@ -31,6 +31,7 @@
 
 using OpenAC.Net.Core.Logging;
 using System;
+using System.Net;
 using System.Text.Json;
 
 namespace OpenAC.Net.NFSe.Nacional.Common.Model;
@@ -50,13 +51,16 @@ public sealed class NFSeResponse<T> : IOpenLog where T : class, new()
     /// <param name="envio">Dados de envio em formato JSON.</param>
     /// <param name="resposta">Resposta recebida em formato JSON.</param>
     /// <param name="sucesso">Indica se a operação foi bem-sucedida.</param>
+    /// <param name="statusHttp">Código de status HTTP da resposta, quando houver.</param>
     /// <param name="options">Opções de serialização JSON utilizadas.</param>
-    private NFSeResponse(string xmlEnvio, string envio, string resposta, bool sucesso, JsonSerializerOptions? options)
+    private NFSeResponse(string xmlEnvio, string envio, string resposta, bool sucesso, HttpStatusCode? statusHttp,
+        JsonSerializerOptions? options)
     {
         XmlEnvio = xmlEnvio;
         JsonEnvio = envio;
         JsonRetorno = resposta;
         Sucesso = sucesso;
+        StatusHttp = statusHttp;
         JsonOptions = options;
 
         try
@@ -70,11 +74,12 @@ public sealed class NFSeResponse<T> : IOpenLog where T : class, new()
         }
     }
 
-    private NFSeResponse(string xmlEnvio, string xmlResposta, bool sucesso, T? resultado)
+    private NFSeResponse(string xmlEnvio, string xmlResposta, bool sucesso, HttpStatusCode? statusHttp, T? resultado)
     {
         XmlEnvio = xmlEnvio;
         XmlRetorno = xmlResposta;
         Sucesso = sucesso;
+        StatusHttp = statusHttp;
         Resultado = resultado;
     }
 
@@ -108,6 +113,15 @@ public sealed class NFSeResponse<T> : IOpenLog where T : class, new()
     public bool Sucesso { get; }
 
     /// <summary>
+    /// Obtém o código de status HTTP retornado pelo webservice, ou <c>null</c> quando o provedor não o informa.
+    /// </summary>
+    /// <remarks>
+    /// Permite distinguir uma rejeição do documento (4xx), que se repetirá a cada reenvio, de uma falha
+    /// do servidor (5xx), que pode ser tentada novamente.
+    /// </remarks>
+    public HttpStatusCode? StatusHttp { get; }
+
+    /// <summary>
     /// Obtém o resultado desserializado da resposta.
     /// </summary>
     public T? Resultado { get; }
@@ -133,7 +147,23 @@ public sealed class NFSeResponse<T> : IOpenLog where T : class, new()
 
     public static NFSeResponse<T> Create(string xmlEnvio, string envio, string resposta, bool sucesso, JsonSerializerOptions? jsonOptions = null)
     {
-        return new NFSeResponse<T>(xmlEnvio, envio, resposta, sucesso, jsonOptions);
+        return new NFSeResponse<T>(xmlEnvio, envio, resposta, sucesso, null, jsonOptions);
+    }
+
+    /// <summary>
+    /// Cria uma instância de <see cref="NFSeResponse{T}"/> contendo os dados de envio e retorno em Json e o status HTTP da resposta.
+    /// </summary>
+    /// <param name="xmlEnvio">XML enviado na requisição.</param>
+    /// <param name="envio">Dados de envio em formato JSON.</param>
+    /// <param name="resposta">Resposta recebida em formato JSON.</param>
+    /// <param name="sucesso">Indica se a operação foi bem-sucedida.</param>
+    /// <param name="statusHttp">Código de status HTTP da resposta.</param>
+    /// <param name="jsonOptions">Opções de serialização JSON utilizadas.</param>
+    /// <returns>Instância de <see cref="NFSeResponse{T}"/> com o resultado desserializado (ou <c>null</c> em caso de erro de desserialização).</returns>
+    public static NFSeResponse<T> Create(string xmlEnvio, string envio, string resposta, bool sucesso, HttpStatusCode? statusHttp,
+        JsonSerializerOptions? jsonOptions = null)
+    {
+        return new NFSeResponse<T>(xmlEnvio, envio, resposta, sucesso, statusHttp, jsonOptions);
     }
 
     /// <summary>
@@ -147,7 +177,21 @@ public sealed class NFSeResponse<T> : IOpenLog where T : class, new()
 
     public static NFSeResponse<T> Create(string xmlEnvio, string xmlResposta, bool sucesso, T? resultado)
     {
-        return new NFSeResponse<T>(xmlEnvio, xmlResposta, sucesso, resultado);
+        return new NFSeResponse<T>(xmlEnvio, xmlResposta, sucesso, null, resultado);
+    }
+
+    /// <summary>
+    /// Cria uma instância de <see cref="NFSeResponse{T}"/> contendo os dados de envio e retorno, o status HTTP da resposta e o resultado previamente montado manualmente.
+    /// </summary>
+    /// <param name="xmlEnvio">XML enviado na requisição.</param>
+    /// <param name="xmlResposta">Resposta recebida em formato XML.</param>
+    /// <param name="sucesso">Indica se a operação foi bem-sucedida.</param>
+    /// <param name="statusHttp">Código de status HTTP da resposta.</param>
+    /// <param name="resultado">Instância de <typeparamref name="T"/>, o resultado previamente montado e tratado.</param>
+    /// <returns>Instância de <see cref="NFSeResponse{T}"/> com o resultado recebido como parâmetro.</returns>
+    public static NFSeResponse<T> Create(string xmlEnvio, string xmlResposta, bool sucesso, HttpStatusCode? statusHttp, T? resultado)
+    {
+        return new NFSeResponse<T>(xmlEnvio, xmlResposta, sucesso, statusHttp, resultado);
     }
 
     #endregion Methods
