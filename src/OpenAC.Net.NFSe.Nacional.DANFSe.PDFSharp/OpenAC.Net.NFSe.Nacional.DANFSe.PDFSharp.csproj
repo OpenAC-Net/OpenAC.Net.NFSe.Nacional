@@ -20,9 +20,9 @@
         <PackageLicenseFile>LICENSE</PackageLicenseFile>
         <PackageReadmeFile>README.md</PackageReadmeFile>
         <NeutralLanguage>pt-BR</NeutralLanguage>
-        <AssemblyVersion>1.7.0</AssemblyVersion>
-        <FileVersion>1.7.0</FileVersion>
-        <Version>1.7.0</Version>
+        <AssemblyVersion>1.7.1</AssemblyVersion>
+        <FileVersion>1.7.1</FileVersion>
+        <Version>1.7.1</Version>
         <PublishRepositoryUrl>true</PublishRepositoryUrl>
         <EmbedUntrackedSources>true</EmbedUntrackedSources>
         <DebugType>embedded</DebugType>
@@ -39,14 +39,11 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="OpenAC.Net.DFe.Core" Version="1.8.0" />
+        <PackageReference Include="OpenAC.Net.DFe.Core" Version="1.8.2" />
         <PackageReference Include="PDFsharp" Version="6.2.4" />
-        <PackageReference Include="QRCoder" Version="1.8.1" />
-        <PackageReference Include="System.Security.Cryptography.Pkcs" Version="11.0.0" />
-        <PackageReference Include="Microsoft.SourceLink.GitHub" Version="11.0.100">
-            <PrivateAssets>all</PrivateAssets>
-            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-        </PackageReference>
+        <PackageReference Include="QRCoder" Version="1.9.0" />
+        <PackageReference Include="System.Security.Cryptography.Pkcs" Version="10.0.14" Condition="'$(TargetFramework)' == 'net8.0' or '$(TargetFramework)' == 'net9.0'" />
+        <PackageReference Include="System.Security.Cryptography.Pkcs" Version="11.0.0" Condition="'$(TargetFramework)' != 'net8.0' and '$(TargetFramework)' != 'net9.0'" />
     </ItemGroup>
 
     <ItemGroup>
