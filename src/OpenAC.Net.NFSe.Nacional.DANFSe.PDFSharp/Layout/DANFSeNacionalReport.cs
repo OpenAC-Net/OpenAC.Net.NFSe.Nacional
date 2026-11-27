@@ -681,10 +681,10 @@ internal sealed class DANFSeNacionalReport
         var declarado = nota.Informacoes.Dps.Informacoes.IBSCBS;
         var calculado = nota.Informacoes.IBSCBS;
         var tributos = declarado?.Valores.Tributos;
-        var cst = !string.IsNullOrWhiteSpace(tributos?.CodigoSituacaoTributaria)
+        var cst = tributos != null && !string.IsNullOrWhiteSpace(tributos.CodigoSituacaoTributaria)
             ? tributos.CodigoSituacaoTributaria
             : tributos?.GrupoIBSCBS.CodigoSituacaoTributaria;
-        var cClassTrib = !string.IsNullOrWhiteSpace(tributos?.CodigoClassificacaoTributaria)
+        var cClassTrib = tributos != null && !string.IsNullOrWhiteSpace(tributos.CodigoClassificacaoTributaria)
             ? tributos.CodigoClassificacaoTributaria
             : tributos?.GrupoIBSCBS.CodigoClassificacaoTributaria;
         var valores = calculado?.Valores;

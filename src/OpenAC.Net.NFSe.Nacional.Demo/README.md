@@ -1,13 +1,15 @@
 # Demo Avalonia do OpenAC.Net.NFSe.Nacional
 
-Aplicação desktop em .NET 8 e Avalonia 12.1.4, com o tema azul e a navegação do demo
-OpenAC.Net.CTe. Funciona em Windows, Linux e macOS com o runtime .NET 8 instalado.
+Aplicação desktop em .NET 8 e .NET 11 com Avalonia, com o tema azul e a navegação do demo
+OpenAC.Net.CTe. Funciona em Windows, Linux e macOS com o runtime da versão escolhida.
 
-A partir de `src`:
+Execute o demo a partir de `src` com o SDK .NET 11.
 
 ```bash
-dotnet run --project OpenAC.Net.NFSe.Nacional.Demo
+dotnet run --project OpenAC.Net.NFSe.Nacional.Demo --framework net11.0
 ```
+
+Para executar em .NET 8, use `--framework net8.0`.
 
 ## Configuração
 

@@ -5,7 +5,7 @@
 [![Discord](https://img.shields.io/badge/Chat%20on-Discord-purple.svg)](https://discord.com/invite/brdmJ7Yv6w)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 [![Target Frameworks](https://img.shields.io/badge/.NET%20Framework-4.6.2%20%7C%204.8-blue.svg)](https://dotnet.microsoft.com/)
-[![Target Frameworks](https://img.shields.io/badge/.NET%20Core%20%2F%20Standard-netstandard2.0%20%7C%20net8.0%20%7C%20net9.0%20%7C%20net10.0-blue.svg)](https://dotnet.microsoft.com/)
+[![Target Frameworks](https://img.shields.io/badge/.NET%20Core%20%2F%20Standard-netstandard2.0%20%7C%20net8.0%20%7C%20net9.0%20%7C%20net10.0%20%7C%20net11.0-blue.svg)](https://dotnet.microsoft.com/)
 
 Biblioteca .NET multiplataforma para geração, assinatura, validação, transmissão e consulta de **NFS-e (Nota Fiscal de Serviço Eletrônica) Padrão Nacional**.
 
@@ -72,7 +72,7 @@ Install-Package OpenAC.Net.NFSe.Nacional
 
 ### PackageReference:
 ```xml
-<PackageReference Include="OpenAC.Net.NFSe.Nacional" Version="1.4.8" />
+<PackageReference Include="OpenAC.Net.NFSe.Nacional" Version="1.7.1" />
 ```
 
 ---

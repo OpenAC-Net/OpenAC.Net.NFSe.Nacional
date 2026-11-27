@@ -32,9 +32,13 @@ seção `DANFSe:Tenants:default`.
 
 ## Execução
 
+Execute o exemplo a partir de `src` com o SDK .NET 11.
+
 ```bash
-dotnet run --project OpenAC.Net.NFSe.Nacional.Web.Exemplo
+dotnet run --project OpenAC.Net.NFSe.Nacional.Web.Exemplo --framework net11.0
 ```
+
+Para executar com o runtime ASP.NET Core 10, use `--framework net10.0`.
 
 ## Endpoints
 

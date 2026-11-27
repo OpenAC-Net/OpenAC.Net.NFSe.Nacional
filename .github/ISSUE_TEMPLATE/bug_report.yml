@@ -27,6 +27,7 @@ body:
       label: "Target Framework (.NET)"
       description: "Qual runtime / framework .NET sua aplicação utiliza?"
       options:
+        - ".NET 11.0"
         - ".NET 10.0"
         - ".NET 9.0"
         - ".NET 8.0"

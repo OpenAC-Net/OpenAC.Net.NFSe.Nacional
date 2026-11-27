@@ -89,7 +89,6 @@ public class TestRespostaHttpNacional
     }
 
     [Test]
-    [NotInParallel(nameof(Console))]
     [Arguments(true)]
     [Arguments(false)]
     public async Task EnviarDps_NaoEscreveNoConsole(bool assinarXml)
@@ -103,19 +102,9 @@ public class TestRespostaHttpNacional
             dps.Assinar(configuracao);
         }
 
-        var saidaOriginal = Console.Out;
-        using var saida = new StringWriter();
-        Console.SetOut(saida);
-        try
-        {
-            await provedor.EnviarAsync(dps);
-        }
-        finally
-        {
-            Console.SetOut(saidaOriginal);
-        }
+        await provedor.EnviarAsync(dps);
 
-        await Assert.That(saida.ToString()).IsEmpty();
+        await Assert.That(TestContext.Current!.Output.GetStandardOutput()).IsEmpty();
     }
 
     private static (NacionalWebservice provedor, TransporteFalso transporte, ConfiguracaoNFSe configuracao) CriarProvedor(HttpStatusCode status,

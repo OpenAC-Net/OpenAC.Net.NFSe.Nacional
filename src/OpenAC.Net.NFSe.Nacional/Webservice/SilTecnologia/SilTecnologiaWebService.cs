@@ -317,8 +317,8 @@ public class SilTecnologiaWebService : NFSeWebserviceBase
     /// Distribui os DF-e por NSU pelo ADN. A SIL compartilha as NFS-e com o ADN, então a distribuição
     /// é a mesma do provedor Nacional.
     /// </summary>
-    public override Task<NFSeResponse<RespostaConsultaDFe>> ConsultaNsuAsync(int nsu, CancellationToken cancellationToken = default) =>
-        Nacional().ConsultaNsuAsync(nsu, cancellationToken);
+    public override Task<NFSeResponse<RespostaConsultaDFe>> ConsultaNsuAsync(int nsu, string? cnpjCpf = null, CancellationToken cancellationToken = default) =>
+        Nacional().ConsultaNsuAsync(nsu, cnpjCpf, cancellationToken);
 
     /// <summary>Distribui os DF-e vinculados à chave pelo ADN.</summary>
     public override Task<NFSeResponse<RespostaConsultaDFe>> ConsultaChaveAsync(string chave, CancellationToken cancellationToken = default) =>
