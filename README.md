@@ -72,7 +72,7 @@ Install-Package OpenAC.Net.NFSe.Nacional
 
 ### PackageReference:
 ```xml
-<PackageReference Include="OpenAC.Net.NFSe.Nacional" Version="1.7.1" />
+<PackageReference Include="OpenAC.Net.NFSe.Nacional" Version="1.6.1" />
 ```
 
 ---
