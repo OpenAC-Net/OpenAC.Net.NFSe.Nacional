@@ -261,12 +261,12 @@ public class TestSchemaV101
     }
 
     [Test]
-    public async Task DpsProducao_AntesEAPartirDe01Dez2026_AlternaLayoutAutomaticamente()
+    public async Task DpsProducao_AntesEAPartirDe07Dez2026_AlternaLayoutAutomaticamente()
     {
-        // 1. Produção antes de 01/12/2026 -> Layout Produção (xDescServ antes de cNBS, sem finNFSe em infDPS, gIBSCBS em trib)
+        // 1. Produção antes de 07/12/2026 -> Layout Produção (xDescServ antes de cNBS, sem finNFSe em infDPS, gIBSCBS em trib)
         var dpsAntes = MontarDps();
         dpsAntes.Informacoes.TipoAmbiente = DFeTipoAmbiente.Producao;
-        dpsAntes.Informacoes.DhEmissao = new DateTimeOffset(2026, 11, 30, 10, 0, 0, TimeSpan.FromHours(-3));
+        dpsAntes.Informacoes.DhEmissao = new DateTimeOffset(2026, 12, 6, 10, 0, 0, TimeSpan.FromHours(-3));
         dpsAntes.Informacoes.Servico.Informacoes.CodNBS = "101010000";
         dpsAntes.Informacoes.Servico.Informacoes.CodInterno = "INT01";
         dpsAntes.Informacoes.IBSCBS = new RTCInfoIBSCBS
@@ -295,10 +295,10 @@ public class TestSchemaV101
         var validoProducao = XmlSchemaValidation.ValidarXml(XmlSemAssinatura(xmlAntes), CaminhoSchemaDpsProducao, out var errosProd, out _);
         await Assert.That(validoProducao).IsTrue().Because(string.Join(" | ", errosProd));
 
-        // 2. Produção a partir de 01/12/2026 -> Layout unificado com Homologação (xDescServ no fim de cServ, finNFSe em infDPS, CST/cClassTrib direto em trib)
+        // 2. Produção a partir de 07/12/2026 -> Layout unificado com Homologação (xDescServ no fim de cServ, finNFSe em infDPS, CST/cClassTrib direto em trib)
         var dpsDepois = MontarDps();
         dpsDepois.Informacoes.TipoAmbiente = DFeTipoAmbiente.Producao;
-        dpsDepois.Informacoes.DhEmissao = new DateTimeOffset(2026, 12, 1, 0, 0, 0, TimeSpan.FromHours(-3));
+        dpsDepois.Informacoes.DhEmissao = new DateTimeOffset(2026, 12, 7, 0, 0, 0, TimeSpan.FromHours(-3));
         dpsDepois.Informacoes.Servico.Informacoes.CodNBS = "101010000";
         dpsDepois.Informacoes.Servico.Informacoes.CodInterno = "INT01";
         dpsDepois.Informacoes.IBSCBS = new RTCInfoIBSCBS
@@ -408,6 +408,97 @@ public class TestSchemaV101
         await Assert.That(lida.Informacoes.IBSCBS.BensMoveis[0].CodigoNCMBemMovel).IsEqualTo("84713012");
     }
 
+    [Test]
+    public async Task Release2_DpsSemIBSCBS_ValidaComIndDestNaRaiz()
+    {
+        var dps = MontarDps();
+        dps.Informacoes.DhEmissao = new DateTimeOffset(2026, 11, 24, 0, 0, 0, TimeSpan.FromHours(-3));
+        dps.GerarId();
+
+        var xml = XmlSemAssinatura(dps.GetXml());
+        var informacoes = XElement.Parse(xml).Elements().Single();
+        var campos = informacoes.Elements().Select(c => c.Name.LocalName).ToArray();
+        await Assert.That(campos[Array.IndexOf(campos, "toma") + 1]).IsEqualTo("indDest");
+        await Assert.That(xml).Contains("<indDest>0</indDest>");
+        var valido = XmlSchemaValidation.ValidarXml(xml, CaminhoSchemaDps, out var erros, out _);
+        await Assert.That(valido).IsTrue().Because(string.Join(" | ", erros));
+    }
+
+    [Test]
+    public async Task Release2_ImportacaoDoTomador_ValidaELeComercioExterior()
+    {
+        var dps = MontarDps();
+        var inf = dps.Informacoes;
+        inf.DhEmissao = new DateTimeOffset(2026, 11, 24, 12, 0, 0, TimeSpan.FromHours(-3));
+        inf.TipoEmitente = EmitenteDps.Tomador;
+        inf.MotivoEmissao = MotivoEmissaoTomadoIntermediario.ImportacaoServico;
+        inf.Prestador.CNPJ = null;
+        inf.Prestador.Nif = "FORNECEDOR01";
+        inf.Servico.ServicoExterior = new ServicoExterior
+        {
+            Modo = ModoPrestacao.ConsumoBrasilExterior,
+            CodMoeda = 840,
+            ValorServico = 10m,
+            NumeroDeclaracaoImportacao = "123",
+            NumeroDuimp = "26BR00012345678",
+            NumeroFatura = "0012",
+            ValorFatura = 100m,
+            NumeroContratoCambio = "0123"
+        };
+        inf.Valores.ValoresAjusteBC = new ValoresAjusteBC
+        {
+            ValorAjusteBCIBSCBSComercioExterior = -0.25m
+        };
+        dps.GerarId();
+        var xml = XmlSemAssinatura(dps.GetXml());
+
+        await Assert.That(inf.Id.Substring(11, 14)).IsEqualTo(CnpjAlfanumericoTomador);
+        await Assert.That(xml).Contains("<cMotivoEmisTI>1</cMotivoEmisTI>");
+        await Assert.That(xml).Contains("<mdPrestacao>5</mdPrestacao>");
+        await Assert.That(xml).DoesNotContain("<vServMoeda>");
+        await Assert.That(xml).DoesNotContain("<nDI>");
+        var valido = XmlSchemaValidation.ValidarXml(xml, CaminhoSchemaDps, out var erros, out _);
+        await Assert.That(valido).IsTrue().Because(string.Join(" | ", erros));
+
+        var recarregada = Dps.Load(xml).Informacoes;
+        await Assert.That(recarregada.Servico.ServicoExterior!.NumeroDuimp).IsEqualTo("26BR00012345678");
+        await Assert.That(recarregada.Servico.ServicoExterior.NumeroFatura).IsEqualTo("0012");
+        await Assert.That(recarregada.Valores.ValoresAjusteBC!.ValorAjusteBCIBSCBSComercioExterior).IsEqualTo(-0.25m);
+    }
+
+    [Test]
+    public async Task Release2_GerarId_UsaCpfDoIntermediario()
+    {
+        var dps = MontarDps();
+        dps.Informacoes.TipoEmitente = EmitenteDps.Intermediário;
+        dps.Informacoes.Intermediario = new InfoPessoaNFSe { CPF = "12345678909" };
+        dps.GerarId();
+
+        await Assert.That(dps.Informacoes.Id.Substring(10, 15)).IsEqualTo("100012345678909");
+    }
+
+    [Test]
+    public async Task Release2_Evento_EscreveMunicipioEValidaContraXsd()
+    {
+        var dps = MontarDps();
+        dps.Informacoes.DhEmissao = new DateTimeOffset(2026, 11, 24, 12, 0, 0, TimeSpan.FromHours(-3));
+        dps.Informacoes.Servico.Informacoes.CodTributacaoNacional = "171001";
+        dps.Informacoes.Servico.Evento = new EventoServicoNFSe
+        {
+            Descricao = "Evento de teste",
+            CodigoMunicipio = "3304557",
+            IdEvento = "EVENTO001",
+            DataInicio = new DateTime(2026, 11, 24),
+            DataFim = new DateTime(2026, 11, 25)
+        };
+        dps.GerarId();
+        var xml = XmlSemAssinatura(dps.GetXml());
+
+        var valido = XmlSchemaValidation.ValidarXml(xml, CaminhoSchemaDps, out var erros, out _);
+        await Assert.That(valido).IsTrue().Because(string.Join(" | ", erros));
+        await Assert.That(Dps.Load(xml).Informacoes.Servico.Evento!.CodigoMunicipio).IsEqualTo("3304557");
+    }
+
     /// <summary>
     /// Monta uma DPS v1.01 mínima e completa o suficiente para passar no schema.
     /// </summary>
@@ -425,11 +516,11 @@ public class TestSchemaV101
         Informacoes = new InfDps
         {
             TipoAmbiente = DFeTipoAmbiente.Homologacao,
-            DhEmissao = DateTime.Now,
+            DhEmissao = new DateTimeOffset(2026, 11, 23, 12, 0, 0, TimeSpan.FromHours(-3)),
             LocalidadeEmitente = CodMunicipio,
             Serie = "13",
             NumeroDps = "7",
-            Competencia = DateTime.Now,
+            Competencia = new DateTime(2026, 11, 23),
             TipoEmitente = EmitenteDps.Prestador,
             Prestador = new PrestadorDps
             {

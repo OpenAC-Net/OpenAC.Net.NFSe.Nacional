@@ -5,6 +5,7 @@ public static class NFSeOperationPolicies
 {
     private static readonly HashSet<string> SafeOperations = new(StringComparer.Ordinal)
     {
+        nameof(IOpenNFSeNacionalClient.ConsultarServicosMunicipaisAsync),
         nameof(IOpenNFSeNacionalClient.ConsultaNsuAsync),
         nameof(IOpenNFSeNacionalClient.ConsultaChaveAsync),
         nameof(IOpenNFSeNacionalClient.DownloadDANFSeAsync),

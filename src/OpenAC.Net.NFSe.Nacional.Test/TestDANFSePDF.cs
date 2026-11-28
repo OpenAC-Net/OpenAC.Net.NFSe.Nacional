@@ -109,7 +109,7 @@ public class TestDANFSePDF
     [Test]
     public async Task ReimpressaoXml_LayoutAntigoELayoutNovo101_CarregaEGeraPdfValido()
     {
-        // 1. Nota no layout antigo 1.01 (Produção antes de 01/12/2026: vCalcDR, vCalcReeRepRes, finNFSe dentro de IBSCBS, gIBSCBS em trib)
+        // 1. Nota no layout antigo 1.01 (Produção antes de 07/12/2026: vCalcDR, vCalcReeRepRes, finNFSe dentro de IBSCBS, gIBSCBS em trib)
         var notaAntiga = CriarNotaExemplo();
         notaAntiga.Versao = "1.01";
         notaAntiga.Informacoes.Dps.Versao = VersaoNFSe.Ve101;
@@ -140,7 +140,8 @@ public class TestDANFSePDF
             FinalidadeNFSe = RTCFinNFSe.Regular,
             IndicadorUsoFinal = RTCIndFinal.Nao,
             CodigoIndicadorOperacao = "100001",
-            IndicadorDestinatario = RTCIndDest.ProprioTomador,
+            IndicadorDestinatario = RTCIndDest.Outro,
+            Destinatario = new RTCInfoDest { Nome = "Destinatário de teste", CPF = "12345678901" },
             Valores = new RTCInfoValoresIBSCBS
             {
                 Tributos = new RTCInfoTributosIBSCBS
@@ -165,15 +166,17 @@ public class TestDANFSePDF
         await Assert.That(notaAntigaRecarregada.Informacoes.Dps.Informacoes.FinalidadeNFSe).IsEqualTo(RTCFinNFSe.Regular);
         await Assert.That(notaAntigaRecarregada.Informacoes.Dps.Informacoes.IBSCBS!.Valores!.Tributos.CodigoSituacaoTributaria).IsEqualTo("000");
 
+        await Assert.That(notaAntigaRecarregada.Informacoes.Dps.Informacoes.Destinatario?.Nome).IsEqualTo("Destinatário de teste");
+
         var pdfAntigo = OpenDANFSeNacional.GerarPDF(notaAntigaRecarregada);
         await Assert.That(Encoding.ASCII.GetString(pdfAntigo, 0, 4)).IsEqualTo("%PDF");
 
-        // 2. Nota no layout novo 1.01 (Homologação ou Produção a partir de 01/12/2026: vCalcAjusteBCISSQN, vCalcAjusteBCIBSCBS, finNFSe em infDPS, CST direto em trib)
+        // 2. Nota no layout novo 1.01 (Homologação ou Produção a partir de 07/12/2026: vCalcAjusteBCISSQN, vCalcAjusteBCIBSCBS, finNFSe em infDPS, CST direto em trib)
         var notaNova = CriarNotaExemplo();
         notaNova.Versao = "1.01";
         notaNova.Informacoes.Dps.Versao = VersaoNFSe.Ve101;
         notaNova.Informacoes.Dps.Informacoes.TipoAmbiente = OpenAC.Net.DFe.Core.Common.DFeTipoAmbiente.Producao;
-        notaNova.Informacoes.Dps.Informacoes.DhEmissao = new DateTimeOffset(2026, 12, 1, 10, 0, 0, TimeSpan.FromHours(-3));
+        notaNova.Informacoes.Dps.Informacoes.DhEmissao = new DateTimeOffset(2026, 12, 7, 10, 0, 0, TimeSpan.FromHours(-3));
         notaNova.Informacoes.Valores.ValorCalcAjusteBCISSQN = 50.00m;
         notaNova.Informacoes.IBSCBS = new RTCIBSCBS
         {
@@ -194,12 +197,18 @@ public class TestDANFSePDF
                 TotalCBS = new RTCTotalCBS { ValorCBS = 12.96m }
             }
         };
+        notaNova.Informacoes.VersaoCalculadoraIBSCBS = "2.0";
         notaNova.Informacoes.Dps.Informacoes.FinalidadeNFSe = RTCFinNFSe.Regular;
+        notaNova.Informacoes.Dps.Informacoes.IndicadorDestinatario = RTCIndDest.Outro;
+        notaNova.Informacoes.Dps.Informacoes.Destinatario = new RTCInfoDest
+        {
+            Nome = "Destinatário de teste",
+            CPF = "12345678901"
+        };
         notaNova.Informacoes.Dps.Informacoes.IBSCBS = new RTCInfoIBSCBS
         {
             IndicadorUsoFinal = RTCIndFinal.Nao,
             CodigoIndicadorOperacao = "100001",
-            IndicadorDestinatario = RTCIndDest.ProprioTomador,
             Valores = new RTCInfoValoresIBSCBS
             {
                 Tributos = new RTCInfoTributosIBSCBS
@@ -220,6 +229,9 @@ public class TestDANFSePDF
         await Assert.That(notaNovaRecarregada.Informacoes.IBSCBS!.Valores!.ValorCalcAjusteBCIBSCBS).IsEqualTo(10.00m);
         await Assert.That(notaNovaRecarregada.Informacoes.Dps.Informacoes.FinalidadeNFSe).IsEqualTo(RTCFinNFSe.Regular);
         await Assert.That(notaNovaRecarregada.Informacoes.Dps.Informacoes.IBSCBS!.Valores!.Tributos.CodigoSituacaoTributaria).IsEqualTo("000");
+
+        await Assert.That(notaNovaRecarregada.Informacoes.VersaoCalculadoraIBSCBS).IsEqualTo("2.0");
+        await Assert.That(notaNovaRecarregada.Informacoes.Dps.Informacoes.Destinatario?.Nome).IsEqualTo("Destinatário de teste");
 
         var pdfNovo = OpenDANFSeNacional.GerarPDF(notaNovaRecarregada);
         await Assert.That(Encoding.ASCII.GetString(pdfNovo, 0, 4)).IsEqualTo("%PDF");

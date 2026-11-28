@@ -1,4 +1,5 @@
 using System.Net;
+using System.Xml.Schema;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using OpenAC.Net.DFe.Core.Collection;
@@ -107,6 +108,64 @@ public class TestRespostaHttpNacional
         await Assert.That(TestContext.Current!.Output.GetStandardOutput()).IsEmpty();
     }
 
+    [Test]
+    [Arguments(6, false)]
+    [Arguments(7, true)]
+    public async Task EnviarDps_EmProducao_ValidaComSchemaDoCaminhoConfigurado(int dia, bool release2)
+    {
+        var (provedor, transporte, configuracao) = CriarProvedor(HttpStatusCode.Created, "{}");
+        configuracao.WebServices.Ambiente = DFeTipoAmbiente.Producao;
+        var dps = MontarDps();
+        dps.Informacoes.TipoAmbiente = DFeTipoAmbiente.Producao;
+        dps.Informacoes.DhEmissao = new DateTimeOffset(2026, 12, dia, 12, 0, 0, TimeSpan.FromHours(-3));
+        dps.Informacoes.Competencia = dps.Informacoes.DhEmissao.Date;
+
+        var schemas = Path.Combine(AppContext.BaseDirectory, "Schemas", "1.01");
+        configuracao.Arquivos.PathSchemas = Path.Combine(schemas, release2 ? "Producao" : "Homologacao");
+        await Assert.That(async () => { await provedor.EnviarAsync(dps); })
+            .Throws<XmlSchemaValidationException>();
+
+        configuracao.Arquivos.PathSchemas = Path.Combine(schemas, release2 ? "Homologacao" : "Producao");
+        var resposta = await provedor.EnviarAsync(dps);
+
+        await Assert.That(resposta.Sucesso).IsTrue();
+        await Assert.That(dps.Xml.Contains("<indDest>0</indDest>", StringComparison.Ordinal)).IsEqualTo(release2);
+        await Assert.That(transporte.UltimaUrl).IsEqualTo("https://sefin.nfse.test/SefinNacional/nfse");
+    }
+
+    [Test]
+    [Arguments(false)]
+    [Arguments(true)]
+    public async Task Release2_ConsultaServicosMunicipais_RetornaServicosTipados(bool listaNaRaiz)
+    {
+        const string lista = """[{"cTribNac":"010101","cTribMun":"003"},{"cTribNac":"010102"}]""";
+        var retorno = listaNaRaiz ? lista : "{\"servicos\":" + lista + "}";
+        var (provedor, transporte, _) = CriarProvedor(HttpStatusCode.OK, retorno);
+
+        var resposta = await provedor.ConsultarServicosMunicipaisAsync(3550308, new DateTime(2026, 11, 24));
+        var servicos = resposta.Resultado!.Servicos;
+
+        await Assert.That(transporte.UltimaUrl).IsEqualTo("https://adn.nfse.test/parametrizacao/3550308/2026-11-24/servicos");
+        await Assert.That(resposta.Sucesso).IsTrue();
+        await Assert.That(resposta.StatusHttp).IsEqualTo(HttpStatusCode.OK);
+        await Assert.That(resposta.JsonRetorno).IsEqualTo(retorno);
+        await Assert.That(servicos[0].CodigoTributacaoNacional).IsEqualTo("010101");
+        await Assert.That(servicos[0].CodigoTributacaoMunicipal).IsEqualTo("003");
+        await Assert.That(servicos[1].CodigoTributacaoMunicipal).IsNull();
+    }
+
+    [Test]
+    public async Task Release2_ConsultaServicosMunicipais_PreservaErrosDoServico()
+    {
+        var (provedor, _, _) = CriarProvedor(HttpStatusCode.BadRequest, RetornoRejeicao);
+
+        var resposta = await provedor.ConsultarServicosMunicipaisAsync(3550308, new DateTime(2026, 11, 24));
+
+        await Assert.That(resposta.Sucesso).IsFalse();
+        await Assert.That(resposta.StatusHttp).IsEqualTo(HttpStatusCode.BadRequest);
+        await Assert.That(resposta.Resultado!.Erros.Single().Codigo).IsEqualTo("E0310");
+    }
+
     private static (NacionalWebservice provedor, TransporteFalso transporte, ConfiguracaoNFSe configuracao) CriarProvedor(HttpStatusCode status,
         string corpo, bool assinarXml = true)
     {
@@ -139,7 +198,16 @@ public class TestRespostaHttpNacional
                     Enderecos = new Dictionary<TipoUrl, string>
                     {
                         { TipoUrl.Enviar, UrlHomologacao },
-                        { TipoUrl.ConsultarChaveDps, UrlHomologacao }
+                        { TipoUrl.ConsultarChaveDps, UrlHomologacao },
+                        { TipoUrl.ParametrosMunicipais, "https://adn.nfse.test/parametrizacao" }
+                    }
+                },
+                new NFSeEnvironment
+                {
+                    Ambiente = DFeTipoAmbiente.Producao,
+                    Enderecos = new Dictionary<TipoUrl, string>
+                    {
+                        { TipoUrl.Enviar, "https://sefin.nfse.test/SefinNacional" }
                     }
                 }
             }

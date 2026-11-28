@@ -29,12 +29,14 @@
 // <summary></summary>
 // ***********************************************************************
 
+using System;
 using OpenAC.Net.Core.Extensions;
 using OpenAC.Net.DFe.Core.Attributes;
 using OpenAC.Net.DFe.Core.Common;
 using OpenAC.Net.DFe.Core.Document;
 using OpenAC.Net.DFe.Core.Serializer;
 using OpenAC.Net.NFSe.Nacional.Common.Types;
+using OpenAC.Net.NFSe.Nacional.Webservice;
 
 namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 
@@ -110,7 +112,8 @@ public sealed partial class Dps : DFeSignDocument<Dps>
     /// <param name="configuracao">Configuração da NFSe.</param>
     /// <param name="options">Opções de salvamento do documento.</param>
     public void Assinar(ConfiguracaoNFSe configuracao, DFeSaveOptions options)
-    {        
+    {
+        Informacoes.UsarLayoutMunicipal = configuracao.WebServices.Provedor != NFSeProvider.Nacional;
         GerarId();
         AssinarDocumento(configuracao.Certificados.ObterCertificado(), options, false);
     }
@@ -130,10 +133,14 @@ public sealed partial class Dps : DFeSignDocument<Dps>
     {
         if (!Informacoes.Id.IsEmpty()) return;
 
-        var tipo = string.IsNullOrEmpty(Informacoes.Prestador.CNPJ) ? "1" : "2";
-        var documento = string.IsNullOrEmpty(Informacoes.Prestador.CPF)
-            ? Informacoes.Prestador.CNPJ ?? string.Empty
-            : $"000{Informacoes.Prestador.CPF}";
+        var emitente = Informacoes.ObterEmitente();
+        if (Informacoes.TipoEmitente != EmitenteDps.Prestador &&
+            string.IsNullOrEmpty(emitente?.CPF) && string.IsNullOrEmpty(emitente?.CNPJ))
+            throw new InvalidOperationException("Informe o CPF ou CNPJ do tomador ou intermediário emitente da DPS.");
+
+        var cnpj = emitente?.CNPJ;
+        var tipo = string.IsNullOrEmpty(cnpj) ? "1" : "2";
+        var documento = tipo == "1" ? $"000{emitente?.CPF}" : cnpj!;
 
         Informacoes.Id = "DPS" +
                          Informacoes.LocalidadeEmitente.PadLeft(7, '0') +

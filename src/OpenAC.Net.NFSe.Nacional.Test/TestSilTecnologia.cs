@@ -28,7 +28,7 @@ public class TestSilTecnologia
 
     private const string UrlHomologacao = "https://homologacao.siltecnologia.com.br/tbbauru/services/NotaFiscalNacional";
 
-    private static string CaminhoSchemaNFSe => Path.Combine(AppContext.BaseDirectory, "Schemas", "1.01", "Homologacao", "NFSe_v1.01.xsd");
+    private static string CaminhoSchemaNFSe => Path.Combine(AppContext.BaseDirectory, "Schemas", "1.01", "Producao", "NFSe_v1.01.xsd");
 
     [Test]
     public async Task Montar_PreencheCamposFixosEEmitente()
@@ -380,7 +380,7 @@ public class TestSilTecnologia
         configuracao.Geral.Versao = VersaoNFSe.Ve101;
         configuracao.Geral.Salvar = false;
         configuracao.Arquivos.Salvar = false;
-        configuracao.Arquivos.PathSchemas = Path.Combine(AppContext.BaseDirectory, "Schemas", "1.01", "Homologacao");
+        configuracao.Arquivos.PathSchemas = Path.Combine(AppContext.BaseDirectory, "Schemas", "1.01", "Producao");
         configuracao.Certificados.CertificadoBytes = pfx;
         configuracao.Certificados.Senha = "1234";
         configuracao.WebServices.Ambiente = DFeTipoAmbiente.Homologacao;
@@ -419,12 +419,13 @@ public class TestSilTecnologia
             Versao = VersaoNFSe.Ve101,
             Informacoes = new InfDps
             {
-                TipoAmbiente = DFeTipoAmbiente.Homologacao,
-                DhEmissao = DateTimeOffset.Now,
+                // Usa uma DPS do leiaute oficial de produção anterior à virada.
+                TipoAmbiente = DFeTipoAmbiente.Producao,
+                DhEmissao = new DateTimeOffset(2026, 12, 6, 12, 0, 0, TimeSpan.FromHours(-3)),
                 LocalidadeEmitente = CodBauru,
                 Serie = "00001",
                 NumeroDps = "7",
-                Competencia = DateTime.Today,
+                Competencia = new DateTime(2026, 12, 6),
                 TipoEmitente = EmitenteDps.Prestador,
                 Prestador = new PrestadorDps
                 {

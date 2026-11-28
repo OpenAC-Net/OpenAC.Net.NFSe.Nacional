@@ -24,13 +24,13 @@ namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 public sealed partial class RTCInfoTributosSitClas : DFeParentItem<RTCInfoTributosSitClas, InfDps>
 {
     /// <summary>
-    /// Código de Situação Tributária do IBS e da CBS (layout anterior a 01/12/2026 em Produção).
+    /// Código de Situação Tributária do IBS e da CBS (layout anterior a 07/12/2026 em Produção).
     /// </summary>
     [DFeElement(TipoCampo.Str, "CST", Min = 3, Max = 3, Ocorrencia = Ocorrencia.Obrigatoria, Ordem = 1)]
     public string CodigoSituacaoTributaria { get; set; } = string.Empty;
 
     /// <summary>
-    /// Código de Classificação Tributária do IBS e da CBS (layout anterior a 01/12/2026 em Produção).
+    /// Código de Classificação Tributária do IBS e da CBS (layout anterior a 07/12/2026 em Produção).
     /// </summary>
     [DFeElement(TipoCampo.Str, "cClassTrib", Min = 6, Max = 6, Ocorrencia = Ocorrencia.Obrigatoria, Ordem = 2)]
     public string CodigoClassificacaoTributaria { get; set; } = string.Empty;

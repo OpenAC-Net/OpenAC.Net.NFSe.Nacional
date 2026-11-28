@@ -107,6 +107,15 @@ public abstract class NFSeWebserviceBase : DFeHttpServiceClient, IOpenLog
     /// <returns>Array de bytes contendo o DANFSe.</returns>
     public abstract Task<byte[]> DownloadDANFSeAsync(string chave, CancellationToken cancellationToken = default);
 
+    /// <summary>Consulta os códigos de serviço parametrizados no município para a competência informada.</summary>
+    /// <param name="codigoMunicipio">Código IBGE do município.</param>
+    /// <param name="competencia">Data de competência consultada.</param>
+    /// <param name="cancellationToken">Token para cancelar a operação.</param>
+    /// <returns>Resposta com os serviços municipais consultados.</returns>
+    public virtual Task<NFSeResponse<RespostaConsultaServicosMunicipais>> ConsultarServicosMunicipaisAsync(int codigoMunicipio,
+        DateTime competencia, CancellationToken cancellationToken = default) =>
+        throw OperacaoNaoSuportada(nameof(ConsultarServicosMunicipaisAsync));
+
     /// <summary>
     /// Distribui os DF-e para contribuintes relacionados à NFS-e.
     /// </summary>

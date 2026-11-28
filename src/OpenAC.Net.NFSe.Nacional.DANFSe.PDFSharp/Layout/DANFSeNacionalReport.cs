@@ -509,7 +509,7 @@ internal sealed class DANFSeNacionalReport
             return;
         }
 
-        var dest = nota.Informacoes.Dps.Informacoes.IBSCBS?.Destinatario;
+        var dest = nota.Informacoes.Dps.Informacoes.Destinatario;
         var end = dest?.Endereco;
         // Linha 1
         PdfDrawHelper.DesenharTituloBlocoInline(gfx, xMm, yMm, colW, lineH, "Destinatário da Operação");
@@ -1070,10 +1070,10 @@ internal sealed class DANFSeNacionalReport
 
     private bool PossuiTomador() => nota.Informacoes.Dps.Informacoes.Tomador != null;
     private bool DestinatarioEhProprioTomador() =>
-        nota.Informacoes.Dps.Informacoes.IBSCBS?.IndicadorDestinatario == RTCIndDest.ProprioTomador;
+        nota.Informacoes.Dps.Informacoes.IndicadorDestinatario == RTCIndDest.ProprioTomador;
 
     private bool PossuiDestinatario() =>
-        !DestinatarioEhProprioTomador() && nota.Informacoes.Dps.Informacoes.IBSCBS?.Destinatario != null;
+        !DestinatarioEhProprioTomador() && nota.Informacoes.Dps.Informacoes.Destinatario != null;
     private bool PossuiIntermediario() => nota.Informacoes.Dps.Informacoes.Intermediario != null;
 
     private sealed class LayoutAlturas

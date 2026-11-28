@@ -18,9 +18,10 @@ um certificado com chave privada no repositório do usuário. Configure o códig
 o CPF/CNPJ e a inscrição municipal do prestador, a versão e o ambiente.
 O demo inicia em **homologação**, versão **1.01**.
 
-Os schemas são copiados para a saída com a biblioteca. Deixe o campo de schemas vazio
-para usar automaticamente `Schemas/1.00` ou `Schemas/1.01`, conforme a versão selecionada.
-Para provedores com schemas próprios, selecione a pasta correspondente.
+Os schemas são copiados para a saída com a biblioteca. Para validar XML, selecione
+no campo de schemas a pasta que contém diretamente os XSDs do leiaute desejado.
+Para a ISSNet, selecione a pasta que contém `ISSNet_v1.01.xsd`. Para enviar eventos
+pela ISSNet, inclua nessa pasta também o XSD do pedido de evento e suas dependências.
 
 **Salvar configurações** grava `nfse.config` no diretório local de dados do usuário,
 em `OpenAC.Net/NFSe.Nacional.Demo`. O caminho completo aparece na tela.

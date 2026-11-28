@@ -57,7 +57,7 @@ public sealed partial class RTCInfoIBSCBS : DFeParentItem<RTCInfoIBSCBS, InfDps>
     internal bool FinalidadeNFSeInformada { get; private set; }
 
     /// <summary>
-    /// Indicador da finalidade da emissão de NFS-e (finNFSe - layout anterior a 01/12/2026 em Produção).
+    /// Indicador da finalidade da emissão de NFS-e (finNFSe - layout anterior a 07/12/2026 em Produção).
     /// TSRTCFinNFSe.
     /// </summary>
     [DFeElement(TipoCampo.Enum, "finNFSe", Ocorrencia = Ocorrencia.Obrigatoria, Ordem = 1)]
@@ -110,13 +110,21 @@ public sealed partial class RTCInfoIBSCBS : DFeParentItem<RTCInfoIBSCBS, InfDps>
     /// TSRTCIndDest.
     /// </summary>
     [DFeElement(TipoCampo.Enum, "indDest", Ocorrencia = Ocorrencia.Obrigatoria, Ordem = 7)]
-    public RTCIndDest IndicadorDestinatario { get; set; }
+    public RTCIndDest IndicadorDestinatario
+    {
+        get => Parent?.IndicadorDestinatarioRaiz ?? field;
+        set => field = value;
+    }
 
     /// <summary>
     /// Grupo de informações relativas ao Destinatário (dest).
     /// </summary>
     [DFeElement("dest", Ocorrencia = Ocorrencia.NaoObrigatoria, Ordem = 8)]
-    public RTCInfoDest? Destinatario { get; set; }
+    public RTCInfoDest? Destinatario
+    {
+        get => Parent?.DestinatarioRaiz ?? field;
+        set => field = value;
+    }
 
     /// <summary>
     /// Grupo de informações de operações relacionadas a bens imóveis, exceto obras (imovel).
@@ -164,6 +172,10 @@ public sealed partial class RTCInfoIBSCBS : DFeParentItem<RTCInfoIBSCBS, InfDps>
         if (valores != null && valores.Parent != Parent)
             valores.Parent = Parent;
     }
+
+    internal bool ShouldSerializeIndicadorDestinatario() => !(Parent?.UsarLayoutRelease2 ?? false);
+
+    internal bool ShouldSerializeDestinatario() => !(Parent?.UsarLayoutRelease2 ?? false);
 
     internal bool ShouldSerializeFinalidadeNFSe() => !(Parent?.UsarLayoutNovo101 ?? true);
 

@@ -53,7 +53,7 @@ public sealed partial class InformacoesServico : DFeParentItem<InformacoesServic
     public string? CodTributacaoMunicipio { get; set; }
 
     /// <summary>
-    /// Projeta <see cref="Descricao"/> na posição anterior a <c>cNBS</c> quando o layout anterior (1.00 ou Produção 1.01 antes de 01/12/2026) estiver ativo.
+    /// Projeta <see cref="Descricao"/> na posição anterior a <c>cNBS</c> quando o layout anterior (1.00 ou Produção 1.01 antes de 07/12/2026) estiver ativo.
     /// </summary>
     [DFeElement(TipoCampo.Str, "xDescServ", Min = 1, Max = 2000, Ocorrencia = Ocorrencia.Obrigatoria, Ordem = 3)]
     internal string DescricaoLayoutAnterior

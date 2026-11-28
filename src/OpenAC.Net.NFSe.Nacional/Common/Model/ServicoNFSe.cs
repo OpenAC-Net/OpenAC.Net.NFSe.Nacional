@@ -75,7 +75,15 @@ public sealed partial class ServicoNFSe : DFeParentItem<ServicoNFSe, InfDps>
     /// Informações sobre serviço prestado no exterior.
     /// </summary>
     [DFeElement("comExt", Ocorrencia = Ocorrencia.NaoObrigatoria)]
-    public ServicoExterior? ServicoExterior { get; set; }
+    public ServicoExterior? ServicoExterior
+    {
+        get;
+        set
+        {
+            field = value;
+            field?.Parent = Parent;
+        }
+    }
     
     /// <summary>
     /// Informações de locação, se aplicável.
@@ -93,7 +101,15 @@ public sealed partial class ServicoNFSe : DFeParentItem<ServicoNFSe, InfDps>
     /// Informações sobre evento do serviço, se aplicável.
     /// </summary>
     [DFeElement("atvEvento", Ocorrencia = Ocorrencia.NaoObrigatoria)]
-    public EventoServicoNFSe? Evento { get; set; }
+    public EventoServicoNFSe? Evento
+    {
+        get;
+        set
+        {
+            field = value;
+            field?.Parent = Parent;
+        }
+    }
     
     /// <summary>
     /// Informações sobre exploração rodoviária, se aplicável.
@@ -110,6 +126,8 @@ public sealed partial class ServicoNFSe : DFeParentItem<ServicoNFSe, InfDps>
     /// <inheritdoc />
     protected override void OnParentChanged()
     {
+        ServicoExterior?.Parent = Parent;
+        Evento?.Parent = Parent;
         if (informacoes != null && informacoes.Parent != Parent)
             informacoes.Parent = Parent;
     }

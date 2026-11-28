@@ -55,6 +55,27 @@ public sealed class OpenNFSeNacional : IOpenNFSeNacionalClient, IOpenLog
 
     #region Methods
 
+    /// <summary>Consulta os códigos de serviço parametrizados no município para a competência informada.</summary>
+    /// <param name="codigoMunicipio">Código IBGE do município.</param>
+    /// <param name="competencia">Data de competência consultada.</param>
+    /// <param name="cancellationToken">Token para cancelar a operação.</param>
+    /// <returns>Resposta com os serviços municipais consultados.</returns>
+    public Task<NFSeResponse<RespostaConsultaServicosMunicipais>> ConsultarServicosMunicipaisAsync(int codigoMunicipio,
+        DateTime competencia, CancellationToken cancellationToken = default)
+    {
+        var provider = NFSeServiceManager.Instance.GetProvider(Configuracoes);
+
+        try
+        {
+            return provider.ConsultarServicosMunicipaisAsync(codigoMunicipio, competencia, cancellationToken);
+        }
+        catch (Exception exception)
+        {
+            this.Log().Error("[ConsultaServicosMunicipais]", exception);
+            throw;
+        }
+    }
+
     /// <summary>
     /// Recepciona a DPS e gera a NFS-e de forma assíncrona.
     /// </summary>

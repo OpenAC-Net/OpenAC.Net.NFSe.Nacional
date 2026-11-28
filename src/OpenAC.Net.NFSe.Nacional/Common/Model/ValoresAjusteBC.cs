@@ -32,13 +32,14 @@
 using System.Collections.Generic;
 using OpenAC.Net.DFe.Core.Attributes;
 using OpenAC.Net.DFe.Core.Serializer;
+using OpenAC.Net.DFe.Core.Collection;
 
 namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 
 /// <summary>
 /// Grupo de informações relativas aos valores para ajuste dos valores de base de cálculo (TCInfoAjusteBC).
 /// </summary>
-public sealed partial class ValoresAjusteBC
+public sealed partial class ValoresAjusteBC : DFeParentItem<ValoresAjusteBC, InfDps>
 {
     /// <summary>
     /// Valor percentual padrão para ajuste dos valores de base de cálculo do ISSQN (pAjusteBCISSQN).
@@ -58,6 +59,14 @@ public sealed partial class ValoresAjusteBC
     [DFeCollection("documentos", Ocorrencia = Ocorrencia.NaoObrigatoria, Ordem = 3)]
     [DFeItem(typeof(DocumentoAjusteBC), "docAjusteBC")]
     public List<DocumentoAjusteBC>? Documentos { get; set; }
+
+    /// <summary>
+    /// Ajuste positivo ou negativo da base de IBS/CBS em operações de comércio exterior.
+    /// </summary>
+    [DFeElement(TipoCampo.De2, "vAjusteBCIBSCBSComExt", Max = 19, Ocorrencia = Ocorrencia.NaoObrigatoria, Ordem = 4)]
+    public decimal? ValorAjusteBCIBSCBSComercioExterior { get; set; }
+
+    internal bool ShouldSerializeValorAjusteBCIBSCBSComercioExterior() => Parent?.UsarLayoutRelease2 ?? true;
 
     /// <summary>
     /// Indica se a lista de documentos deve ser serializada.
