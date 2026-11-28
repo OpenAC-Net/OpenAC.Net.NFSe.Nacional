@@ -46,9 +46,9 @@ public sealed partial class InfDps : DFeParentItem<InfDps, Dps>
     #region Constants
 
     /// <summary>
-    /// Data em que o layout 1.01 de Produção passa a ser idêntico ao de Homologação (01/12/2026).
+    /// Data em que o layout 1.01 de Produção passa a ser idêntico ao de Homologação (07/12/2026).
     /// </summary>
-    public static readonly DateTime DataUnificacaoLayout101 = new(2026, 12, 1);
+    public static readonly DateTime DataUnificacaoLayout101 = new(2026, 12, 7);
 
     #endregion Constants
 
@@ -57,6 +57,9 @@ public sealed partial class InfDps : DFeParentItem<InfDps, Dps>
     private RTCFinNFSe finalidadeNFSe = RTCFinNFSe.Regular;
     private ServicoNFSe servico = null!;
     private RTCInfoIBSCBS? ibscbs;
+    private RTCIndDest? indicadorDestinatario;
+    private RTCInfoDest? destinatario;
+    private ValoresDps valores = null!;
 
     #endregion Fields
 
@@ -68,6 +71,7 @@ public sealed partial class InfDps : DFeParentItem<InfDps, Dps>
     public InfDps()
     {
         Servico = new ServicoNFSe();
+        Valores = new ValoresDps();
     }
 
     #endregion Constructors
@@ -75,13 +79,25 @@ public sealed partial class InfDps : DFeParentItem<InfDps, Dps>
     #region Properties
 
     /// <summary>
-    /// Indica se deve utilizar o novo layout 1.01 (Homologação ou Produção a partir de 01/12/2026).
+    /// Indica se deve utilizar o novo layout 1.01 (Homologação ou Produção a partir de 07/12/2026).
     /// </summary>
     [DFeIgnore]
     internal bool UsarLayoutNovo101 =>
         (Parent?.Versao ?? VersaoNFSe.Ve100) == VersaoNFSe.Ve101 &&
         (TipoAmbiente == DFeTipoAmbiente.Homologacao ||
-         (DhEmissao != default ? DhEmissao.Date : DateTime.Today) >= DataUnificacaoLayout101);
+         DataEmissaoLayout >= DataUnificacaoLayout101);
+
+    [DFeIgnore]
+    internal bool UsarLayoutRelease2 => !UsarLayoutMunicipal && UsarLayoutNovo101;
+
+    [DFeIgnore]
+    internal bool UsarLayoutMunicipal { get; set; }
+
+    internal RTCIndDest? IndicadorDestinatarioRaiz => indicadorDestinatario;
+
+    internal RTCInfoDest? DestinatarioRaiz => destinatario;
+
+    private DateTime DataEmissaoLayout => DhEmissao != default ? DhEmissao.Date : DateTime.Today;
 
     /// <summary>
     /// Identificador único da DPS.
@@ -183,6 +199,33 @@ public sealed partial class InfDps : DFeParentItem<InfDps, Dps>
     public InfoPessoaNFSe? Tomador { get; set; }
 
     /// <summary>
+    /// Identifica se o destinatário é o próprio tomador. Lê também o indicador dos XMLs anteriores.
+    /// </summary>
+    [DFeIgnore]
+    public RTCIndDest? IndicadorDestinatario
+    {
+        get => indicadorDestinatario ?? IBSCBS?.IndicadorDestinatario;
+        set => indicadorDestinatario = value;
+    }
+
+    [DFeElement(TipoCampo.Enum, "indDest", Ocorrencia = Ocorrencia.Obrigatoria)]
+    internal RTCIndDest IndicadorDestinatarioXml
+    {
+        get => IndicadorDestinatario ?? RTCIndDest.ProprioTomador;
+        set => IndicadorDestinatario = value;
+    }
+
+    /// <summary>
+    /// Identifica o destinatário na DPS. Lê também o grupo dos XMLs anteriores.
+    /// </summary>
+    [DFeElement("dest", Ocorrencia = Ocorrencia.NaoObrigatoria)]
+    public RTCInfoDest? Destinatario
+    {
+        get => destinatario ?? IBSCBS?.Destinatario;
+        set => destinatario = value;
+    }
+
+    /// <summary>
     /// Informações do intermediário, se houver.
     /// </summary>
     [DFeElement("interm", Ocorrencia = Ocorrencia.NaoObrigatoria)]
@@ -208,7 +251,16 @@ public sealed partial class InfDps : DFeParentItem<InfDps, Dps>
     /// Valores da DPS.
     /// </summary>
     [DFeElement("valores", Ocorrencia = Ocorrencia.Obrigatoria)]
-    public ValoresDps Valores { get; set; } = new();
+    public ValoresDps Valores
+    {
+        get => valores;
+        set
+        {
+            valores = value;
+            if (valores != null)
+                valores.Parent = this;
+        }
+    }
 
     /// <summary>
     /// Grupo de informações declaradas pelo emitente referentes ao IBS e à CBS
@@ -237,7 +289,18 @@ public sealed partial class InfDps : DFeParentItem<InfDps, Dps>
 
     #region Methods
 
+    internal InfoPessoaNFSe? ObterEmitente() => TipoEmitente switch
+    {
+        EmitenteDps.Tomador => Tomador,
+        EmitenteDps.Intermediário => Intermediario,
+        _ => Prestador
+    };
+
     internal bool ShouldSerializeFinalidadeNFSe() => UsarLayoutNovo101;
+
+    internal bool ShouldSerializeIndicadorDestinatarioXml() => UsarLayoutRelease2;
+
+    internal bool ShouldSerializeDestinatario() => UsarLayoutRelease2;
 
     #endregion Methods
 }

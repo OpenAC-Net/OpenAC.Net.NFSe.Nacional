@@ -114,14 +114,38 @@ public static class ISSNetDps
         var servico = dps.Informacoes.Servico;
         var local = servico.Localidade;
         var alterado = false;
+        var ibscbs = Filho(infDps, "IBSCBS");
 
         var finNfse = Filho(infDps, "finNFSe");
         if (finNfse != null)
         {
             infDps.RemoveChild(finNfse);
-            var ibscbs = Filho(infDps, "IBSCBS");
             if (ibscbs != null && Filho(ibscbs, "finNFSe") == null)
                 ibscbs.PrependChild(finNfse);
+            alterado = true;
+        }
+
+        var indDest = Filho(infDps, "indDest");
+        var dest = Filho(infDps, "dest");
+        if (indDest != null)
+        {
+            infDps.RemoveChild(indDest);
+            if (ibscbs != null)
+            {
+                Remover(ibscbs, "indDest");
+                ibscbs.InsertBefore(indDest, Filho(ibscbs, "dest") ?? Filho(ibscbs, "imovel") ?? Filho(ibscbs, "valores"));
+            }
+            alterado = true;
+        }
+
+        if (dest != null)
+        {
+            infDps.RemoveChild(dest);
+            if (ibscbs != null)
+            {
+                Remover(ibscbs, "dest");
+                ibscbs.InsertBefore(dest, Filho(ibscbs, "imovel") ?? Filho(ibscbs, "valores"));
+            }
             alterado = true;
         }
 
@@ -169,7 +193,7 @@ public static class ISSNetDps
             alterado |= AdequarEndereco(Filho(evento, "end"), servico.Evento?.Endereco, local, "atvEvento");
         }
 
-        var imovel = Filho(Filho(infDps, "IBSCBS"), "imovel");
+        var imovel = Filho(ibscbs, "imovel");
         if (imovel != null)
         {
             alterado |= Remover(imovel, "cCIB");

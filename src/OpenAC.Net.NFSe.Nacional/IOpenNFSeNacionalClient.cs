@@ -1,3 +1,4 @@
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using OpenAC.Net.NFSe.Nacional.Common.Model;
@@ -19,6 +20,14 @@ public interface IOpenNFSeNacionalClient
     /// <returns>Resposta fiscal do processamento do evento.</returns>
     Task<NFSeResponse<RespostaEnvioEvento>> EnviarEventoAsync(PedidoRegistroEvento evento,
         CancellationToken cancellationToken = default);
+
+    /// <summary>Consulta os códigos de serviço parametrizados no município para a competência informada.</summary>
+    /// <param name="codigoMunicipio">Código IBGE do município.</param>
+    /// <param name="competencia">Data de competência consultada.</param>
+    /// <param name="cancellationToken">Token para cancelar a operação.</param>
+    /// <returns>Resposta com os serviços municipais consultados.</returns>
+    Task<NFSeResponse<RespostaConsultaServicosMunicipais>> ConsultarServicosMunicipaisAsync(int codigoMunicipio,
+        DateTime competencia, CancellationToken cancellationToken = default);
 
     /// <summary>Consulta documentos fiscais distribuídos a partir de um NSU.</summary>
     /// <param name="nsu">Número Sequencial Único inicial da consulta.</param>

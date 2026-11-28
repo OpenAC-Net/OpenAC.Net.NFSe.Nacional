@@ -402,12 +402,12 @@ public class TestXmlSerialization
             Versao = VersaoNFSe.Ve101,
             Informacoes = new InfDps
             {
-                TipoAmbiente = DFeTipoAmbiente.Homologacao,
-                DhEmissao = DateTime.Now,
+                TipoAmbiente = DFeTipoAmbiente.Producao,
+                DhEmissao = new DateTimeOffset(2026, 11, 23, 12, 0, 0, TimeSpan.FromHours(-3)),
                 LocalidadeEmitente = "3550308",
                 Serie = "1",
                 NumeroDps = "1001",
-                Competencia = DateTime.Today,
+                Competencia = new DateTime(2026, 11, 23),
                 TipoEmitente = EmitenteDps.Prestador,
                 Prestador = new PrestadorDps { CNPJ = "12ABC678000199" },
                 Tomador = new InfoPessoaNFSe

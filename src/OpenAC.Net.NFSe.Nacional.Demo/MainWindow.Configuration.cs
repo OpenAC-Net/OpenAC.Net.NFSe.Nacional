@@ -73,8 +73,7 @@ public partial class MainWindow
         config.WebServices.ValidarSchemas = ValidateSchemasCheck.IsChecked == true;
         config.Certificados.Certificado = !string.IsNullOrWhiteSpace(CertificatePathText.Text) ? CertificatePathText.Text.Trim() : CertificateSerialText.Text?.Trim() ?? "";
         config.Certificados.Senha = CertificatePasswordText.Text ?? "";
-        var versionFolder = config.Geral.Versao == VersaoNFSe.Ve101 ? "1.01" : "1.00";
-        config.Arquivos.PathSchemas = string.IsNullOrWhiteSpace(SchemasPathText.Text) ? Path.Combine(AppContext.BaseDirectory, "Schemas", versionFolder) : SchemasPathText.Text.Trim();
+        config.Arquivos.PathSchemas = SchemasPathText.Text?.Trim() ?? "";
         config.Arquivos.VersaoSchema = config.Geral.Versao;
         config.Arquivos.PathNFSe = DocumentsPathText.Text ?? "";
         config.Arquivos.PathDps = Path.Combine(config.Arquivos.PathNFSe, "DPS");

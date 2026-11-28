@@ -32,6 +32,7 @@
 using OpenAC.Net.DFe.Core.Storage;
 using OpenAC.Net.DFe.Core.Http;
 using System;
+using System.Globalization;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -96,6 +97,29 @@ public class NacionalWebservice : NFSeWebserviceBase
     }
 
     #endregion DANFSe
+
+    /// <inheritdoc />
+    public override async Task<NFSeResponse<RespostaConsultaServicosMunicipais>> ConsultarServicosMunicipaisAsync(int codigoMunicipio,
+        DateTime competencia, CancellationToken cancellationToken = default)
+    {
+        var municipio = codigoMunicipio.ToString(CultureInfo.InvariantCulture);
+        var data = competencia.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
+        this.Log().Debug($"Webservice: [ConsultaServicosMunicipais][Envio] - {municipio} {data}");
+
+        var url = ServiceInfo[Configuracao.WebServices.Ambiente][TipoUrl.ParametrosMunicipais];
+        if (string.IsNullOrWhiteSpace(url))
+            throw OperacaoNaoSuportada(nameof(ConsultarServicosMunicipaisAsync));
+
+        using var resposta = await SendAsync(null, HttpMethod.Get, $"{url.TrimEnd('/')}/{municipio}/{data}/servicos",
+            cancellationToken: cancellationToken);
+        var corpo = await LerRespostaAsync(resposta, cancellationToken);
+
+        this.Log().Debug($"Webservice: [ConsultaServicosMunicipais][Resposta] - {corpo}");
+        await GravarArquivoEmDiscoAsync(corpo, $"ConsultaServicosMunicipais-{municipio}-{data}-resp.json", "", cancellationToken);
+
+        return NFSeResponse<RespostaConsultaServicosMunicipais>.Create("", "", corpo, resposta.IsSuccessStatusCode,
+            resposta.StatusCode, RespostaConsultaServicosMunicipais.OpcoesJson);
+    }
 
     #region DFe
 
@@ -314,7 +338,8 @@ public class NacionalWebservice : NFSeWebserviceBase
 
         ValidarSchema(SchemaNFSe.DPS, dps.Xml, dps.Versao);
 
-        var documento = dps.Informacoes.Prestador.CPF ?? dps.Informacoes.Prestador.CNPJ;
+        var emitente = dps.Informacoes.ObterEmitente();
+        var documento = emitente?.CNPJ ?? emitente?.CPF;
 
         var prefixoNomeArquivoDps = Configuracao.Arquivos.PadronizarNomes
             ? dps.Informacoes.Id

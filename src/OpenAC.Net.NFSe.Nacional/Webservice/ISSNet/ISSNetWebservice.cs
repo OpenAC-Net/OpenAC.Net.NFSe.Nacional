@@ -487,33 +487,8 @@ public class ISSNetWebService : NacionalWebservice
     {
         if (!Configuracao.WebServices.ValidarSchemas) return;
 
-        ValidarSchema(ObterSchemaISSNet(), xmlEnvio, versao);
-    }
-
-    /// <summary>
-    /// Localiza o schema da ISSNet. O <c>PathSchemas</c> aponta para a pasta da versão nacional
-    /// (<c>Schemas/1.0x</c>), então a pasta do provedor é procurada ao lado dela
-    /// (<c>Schemas/ISSNet/1.01</c>) e, em seguida, na pasta da aplicação.
-    /// </summary>
-    /// <returns>O caminho do schema (o primeiro existente, ou o primeiro candidato se nenhum existir).</returns>
-    private string ObterSchemaISSNet()
-    {
-        var relativo = Path.Combine(ISSNetDps.PastaSchema, ISSNetDps.VersaoSchema, ISSNetDps.ArquivoSchema);
-        var pathSchemas = Configuracao.Arquivos.PathSchemas?.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
-
-        var candidatos = new List<string>();
-        if (!string.IsNullOrEmpty(pathSchemas))
-        {
-            candidatos.Add(Path.Combine(pathSchemas, relativo));
-
-            var pastaSchemas = Path.GetDirectoryName(pathSchemas);
-            if (!string.IsNullOrEmpty(pastaSchemas))
-                candidatos.Add(Path.Combine(pastaSchemas, relativo));
-        }
-
-        candidatos.Add(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Schemas", relativo));
-
-        return candidatos.FirstOrDefault(File.Exists) ?? candidatos[0];
+        var schema = Path.Combine(Configuracao.Arquivos.PathSchemas, ISSNetDps.ArquivoSchema);
+        ValidarSchema(schema, xmlEnvio, versao);
     }
 
     /// <summary>

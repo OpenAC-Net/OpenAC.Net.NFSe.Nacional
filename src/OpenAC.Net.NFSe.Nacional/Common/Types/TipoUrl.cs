@@ -27,5 +27,8 @@ public enum TipoUrl
     ConsultaExisteDps,
     
     /// <summary>Consultar evento por chave de acesso, tipo de evento e número sequencial do evento.</summary>
-    ConsultarEvento
+    ConsultarEvento,
+
+    /// <summary>API de parâmetros municipais do ADN.</summary>
+    ParametrosMunicipais
 }

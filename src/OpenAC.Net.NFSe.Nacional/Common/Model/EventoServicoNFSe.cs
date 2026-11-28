@@ -33,13 +33,14 @@ using System;
 using OpenAC.Net.Core.Extensions;
 using OpenAC.Net.DFe.Core.Attributes;
 using OpenAC.Net.DFe.Core.Serializer;
+using OpenAC.Net.DFe.Core.Collection;
 
 namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 
 /// <summary>
 /// Representa um evento de serviço para NFSe.
 /// </summary>
-public sealed partial class EventoServicoNFSe
+public sealed partial class EventoServicoNFSe : DFeParentItem<EventoServicoNFSe, InfDps>
 {
     #region Properties
 
@@ -61,6 +62,12 @@ public sealed partial class EventoServicoNFSe
     [DFeElement(TipoCampo.Dat, "dtFim", Min = 1, Max = 255, Ocorrencia = Ocorrencia.Obrigatoria)]
     public DateTime DataFim { get; set; } = DateTime.Today;
     
+    /// <summary>
+    /// Código IBGE do município do evento para os subitens 12.13 e 17.10.
+    /// </summary>
+    [DFeElement(TipoCampo.StrNumber, "cMun", Min = 7, Max = 7, Ocorrencia = Ocorrencia.NaoObrigatoria)]
+    public string? CodigoMunicipio { get; set; }
+
     /// <summary>
     /// Identificador do evento.
     /// </summary>
@@ -86,6 +93,8 @@ public sealed partial class EventoServicoNFSe
     /// Indica se a propriedade Endereco deve ser serializada.
     /// </summary>
     public bool ShouldSerializeEndereco() => IdEvento.IsEmpty();
+
+    internal bool ShouldSerializeCodigoMunicipio() => Parent?.UsarLayoutRelease2 ?? true;
     
     #endregion Methods
 }

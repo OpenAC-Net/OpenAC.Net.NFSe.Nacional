@@ -30,13 +30,14 @@
 // ***********************************************************************
 
 using OpenAC.Net.DFe.Core.Attributes;
+using OpenAC.Net.DFe.Core.Collection;
 
 namespace OpenAC.Net.NFSe.Nacional.Common.Model;
 
 /// <summary>
 /// Representa os valores de uma DPS (Documento de Prestação de Serviço).
 /// </summary>
-public sealed partial class ValoresDps
+public sealed partial class ValoresDps : DFeParentItem<ValoresDps, InfDps>
 {
     /// <summary>
     /// Valores do serviço prestado.
@@ -60,11 +61,27 @@ public sealed partial class ValoresDps
     /// Grupo de informações relativas aos valores para ajuste dos valores de base de cálculo (vAjusteBC).
     /// </summary>
     [DFeElement("vAjusteBC", Ocorrencia = Ocorrencia.NaoObrigatoria)]
-    public ValoresAjusteBC? ValoresAjusteBC { get; set; }
+    public ValoresAjusteBC? ValoresAjusteBC
+    {
+        get;
+        set
+        {
+            field = value;
+            if (field != null)
+                field.Parent = Parent;
+        }
+    }
 
     /// <summary>
     /// Tributos incidentes na operação.
     /// </summary>
     [DFeElement("trib", Ocorrencia = Ocorrencia.Obrigatoria)]
     public TributosNFSe Tributos { get; set; } = new();
+
+    /// <inheritdoc />
+    protected override void OnParentChanged()
+    {
+        if (ValoresAjusteBC != null)
+            ValoresAjusteBC.Parent = Parent;
+    }
 }

@@ -66,5 +66,11 @@ public enum ModoPrestacao
     /// 4 - Movimento Temporário de Pessoas Físicas
     /// </summary>
     [DFeEnum("4")]
-    MovimentoTemporarioPessoasFisicas = 4
+    MovimentoTemporarioPessoasFisicas = 4,
+
+    /// <summary>
+    /// Consumo concomitante no território nacional e no exterior.
+    /// </summary>
+    [DFeEnum("5")]
+    ConsumoBrasilExterior = 5
 }

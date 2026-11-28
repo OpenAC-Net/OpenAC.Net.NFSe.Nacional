@@ -138,6 +138,7 @@ public class SilTecnologiaWebService : NFSeWebserviceBase
     public async Task<NFSeResponse<RespostaEnvioDps>> EnviarAsync(NotaFiscalServico nfse, CancellationToken cancellationToken = default)
     {
         var dps = nfse.Informacoes.Dps;
+        dps.Informacoes.UsarLayoutMunicipal = true;
         var options = OpcoesXml();
 
         // Valida apenas a DPS: o NFSe_v1.01.xsd exige nNFSe >= 1, mas a SIL exige nNFSe = 0.

@@ -69,6 +69,7 @@ public static class SilTecnologiaNFSe
         var copia = Dps.Load(dps.GetXml());
         copia.Signature = null!;
         var inf = copia.Informacoes;
+        inf.UsarLayoutMunicipal = true;
         var prestador = inf.Prestador;
 
         var municipioPrestador = prestador.Endereco?.Municipio as MunicipioNacional;

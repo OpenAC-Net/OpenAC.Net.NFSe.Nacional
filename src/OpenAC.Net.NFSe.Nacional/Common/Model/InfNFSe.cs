@@ -110,6 +110,12 @@ public sealed partial class InfNFSe
     public AmbienteGerador AmbienteGerador { get; set; }
 
     /// <summary>
+    /// Versão da Calculadora de Tributos utilizada pela Sefin Nacional.
+    /// </summary>
+    [DFeElement(TipoCampo.Str, "verCalcIBSCBS", Min = 1, Max = 20, Ocorrencia = Ocorrencia.NaoObrigatoria)]
+    public string? VersaoCalculadoraIBSCBS { get; set; }
+
+    /// <summary>
     /// Tipo de emissão da NFSe.
     /// </summary>
     [DFeElement(TipoCampo.Enum, "tpEmis", Ocorrencia = Ocorrencia.Obrigatoria)]
